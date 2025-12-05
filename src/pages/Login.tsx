@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-
+import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,15 +32,14 @@ export default function Login() {
   return (
     <div className="min-h-screen flex bg-background">
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-lime-600 items-center justify-center p-12">
-        <div className="max-w-md text-center animate-fade-in">
-          <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-8">
-            <span className="text-4xl font-display font-bold text-white">L</span>
-          </div>
-          <h1 className="text-4xl font-display font-bold text-white mb-4">
-            Lavcom Analytics
-          </h1>
-          <p className="text-white/80 text-lg">
+      <div className="hidden lg:flex lg:w-1/2 bg-lavcom-dark items-center justify-center p-12">
+        <div className="max-w-lg text-center animate-fade-in">
+          <img 
+            src={lavcomLogo} 
+            alt="Lavcom Analytics" 
+            className="w-full max-w-md mx-auto mb-8"
+          />
+          <p className="text-lavcom-gray text-lg">
             Analysez les performances de vos laveries en un coup d'œil
           </p>
           <div className="mt-12 grid grid-cols-3 gap-6 text-center">
@@ -65,12 +64,11 @@ export default function Login() {
         <div className="w-full max-w-md space-y-8 animate-fade-in">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
-            <div className="w-16 h-16 rounded-xl bg-primary flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-display font-bold text-primary-foreground">L</span>
-            </div>
-            <h1 className="text-2xl font-display font-bold text-foreground">
-              Lavcom Analytics
-            </h1>
+            <img 
+              src={lavcomLogo} 
+              alt="Lavcom Analytics" 
+              className="w-48 mx-auto"
+            />
           </div>
 
           <div className="space-y-2">
