@@ -13,6 +13,14 @@ import ImportExport from "./pages/ImportExport";
 import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 
+// Chart pages
+import MonthlyRevenuePage from "./pages/charts/MonthlyRevenuePage";
+import DailyRevenuePage from "./pages/charts/DailyRevenuePage";
+import PaymentDistributionPage from "./pages/charts/PaymentDistributionPage";
+import MachineTypePage from "./pages/charts/MachineTypePage";
+import SalesHeatmapPage from "./pages/charts/SalesHeatmapPage";
+import ProductsRevenuePage from "./pages/charts/ProductsRevenuePage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -32,6 +40,14 @@ const App = () => (
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
             <Route path="/admin/users" element={<AdminUsers />} />
+            
+            {/* Chart pages */}
+            <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />
+            <Route path="/charts/daily" element={<DailyRevenuePage />} />
+            <Route path="/charts/payments" element={<PaymentDistributionPage />} />
+            <Route path="/charts/machines" element={<MachineTypePage />} />
+            <Route path="/charts/heatmap" element={<SalesHeatmapPage />} />
+            <Route path="/charts/products" element={<ProductsRevenuePage />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

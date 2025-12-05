@@ -7,10 +7,22 @@ import {
   Settings,
   LogOut,
   Building2,
-  ChevronLeft
+  ChevronLeft,
+  BarChart3,
+  LineChart,
+  PieChart,
+  Grid3X3,
+  Package,
+  Activity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { useState } from "react";
 
 interface AppSidebarProps {
   collapsed?: boolean;
@@ -18,6 +30,15 @@ interface AppSidebarProps {
   userRole?: string;
   currentLaundromat?: string;
 }
+
+const chartsNavigation = [
+  { name: "CA par mois", href: "/charts/monthly", icon: BarChart3 },
+  { name: "CA par jour", href: "/charts/daily", icon: LineChart },
+  { name: "Paiements", href: "/charts/payments", icon: PieChart },
+  { name: "Machines", href: "/charts/machines", icon: Activity },
+  { name: "Heatmap", href: "/charts/heatmap", icon: Grid3X3 },
+  { name: "Produits", href: "/charts/products", icon: Package },
+];
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, permission: "READ_VIEWS" },
@@ -37,9 +58,9 @@ export function AppSidebar({
   currentLaundromat = "Ma Laverie"
 }: AppSidebarProps) {
   const location = useLocation();
+  const [chartsOpen, setChartsOpen] = useState(location.pathname.startsWith("/charts"));
   
   const hasPermission = (permission: string) => {
-    // Simplified permission check for V1
     const adminPermissions = ["MANAGE_USERS", "MANAGE_OPTIONS", "IMPORT_DATA"];
     if (userRole === "SUPER_ADMIN" || userRole === "ADMIN") return true;
     if (userRole === "CHECKER" && !adminPermissions.includes(permission)) return true;
@@ -110,6 +131,61 @@ export function AppSidebar({
             </NavLink>
           );
         })}
+
+        {/* Charts Section */}
+        {!collapsed && (
+          <div className="pt-4 pb-2">
+            <span className="px-3 text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
+              Graphiques
+            </span>
+          </div>
+        )}
+        
+        {collapsed ? (
+          chartsNavigation.map((item) => {
+            const isActive = location.pathname === item.href;
+            return (
+              <NavLink
+                key={item.name}
+                to={item.href}
+                className={cn(
+                  "sidebar-item",
+                  isActive && "sidebar-item-active"
+                )}
+              >
+                <item.icon className="h-5 w-5 shrink-0" />
+              </NavLink>
+            );
+          })
+        ) : (
+          <Collapsible open={chartsOpen} onOpenChange={setChartsOpen}>
+            <CollapsibleTrigger className="sidebar-item w-full justify-between">
+              <div className="flex items-center gap-3">
+                <BarChart3 className="h-5 w-5 shrink-0" />
+                <span>Analyses</span>
+              </div>
+              <ChevronLeft className={cn("h-4 w-4 transition-transform", chartsOpen && "-rotate-90")} />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-4 space-y-1">
+              {chartsNavigation.map((item) => {
+                const isActive = location.pathname === item.href;
+                return (
+                  <NavLink
+                    key={item.name}
+                    to={item.href}
+                    className={cn(
+                      "sidebar-item text-sm",
+                      isActive && "sidebar-item-active"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    <span>{item.name}</span>
+                  </NavLink>
+                );
+              })}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
 
         {/* Admin Section */}
         {(userRole === "SUPER_ADMIN" || userRole === "ADMIN") && (
