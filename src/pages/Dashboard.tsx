@@ -11,30 +11,177 @@ import {
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
-import { RevenueChart } from "@/components/dashboard/RevenueChart";
-import { CategoryPieChart } from "@/components/dashboard/CategoryPieChart";
-import { PaymentModeChart } from "@/components/dashboard/PaymentModeChart";
+import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
+import { DailyRevenueChart } from "@/components/dashboard/DailyRevenueChart";
+import { PaymentPieChart } from "@/components/dashboard/PaymentPieChart";
+import { MachineTypeChart } from "@/components/dashboard/MachineTypeChart";
+import { SalesHeatmap } from "@/components/dashboard/SalesHeatmap";
+import { ProductsRevenueChart } from "@/components/dashboard/ProductsRevenueChart";
 
-// Mock data for V1
-const mockRevenueData = [
-  { date: "01/12", cb: 245, esp: 89 },
-  { date: "02/12", cb: 312, esp: 124 },
-  { date: "03/12", cb: 287, esp: 98 },
-  { date: "04/12", cb: 356, esp: 145 },
-  { date: "05/12", cb: 298, esp: 112 },
+// Mock data - CA par mois
+const mockMonthlyData = [
+  { month: "Jan", revenue: 4250 },
+  { month: "Fév", revenue: 3890 },
+  { month: "Mar", revenue: 4520 },
+  { month: "Avr", revenue: 4180 },
+  { month: "Mai", revenue: 4750 },
+  { month: "Juin", revenue: 5120 },
+  { month: "Juil", revenue: 5890 },
+  { month: "Août", revenue: 4980 },
+  { month: "Sep", revenue: 4650 },
+  { month: "Oct", revenue: 4890 },
+  { month: "Nov", revenue: 5240 },
+  { month: "Déc", revenue: 3495 },
 ];
 
-const mockCategoryData = [
-  { name: "Lave-linge", value: 1850, color: "#3b82f6" },
-  { name: "Sèche-linge", value: 980, color: "#FCD259" },
-  { name: "Lessive", value: 245, color: "#a855f7" },
-  { name: "Recharges", value: 420, color: "#A3C615" },
+// Mock data - CA par jour
+const mockDailyData = [
+  { date: "01/12", revenue: 334 },
+  { date: "02/12", revenue: 436 },
+  { date: "03/12", revenue: 385 },
+  { date: "04/12", revenue: 501 },
+  { date: "05/12", revenue: 410 },
+  { date: "06/12", revenue: 589 },
+  { date: "07/12", revenue: 840 },
 ];
 
+// Mock data - Répartition des paiements
 const mockPaymentData = [
-  { name: "Carte bancaire", value: 2845, color: "#A3C615" },
-  { name: "Espèces", value: 568, color: "#3b82f6" },
-  { name: "Fidélité", value: 82, color: "#FCD259" },
+  { name: "Carte bancaire", value: 2845, color: "hsl(72, 80%, 43%)" },
+  { name: "Espèces", value: 568, color: "hsl(217, 91%, 60%)" },
+  { name: "Fidélité", value: 82, color: "hsl(43, 97%, 67%)" },
+];
+
+// Mock data - CA et cycles par type de machine
+const mockMachineData = [
+  { type: "Lave-linge 8kg", ca: 980, cycles: 140 },
+  { type: "Lave-linge 12kg", ca: 870, cycles: 87 },
+  { type: "Sèche-linge", ca: 680, cycles: 136 },
+  { type: "Lave-linge 18kg", ca: 520, cycles: 40 },
+];
+
+// Mock data - Heatmap (jour x heure)
+const mockHeatmapData = [
+  // Lundi
+  { day: "Lun", hour: 7, cycles: 2 },
+  { day: "Lun", hour: 8, cycles: 5 },
+  { day: "Lun", hour: 9, cycles: 8 },
+  { day: "Lun", hour: 10, cycles: 12 },
+  { day: "Lun", hour: 11, cycles: 10 },
+  { day: "Lun", hour: 12, cycles: 6 },
+  { day: "Lun", hour: 13, cycles: 4 },
+  { day: "Lun", hour: 14, cycles: 8 },
+  { day: "Lun", hour: 15, cycles: 9 },
+  { day: "Lun", hour: 16, cycles: 11 },
+  { day: "Lun", hour: 17, cycles: 14 },
+  { day: "Lun", hour: 18, cycles: 16 },
+  { day: "Lun", hour: 19, cycles: 12 },
+  { day: "Lun", hour: 20, cycles: 8 },
+  { day: "Lun", hour: 21, cycles: 3 },
+  // Mardi
+  { day: "Mar", hour: 7, cycles: 1 },
+  { day: "Mar", hour: 8, cycles: 4 },
+  { day: "Mar", hour: 9, cycles: 7 },
+  { day: "Mar", hour: 10, cycles: 10 },
+  { day: "Mar", hour: 11, cycles: 8 },
+  { day: "Mar", hour: 12, cycles: 5 },
+  { day: "Mar", hour: 13, cycles: 3 },
+  { day: "Mar", hour: 14, cycles: 6 },
+  { day: "Mar", hour: 15, cycles: 8 },
+  { day: "Mar", hour: 16, cycles: 10 },
+  { day: "Mar", hour: 17, cycles: 13 },
+  { day: "Mar", hour: 18, cycles: 15 },
+  { day: "Mar", hour: 19, cycles: 11 },
+  { day: "Mar", hour: 20, cycles: 7 },
+  { day: "Mar", hour: 21, cycles: 2 },
+  // Mercredi
+  { day: "Mer", hour: 7, cycles: 3 },
+  { day: "Mer", hour: 8, cycles: 6 },
+  { day: "Mer", hour: 9, cycles: 9 },
+  { day: "Mer", hour: 10, cycles: 14 },
+  { day: "Mer", hour: 11, cycles: 12 },
+  { day: "Mer", hour: 12, cycles: 7 },
+  { day: "Mer", hour: 13, cycles: 5 },
+  { day: "Mer", hour: 14, cycles: 10 },
+  { day: "Mer", hour: 15, cycles: 11 },
+  { day: "Mer", hour: 16, cycles: 13 },
+  { day: "Mer", hour: 17, cycles: 16 },
+  { day: "Mer", hour: 18, cycles: 18 },
+  { day: "Mer", hour: 19, cycles: 14 },
+  { day: "Mer", hour: 20, cycles: 9 },
+  { day: "Mer", hour: 21, cycles: 4 },
+  // Jeudi
+  { day: "Jeu", hour: 7, cycles: 2 },
+  { day: "Jeu", hour: 8, cycles: 5 },
+  { day: "Jeu", hour: 9, cycles: 8 },
+  { day: "Jeu", hour: 10, cycles: 11 },
+  { day: "Jeu", hour: 11, cycles: 9 },
+  { day: "Jeu", hour: 12, cycles: 6 },
+  { day: "Jeu", hour: 13, cycles: 4 },
+  { day: "Jeu", hour: 14, cycles: 7 },
+  { day: "Jeu", hour: 15, cycles: 9 },
+  { day: "Jeu", hour: 16, cycles: 12 },
+  { day: "Jeu", hour: 17, cycles: 14 },
+  { day: "Jeu", hour: 18, cycles: 17 },
+  { day: "Jeu", hour: 19, cycles: 13 },
+  { day: "Jeu", hour: 20, cycles: 8 },
+  { day: "Jeu", hour: 21, cycles: 3 },
+  // Vendredi
+  { day: "Ven", hour: 7, cycles: 3 },
+  { day: "Ven", hour: 8, cycles: 7 },
+  { day: "Ven", hour: 9, cycles: 10 },
+  { day: "Ven", hour: 10, cycles: 13 },
+  { day: "Ven", hour: 11, cycles: 11 },
+  { day: "Ven", hour: 12, cycles: 8 },
+  { day: "Ven", hour: 13, cycles: 6 },
+  { day: "Ven", hour: 14, cycles: 9 },
+  { day: "Ven", hour: 15, cycles: 12 },
+  { day: "Ven", hour: 16, cycles: 15 },
+  { day: "Ven", hour: 17, cycles: 18 },
+  { day: "Ven", hour: 18, cycles: 20 },
+  { day: "Ven", hour: 19, cycles: 16 },
+  { day: "Ven", hour: 20, cycles: 10 },
+  { day: "Ven", hour: 21, cycles: 5 },
+  // Samedi
+  { day: "Sam", hour: 7, cycles: 4 },
+  { day: "Sam", hour: 8, cycles: 8 },
+  { day: "Sam", hour: 9, cycles: 14 },
+  { day: "Sam", hour: 10, cycles: 18 },
+  { day: "Sam", hour: 11, cycles: 20 },
+  { day: "Sam", hour: 12, cycles: 16 },
+  { day: "Sam", hour: 13, cycles: 12 },
+  { day: "Sam", hour: 14, cycles: 15 },
+  { day: "Sam", hour: 15, cycles: 17 },
+  { day: "Sam", hour: 16, cycles: 19 },
+  { day: "Sam", hour: 17, cycles: 22 },
+  { day: "Sam", hour: 18, cycles: 18 },
+  { day: "Sam", hour: 19, cycles: 14 },
+  { day: "Sam", hour: 20, cycles: 8 },
+  { day: "Sam", hour: 21, cycles: 4 },
+  // Dimanche
+  { day: "Dim", hour: 7, cycles: 1 },
+  { day: "Dim", hour: 8, cycles: 3 },
+  { day: "Dim", hour: 9, cycles: 6 },
+  { day: "Dim", hour: 10, cycles: 10 },
+  { day: "Dim", hour: 11, cycles: 12 },
+  { day: "Dim", hour: 12, cycles: 9 },
+  { day: "Dim", hour: 13, cycles: 7 },
+  { day: "Dim", hour: 14, cycles: 8 },
+  { day: "Dim", hour: 15, cycles: 10 },
+  { day: "Dim", hour: 16, cycles: 11 },
+  { day: "Dim", hour: 17, cycles: 13 },
+  { day: "Dim", hour: 18, cycles: 10 },
+  { day: "Dim", hour: 19, cycles: 7 },
+  { day: "Dim", hour: 20, cycles: 4 },
+  { day: "Dim", hour: 21, cycles: 2 },
+];
+
+// Mock data - CA Produits / Recharges
+const mockProductsData = [
+  { name: "Lessive", value: 245, color: "hsl(280, 65%, 60%)" },
+  { name: "Adoucissant", value: 120, color: "hsl(217, 91%, 60%)" },
+  { name: "Recharges", value: 420, color: "hsl(72, 80%, 43%)" },
+  { name: "Sacs", value: 80, color: "hsl(43, 97%, 67%)" },
 ];
 
 export default function Dashboard() {
@@ -103,20 +250,22 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Charts */}
+      {/* Charts Row 1: CA par mois + CA par jour */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RevenueChart data={mockRevenueData} />
-        <CategoryPieChart data={mockCategoryData} />
+        <MonthlyRevenueChart data={mockMonthlyData} />
+        <DailyRevenueChart data={mockDailyData} />
       </div>
 
+      {/* Charts Row 2: Paiements + Machines */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PaymentModeChart data={mockPaymentData} />
-        <div className="kpi-card h-[400px] flex items-center justify-center">
-          <div className="text-center text-muted-foreground">
-            <p className="text-lg font-medium">Heatmap des ventes</p>
-            <p className="text-sm">Disponible prochainement</p>
-          </div>
-        </div>
+        <PaymentPieChart data={mockPaymentData} />
+        <MachineTypeChart data={mockMachineData} />
+      </div>
+
+      {/* Charts Row 3: Heatmap + Produits */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <SalesHeatmap data={mockHeatmapData} />
+        <ProductsRevenueChart data={mockProductsData} />
       </div>
     </div>
   );
