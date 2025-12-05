@@ -2,7 +2,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Receipt, 
-  Upload, 
+  ArrowDownUp, 
   Users, 
   Settings,
   LogOut,
@@ -22,7 +22,7 @@ interface AppSidebarProps {
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, permission: "READ_VIEWS" },
   { name: "Opérations", href: "/operations", icon: Receipt, permission: "READ_VIEWS" },
-  { name: "Imports", href: "/imports", icon: Upload, permission: "IMPORT_DATA" },
+  { name: "Import / Export", href: "/import-export", icon: ArrowDownUp, permission: "IMPORT_DATA" },
 ];
 
 const adminNavigation = [

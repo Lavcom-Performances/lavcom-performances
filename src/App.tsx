@@ -9,7 +9,7 @@ import Login from "./pages/Login";
 import SelectLaundromat from "./pages/SelectLaundromat";
 import Dashboard from "./pages/Dashboard";
 import Operations from "./pages/Operations";
-import Imports from "./pages/Imports";
+import ImportExport from "./pages/ImportExport";
 import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 
@@ -30,7 +30,7 @@ const App = () => (
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/operations" element={<Operations />} />
-            <Route path="/imports" element={<Imports />} />
+            <Route path="/import-export" element={<ImportExport />} />
             <Route path="/admin/users" element={<AdminUsers />} />
           </Route>
           
