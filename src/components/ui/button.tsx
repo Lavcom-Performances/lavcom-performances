@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        lavcom: "bg-gradient-to-r from-primary to-emerald-600 text-primary-foreground hover:opacity-90 shadow-[0_4px_14px_0_rgba(34,197,94,0.15)] hover:shadow-lg",
+        lavcom: "bg-gradient-to-r from-primary to-lime-600 text-primary-foreground hover:opacity-90 shadow-lavcom hover:shadow-lg",
         sidebar: "bg-sidebar-accent text-sidebar-foreground hover:bg-sidebar-accent/80",
       },
       size: {

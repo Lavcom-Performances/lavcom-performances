@@ -32,7 +32,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex bg-background">
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 gradient-lavcom items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-lime-600 items-center justify-center p-12">
         <div className="max-w-md text-center animate-fade-in">
           <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-8">
             <span className="text-4xl font-display font-bold text-white">L</span>
