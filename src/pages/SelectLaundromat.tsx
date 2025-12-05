@@ -1,8 +1,5 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Building2, MapPin, ChevronRight, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Building2, MapPin, ChevronRight } from "lucide-react";
 
 // Mock data for V1
 const mockLaundromats = [
@@ -12,13 +9,11 @@ const mockLaundromats = [
 ];
 
 export default function SelectLaundromat() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleContinue = () => {
-    if (selectedId) {
-      navigate("/dashboard");
-    }
+  const handleSelectLaundromat = (laundromatId: string) => {
+    // TODO: Store selected laundromat in context/state
+    navigate("/dashboard");
   };
 
   return (
@@ -40,21 +35,11 @@ export default function SelectLaundromat() {
           {mockLaundromats.map((laundromat) => (
             <button
               key={laundromat.id}
-              onClick={() => setSelectedId(laundromat.id)}
-              className={cn(
-                "w-full p-4 rounded-xl border-2 transition-all duration-200 text-left flex items-center justify-between group",
-                selectedId === laundromat.id
-                  ? "border-primary bg-primary/5 shadow-lavcom"
-                  : "border-border bg-card hover:border-primary/50 hover:shadow-sm"
-              )}
+              onClick={() => handleSelectLaundromat(laundromat.id)}
+              className="w-full p-4 rounded-xl border-2 transition-all duration-200 text-left flex items-center justify-between group border-border bg-card hover:border-primary hover:shadow-lavcom"
             >
               <div className="flex items-center gap-4">
-                <div className={cn(
-                  "w-12 h-12 rounded-lg flex items-center justify-center transition-colors",
-                  selectedId === laundromat.id
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
-                )}>
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center transition-colors bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground">
                   <Building2 className="h-6 w-6" />
                 </div>
                 <div>
@@ -65,35 +50,14 @@ export default function SelectLaundromat() {
                   </div>
                 </div>
               </div>
-              <ChevronRight className={cn(
-                "h-5 w-5 transition-colors",
-                selectedId === laundromat.id
-                  ? "text-primary"
-                  : "text-muted-foreground group-hover:text-primary"
-              )} />
+              <ChevronRight className="h-5 w-5 transition-colors text-muted-foreground group-hover:text-primary" />
             </button>
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={() => navigate("/admin/laundromats/new")}
-          >
-            <Plus className="h-4 w-4" />
-            Ajouter une laverie
-          </Button>
-          <Button
-            variant="lavcom"
-            className="flex-1"
-            onClick={handleContinue}
-            disabled={!selectedId}
-          >
-            Continuer
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+        <p className="text-center text-sm text-muted-foreground">
+          L'upload de fichiers CSV se fait depuis le menu <strong>Imports</strong> après avoir sélectionné une laverie.
+        </p>
       </div>
     </div>
   );
