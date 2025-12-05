@@ -32,7 +32,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex bg-background">
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-lavcom-dark items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12" style={{ backgroundColor: '#383838' }}>
         <div className="max-w-lg text-center animate-fade-in">
           <img 
             src={lavcomLogo} 
