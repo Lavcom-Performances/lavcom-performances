@@ -25,16 +25,16 @@ const mockRevenueData = [
 ];
 
 const mockCategoryData = [
-  { name: "Lave-linge", value: 1850, color: "hsl(199, 89%, 48%)" },
-  { name: "Sèche-linge", value: 980, color: "hsl(25, 95%, 53%)" },
-  { name: "Lessive", value: 245, color: "hsl(280, 65%, 60%)" },
-  { name: "Recharges", value: 420, color: "hsl(142, 71%, 45%)" },
+  { name: "Lave-linge", value: 1850, color: "#3b82f6" },
+  { name: "Sèche-linge", value: 980, color: "#FCD259" },
+  { name: "Lessive", value: 245, color: "#a855f7" },
+  { name: "Recharges", value: 420, color: "#A3C615" },
 ];
 
 const mockPaymentData = [
-  { name: "Carte bancaire", value: 2845, color: "hsl(142, 71%, 45%)" },
-  { name: "Espèces", value: 568, color: "hsl(217, 91%, 60%)" },
-  { name: "Fidélité", value: 82, color: "hsl(262, 83%, 58%)" },
+  { name: "Carte bancaire", value: 2845, color: "#A3C615" },
+  { name: "Espèces", value: 568, color: "#3b82f6" },
+  { name: "Fidélité", value: 82, color: "#FCD259" },
 ];
 
 export default function Dashboard() {

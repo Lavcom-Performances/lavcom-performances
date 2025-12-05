@@ -34,8 +34,8 @@ export function KPICard({
           <p className={cn(
             "text-2xl font-display font-bold tracking-tight",
             variant === "primary" && "text-primary",
-            variant === "success" && "text-emerald-600",
-            variant === "warning" && "text-amber-600"
+            variant === "success" && "text-lime-600",
+            variant === "warning" && "text-amber-500"
           )}>
             {value}
           </p>
@@ -48,15 +48,15 @@ export function KPICard({
             "p-2 rounded-lg",
             variant === "default" && "bg-muted",
             variant === "primary" && "bg-primary/10",
-            variant === "success" && "bg-emerald-100",
+            variant === "success" && "bg-lime-100",
             variant === "warning" && "bg-amber-100"
           )}>
             <Icon className={cn(
               "h-5 w-5",
               variant === "default" && "text-muted-foreground",
               variant === "primary" && "text-primary",
-              variant === "success" && "text-emerald-600",
-              variant === "warning" && "text-amber-600"
+              variant === "success" && "text-lime-600",
+              variant === "warning" && "text-amber-500"
             )} />
           </div>
         )}
@@ -65,13 +65,13 @@ export function KPICard({
       {trend && (
         <div className="flex items-center gap-1 mt-3 pt-3 border-t border-border/50">
           {trend.isPositive ? (
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
+            <TrendingUp className="h-4 w-4 text-lime-600" />
           ) : (
             <TrendingDown className="h-4 w-4 text-red-500" />
           )}
           <span className={cn(
             "text-sm font-medium",
-            trend.isPositive ? "text-emerald-600" : "text-red-600"
+            trend.isPositive ? "text-lime-600" : "text-red-600"
           )}>
             {trend.isPositive ? "+" : ""}{trend.value}%
           </span>

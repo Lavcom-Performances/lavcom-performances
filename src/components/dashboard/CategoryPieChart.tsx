@@ -7,6 +7,14 @@ import {
   Tooltip,
 } from "recharts";
 
+// Lavcom brand colors
+const COLORS = {
+  lave: "#3b82f6",     // Blue
+  seche: "#FCD259",    // Lavcom yellow
+  lessive: "#a855f7",  // Purple
+  recharge: "#A3C615", // Lavcom green
+};
+
 interface CategoryPieChartProps {
   data: Array<{
     name: string;

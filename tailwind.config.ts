@@ -65,9 +65,9 @@ export default {
           green: "hsl(var(--lavcom-green))",
           "green-light": "hsl(var(--lavcom-green-light))",
           "green-dark": "hsl(var(--lavcom-green-dark))",
-          blue: "hsl(var(--lavcom-blue))",
-          orange: "hsl(var(--lavcom-orange))",
-          purple: "hsl(var(--lavcom-purple))",
+          yellow: "hsl(var(--lavcom-yellow))",
+          "gray-dark": "hsl(var(--lavcom-gray-dark))",
+          "gray-light": "hsl(var(--lavcom-gray-light))",
         },
         chart: {
           cb: "hsl(var(--chart-cb))",
@@ -85,8 +85,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        'card': 'var(--shadow-card)',
-        'lavcom': '0 4px 14px 0 rgba(34, 197, 94, 0.15)',
+        'card': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        'lavcom': '0 4px 14px 0 rgba(163, 198, 21, 0.15)',
       },
       keyframes: {
         "accordion-down": {
@@ -109,10 +109,6 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
-        "pulse-soft": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.7" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -120,7 +116,6 @@ export default {
         "fade-in": "fade-in 0.4s ease-out",
         "slide-in-left": "slide-in-left 0.3s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
-        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
       },
     },
   },
