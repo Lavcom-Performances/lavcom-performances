@@ -39,7 +39,7 @@ export default function Login() {
             alt="Lavcom Analytics" 
             className="w-full max-w-md mx-auto mb-8"
           />
-          <p className="text-lavcom-gray text-lg">
+          <p className="text-white text-lg">
             Analysez les performances de vos laveries en un coup d'œil
           </p>
           <div className="mt-12 grid grid-cols-3 gap-6 text-center">
