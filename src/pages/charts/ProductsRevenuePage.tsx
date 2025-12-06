@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { ChartFilters } from "@/components/dashboard/ChartFilters";
-import { ProductsRevenueChart } from "@/components/dashboard/ProductsRevenueChart";
-
-// Mock data basé sur le PDF - CA Produits / Recharges
-const mockProductsData = [
-  { name: "Lessive", value: 118.80, color: "hsl(var(--chart-lessive))" },
-  { name: "Recharges Simply Pay", value: 185.00, color: "hsl(var(--lavcom-green))" },
-];
+import { ProductsDailyTable } from "@/components/dashboard/ProductsDailyTable";
+import { realProductsDailyData, productsDailyTotals } from "@/data/productsDailyData";
 
 export default function ProductsRevenuePage() {
   const [selectedYear, setSelectedYear] = useState("2025");
@@ -19,10 +14,10 @@ export default function ProductsRevenuePage() {
       <div className="flex flex-col gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-            CA Produits & Recharges
+            CA Produits & Machines
           </h1>
           <p className="text-muted-foreground">
-            Ventes de lessive et recharges d'application
+            Chiffre d'affaires par machine et par jour
           </p>
         </div>
         
@@ -39,10 +34,8 @@ export default function ProductsRevenuePage() {
         />
       </div>
 
-      {/* Chart */}
-      <div className="max-w-3xl">
-        <ProductsRevenueChart data={mockProductsData} />
-      </div>
+      {/* Table with heatmap */}
+      <ProductsDailyTable data={realProductsDailyData} totals={productsDailyTotals} />
     </div>
   );
 }
