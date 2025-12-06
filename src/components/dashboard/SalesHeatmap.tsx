@@ -16,10 +16,11 @@ function getIntensityColor(value: number, maxValue: number): string {
   
   const intensity = value / maxValue;
   
-  if (intensity < 0.25) return "hsl(72, 80%, 85%)"; // Light green
-  if (intensity < 0.5) return "hsl(72, 80%, 65%)";  // Medium light green
-  if (intensity < 0.75) return "hsl(72, 80%, 50%)"; // Medium green
-  return "hsl(72, 80%, 43%)"; // Lavcom green (full)
+  // Green for low frequency, Red for high frequency (as per PDF reference)
+  if (intensity < 0.25) return "hsl(120, 60%, 75%)"; // Light green - calm
+  if (intensity < 0.5) return "hsl(60, 70%, 65%)";   // Yellow-green - moderate
+  if (intensity < 0.75) return "hsl(30, 80%, 55%)";  // Orange - busy
+  return "hsl(0, 70%, 50%)"; // Red - very busy
 }
 
 export function SalesHeatmap({ data }: SalesHeatmapProps) {
@@ -87,15 +88,15 @@ export function SalesHeatmap({ data }: SalesHeatmapProps) {
       
       {/* Legend */}
       <div className="flex items-center justify-center gap-2 mt-4 text-xs text-muted-foreground">
-        <span>Moins</span>
+        <span>Calme</span>
         <div className="flex gap-1">
           <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(var(--muted))" }} />
-          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(72, 80%, 85%)" }} />
-          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(72, 80%, 65%)" }} />
-          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(72, 80%, 50%)" }} />
-          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(72, 80%, 43%)" }} />
+          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(120, 60%, 75%)" }} />
+          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(60, 70%, 65%)" }} />
+          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(30, 80%, 55%)" }} />
+          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(0, 70%, 50%)" }} />
         </div>
-        <span>Plus</span>
+        <span>Chargé</span>
       </div>
     </div>
   );
