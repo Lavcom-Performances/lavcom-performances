@@ -64,9 +64,12 @@
     --lavcom-gray-light: 0 0% 85%;
     
     /* Chart colors */
-    --chart-cb: 72 80% 43%;
-    --chart-esp: 217 91% 60%;
-    --chart-fidelite: 262 83% 58%;
+    /* CB (Carte Bancaire) #BED7F0 */
+    --chart-cb: 210 62% 84%;
+    /* Fidélité #D9D9D9 */
+    --chart-fidelite: 0 0% 85%;
+    /* ESP (Espèces) - vert Lavcom */
+    --chart-esp: 72 80% 43%;
     --chart-lave: 199 89% 48%;
     --chart-seche: 43 97% 67%;
     --chart-lessive: 280 65% 60%;
