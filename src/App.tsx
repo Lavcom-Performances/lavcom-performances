@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Pricing from "./pages/Pricing";
+import Subscribe from "./pages/Subscribe";
 import SelectLaundromat from "./pages/SelectLaundromat";
 import Dashboard from "./pages/Dashboard";
 import Operations from "./pages/Operations";
@@ -39,6 +41,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/subscribe" element={<Subscribe />} />
           <Route path="/select-laundromat" element={<SelectLaundromat />} />
           
           {/* App routes with sidebar layout */}

@@ -144,6 +144,13 @@ export default function Login() {
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
+            Pas encore abonné ?{" "}
+            <a href="/pricing" className="text-primary hover:underline font-medium">
+              Découvrir nos offres
+            </a>
+          </p>
+
+          <p className="text-center text-sm text-muted-foreground">
             Besoin d'aide ?{" "}
             <a href="#" className="text-primary hover:underline">
               Contactez le support
