@@ -126,18 +126,18 @@ export default function AdminUsers() {
   };
 
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
             Gestion des accès
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Gérez les utilisateurs, rôles et permissions
           </p>
         </div>
-        <Button variant="lavcom">
+        <Button variant="lavcom" className="w-full sm:w-auto self-start">
           <Plus className="h-4 w-4" />
           Ajouter un utilisateur
         </Button>
@@ -145,20 +145,25 @@ export default function AdminUsers() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="users" className="gap-2">
-            <Users className="h-4 w-4" />
-            Utilisateurs
-          </TabsTrigger>
-          <TabsTrigger value="permissions" className="gap-2">
-            <Table2 className="h-4 w-4" />
-            Permissions et rôles
-          </TabsTrigger>
-          <TabsTrigger value="hierarchy" className="gap-2">
-            <Shield className="h-4 w-4" />
-            Hiérarchie des rôles
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="w-full sm:w-auto inline-flex">
+            <TabsTrigger value="users" className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-initial">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">Utilisateurs</span>
+              <span className="xs:hidden">Users</span>
+            </TabsTrigger>
+            <TabsTrigger value="permissions" className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-initial">
+              <Table2 className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Permissions et rôles</span>
+              <span className="sm:hidden">Permissions</span>
+            </TabsTrigger>
+            <TabsTrigger value="hierarchy" className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-initial">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Hiérarchie des rôles</span>
+              <span className="sm:hidden">Rôles</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Users Tab */}
         <TabsContent value="users" className="space-y-4">
@@ -177,7 +182,8 @@ export default function AdminUsers() {
 
           {/* Users Table */}
           <div className="card-lavcom overflow-hidden">
-            <Table>
+            <div className="overflow-x-auto">
+              <Table className="min-w-[600px]">
               <TableHeader>
                 <TableRow className="bg-muted/50">
                   <TableHead>Utilisateur</TableHead>
@@ -293,6 +299,7 @@ export default function AdminUsers() {
                 })}
               </TableBody>
             </Table>
+            </div>
           </div>
         </TabsContent>
 
