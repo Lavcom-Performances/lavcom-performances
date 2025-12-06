@@ -43,12 +43,20 @@ const formatCurrency = (value: number | null) => {
   }).format(value);
 };
 
+// Function to get green heatmap color based on value intensity
+// Gradient: light yellow-green (#F4F8E8) -> medium green (#9DC284) -> dark green (#4E8B31)
 const getHeatmapColor = (value: number | null, maxValue: number) => {
   if (value === null || value === 0 || maxValue === 0) return "";
-  const intensity = value / maxValue;
-  // Green heatmap from light to dark green
-  const lightness = 90 - intensity * 45; // From 90% (light) to 45% (dark)
-  return `hsl(142, 70%, ${lightness}%)`;
+  const intensity = Math.min(value / maxValue, 1);
+  
+  // Interpolate from light yellow-green to dark green
+  // Low: hsl(75, 50%, 94%) - light yellow-green
+  // Mid: hsl(90, 40%, 64%) - medium green  
+  // High: hsl(100, 48%, 37%) - dark green
+  const hue = 75 + (intensity * 25); // 75 to 100
+  const saturation = 50 - (intensity * 10) + (intensity * 8); // varies
+  const lightness = 94 - (intensity * 57); // 94% to 37%
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 };
 
 export function ProductsDailyTable({ data, totals }: ProductsDailyTableProps) {
