@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -6,9 +7,14 @@ import {
   Target,
   Clock,
   Calendar,
-  Zap
+  Zap,
+  Download,
+  Loader2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { generateRecommendationsReport, getRecommendationsData } from "@/utils/recommendationsPdfExport";
 
 interface InsightCardProps {
   title: string;
@@ -54,6 +60,30 @@ function InsightCard({ title, description, type, icon: Icon, metric }: InsightCa
 }
 
 export default function RecommendationsPage() {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+
+  const handleExportPDF = async () => {
+    setIsGenerating(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const data = getRecommendationsData();
+      generateRecommendationsReport(data);
+      toast({
+        title: "PDF généré avec succès",
+        description: "Le rapport a été téléchargé.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de générer le PDF.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   // Ces insights seraient générés dynamiquement à partir des données réelles
   const performanceInsights = [
     {
@@ -126,13 +156,32 @@ export default function RecommendationsPage() {
 
   return (
     <div className="p-6 lg:p-8 space-y-8">
-      <div>
-        <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-          Recommandations
-        </h1>
-        <p className="text-muted-foreground">
-          Insights et actions recommandées basées sur vos données
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+            Recommandations
+          </h1>
+          <p className="text-muted-foreground">
+            Insights et actions recommandées basées sur vos données
+          </p>
+        </div>
+        <Button 
+          onClick={handleExportPDF} 
+          disabled={isGenerating}
+          className="gap-2"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Génération...
+            </>
+          ) : (
+            <>
+              <Download className="h-4 w-4" />
+              Télécharger PDF
+            </>
+          )}
+        </Button>
       </div>
 
       {/* Performance Insights */}
