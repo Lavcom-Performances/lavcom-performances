@@ -7,11 +7,11 @@ import {
   Tooltip,
 } from "recharts";
 
-// Lavcom brand colors
+// Payment colors: ESP = vert, CB = bleu, FI = gris
 const COLORS = {
-  cb: "hsl(72, 80%, 43%)",     // Lavcom green
-  esp: "hsl(217, 91%, 60%)",   // Blue
-  fi: "hsl(43, 97%, 67%)",     // Lavcom yellow
+  esp: "hsl(72, 80%, 43%)",   // Lavcom green for Espèces
+  cb: "#BED7F0",               // Blue for Carte bancaire
+  fi: "#D9D9D9",               // Gray for Fidélité
 };
 
 interface PaymentPieChartProps {
