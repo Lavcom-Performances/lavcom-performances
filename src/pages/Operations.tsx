@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { DateRange } from "react-day-picker";
-import { subDays, format } from "date-fns";
+import { subDays, format, startOfDay, startOfMonth, startOfYear, isWithinInterval, getHours } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Search, Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,15 +22,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { OperationsKPIRow } from "@/components/operations/OperationsKPIRow";
+import { HourlyBarChart } from "@/components/operations/HourlyBarChart";
+import { MachineCountList } from "@/components/operations/MachineCountList";
 
-// Mock data for V1
+// Mock data for V1 - more complete dataset
 const mockOperations = [
-  { id: "1", date: new Date(), label: "Lave-linge 6kg #1", category: "LAVE_LINGE", paymentMode: "CB", amount: 6.50, detail: "Cycle complet" },
-  { id: "2", date: new Date(), label: "Sèche-linge 15min #2", category: "SECHE_LINGE", paymentMode: "ESP", amount: 2.00, detail: "" },
-  { id: "3", date: subDays(new Date(), 1), label: "Lessive dose", category: "LESSIVE", paymentMode: "CB", amount: 1.50, detail: "" },
-  { id: "4", date: subDays(new Date(), 1), label: "Rech CB", category: "RECHARGE_CB", paymentMode: "CB", amount: 10.00, detail: "simplypay" },
-  { id: "5", date: subDays(new Date(), 2), label: "Rech ESP", category: "RECHARGE_ESP", paymentMode: "ESP", amount: 5.00, detail: "tube" },
-  { id: "6", date: subDays(new Date(), 2), label: "Lave-linge 8kg #3", category: "LAVE_LINGE", paymentMode: "FI", amount: 8.00, detail: "Cycle intensif" },
+  { id: "1", date: new Date(), label: "Lave-linge 3", category: "LAVE_LINGE", paymentMode: "CB", amount: 4.00, insert: 0, rendu: 0, detail: "CB" },
+  { id: "2", date: new Date(), label: "Lave-linge 4", category: "LAVE_LINGE", paymentMode: "ESP", amount: 4.00, insert: 4.00, rendu: 0, detail: "TUBE" },
+  { id: "3", date: new Date(), label: "Lave-linge 5", category: "LAVE_LINGE", paymentMode: "ESP", amount: 4.00, insert: 10.00, rendu: 6.00, detail: "CAISSE" },
+  { id: "4", date: new Date(), label: "Lave-linge 6", category: "LAVE_LINGE", paymentMode: "CB", amount: 4.00, insert: 0, rendu: 0, detail: "CB" },
+  { id: "5", date: new Date(), label: "Sèche-linge 1", category: "SECHE_LINGE", paymentMode: "ESP", amount: 2.00, insert: 2.00, rendu: 0, detail: "TUBE" },
+  { id: "6", date: new Date(), label: "Sèche-linge 2", category: "SECHE_LINGE", paymentMode: "ESP", amount: 2.00, insert: 2.00, rendu: 0, detail: "TUBE" },
+  { id: "7", date: new Date(), label: "Lessive 7", category: "LESSIVE", paymentMode: "ESP", amount: 1.00, insert: 1.00, rendu: 0, detail: "CAISSE" },
+  { id: "8", date: subDays(new Date(), 1), label: "Lave-linge 5", category: "LAVE_LINGE", paymentMode: "ESP", amount: 4.00, insert: 4.00, rendu: 0, detail: "CAISSE" },
+  { id: "9", date: subDays(new Date(), 1), label: "Lave-linge 6", category: "LAVE_LINGE", paymentMode: "CB", amount: 4.00, insert: 0, rendu: 0, detail: "REJETÉ" },
+  { id: "10", date: subDays(new Date(), 2), label: "Sèche-linge 1", category: "SECHE_LINGE", paymentMode: "ESP", amount: 2.00, insert: 3.90, rendu: 1.00, detail: "CAISSE" },
+  { id: "11", date: subDays(new Date(), 2), label: "Lave-linge 4", category: "LAVE_LINGE", paymentMode: "ESP", amount: 8.00, insert: 8.00, rendu: 0, detail: "TUBE" },
+  { id: "12", date: subDays(new Date(), 3), label: "Sèche-linge 1", category: "SECHE_LINGE", paymentMode: "ESP", amount: 1.00, insert: 1.00, rendu: 0, detail: "CAISSE" },
+  { id: "13", date: subDays(new Date(), 3), label: "Lave-linge 3", category: "LAVE_LINGE", paymentMode: "CB", amount: 8.00, insert: 0, rendu: 0, detail: "CB" },
+  { id: "14", date: subDays(new Date(), 4), label: "Sèche-linge 2", category: "SECHE_LINGE", paymentMode: "ESP", amount: 1.00, insert: 2.00, rendu: 1.00, detail: "BILLET" },
+  { id: "15", date: subDays(new Date(), 5), label: "Sèche-linge 1", category: "SECHE_LINGE", paymentMode: "ESP", amount: 1.00, insert: 10.00, rendu: 9.00, detail: "CAISSE" },
+  { id: "16", date: subDays(new Date(), 6), label: "Lave-linge 6", category: "LAVE_LINGE", paymentMode: "ESP", amount: 4.00, insert: 7.80, rendu: 3.00, detail: "TUBE" },
 ];
 
 const paymentModeBadge = (mode: string) => {
@@ -71,8 +84,76 @@ export default function Operations() {
     const matchesSearch = op.label.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === "all" || op.category === categoryFilter;
     const matchesPayment = paymentFilter === "all" || op.paymentMode === paymentFilter;
+    
+    // Date filter
+    if (dateRange?.from && dateRange?.to) {
+      const opDate = startOfDay(op.date);
+      const isInRange = isWithinInterval(opDate, { start: startOfDay(dateRange.from), end: startOfDay(dateRange.to) });
+      return matchesSearch && matchesCategory && matchesPayment && isInRange;
+    }
+    
     return matchesSearch && matchesCategory && matchesPayment;
   });
+
+  // Calculate KPIs
+  const kpis = useMemo(() => {
+    const today = startOfDay(new Date());
+    const monthStart = startOfMonth(new Date());
+    const yearStart = startOfYear(new Date());
+
+    const calcKPI = (ops: typeof mockOperations) => ({
+      total: ops.reduce((sum, op) => sum + op.amount, 0),
+      cb: ops.filter(op => op.paymentMode === "CB").reduce((sum, op) => sum + op.amount, 0),
+      esp: ops.filter(op => op.paymentMode === "ESP").reduce((sum, op) => sum + op.amount, 0),
+    });
+
+    const todayOps = filteredOperations.filter(op => startOfDay(op.date).getTime() === today.getTime());
+    const monthOps = filteredOperations.filter(op => op.date >= monthStart);
+    const yearOps = filteredOperations.filter(op => op.date >= yearStart);
+
+    return {
+      day: calcKPI(todayOps),
+      month: calcKPI(monthOps),
+      year: calcKPI(yearOps),
+    };
+  }, [filteredOperations]);
+
+  // Calculate hourly data for chart
+  const hourlyData = useMemo(() => {
+    const hours: { [key: number]: { cb: number; esp: number } } = {};
+    for (let i = 6; i <= 22; i++) {
+      hours[i] = { cb: 0, esp: 0 };
+    }
+    
+    filteredOperations.forEach(op => {
+      const hour = getHours(op.date);
+      if (hour >= 6 && hour <= 22) {
+        if (op.paymentMode === "CB") {
+          hours[hour].cb += op.amount;
+        } else if (op.paymentMode === "ESP") {
+          hours[hour].esp += op.amount;
+        }
+      }
+    });
+
+    return Object.entries(hours).map(([hour, data]) => ({
+      hour: `${hour}h`,
+      cb: data.cb,
+      esp: data.esp,
+    }));
+  }, [filteredOperations]);
+
+  // Calculate machine counts
+  const machineCounts = useMemo(() => {
+    const counts: { [key: string]: number } = {};
+    filteredOperations.forEach(op => {
+      counts[op.label] = (counts[op.label] || 0) + 1;
+    });
+    
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [filteredOperations]);
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
@@ -135,6 +216,54 @@ export default function Operations() {
         </div>
       </div>
 
+      {/* KPIs + Chart + Machine counts */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* KPIs Column */}
+        <div className="lg:col-span-4 card-lavcom p-4 space-y-3">
+          <OperationsKPIRow 
+            label="JOUR" 
+            total={kpis.day.total} 
+            cb={kpis.day.cb} 
+            esp={kpis.day.esp}
+          />
+          <OperationsKPIRow 
+            label="MOIS" 
+            total={kpis.month.total} 
+            cb={kpis.month.cb} 
+            esp={kpis.month.esp}
+            isHighlighted
+          />
+          <OperationsKPIRow 
+            label="ANNÉE" 
+            total={kpis.year.total} 
+            cb={kpis.year.cb} 
+            esp={kpis.year.esp}
+          />
+        </div>
+
+        {/* Hourly Chart */}
+        <div className="lg:col-span-5 card-lavcom p-4">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-2">CA par heure</h3>
+          <div className="flex items-center gap-4 mb-2 text-xs">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: 'hsl(var(--chart-cb))' }}></div>
+              <span>CB</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: 'hsl(var(--chart-esp))' }}></div>
+              <span>ESP</span>
+            </div>
+          </div>
+          <HourlyBarChart data={hourlyData} />
+        </div>
+
+        {/* Machine counts */}
+        <div className="lg:col-span-3 card-lavcom p-4">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-2">Machines utilisées</h3>
+          <MachineCountList machines={machineCounts} />
+        </div>
+      </div>
+
       {/* Table */}
       <div className="card-lavcom overflow-hidden">
         <Table>
@@ -142,10 +271,11 @@ export default function Operations() {
             <TableRow className="bg-muted/50">
               <TableHead>Date</TableHead>
               <TableHead>Heure</TableHead>
-              <TableHead>Libellé</TableHead>
-              <TableHead>Catégorie</TableHead>
-              <TableHead>Paiement</TableHead>
-              <TableHead className="text-right">Montant</TableHead>
+              <TableHead>Sélection</TableHead>
+              <TableHead>Mode</TableHead>
+              <TableHead className="text-right">Insert</TableHead>
+              <TableHead className="text-right">Rendu</TableHead>
+              <TableHead className="text-right">Prix</TableHead>
               <TableHead>Détail</TableHead>
             </TableRow>
           </TableHeader>
@@ -156,19 +286,23 @@ export default function Operations() {
                   {format(op.date, "dd/MM/yyyy", { locale: fr })}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {format(op.date, "HH:mm", { locale: fr })}
+                  {format(op.date, "HH:mm:ss", { locale: fr })}
                 </TableCell>
-                <TableCell>{op.label}</TableCell>
-                <TableCell>
-                  <span className="text-sm text-muted-foreground">
-                    {categoryLabel(op.category)}
-                  </span>
-                </TableCell>
+                <TableCell className="font-medium">{op.label}</TableCell>
                 <TableCell>{paymentModeBadge(op.paymentMode)}</TableCell>
+                <TableCell className="text-right">
+                  {op.insert > 0 ? `${op.insert.toFixed(2)} €` : "-"}
+                </TableCell>
+                <TableCell className="text-right">
+                  {op.rendu > 0 ? `${op.rendu.toFixed(2)} €` : "-"}
+                </TableCell>
                 <TableCell className="text-right font-medium">
                   {op.amount.toFixed(2)} €
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className={cn(
+                  "text-sm",
+                  op.detail === "REJETÉ" ? "text-destructive font-medium" : "text-muted-foreground"
+                )}>
                   {op.detail || "-"}
                 </TableCell>
               </TableRow>
