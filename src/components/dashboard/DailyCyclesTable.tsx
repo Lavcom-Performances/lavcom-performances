@@ -58,7 +58,23 @@ const monthHeaders = [
   { key: "decembre", label: "DÉC" },
 ];
 
+// Function to get green heatmap color based on value intensity
+function getHeatmapColor(value: number | undefined, maxValue: number): string {
+  if (value === undefined || value === 0) return "transparent";
+  const intensity = Math.min(value / maxValue, 1);
+  // Light green to dark green: hsl(120, 40%, 90%) to hsl(120, 60%, 25%)
+  const lightness = 90 - (intensity * 65); // 90% to 25%
+  const saturation = 40 + (intensity * 20); // 40% to 60%
+  return `hsl(120, ${saturation}%, ${lightness}%)`;
+}
+
 export function DailyCyclesTable({ data, monthTotals }: DailyCyclesTableProps) {
+  // Calculate max value for heatmap scaling
+  const allValues = data.flatMap(row => 
+    monthHeaders.map(m => row[m.key as keyof DailyCyclesData] as number | undefined)
+  ).filter((v): v is number => v !== undefined);
+  const maxValue = Math.max(...allValues, 1);
+
   return (
     <div className="kpi-card">
       <h3 className="font-display font-semibold text-lg mb-4">Nombre de cycles par jour</h3>
@@ -79,11 +95,22 @@ export function DailyCyclesTable({ data, monthTotals }: DailyCyclesTableProps) {
             {data.map((row) => (
               <TableRow key={row.day}>
                 <TableCell className="text-center font-medium">{row.day}</TableCell>
-                {monthHeaders.map((month) => (
-                  <TableCell key={month.key} className="text-center text-sm">
-                    {row[month.key as keyof DailyCyclesData] ?? "-"}
-                  </TableCell>
-                ))}
+                {monthHeaders.map((month) => {
+                  const value = row[month.key as keyof DailyCyclesData] as number | undefined;
+                  const bgColor = getHeatmapColor(value, maxValue);
+                  return (
+                    <TableCell 
+                      key={month.key} 
+                      className="text-center text-sm"
+                      style={{ 
+                        backgroundColor: bgColor,
+                        color: value && value > maxValue * 0.6 ? 'white' : 'inherit'
+                      }}
+                    >
+                      {value ?? "-"}
+                    </TableCell>
+                  );
+                })}
                 <TableCell className="text-center font-semibold text-primary">{row.total}</TableCell>
               </TableRow>
             ))}

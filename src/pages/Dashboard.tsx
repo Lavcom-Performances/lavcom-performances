@@ -16,7 +16,7 @@ import { DailyRevenueChart } from "@/components/dashboard/DailyRevenueChart";
 import { PaymentPieChart } from "@/components/dashboard/PaymentPieChart";
 
 import { SalesHeatmap } from "@/components/dashboard/SalesHeatmap";
-import { ProductsRevenueChart } from "@/components/dashboard/ProductsRevenueChart";
+import { AverageMachinesChart } from "@/components/dashboard/AverageMachinesChart";
 
 // Mock data - CA par mois
 const mockMonthlyData = [
@@ -169,12 +169,15 @@ const mockHeatmapData = [
   { day: "Dim", hour: 21, cycles: 2 },
 ];
 
-// Mock data - CA Produits / Recharges
-const mockProductsData = [
-  { name: "Lessive", value: 245, color: "hsl(280, 65%, 60%)" },
-  { name: "Adoucissant", value: 120, color: "hsl(217, 91%, 60%)" },
-  { name: "Recharges", value: 420, color: "hsl(72, 80%, 43%)" },
-  { name: "Sacs", value: 80, color: "hsl(43, 97%, 67%)" },
+// Mock data - Moyenne machines par jour
+const mockAverageMachinesData = [
+  { day: "Lun", average: 42.5 },
+  { day: "Mar", average: 38.2 },
+  { day: "Mer", average: 45.8 },
+  { day: "Jeu", average: 41.3 },
+  { day: "Ven", average: 52.1 },
+  { day: "Sam", average: 68.4 },
+  { day: "Dim", average: 35.6 },
 ];
 
 export default function Dashboard() {
@@ -249,10 +252,10 @@ export default function Dashboard() {
         <DailyRevenueChart data={mockDailyData} />
       </div>
 
-      {/* Charts Row 2: Paiements + Produits */}
+      {/* Charts Row 2: Paiements + Moyenne Machines */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <PaymentPieChart data={mockPaymentData} />
-        <ProductsRevenueChart data={mockProductsData} />
+        <AverageMachinesChart data={mockAverageMachinesData} />
       </div>
 
       {/* Charts Row 3: Heatmap */}
