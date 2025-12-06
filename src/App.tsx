@@ -29,6 +29,7 @@ import DailyFrequencyPage from "./pages/charts/DailyFrequencyPage";
 import HalfHourlyFrequencyPage from "./pages/charts/HalfHourlyFrequencyPage";
 import OccupancyRatePage from "./pages/charts/OccupancyRatePage";
 import RecommendationsPage from "./pages/RecommendationsPage";
+import PredictiveMaintenance from "./pages/PredictiveMaintenance";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => (
             <Route path="/charts/half-hourly" element={<HalfHourlyFrequencyPage />} />
             <Route path="/charts/occupancy" element={<OccupancyRatePage />} />
             <Route path="/recommendations" element={<RecommendationsPage />} />
+            <Route path="/maintenance" element={<PredictiveMaintenance />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
