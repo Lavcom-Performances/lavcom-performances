@@ -59,13 +59,19 @@ const monthHeaders = [
 ];
 
 // Function to get green heatmap color based on value intensity
+// Gradient: light yellow-green (#F4F8E8) -> medium green (#9DC284) -> dark green (#4E8B31)
 function getHeatmapColor(value: number | undefined, maxValue: number): string {
   if (value === undefined || value === 0) return "transparent";
   const intensity = Math.min(value / maxValue, 1);
-  // Light green to dark green: hsl(120, 40%, 90%) to hsl(120, 60%, 25%)
-  const lightness = 90 - (intensity * 65); // 90% to 25%
-  const saturation = 40 + (intensity * 20); // 40% to 60%
-  return `hsl(120, ${saturation}%, ${lightness}%)`;
+  
+  // Interpolate from light yellow-green to dark green
+  // Low: hsl(75, 50%, 94%) - light yellow-green
+  // Mid: hsl(90, 40%, 64%) - medium green  
+  // High: hsl(100, 48%, 37%) - dark green
+  const hue = 75 + (intensity * 25); // 75 to 100
+  const saturation = 50 - (intensity * 10) + (intensity * 8); // varies
+  const lightness = 94 - (intensity * 57); // 94% to 37%
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }
 
 export function DailyCyclesTable({ data, monthTotals }: DailyCyclesTableProps) {
