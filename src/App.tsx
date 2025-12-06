@@ -20,6 +20,11 @@ import PaymentDistributionPage from "./pages/charts/PaymentDistributionPage";
 import MachineTypePage from "./pages/charts/MachineTypePage";
 import SalesHeatmapPage from "./pages/charts/SalesHeatmapPage";
 import ProductsRevenuePage from "./pages/charts/ProductsRevenuePage";
+import AnnualComparisonPage from "./pages/charts/AnnualComparisonPage";
+import HourlyFrequencyPage from "./pages/charts/HourlyFrequencyPage";
+import DailyFrequencyPage from "./pages/charts/DailyFrequencyPage";
+import HalfHourlyFrequencyPage from "./pages/charts/HalfHourlyFrequencyPage";
+import RecommendationsPage from "./pages/RecommendationsPage";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +53,11 @@ const App = () => (
             <Route path="/charts/machines" element={<MachineTypePage />} />
             <Route path="/charts/heatmap" element={<SalesHeatmapPage />} />
             <Route path="/charts/products" element={<ProductsRevenuePage />} />
+            <Route path="/charts/annual" element={<AnnualComparisonPage />} />
+            <Route path="/charts/hourly" element={<HourlyFrequencyPage />} />
+            <Route path="/charts/daily-freq" element={<DailyFrequencyPage />} />
+            <Route path="/charts/half-hourly" element={<HalfHourlyFrequencyPage />} />
+            <Route path="/recommendations" element={<RecommendationsPage />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
