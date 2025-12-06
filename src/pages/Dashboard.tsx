@@ -240,10 +240,11 @@ export default function Dashboard() {
           variant="warning"
         />
         <KPICard
-          title="CA Produits"
-          value="665,00 €"
-          icon={Package}
-          subtitle="Lessive + Recharges"
+          title="Taux d'occupation"
+          value="67%"
+          icon={TrendingUp}
+          variant="warning"
+          subtitle="Moyenne machines"
         />
       </div>
 
