@@ -241,10 +241,10 @@ export default function Dashboard() {
         />
         <KPICard
           title="Taux d'occupation"
-          value="67%"
+          value="65%"
           icon={TrendingUp}
           variant="warning"
-          subtitle="Moyenne machines"
+          subtitle="LL: 65% | SL: 58%"
         />
       </div>
 

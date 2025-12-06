@@ -42,6 +42,7 @@ const chartsNavigation = [
   { name: "CA par jour", href: "/charts/daily", icon: LineChart },
   { name: "Paiements", href: "/charts/payments", icon: PieChart },
   { name: "Machines", href: "/charts/machines", icon: Activity },
+  { name: "Taux occupation", href: "/charts/occupancy", icon: Activity },
   { name: "Fréq. par heure", href: "/charts/hourly", icon: Clock },
   { name: "Fréq. par jour", href: "/charts/daily-freq", icon: Calendar },
   { name: "Fréq. 30 min", href: "/charts/half-hourly", icon: Timer },
