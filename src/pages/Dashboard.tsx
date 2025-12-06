@@ -46,10 +46,11 @@ const mockDailyData = [
 ];
 
 // Mock data - Répartition des paiements
+// ESP = vert (Lavcom green), CB = bleu (#BED7F0), FI = gris (#D9D9D9)
 const mockPaymentData = [
-  { name: "Carte bancaire", value: 2845, color: "hsl(72, 80%, 43%)" },
-  { name: "Espèces", value: 568, color: "hsl(217, 91%, 60%)" },
-  { name: "Fidélité", value: 82, color: "hsl(43, 97%, 67%)" },
+  { name: "Carte bancaire", value: 2845, color: "#BED7F0" },
+  { name: "Espèces", value: 568, color: "hsl(72, 80%, 43%)" },
+  { name: "Fidélité", value: 82, color: "#D9D9D9" },
 ];
 
 

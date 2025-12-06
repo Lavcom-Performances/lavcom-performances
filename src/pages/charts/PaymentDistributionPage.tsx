@@ -2,10 +2,11 @@ import { useState } from "react";
 import { ChartFilters } from "@/components/dashboard/ChartFilters";
 import { PaymentPieChart } from "@/components/dashboard/PaymentPieChart";
 
-// Mock data - Répartition des paiements (basé sur le PDF)
+// Mock data - ESP = vert, CB = bleu, FI = gris
 const mockPaymentData = [
-  { name: "Carte bancaire", value: 4303.50, color: "hsl(var(--lavcom-green))" },
-  { name: "Espèces", value: 1516.80, color: "hsl(var(--chart-esp))" },
+  { name: "Carte bancaire", value: 4303.50, color: "#BED7F0" },
+  { name: "Espèces", value: 1516.80, color: "hsl(72, 80%, 43%)" },
+  { name: "Fidélité", value: 350.00, color: "#D9D9D9" },
 ];
 
 export default function PaymentDistributionPage() {

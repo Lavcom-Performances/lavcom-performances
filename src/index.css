@@ -64,12 +64,12 @@
     --lavcom-gray-light: 0 0% 85%;
     
     /* Chart colors */
-    /* CB (Carte Bancaire) #BED7F0 */
-    --chart-cb: 210 62% 84%;
-    /* Fidélité #D9D9D9 */
-    --chart-fidelite: 0 0% 85%;
-    /* ESP (Espèces) - vert Lavcom */
+    /* ESP (Espèces) = vert Lavcom #A3C615 */
     --chart-esp: 72 80% 43%;
+    /* CB (Carte Bancaire) = bleu #BED7F0 */
+    --chart-cb: 210 62% 84%;
+    /* Fidélité = gris #D9D9D9 */
+    --chart-fidelite: 0 0% 85%;
     --chart-lave: 199 89% 48%;
     --chart-seche: 43 97% 67%;
     --chart-lessive: 280 65% 60%;
@@ -144,16 +144,16 @@
     @apply absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full;
   }
 
-  .badge-cb {
+  .badge-esp {
     @apply bg-lime-100 text-lime-700 px-2 py-0.5 rounded-full text-xs font-medium;
   }
 
-  .badge-esp {
+  .badge-cb {
     @apply bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium;
   }
 
   .badge-fi {
-    @apply bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs font-medium;
   }
 
   .gradient-lavcom {

@@ -46,13 +46,13 @@ export function RevenueChart({ data }: RevenueChartProps) {
           <Bar 
             dataKey="cb" 
             name="CB" 
-            fill="#A3C615" 
+            fill="#BED7F0" 
             radius={[4, 4, 0, 0]}
           />
           <Bar 
             dataKey="esp" 
             name="Espèces" 
-            fill="#3b82f6" 
+            fill="hsl(72, 80%, 43%)" 
             radius={[4, 4, 0, 0]}
           />
         </BarChart>
