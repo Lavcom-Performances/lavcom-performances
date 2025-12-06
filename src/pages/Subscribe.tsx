@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Building2, User, CreditCard, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, User, CreditCard, Check, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
 
@@ -26,6 +27,24 @@ interface ContactInfo {
   fonction: string;
 }
 
+const pricingTiers = [
+  { min: 1, max: 1, priceMonthly: 20, priceAnnual: 220, discount: 0 },
+  { min: 2, max: 3, priceMonthly: 18, priceAnnual: 198, discount: 10 },
+  { min: 4, max: 5, priceMonthly: 16, priceAnnual: 176, discount: 20 },
+  { min: 6, max: Infinity, priceMonthly: 14, priceAnnual: 154, discount: 30 },
+];
+
+const getPricing = (count: number, plan: string) => {
+  const tier = pricingTiers.find(t => count >= t.min && count <= t.max) || pricingTiers[0];
+  const isAnnual = plan === "annual";
+  return {
+    pricePerLaundry: isAnnual ? tier.priceAnnual : tier.priceMonthly,
+    total: (isAnnual ? tier.priceAnnual : tier.priceMonthly) * count,
+    discount: tier.discount,
+    period: isAnnual ? "an" : "mois",
+  };
+};
+
 const steps = [
   { id: 1, name: "Entreprise", icon: Building2 },
   { id: 2, name: "Contact", icon: User },
@@ -36,9 +55,11 @@ export default function Subscribe() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const planFromUrl = searchParams.get("plan") || "monthly";
+  const countFromUrl = parseInt(searchParams.get("count") || "1", 10);
   
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState(planFromUrl);
+  const [laundryCount, setLaundryCount] = useState(countFromUrl);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
@@ -58,12 +79,10 @@ export default function Subscribe() {
     fonction: "",
   });
 
-  const planDetails = {
-    monthly: { name: "Mensuel", price: 20, period: "mois" },
-    annual: { name: "Annuel", price: 220, period: "an", savings: 20 },
-  };
+  const pricing = getPricing(laundryCount, selectedPlan);
 
-  const currentPlan = planDetails[selectedPlan as keyof typeof planDetails];
+  const incrementCount = () => setLaundryCount(prev => Math.min(prev + 1, 20));
+  const decrementCount = () => setLaundryCount(prev => Math.max(prev - 1, 1));
 
   const validateStep1 = () => {
     if (!companyInfo.raisonSociale || !companyInfo.siret || !companyInfo.adresse || !companyInfo.codePostal || !companyInfo.ville) {
@@ -350,6 +369,39 @@ export default function Subscribe() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Laundry count */}
+                <div className="space-y-3">
+                  <Label>Nombre de laveries</Label>
+                  <div className="flex items-center gap-4 p-4 border rounded-lg">
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={decrementCount}
+                      disabled={laundryCount <= 1}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-2xl font-bold text-foreground w-12 text-center">
+                      {laundryCount}
+                    </span>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={incrementCount}
+                      disabled={laundryCount >= 20}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                    <div className="flex-1 text-right">
+                      {pricing.discount > 0 && (
+                        <Badge className="bg-primary/10 text-primary border-primary/20">
+                          -{pricing.discount}% de réduction
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Plan selection */}
                 <div className="space-y-3">
                   <Label>Formule choisie</Label>
@@ -371,7 +423,7 @@ export default function Subscribe() {
                           <p className="text-sm text-muted-foreground">Sans engagement</p>
                         </div>
                       </div>
-                      <p className="font-bold text-lg">20€/mois</p>
+                      <p className="font-bold text-lg">{getPricing(laundryCount, "monthly").total}€/mois</p>
                     </label>
                     
                     <label 
@@ -384,10 +436,10 @@ export default function Subscribe() {
                         <RadioGroupItem value="annual" id="annual-plan" />
                         <div>
                           <p className="font-medium">Annuel</p>
-                          <p className="text-sm text-primary">Économisez 20€</p>
+                          <p className="text-sm text-primary">2 mois offerts</p>
                         </div>
                       </div>
-                      <p className="font-bold text-lg">220€/an</p>
+                      <p className="font-bold text-lg">{getPricing(laundryCount, "annual").total}€/an</p>
                     </label>
                   </RadioGroup>
                 </div>
@@ -400,10 +452,14 @@ export default function Subscribe() {
                     <p><span className="text-muted-foreground">SIRET :</span> {companyInfo.siret}</p>
                     <p><span className="text-muted-foreground">Contact :</span> {contactInfo.prenom} {contactInfo.nom}</p>
                     <p><span className="text-muted-foreground">Email :</span> {contactInfo.email}</p>
+                    <p><span className="text-muted-foreground">Laveries :</span> {laundryCount} ({pricing.pricePerLaundry}€/{pricing.period} par laverie)</p>
                   </div>
                   <div className="border-t border-border pt-3 flex items-center justify-between">
                     <span className="font-medium">Total à payer</span>
-                    <span className="text-2xl font-bold text-primary">{currentPlan.price}€</span>
+                    <div className="text-right">
+                      <span className="text-2xl font-bold text-primary">{pricing.total}€</span>
+                      <span className="text-muted-foreground">/{pricing.period}</span>
+                    </div>
                   </div>
                 </div>
 
