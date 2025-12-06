@@ -24,6 +24,7 @@ import AnnualComparisonPage from "./pages/charts/AnnualComparisonPage";
 import HourlyFrequencyPage from "./pages/charts/HourlyFrequencyPage";
 import DailyFrequencyPage from "./pages/charts/DailyFrequencyPage";
 import HalfHourlyFrequencyPage from "./pages/charts/HalfHourlyFrequencyPage";
+import OccupancyRatePage from "./pages/charts/OccupancyRatePage";
 import RecommendationsPage from "./pages/RecommendationsPage";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ const App = () => (
             <Route path="/charts/hourly" element={<HourlyFrequencyPage />} />
             <Route path="/charts/daily-freq" element={<DailyFrequencyPage />} />
             <Route path="/charts/half-hourly" element={<HalfHourlyFrequencyPage />} />
+            <Route path="/charts/occupancy" element={<OccupancyRatePage />} />
             <Route path="/recommendations" element={<RecommendationsPage />} />
           </Route>
           
