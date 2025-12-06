@@ -18,7 +18,8 @@ import {
   Calendar,
   Timer,
   TrendingUp,
-  Lightbulb
+  Lightbulb,
+  Wrench
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,7 @@ const chartsNavigation = [
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, permission: "READ_VIEWS" },
   { name: "Recommandations", href: "/recommendations", icon: Lightbulb, permission: "READ_VIEWS" },
+  { name: "Maintenance", href: "/maintenance", icon: Wrench, permission: "READ_VIEWS" },
   { name: "Opérations", href: "/operations", icon: Receipt, permission: "READ_VIEWS" },
   { name: "Import / Export", href: "/import-export", icon: ArrowDownUp, permission: "IMPORT_DATA" },
 ];
