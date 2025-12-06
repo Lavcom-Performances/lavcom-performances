@@ -13,7 +13,12 @@ import {
   PieChart,
   Grid3X3,
   Package,
-  Activity
+  Activity,
+  Clock,
+  Calendar,
+  Timer,
+  TrendingUp,
+  Lightbulb
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,16 +37,21 @@ interface AppSidebarProps {
 }
 
 const chartsNavigation = [
+  { name: "CA Annuel", href: "/charts/annual", icon: TrendingUp },
   { name: "CA par mois", href: "/charts/monthly", icon: BarChart3 },
   { name: "CA par jour", href: "/charts/daily", icon: LineChart },
   { name: "Paiements", href: "/charts/payments", icon: PieChart },
   { name: "Machines", href: "/charts/machines", icon: Activity },
+  { name: "Fréq. par heure", href: "/charts/hourly", icon: Clock },
+  { name: "Fréq. par jour", href: "/charts/daily-freq", icon: Calendar },
+  { name: "Fréq. 30 min", href: "/charts/half-hourly", icon: Timer },
   { name: "Heatmap", href: "/charts/heatmap", icon: Grid3X3 },
   { name: "Produits", href: "/charts/products", icon: Package },
 ];
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, permission: "READ_VIEWS" },
+  { name: "Recommandations", href: "/recommendations", icon: Lightbulb, permission: "READ_VIEWS" },
   { name: "Opérations", href: "/operations", icon: Receipt, permission: "READ_VIEWS" },
   { name: "Import / Export", href: "/import-export", icon: ArrowDownUp, permission: "IMPORT_DATA" },
 ];
