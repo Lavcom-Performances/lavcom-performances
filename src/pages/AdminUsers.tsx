@@ -152,7 +152,11 @@ export default function AdminUsers() {
           </TabsTrigger>
           <TabsTrigger value="permissions" className="gap-2">
             <Table2 className="h-4 w-4" />
-            Table des accès
+            Permissions et rôles
+          </TabsTrigger>
+          <TabsTrigger value="hierarchy" className="gap-2">
+            <Shield className="h-4 w-4" />
+            Hiérarchie des rôles
           </TabsTrigger>
         </TabsList>
 
@@ -171,131 +175,124 @@ export default function AdminUsers() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Users Table */}
-            <div className="lg:col-span-2 card-lavcom overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead>Utilisateur</TableHead>
-                    <TableHead>Rôle</TableHead>
-                    <TableHead>Laveries</TableHead>
-                    <TableHead>Statut</TableHead>
-                    <TableHead className="w-[50px]"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredUsers.map((user) => {
-                    const role = roleConfig[user.role];
-                    const RoleIcon = role.icon;
-                    const canManage = canManageRole(CURRENT_USER_ROLE, user.role);
-                    const canDelete = canDeleteUser(CURRENT_USER_ROLE, user.role);
-                    
-                    return (
-                      <TableRow key={user.id} className="hover:bg-muted/30">
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                              <span className="text-sm font-medium text-primary">
-                                {user.fullName.split(' ').map(n => n[0]).join('')}
-                              </span>
-                            </div>
-                            <div>
-                              <p className="font-medium">{user.fullName}</p>
-                              <p className="text-sm text-muted-foreground">{user.email}</p>
-                            </div>
+          {/* Users Table */}
+          <div className="card-lavcom overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead>Utilisateur</TableHead>
+                  <TableHead>Rôle</TableHead>
+                  <TableHead>Laveries</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="w-[50px]"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredUsers.map((user) => {
+                  const role = roleConfig[user.role];
+                  const RoleIcon = role.icon;
+                  const canManage = canManageRole(CURRENT_USER_ROLE, user.role);
+                  const canDelete = canDeleteUser(CURRENT_USER_ROLE, user.role);
+                  
+                  return (
+                    <TableRow key={user.id} className="hover:bg-muted/30">
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="text-sm font-medium text-primary">
+                              {user.fullName.split(' ').map(n => n[0]).join('')}
+                            </span>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={role.variant} className="gap-1">
-                            <RoleIcon className="h-3 w-3" />
-                            {role.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {user.laundromats.length > 0 ? (
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Building2 className="h-3 w-3" />
-                              <span>{user.laundromats.length} laverie(s)</span>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
+                          <div>
+                            <p className="font-medium">{user.fullName}</p>
+                            <p className="text-sm text-muted-foreground">{user.email}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={role.variant} className="gap-1">
+                          <RoleIcon className="h-3 w-3" />
+                          {role.label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {user.laundromats.length > 0 ? (
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Building2 className="h-3 w-3" />
+                            <span>{user.laundromats.length} laverie(s)</span>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className={cn(
+                          "inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium",
+                          user.isActive 
+                            ? "bg-emerald-100 text-emerald-700" 
+                            : "bg-muted text-muted-foreground"
+                        )}>
                           <div className={cn(
-                            "inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium",
-                            user.isActive 
-                              ? "bg-emerald-100 text-emerald-700" 
-                              : "bg-muted text-muted-foreground"
-                          )}>
-                            <div className={cn(
-                              "w-1.5 h-1.5 rounded-full",
-                              user.isActive ? "bg-emerald-500" : "bg-muted-foreground"
-                            )} />
-                            {user.isActive ? "Actif" : "Inactif"}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem disabled={!canManage}>
-                                Modifier
+                            "w-1.5 h-1.5 rounded-full",
+                            user.isActive ? "bg-emerald-500" : "bg-muted-foreground"
+                          )} />
+                          {user.isActive ? "Actif" : "Inactif"}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem disabled={!canManage}>
+                              Modifier
+                            </DropdownMenuItem>
+                            {canManage && (
+                              <DropdownMenuItem onClick={() => setActiveTab("permissions")}>
+                                Gérer les permissions
                               </DropdownMenuItem>
-                              {canManage && (
-                                <DropdownMenuItem onClick={() => setActiveTab("permissions")}>
-                                  Gérer les permissions
-                                </DropdownMenuItem>
-                              )}
-                              {canManage && (
-                                <>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuLabel className="text-xs text-muted-foreground">
-                                    Changer le rôle
-                                  </DropdownMenuLabel>
-                                  {(['ADMIN', 'CHECKER', 'USER', 'GUEST'] as UserRole[]).map(r => (
-                                    <DropdownMenuItem 
-                                      key={r}
-                                      onClick={() => handleRoleChange(user.id, r)}
-                                      disabled={r === user.role}
-                                    >
-                                      {ROLE_DESCRIPTIONS[r].label}
-                                    </DropdownMenuItem>
-                                  ))}
-                                </>
-                              )}
-                              <DropdownMenuItem disabled={!canManage}>
-                                Gérer les laveries
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                className="text-destructive"
-                                disabled={!canDelete}
-                                onClick={() => handleDeleteUser(user.id)}
-                              >
-                                Supprimer
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Roles Info Card */}
-            <div className="lg:col-span-1">
-              <RolesInfoCard />
-            </div>
+                            )}
+                            {canManage && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                                  Changer le rôle
+                                </DropdownMenuLabel>
+                                {(['ADMIN', 'CHECKER', 'USER', 'GUEST'] as UserRole[]).map(r => (
+                                  <DropdownMenuItem 
+                                    key={r}
+                                    onClick={() => handleRoleChange(user.id, r)}
+                                    disabled={r === user.role}
+                                  >
+                                    {ROLE_DESCRIPTIONS[r].label}
+                                  </DropdownMenuItem>
+                                ))}
+                              </>
+                            )}
+                            <DropdownMenuItem disabled={!canManage}>
+                              Gérer les laveries
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              className="text-destructive"
+                              disabled={!canDelete}
+                              onClick={() => handleDeleteUser(user.id)}
+                            >
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
         </TabsContent>
 
@@ -312,6 +309,11 @@ export default function AdminUsers() {
               onPermissionChange={handlePermissionChange}
             />
           </div>
+        </TabsContent>
+
+        {/* Hierarchy Tab */}
+        <TabsContent value="hierarchy" className="space-y-4">
+          <RolesInfoCard />
         </TabsContent>
       </Tabs>
     </div>
