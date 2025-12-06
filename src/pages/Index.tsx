@@ -1,15 +1,7 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const Index = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Redirect to login page
-    navigate("/login");
-  }, [navigate]);
-
-  return null;
+  return <Navigate to="/login" replace />;
 };
 
 export default Index;
