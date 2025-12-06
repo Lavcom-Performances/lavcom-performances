@@ -14,7 +14,7 @@ import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
 import { DailyRevenueChart } from "@/components/dashboard/DailyRevenueChart";
 import { PaymentPieChart } from "@/components/dashboard/PaymentPieChart";
-import { MachineTypeChart } from "@/components/dashboard/MachineTypeChart";
+
 import { SalesHeatmap } from "@/components/dashboard/SalesHeatmap";
 import { ProductsRevenueChart } from "@/components/dashboard/ProductsRevenueChart";
 
@@ -52,13 +52,6 @@ const mockPaymentData = [
   { name: "Fidélité", value: 82, color: "hsl(43, 97%, 67%)" },
 ];
 
-// Mock data - CA et cycles par type de machine
-const mockMachineData = [
-  { type: "Lave-linge 8kg", ca: 980, cycles: 140 },
-  { type: "Lave-linge 12kg", ca: 870, cycles: 87 },
-  { type: "Sèche-linge", ca: 680, cycles: 136 },
-  { type: "Lave-linge 18kg", ca: 520, cycles: 40 },
-];
 
 // Mock data - Heatmap (jour x heure)
 const mockHeatmapData = [
@@ -256,16 +249,15 @@ export default function Dashboard() {
         <DailyRevenueChart data={mockDailyData} />
       </div>
 
-      {/* Charts Row 2: Paiements + Machines */}
+      {/* Charts Row 2: Paiements + Produits */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <PaymentPieChart data={mockPaymentData} />
-        <MachineTypeChart data={mockMachineData} />
+        <ProductsRevenueChart data={mockProductsData} />
       </div>
 
-      {/* Charts Row 3: Heatmap + Produits */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Charts Row 3: Heatmap */}
+      <div className="grid grid-cols-1 gap-6">
         <SalesHeatmap data={mockHeatmapData} />
-        <ProductsRevenueChart data={mockProductsData} />
       </div>
     </div>
   );
