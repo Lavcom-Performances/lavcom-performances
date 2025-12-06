@@ -35,6 +35,7 @@ const chartsNavigation = [
   { name: "CA par mois", href: "/charts/monthly", icon: BarChart3 },
   { name: "CA par jour", href: "/charts/daily", icon: LineChart },
   { name: "Paiements", href: "/charts/payments", icon: PieChart },
+  { name: "Machines", href: "/charts/machines", icon: Activity },
   { name: "Heatmap", href: "/charts/heatmap", icon: Grid3X3 },
   { name: "Produits", href: "/charts/products", icon: Package },
 ];

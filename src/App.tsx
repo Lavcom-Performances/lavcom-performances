@@ -17,7 +17,7 @@ import NotFound from "./pages/NotFound";
 import MonthlyRevenuePage from "./pages/charts/MonthlyRevenuePage";
 import DailyRevenuePage from "./pages/charts/DailyRevenuePage";
 import PaymentDistributionPage from "./pages/charts/PaymentDistributionPage";
-
+import MachineTypePage from "./pages/charts/MachineTypePage";
 import SalesHeatmapPage from "./pages/charts/SalesHeatmapPage";
 import ProductsRevenuePage from "./pages/charts/ProductsRevenuePage";
 
@@ -45,7 +45,7 @@ const App = () => (
             <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />
             <Route path="/charts/daily" element={<DailyRevenuePage />} />
             <Route path="/charts/payments" element={<PaymentDistributionPage />} />
-            
+            <Route path="/charts/machines" element={<MachineTypePage />} />
             <Route path="/charts/heatmap" element={<SalesHeatmapPage />} />
             <Route path="/charts/products" element={<ProductsRevenuePage />} />
           </Route>
