@@ -58,7 +58,7 @@ export function AppSidebar({
   currentLaundromat = "Ma Laverie"
 }: AppSidebarProps) {
   const location = useLocation();
-  const [chartsOpen, setChartsOpen] = useState(location.pathname.startsWith("/charts"));
+  const [chartsOpen, setChartsOpen] = useState(true);
   
   const hasPermission = (permission: string) => {
     const adminPermissions = ["MANAGE_USERS", "MANAGE_OPTIONS", "IMPORT_DATA"];
