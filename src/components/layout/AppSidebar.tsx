@@ -113,11 +113,12 @@ export function AppSidebar({
       {!collapsed && (
         <div className="px-4 py-3 border-b border-sidebar-border">
           <NavLink 
-            to="/select-laundromat"
+            to="/laundromat-settings"
             className="flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
           >
             <Building2 className="h-4 w-4" />
             <span className="text-sm truncate">{currentLaundromat}</span>
+            <Settings className="h-3 w-3 ml-auto opacity-50" />
           </NavLink>
         </div>
       )}

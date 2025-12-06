@@ -12,6 +12,7 @@ import Operations from "./pages/Operations";
 import ImportExport from "./pages/ImportExport";
 import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
+import LaundromatSettings from "./pages/LaundromatSettings";
 
 // Chart pages
 import MonthlyRevenuePage from "./pages/charts/MonthlyRevenuePage";
@@ -43,6 +44,7 @@ const App = () => (
           {/* App routes with sidebar layout */}
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/laundromat-settings" element={<LaundromatSettings />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
             <Route path="/admin/users" element={<AdminUsers />} />
