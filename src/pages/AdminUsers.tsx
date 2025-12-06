@@ -10,7 +10,9 @@ import {
   Building2,
   UserX,
   Table2,
-  Users
+  Users,
+  ArrowRightLeft,
+  AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +34,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { PermissionsTable } from "@/components/admin/PermissionsTable";
 import { RolesInfoCard } from "@/components/admin/RolesInfoCard";
@@ -68,6 +80,8 @@ export default function AdminUsers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<UserWithPermissions[]>(mockUsers);
   const [activeTab, setActiveTab] = useState("users");
+  const [transferDialogOpen, setTransferDialogOpen] = useState(false);
+  const [selectedAdminForTransfer, setSelectedAdminForTransfer] = useState<UserWithPermissions | null>(null);
 
   const filteredUsers = users.filter((user) =>
     user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -123,6 +137,36 @@ export default function AdminUsers() {
 
     setUsers(prevUsers => prevUsers.filter(u => u.id !== userId));
     toast.success("Utilisateur supprimé");
+  };
+
+  const handleTransferSuperAdmin = (targetUser: UserWithPermissions) => {
+    setSelectedAdminForTransfer(targetUser);
+    setTransferDialogOpen(true);
+  };
+
+  const confirmTransferSuperAdmin = () => {
+    if (!selectedAdminForTransfer) return;
+
+    // Find current super admin (the logged-in user)
+    const currentSuperAdmin = users.find(u => u.role === "SUPER_ADMIN");
+    
+    setUsers(prevUsers =>
+      prevUsers.map(user => {
+        // Transfer SUPER_ADMIN to selected admin
+        if (user.id === selectedAdminForTransfer.id) {
+          return { ...user, role: "SUPER_ADMIN" as UserRole };
+        }
+        // Demote current super admin to ADMIN
+        if (user.id === currentSuperAdmin?.id) {
+          return { ...user, role: "ADMIN" as UserRole };
+        }
+        return user;
+      })
+    );
+
+    toast.success(`${selectedAdminForTransfer.fullName} est maintenant Super Admin`);
+    setTransferDialogOpen(false);
+    setSelectedAdminForTransfer(null);
   };
 
   return (
@@ -284,6 +328,19 @@ export default function AdminUsers() {
                               Gérer les laveries
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
+                            {/* Transfer Super Admin option - only visible to Super Admin for Admin users */}
+                            {CURRENT_USER_ROLE === "SUPER_ADMIN" && user.role === "ADMIN" && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  onClick={() => handleTransferSuperAdmin(user)}
+                                  className="text-primary"
+                                >
+                                  <ArrowRightLeft className="h-4 w-4 mr-2" />
+                                  Transférer Super Admin
+                                </DropdownMenuItem>
+                              </>
+                            )}
                             <DropdownMenuItem 
                               className="text-destructive"
                               disabled={!canDelete}
@@ -323,6 +380,41 @@ export default function AdminUsers() {
           <RolesInfoCard />
         </TabsContent>
       </Tabs>
+
+      {/* Transfer Super Admin Confirmation Dialog */}
+      <AlertDialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6 text-amber-600" />
+              </div>
+              <AlertDialogTitle className="text-lg">
+                Transférer le statut Super Admin
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="space-y-3">
+              <p>
+                Vous êtes sur le point de transférer votre statut de <strong>Super Admin</strong> à{" "}
+                <strong>{selectedAdminForTransfer?.fullName}</strong>.
+              </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-800 text-sm">
+                <strong>Attention :</strong> Cette action est irréversible. Vous deviendrez Admin 
+                et perdrez vos privilèges de Super Admin.
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmTransferSuperAdmin}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
+              Confirmer le transfert
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
