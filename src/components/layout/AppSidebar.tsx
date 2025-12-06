@@ -46,7 +46,7 @@ const chartsNavigation = [
   { name: "Fréq. par heure", href: "/charts/hourly", icon: Clock },
   { name: "Fréq. par jour", href: "/charts/daily-freq", icon: Calendar },
   { name: "Fréq. 30 min", href: "/charts/half-hourly", icon: Timer },
-  { name: "Heatmap", href: "/charts/heatmap", icon: Grid3X3 },
+  { name: "Affluence (Heatmap)", href: "/charts/heatmap", icon: Grid3X3 },
   { name: "Produits", href: "/charts/products", icon: Package },
 ];
 
