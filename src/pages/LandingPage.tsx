@@ -215,14 +215,13 @@ const LandingPage = () => {
             Solution n°1 pour les laveries automatiques
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 animate-fade-in stagger-1">
-            Transformez vos données en{" "}
-            <span className="text-primary">décisions rentables</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 animate-fade-in stagger-1 leading-tight">
+            Vos centrales collectent les données,{" "}
+            <span className="text-primary">Lavcom Analytics les transforme en décisions concrètes.</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in stagger-2">
-            Lavcom Analytics vous offre une vision complète de votre activité. 
-            Analysez, anticipez et optimisez vos performances en temps réel.
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto animate-fade-in stagger-2">
+            Lavcom Analytics analyse les données de vos centrales de paiement et vous dit quoi faire pour augmenter la rentabilité de vos laveries.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in stagger-3">
