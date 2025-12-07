@@ -29,7 +29,9 @@ import {
   Mail,
   User,
   MessageSquare,
-  Loader2
+  Loader2,
+  Calculator,
+  Rocket
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -179,6 +181,9 @@ const LandingPage = () => {
             <a href="#demo" className="text-muted-foreground hover:text-foreground transition-colors">
               Démo
             </a>
+            <Link to="/simulation" className="text-amber-600 hover:text-amber-700 font-medium transition-colors">
+              Simulateur
+            </Link>
             <a href="#benefits" className="text-muted-foreground hover:text-foreground transition-colors">
               Avantages
             </a>
@@ -237,6 +242,77 @@ const LandingPage = () => {
                 Voir la démo
               </Button>
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Section Futurs Exploitants */}
+      <section className="py-16 px-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20">
+        <div className="container mx-auto max-w-5xl">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            <div className="flex-1 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                <Rocket className="h-4 w-4" />
+                Vous souhaitez ouvrir une laverie ?
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                Simulez la rentabilité de votre projet
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                Avant d'investir, testez différents scénarios : nombre de machines, tarifs, charges...
+                Notre simulateur calcule votre seuil de rentabilité et votre bénéfice estimé.
+              </p>
+              <ul className="space-y-2 mb-6 text-left">
+                <li className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" />
+                  <span>Configuration machines personnalisée</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" />
+                  <span>Calcul du seuil de rentabilité</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" />
+                  <span>Export PDF du bilan prévisionnel</span>
+                </li>
+              </ul>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                <Link to="/simulation">
+                  <Button size="lg" className="btn-bounce bg-amber-600 hover:bg-amber-700 text-white">
+                    <Calculator className="mr-2 h-5 w-5" />
+                    Accéder au simulateur
+                  </Button>
+                </Link>
+                <Link to="/pricing">
+                  <Button size="lg" variant="outline" className="btn-bounce border-amber-600/50 text-amber-700 dark:text-amber-400 hover:bg-amber-600/10">
+                    Voir les offres
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="flex-shrink-0">
+              <Card className="p-6 bg-card/80 backdrop-blur border-amber-500/30 shadow-xl">
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto">
+                    <Calculator className="h-8 w-8 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold text-foreground">Simulateur</p>
+                    <p className="text-sm text-muted-foreground">de rentabilité</p>
+                  </div>
+                  <div className="pt-4 border-t border-border space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Pack Simulateur</span>
+                      <span className="font-semibold">79 €/mois</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Pack Premium</span>
+                      <span className="font-semibold text-amber-600">279 € (+ visio expert)</span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
