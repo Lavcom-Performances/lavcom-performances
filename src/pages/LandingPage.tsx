@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { 
   BarChart3, 
   TrendingUp, 
@@ -104,6 +110,9 @@ const LandingPage = () => {
             </a>
             <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">
               Témoignages
+            </a>
+            <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">
+              FAQ
             </a>
             <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Tarifs
@@ -355,6 +364,86 @@ const LandingPage = () => {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-20 px-4 bg-muted/30">
+        <div className="container mx-auto max-w-3xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Questions fréquentes
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Tout ce que vous devez savoir sur Lavcom Analytics
+            </p>
+          </div>
+          
+          <Accordion type="single" collapsible className="space-y-4">
+            <AccordionItem value="item-1" className="bg-card rounded-xl border border-border/50 px-6">
+              <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
+                Comment Lavcom Analytics se connecte-t-il à mes machines ?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Lavcom Analytics s'intègre facilement avec la plupart des systèmes de paiement et de gestion de laverie. 
+                Notre équipe technique vous accompagne dans la configuration initiale qui prend généralement moins de 2 heures.
+                Aucune modification matérielle n'est nécessaire.
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-2" className="bg-card rounded-xl border border-border/50 px-6">
+              <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
+                Mes données sont-elles sécurisées ?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Absolument. Toutes vos données sont chiffrées et stockées sur des serveurs sécurisés en Europe. 
+                Nous sommes conformes au RGPD et ne partageons jamais vos informations avec des tiers. 
+                Vous restez propriétaire de vos données à 100%.
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-3" className="bg-card rounded-xl border border-border/50 px-6">
+              <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
+                Puis-je gérer plusieurs laveries avec un seul compte ?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Oui ! Lavcom Analytics est conçu pour gérer aussi bien une seule laverie qu'un réseau complet. 
+                Vous pouvez visualiser les performances de chaque établissement individuellement ou obtenir une vue consolidée de tout votre réseau.
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-4" className="bg-card rounded-xl border border-border/50 px-6">
+              <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
+                Quelle est la durée de l'essai gratuit ?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Vous bénéficiez d'un essai gratuit de 14 jours avec accès à toutes les fonctionnalités. 
+                Aucune carte bancaire n'est requise pour commencer. À la fin de l'essai, vous choisissez l'offre qui vous convient.
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-5" className="bg-card rounded-xl border border-border/50 px-6">
+              <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
+                Comment fonctionnent les alertes de maintenance ?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Notre système analyse en continu les données de vos machines pour détecter les anomalies avant qu'elles ne causent des pannes. 
+                Vous recevez des alertes par email ou SMS avec des recommandations d'action précises. 
+                Cela vous permet d'intervenir de manière préventive et de réduire significativement les temps d'arrêt.
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="item-6" className="bg-card rounded-xl border border-border/50 px-6">
+              <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
+                Quel support est inclus dans l'abonnement ?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground">
+                Tous nos abonnements incluent un support par email avec réponse sous 24h. 
+                Les offres Pro et Business bénéficient d'un support prioritaire par téléphone et d'un accompagnement personnalisé 
+                pour optimiser l'utilisation de la plateforme.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </section>
 
