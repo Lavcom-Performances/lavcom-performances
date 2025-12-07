@@ -31,11 +31,12 @@ interface InsightCardProps {
 }
 
 function InsightCard({ title, description, type, icon: Icon, metric, financialImpact, effort }: InsightCardProps) {
-  const colors = {
-    success: "border-l-green-500 bg-green-500/10 dark:bg-green-500/20",
-    warning: "border-l-amber-500 bg-amber-500/10 dark:bg-amber-500/20",
-    info: "border-l-blue-500 bg-blue-500/10 dark:bg-blue-500/20",
-    action: "border-l-primary bg-primary/10 dark:bg-primary/20",
+  // Bordure colorée selon le type, mais fond neutre pour éviter la confusion
+  const borderColors = {
+    success: "border-l-green-500",
+    warning: "border-l-amber-500",
+    info: "border-l-blue-500",
+    action: "border-l-primary",
   };
 
   const iconColors = {
@@ -45,42 +46,58 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
     action: "text-primary",
   };
 
+  const metricColors = {
+    success: "text-green-600 dark:text-green-400",
+    warning: "text-amber-600 dark:text-amber-400",
+    info: "text-blue-600 dark:text-blue-400",
+    action: "text-primary",
+  };
+
   const effortConfig = {
-    low: { label: "Faible", className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
-    medium: { label: "Moyen", className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
-    high: { label: "Fort", className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+    low: { 
+      label: "Faible", 
+      className: "bg-emerald-500 text-white hover:bg-emerald-500 border-0" 
+    },
+    medium: { 
+      label: "Moyen", 
+      className: "bg-amber-500 text-white hover:bg-amber-500 border-0" 
+    },
+    high: { 
+      label: "Fort", 
+      className: "bg-red-500 text-white hover:bg-red-500 border-0" 
+    },
   };
 
   return (
-    <Card className={`border-l-4 ${colors[type]}`}>
+    <Card className={`border-l-4 ${borderColors[type]} bg-card hover:shadow-md transition-shadow`}>
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Icon className={`h-5 w-5 ${iconColors[type]}`} />
-            <CardTitle className="text-base font-semibold text-foreground">{title}</CardTitle>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Icon className={`h-5 w-5 shrink-0 ${iconColors[type]}`} />
+            <CardTitle className="text-base font-semibold text-foreground truncate">{title}</CardTitle>
           </div>
           {metric && (
-            <span className={`text-lg font-bold ${iconColors[type]}`}>{metric}</span>
+            <span className={`text-lg font-bold shrink-0 ${metricColors[type]}`}>{metric}</span>
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="text-sm text-foreground/70">{description}</p>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
         
-        {/* Impact financier et Effort */}
+        {/* Impact financier et Effort - Design amélioré */}
         {(financialImpact !== undefined || effort) && (
-          <div className="flex items-center justify-between pt-2 border-t border-border/50">
+          <div className="flex items-center justify-between gap-4 pt-3 border-t border-border">
             {financialImpact !== undefined && (
-              <div className="flex items-center gap-1.5">
-                <Euro className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/30 rounded-full">
+                <Euro className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
                   +{financialImpact} €/mois
                 </span>
               </div>
             )}
             {effort && (
-              <Badge className={effortConfig[effort].className}>
-                Effort {effortConfig[effort].label}
+              <Badge className={`${effortConfig[effort].className} text-xs px-3 py-1`}>
+                {effortConfig[effort].label}
               </Badge>
             )}
           </div>
