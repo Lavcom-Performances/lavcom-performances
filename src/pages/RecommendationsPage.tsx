@@ -9,12 +9,16 @@ import {
   Calendar,
   Zap,
   Download,
-  Loader2
+  Loader2,
+  Euro
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { generateRecommendationsReport, getRecommendationsData } from "@/utils/recommendationsPdfExport";
+
+type EffortLevel = "low" | "medium" | "high";
 
 interface InsightCardProps {
   title: string;
@@ -22,9 +26,11 @@ interface InsightCardProps {
   type: "success" | "warning" | "info" | "action";
   icon: React.ElementType;
   metric?: string;
+  financialImpact?: number;
+  effort?: EffortLevel;
 }
 
-function InsightCard({ title, description, type, icon: Icon, metric }: InsightCardProps) {
+function InsightCard({ title, description, type, icon: Icon, metric, financialImpact, effort }: InsightCardProps) {
   const colors = {
     success: "border-l-green-500 bg-green-500/10 dark:bg-green-500/20",
     warning: "border-l-amber-500 bg-amber-500/10 dark:bg-amber-500/20",
@@ -37,6 +43,12 @@ function InsightCard({ title, description, type, icon: Icon, metric }: InsightCa
     warning: "text-amber-600 dark:text-amber-400",
     info: "text-blue-600 dark:text-blue-400",
     action: "text-primary",
+  };
+
+  const effortConfig = {
+    low: { label: "Faible", className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+    medium: { label: "Moyen", className: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
+    high: { label: "Fort", className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
   };
 
   return (
@@ -52,8 +64,27 @@ function InsightCard({ title, description, type, icon: Icon, metric }: InsightCa
           )}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-3">
         <p className="text-sm text-foreground/70">{description}</p>
+        
+        {/* Impact financier et Effort */}
+        {(financialImpact !== undefined || effort) && (
+          <div className="flex items-center justify-between pt-2 border-t border-border/50">
+            {financialImpact !== undefined && (
+              <div className="flex items-center gap-1.5">
+                <Euro className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                  +{financialImpact} €/mois
+                </span>
+              </div>
+            )}
+            {effort && (
+              <Badge className={effortConfig[effort].className}>
+                Effort {effortConfig[effort].label}
+              </Badge>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -92,6 +123,8 @@ export default function RecommendationsPage() {
       type: "warning" as const,
       icon: TrendingDown,
       metric: "-27%",
+      financialImpact: 2500,
+      effort: "high" as EffortLevel,
     },
     {
       title: "Sèche-linge 2 sous-performant",
@@ -99,6 +132,8 @@ export default function RecommendationsPage() {
       type: "warning" as const,
       icon: AlertTriangle,
       metric: "219€",
+      financialImpact: 146,
+      effort: "medium" as EffortLevel,
     },
     {
       title: "Dimanche meilleur jour",
@@ -106,6 +141,8 @@ export default function RecommendationsPage() {
       type: "success" as const,
       icon: TrendingUp,
       metric: "21%",
+      financialImpact: 85,
+      effort: "low" as EffortLevel,
     },
   ];
 
@@ -116,6 +153,8 @@ export default function RecommendationsPage() {
       type: "action" as const,
       icon: Clock,
       metric: "25%",
+      financialImpact: 320,
+      effort: "medium" as EffortLevel,
     },
     {
       title: "Heures creuses à exploiter",
@@ -123,6 +162,8 @@ export default function RecommendationsPage() {
       type: "info" as const,
       icon: Lightbulb,
       metric: "4%",
+      financialImpact: 180,
+      effort: "low" as EffortLevel,
     },
     {
       title: "CB majoritaire",
@@ -130,6 +171,8 @@ export default function RecommendationsPage() {
       type: "success" as const,
       icon: Zap,
       metric: "81%",
+      financialImpact: 50,
+      effort: "low" as EffortLevel,
     },
   ];
 
@@ -139,18 +182,24 @@ export default function RecommendationsPage() {
       description: "Programmer une maintenance préventive et vérifier les temps de cycle. L'écart de performance avec le sèche-linge 1 est anormal.",
       type: "action" as const,
       icon: Target,
+      financialImpact: 146,
+      effort: "medium" as EffortLevel,
     },
     {
       title: "Campagne heures creuses",
       description: "Lancer une offre -20% sur les cycles avant 10h pour augmenter la fréquentation matinale et désengorger les pics.",
       type: "action" as const,
       icon: Calendar,
+      financialImpact: 250,
+      effort: "low" as EffortLevel,
     },
     {
       title: "Analyse concurrence",
       description: "La baisse de CA en 2025 nécessite une étude de marché. Vérifiez les ouvertures de laveries dans le quartier.",
       type: "action" as const,
       icon: Lightbulb,
+      financialImpact: 500,
+      effort: "high" as EffortLevel,
     },
   ];
 
