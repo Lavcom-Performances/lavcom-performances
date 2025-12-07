@@ -29,6 +29,10 @@ export interface SimulationProject {
   id?: string;
   name: string;
   location: string;
+  city?: string;
+  postal_code?: string;
+  department?: string;
+  zone_type?: string;
   surface_m2: number;
   opening_hours_description: string;
   
