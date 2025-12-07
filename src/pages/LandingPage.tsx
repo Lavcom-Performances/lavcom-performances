@@ -175,17 +175,14 @@ const LandingPage = () => {
             <img src={lavcomLogo} alt="Lavcom Analytics" className="h-8 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
+            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+              Exploitants
+            </Link>
+            <Link to="/simulateur" className="text-amber-600 hover:text-amber-700 font-medium transition-colors">
+              Simulation ouverture
+            </Link>
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
               Fonctionnalités
-            </a>
-            <a href="#demo" className="text-muted-foreground hover:text-foreground transition-colors">
-              Démo
-            </a>
-            <Link to="/simulation" className="text-amber-600 hover:text-amber-700 font-medium transition-colors">
-              Simulateur
-            </Link>
-            <a href="#benefits" className="text-muted-foreground hover:text-foreground transition-colors">
-              Avantages
             </a>
             <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">
               Témoignages
@@ -193,19 +190,16 @@ const LandingPage = () => {
             <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">
               FAQ
             </a>
-            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-              Tarifs
-            </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <Link to="/login">
+            <Link to="/login?mode=exploitant">
               <Button variant="ghost" className="btn-bounce">
                 Connexion
               </Button>
             </Link>
             <Link to="/pricing">
               <Button className="btn-bounce bg-primary hover:bg-primary/90">
-                Essai gratuit
+                Tarifs exploitants
               </Button>
             </Link>
           </div>
@@ -277,15 +271,15 @@ const LandingPage = () => {
                 </li>
               </ul>
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                <Link to="/simulation">
+                <Link to="/simulateur">
                   <Button size="lg" className="btn-bounce bg-amber-600 hover:bg-amber-700 text-white">
                     <Calculator className="mr-2 h-5 w-5" />
-                    Accéder au simulateur
+                    Tester le simulateur
                   </Button>
                 </Link>
-                <Link to="/pricing">
+                <Link to="/subscribe-simulator">
                   <Button size="lg" variant="outline" className="btn-bounce border-amber-600/50 text-amber-700 dark:text-amber-400 hover:bg-amber-600/10">
-                    Voir les offres
+                    Voir les packs
                   </Button>
                 </Link>
               </div>

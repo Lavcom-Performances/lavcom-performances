@@ -1,18 +1,26 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
+
+  // Get mode and redirect from URL params
+  const mode = searchParams.get("mode") ?? "exploitant";
+  const redirectUrl = searchParams.get("redirect");
+
+  const isSimulatorMode = mode === "simulateur";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,9 +31,21 @@ export default function Login() {
       setIsLoading(false);
       toast({
         title: "Connexion réussie",
-        description: "Bienvenue sur Lavcom Analytics",
+        description: isSimulatorMode 
+          ? "Bienvenue sur Lavcom Analytics Création" 
+          : "Bienvenue sur Lavcom Analytics",
       });
-      navigate("/select-laundromat");
+      
+      // Redirect based on mode
+      if (redirectUrl) {
+        navigate(redirectUrl);
+      } else if (isSimulatorMode) {
+        // Futur exploitant: redirect to simulator
+        navigate("/simulation");
+      } else {
+        // Exploitant: redirect to laundromat selection
+        navigate("/select-laundromat");
+      }
     }, 1000);
   };
 
@@ -41,7 +61,10 @@ export default function Login() {
       </Link>
 
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12" style={{ backgroundColor: '#383838' }}>
+      <div 
+        className="hidden lg:flex lg:w-1/2 items-center justify-center p-12" 
+        style={{ backgroundColor: isSimulatorMode ? '#b45309' : '#383838' }}
+      >
         <div className="max-w-lg text-center animate-fade-in">
           <img 
             src={lavcomLogo} 
@@ -49,21 +72,43 @@ export default function Login() {
             className="w-full max-w-md mx-auto mb-8"
           />
           <p className="text-white text-lg">
-            Analysez les performances de vos laveries en un coup d'œil
+            {isSimulatorMode 
+              ? "Simulez la rentabilité de votre future laverie"
+              : "Analysez les performances de vos laveries en un coup d'œil"
+            }
           </p>
           <div className="mt-12 grid grid-cols-3 gap-6 text-center">
-            <div className="space-y-2">
-              <p className="text-3xl font-display font-bold text-white">24/7</p>
-              <p className="text-sm text-white/70">Suivi temps réel</p>
-            </div>
-            <div className="space-y-2">
-              <p className="text-3xl font-display font-bold text-white">+30%</p>
-              <p className="text-sm text-white/70">Gain de temps</p>
-            </div>
-            <div className="space-y-2">
-              <p className="text-3xl font-display font-bold text-white">100%</p>
-              <p className="text-sm text-white/70">Données sécurisées</p>
-            </div>
+            {isSimulatorMode ? (
+              <>
+                <div className="space-y-2">
+                  <p className="text-3xl font-display font-bold text-white">5 min</p>
+                  <p className="text-sm text-white/70">Estimation rapide</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-display font-bold text-white">PDF</p>
+                  <p className="text-sm text-white/70">Rapport banque</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-display font-bold text-white">∞</p>
+                  <p className="text-sm text-white/70">Scénarios illimités</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <p className="text-3xl font-display font-bold text-white">24/7</p>
+                  <p className="text-sm text-white/70">Suivi temps réel</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-display font-bold text-white">+30%</p>
+                  <p className="text-sm text-white/70">Gain de temps</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-3xl font-display font-bold text-white">100%</p>
+                  <p className="text-sm text-white/70">Données sécurisées</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -82,10 +127,13 @@ export default function Login() {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-display font-semibold text-foreground">
-              Connexion
+              {isSimulatorMode ? "Connexion Simulateur" : "Connexion"}
             </h2>
             <p className="text-muted-foreground">
-              Entrez vos identifiants pour accéder à votre espace
+              {isSimulatorMode 
+                ? "Accédez à votre espace simulation"
+                : "Entrez vos identifiants pour accéder à votre espace"
+              }
             </p>
           </div>
 
@@ -154,10 +202,34 @@ export default function Login() {
 
           <p className="text-center text-sm text-muted-foreground">
             Pas encore abonné ?{" "}
-            <Link to="/pricing" className="text-primary hover:underline font-medium">
-              Découvrir nos offres
+            <Link 
+              to={isSimulatorMode ? "/subscribe-simulator" : "/pricing"} 
+              className="text-primary hover:underline font-medium"
+            >
+              {isSimulatorMode ? "Découvrir les packs simulateur" : "Découvrir nos offres"}
             </Link>
           </p>
+
+          {/* Mode switch */}
+          <div className="pt-4 border-t border-border">
+            <p className="text-center text-sm text-muted-foreground">
+              {isSimulatorMode ? (
+                <>
+                  Vous êtes exploitant ?{" "}
+                  <Link to="/login?mode=exploitant" className="text-primary hover:underline">
+                    Connexion exploitant
+                  </Link>
+                </>
+              ) : (
+                <>
+                  Vous voulez ouvrir une laverie ?{" "}
+                  <Link to="/login?mode=simulateur" className="text-primary hover:underline">
+                    Connexion simulateur
+                  </Link>
+                </>
+              )}
+            </p>
+          </div>
 
           <p className="text-center text-sm text-muted-foreground">
             Besoin d'aide ?{" "}
