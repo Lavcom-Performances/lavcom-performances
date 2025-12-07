@@ -124,11 +124,15 @@
 
 @layer components {
   .card-lavcom {
-    @apply bg-card rounded-xl shadow-sm border border-border/50;
+    @apply bg-card rounded-xl shadow-sm border border-border/50 transition-all duration-300;
+  }
+
+  .card-lavcom-hover {
+    @apply bg-card rounded-xl shadow-sm border border-border/50 transition-all duration-300 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1;
   }
 
   .kpi-card {
-    @apply bg-card rounded-xl p-6 shadow-sm border border-border/50 transition-all duration-200 hover:shadow-md;
+    @apply bg-card rounded-xl p-6 shadow-sm border border-border/50 transition-all duration-300 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 cursor-default;
   }
 
   .sidebar-item {
@@ -145,19 +149,63 @@
   }
 
   .badge-esp {
-    @apply bg-lime-100 text-lime-700 px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-lime-100 text-lime-700 px-2 py-0.5 rounded-full text-xs font-medium dark:bg-lime-900/30 dark:text-lime-400;
   }
 
   .badge-cb {
-    @apply bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium dark:bg-blue-900/30 dark:text-blue-400;
   }
 
   .badge-fi {
-    @apply bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs font-medium dark:bg-gray-700 dark:text-gray-300;
   }
 
   .gradient-lavcom {
     @apply bg-gradient-to-br from-primary to-lime-600;
+  }
+
+  /* Hover effects */
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_20px_rgba(163,198,21,0.3)];
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105 active:scale-95;
+  }
+
+  /* Button micro-interactions */
+  .btn-bounce {
+    @apply transition-transform duration-150 active:scale-95;
+  }
+
+  /* Staggered animation delays */
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
+  .stagger-6 { animation-delay: 0.3s; }
+
+  /* Shimmer effect for loading */
+  .shimmer {
+    @apply relative overflow-hidden;
+  }
+  
+  .shimmer::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary) / 0.1),
+      transparent
+    );
+    animation: shimmer 2s linear infinite;
+    background-size: 200% 100%;
   }
 }
 
