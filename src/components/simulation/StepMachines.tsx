@@ -1,8 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { WashingMachine, Wind } from "lucide-react";
-import { SimulationProject, SimulationResults, WashingMachineConfig, DryerConfig } from "@/types/simulation";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { WashingMachine, Wind, Plus, Trash2 } from "lucide-react";
+import { SimulationProject, SimulationResults, MachineConfig, WASHER_CAPACITIES, DRYER_CAPACITIES } from "@/types/simulation";
 
 interface StepMachinesProps {
   project: SimulationProject;
@@ -20,13 +22,42 @@ const formatCurrency = (value: number): string => {
 };
 
 export function StepMachines({ project, results, onUpdate }: StepMachinesProps) {
-  const updateMachine = (field: keyof (WashingMachineConfig & DryerConfig), value: number) => {
+  const addMachine = (type: 'washer' | 'dryer') => {
+    const defaultCapacity = type === 'washer' ? 7 : 13;
+    const defaultPrice = type === 'washer' ? 5.5 : 2;
+    const newMachine: MachineConfig = {
+      id: `${type}_${Date.now()}`,
+      type,
+      capacity_kg: defaultCapacity,
+      count: 1,
+      price: defaultPrice,
+      cycles_day: 4,
+    };
     onUpdate({
-      machines: {
-        ...project.machines,
-        [field]: value
-      }
+      machines: [...project.machines, newMachine]
     });
+  };
+
+  const updateMachine = (id: string, updates: Partial<MachineConfig>) => {
+    onUpdate({
+      machines: project.machines.map(m => 
+        m.id === id ? { ...m, ...updates } : m
+      )
+    });
+  };
+
+  const removeMachine = (id: string) => {
+    onUpdate({
+      machines: project.machines.filter(m => m.id !== id)
+    });
+  };
+
+  const washers = project.machines.filter(m => m.type === 'washer');
+  const dryers = project.machines.filter(m => m.type === 'dryer');
+
+  const getMachineRevenue = (machineId: string) => {
+    const revenue = results.machine_revenues.find(r => r.id === machineId);
+    return revenue?.turnover_month || 0;
   };
 
   return (
@@ -34,7 +65,7 @@ export function StepMachines({ project, results, onUpdate }: StepMachinesProps) 
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground">Configuration des machines</h2>
         <p className="text-muted-foreground mt-2">
-          Définissez le nombre de machines, les tarifs et la fréquentation estimée
+          Ajoutez vos machines avec le poids de votre choix
         </p>
       </div>
 
@@ -47,123 +78,82 @@ export function StepMachines({ project, results, onUpdate }: StepMachinesProps) 
               Lave-linge
             </CardTitle>
             <CardDescription>
-              Configurez vos différentes capacités de lavage
+              Configurez vos machines à laver
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* 7 kg */}
-            <div className="p-4 rounded-lg bg-muted/50 space-y-3">
-              <Label className="font-semibold">Lave-linge 7 kg</Label>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="wash_7kg_count" className="text-xs text-muted-foreground">Nombre</Label>
-                  <Input
-                    id="wash_7kg_count"
-                    type="number"
-                    min="0"
-                    value={project.machines.wash_7kg_count || ''}
-                    onChange={(e) => updateMachine('wash_7kg_count', parseInt(e.target.value) || 0)}
-                  />
+          <CardContent className="space-y-4">
+            {washers.map((machine) => (
+              <div key={machine.id} className="p-4 rounded-lg bg-muted/50 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={machine.capacity_kg.toString()}
+                      onValueChange={(v) => updateMachine(machine.id, { capacity_kg: parseInt(v) })}
+                    >
+                      <SelectTrigger className="w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {WASHER_CAPACITIES.map((cap) => (
+                          <SelectItem key={cap} value={cap.toString()}>
+                            {cap} kg
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm text-muted-foreground">
+                      → {formatCurrency(getMachineRevenue(machine.id))}/mois
+                    </span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => removeMachine(machine.id)}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="wash_7kg_price" className="text-xs text-muted-foreground">Prix (€)</Label>
-                  <Input
-                    id="wash_7kg_price"
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={project.machines.wash_7kg_price || ''}
-                    onChange={(e) => updateMachine('wash_7kg_price', parseFloat(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="wash_7kg_cycles" className="text-xs text-muted-foreground">Cycles/jour</Label>
-                  <Input
-                    id="wash_7kg_cycles"
-                    type="number"
-                    min="0"
-                    value={project.machines.wash_7kg_cycles_day || ''}
-                    onChange={(e) => updateMachine('wash_7kg_cycles_day', parseInt(e.target.value) || 0)}
-                  />
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Nombre</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={machine.count || ''}
+                      onChange={(e) => updateMachine(machine.id, { count: parseInt(e.target.value) || 1 })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Prix (€)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={machine.price || ''}
+                      onChange={(e) => updateMachine(machine.id, { price: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Cycles/jour</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={machine.cycles_day || ''}
+                      onChange={(e) => updateMachine(machine.id, { cycles_day: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
 
-            {/* 10 kg */}
-            <div className="p-4 rounded-lg bg-muted/50 space-y-3">
-              <Label className="font-semibold">Lave-linge 10 kg</Label>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="wash_10kg_count" className="text-xs text-muted-foreground">Nombre</Label>
-                  <Input
-                    id="wash_10kg_count"
-                    type="number"
-                    min="0"
-                    value={project.machines.wash_10kg_count || ''}
-                    onChange={(e) => updateMachine('wash_10kg_count', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="wash_10kg_price" className="text-xs text-muted-foreground">Prix (€)</Label>
-                  <Input
-                    id="wash_10kg_price"
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={project.machines.wash_10kg_price || ''}
-                    onChange={(e) => updateMachine('wash_10kg_price', parseFloat(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="wash_10kg_cycles" className="text-xs text-muted-foreground">Cycles/jour</Label>
-                  <Input
-                    id="wash_10kg_cycles"
-                    type="number"
-                    min="0"
-                    value={project.machines.wash_10kg_cycles_day || ''}
-                    onChange={(e) => updateMachine('wash_10kg_cycles_day', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 18 kg */}
-            <div className="p-4 rounded-lg bg-muted/50 space-y-3">
-              <Label className="font-semibold">Lave-linge 18 kg</Label>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="wash_18kg_count" className="text-xs text-muted-foreground">Nombre</Label>
-                  <Input
-                    id="wash_18kg_count"
-                    type="number"
-                    min="0"
-                    value={project.machines.wash_18kg_count || ''}
-                    onChange={(e) => updateMachine('wash_18kg_count', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="wash_18kg_price" className="text-xs text-muted-foreground">Prix (€)</Label>
-                  <Input
-                    id="wash_18kg_price"
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={project.machines.wash_18kg_price || ''}
-                    onChange={(e) => updateMachine('wash_18kg_price', parseFloat(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="wash_18kg_cycles" className="text-xs text-muted-foreground">Cycles/jour</Label>
-                  <Input
-                    id="wash_18kg_cycles"
-                    type="number"
-                    min="0"
-                    value={project.machines.wash_18kg_cycles_day || ''}
-                    onChange={(e) => updateMachine('wash_18kg_cycles_day', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-            </div>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => addMachine('washer')}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Ajouter un lave-linge
+            </Button>
 
             <div className="p-3 rounded-lg bg-primary/10 text-center">
               <p className="text-sm text-muted-foreground">CA lavage estimé</p>
@@ -182,85 +172,82 @@ export function StepMachines({ project, results, onUpdate }: StepMachinesProps) 
               Sèche-linge
             </CardTitle>
             <CardDescription>
-              Configurez vos sèche-linge petits et grands
+              Configurez vos sèche-linge
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Petit */}
-            <div className="p-4 rounded-lg bg-muted/50 space-y-3">
-              <Label className="font-semibold">Sèche-linge petit (10-13 kg)</Label>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="dry_small_count" className="text-xs text-muted-foreground">Nombre</Label>
-                  <Input
-                    id="dry_small_count"
-                    type="number"
-                    min="0"
-                    value={project.machines.dry_small_count || ''}
-                    onChange={(e) => updateMachine('dry_small_count', parseInt(e.target.value) || 0)}
-                  />
+          <CardContent className="space-y-4">
+            {dryers.map((machine) => (
+              <div key={machine.id} className="p-4 rounded-lg bg-muted/50 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={machine.capacity_kg.toString()}
+                      onValueChange={(v) => updateMachine(machine.id, { capacity_kg: parseInt(v) })}
+                    >
+                      <SelectTrigger className="w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DRYER_CAPACITIES.map((cap) => (
+                          <SelectItem key={cap} value={cap.toString()}>
+                            {cap} kg
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm text-muted-foreground">
+                      → {formatCurrency(getMachineRevenue(machine.id))}/mois
+                    </span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => removeMachine(machine.id)}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="dry_small_price" className="text-xs text-muted-foreground">Prix (€)</Label>
-                  <Input
-                    id="dry_small_price"
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={project.machines.dry_small_price || ''}
-                    onChange={(e) => updateMachine('dry_small_price', parseFloat(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="dry_small_cycles" className="text-xs text-muted-foreground">Cycles/jour</Label>
-                  <Input
-                    id="dry_small_cycles"
-                    type="number"
-                    min="0"
-                    value={project.machines.dry_small_cycles_day || ''}
-                    onChange={(e) => updateMachine('dry_small_cycles_day', parseInt(e.target.value) || 0)}
-                  />
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Nombre</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={machine.count || ''}
+                      onChange={(e) => updateMachine(machine.id, { count: parseInt(e.target.value) || 1 })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Prix (€)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      value={machine.price || ''}
+                      onChange={(e) => updateMachine(machine.id, { price: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Cycles/jour</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={machine.cycles_day || ''}
+                      onChange={(e) => updateMachine(machine.id, { cycles_day: parseInt(e.target.value) || 0 })}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
 
-            {/* Grand */}
-            <div className="p-4 rounded-lg bg-muted/50 space-y-3">
-              <Label className="font-semibold">Sèche-linge grand (15-18 kg)</Label>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="dry_large_count" className="text-xs text-muted-foreground">Nombre</Label>
-                  <Input
-                    id="dry_large_count"
-                    type="number"
-                    min="0"
-                    value={project.machines.dry_large_count || ''}
-                    onChange={(e) => updateMachine('dry_large_count', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="dry_large_price" className="text-xs text-muted-foreground">Prix (€)</Label>
-                  <Input
-                    id="dry_large_price"
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={project.machines.dry_large_price || ''}
-                    onChange={(e) => updateMachine('dry_large_price', parseFloat(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="dry_large_cycles" className="text-xs text-muted-foreground">Cycles/jour</Label>
-                  <Input
-                    id="dry_large_cycles"
-                    type="number"
-                    min="0"
-                    value={project.machines.dry_large_cycles_day || ''}
-                    onChange={(e) => updateMachine('dry_large_cycles_day', parseInt(e.target.value) || 0)}
-                  />
-                </div>
-              </div>
-            </div>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => addMachine('dryer')}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Ajouter un sèche-linge
+            </Button>
 
             <div className="p-3 rounded-lg bg-primary/10 text-center">
               <p className="text-sm text-muted-foreground">CA séchage estimé</p>
