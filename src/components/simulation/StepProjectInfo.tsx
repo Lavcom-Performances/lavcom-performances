@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Building2, MapPin, Maximize, Clock, Map } from "lucide-react";
 import { SimulationProject } from "@/types/simulation";
 import { CityAutocomplete } from "./CityAutocomplete";
+import { formatUserInput } from "@/lib/textUtils";
 import { 
   SURFACE_OPTIONS, 
   OPENING_HOURS_OPTIONS, 
@@ -95,6 +96,7 @@ export function StepProjectInfo({ project, onUpdate }: StepProjectInfoProps) {
               placeholder="Ex: Laverie Centre-ville Lyon"
               value={project.name}
               onChange={(e) => onUpdate({ name: e.target.value })}
+              onBlur={(e) => onUpdate({ name: formatUserInput(e.target.value) })}
             />
           </div>
 
@@ -201,6 +203,7 @@ export function StepProjectInfo({ project, onUpdate }: StepProjectInfoProps) {
                   placeholder="Ex: Lun-Sam 7h-22h, Dim 8h-20h"
                   value={project.opening_hours_description}
                   onChange={(e) => onUpdate({ opening_hours_description: e.target.value })}
+                  onBlur={(e) => onUpdate({ opening_hours_description: formatUserInput(e.target.value) })}
                 />
               )}
             </div>
