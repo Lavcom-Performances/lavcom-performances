@@ -15,8 +15,8 @@ import ImportExport from "./pages/ImportExport";
 import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 import LaundromatSettings from "./pages/LaundromatSettings";
+import CompanySettings from "./pages/CompanySettings";
 
-// Chart pages
 import MonthlyRevenuePage from "./pages/charts/MonthlyRevenuePage";
 import DailyRevenuePage from "./pages/charts/DailyRevenuePage";
 import PaymentDistributionPage from "./pages/charts/PaymentDistributionPage";
@@ -45,6 +45,7 @@ const App = () => (
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/subscribe" element={<Subscribe />} />
           <Route path="/select-laundromat" element={<SelectLaundromat />} />
+          <Route path="/company-settings" element={<CompanySettings />} />
           
           {/* App routes with sidebar layout */}
           <Route element={<AppLayout />}>
