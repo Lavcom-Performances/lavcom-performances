@@ -106,7 +106,7 @@ export function StepCosts({ project, results, onUpdate }: StepCostsProps) {
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground">Charges et seuil de rentabilité</h2>
         <p className="text-muted-foreground mt-2">
-          Détaillez vos charges fixes et variables
+          Valeurs indicatives pré-remplies – ajustez selon votre situation
         </p>
       </div>
 

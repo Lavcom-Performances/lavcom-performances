@@ -92,31 +92,41 @@ export interface SimulationResults {
   estimated_profit_month: number;
 }
 
-// Valeurs par défaut pour les charges fixes
+// Valeurs indicatives pour les charges fixes (basées sur moyennes marché)
 export const defaultFixedCosts: FixedCostItem[] = [
-  { id: 'rent', label: 'Loyer', amount: 0, category: 'rent' },
-  { id: 'charges', label: 'Charges locatives', amount: 0, category: 'rent' },
-  { id: 'lease', label: 'Prêt / leasing machines', amount: 0, category: 'lease' },
-  { id: 'insurance', label: 'Assurance', amount: 0, category: 'insurance' },
-  { id: 'cfe', label: 'CFE (Cotisation Foncière)', amount: 0, category: 'tax' },
-  { id: 'cleaning', label: 'Ménage / entretien', amount: 0, category: 'cleaning' },
+  { id: 'rent', label: 'Loyer', amount: 1200, category: 'rent' },
+  { id: 'charges', label: 'Charges locatives', amount: 150, category: 'rent' },
+  { id: 'lease', label: 'Prêt / leasing machines', amount: 800, category: 'lease' },
+  { id: 'insurance', label: 'Assurance', amount: 120, category: 'insurance' },
+  { id: 'cfe', label: 'CFE (Cotisation Foncière)', amount: 80, category: 'tax' },
+  { id: 'cleaning', label: 'Ménage / entretien', amount: 250, category: 'cleaning' },
 ];
 
-// Valeurs par défaut pour les charges variables
+// Valeurs indicatives pour les charges variables (% moyens du CA)
 export const defaultVariableCosts: VariableCostItem[] = [
-  { id: 'electricity', label: 'Électricité', percent: 0, category: 'electricity' },
-  { id: 'water', label: 'Eau', percent: 0, category: 'water' },
+  { id: 'electricity', label: 'Électricité', percent: 10, category: 'electricity' },
+  { id: 'water', label: 'Eau', percent: 4, category: 'water' },
   { id: 'gas', label: 'Gaz', percent: 0, category: 'gas' },
-  { id: 'detergent', label: 'Lessive / produits', percent: 0, category: 'detergent' },
+  { id: 'detergent', label: 'Lessive / produits', percent: 4, category: 'detergent' },
 ];
 
-// Valeurs par défaut pour un nouveau projet
+// Configuration machine par défaut (config standard petite laverie)
+export const defaultMachines: MachineConfig[] = [
+  { id: 'wash_7kg_default', type: 'washer', capacity_kg: 7, count: 2, price: 5.5, cycles_day: 4 },
+  { id: 'wash_10kg_default', type: 'washer', capacity_kg: 10, count: 2, price: 7, cycles_day: 3 },
+  { id: 'wash_18kg_default', type: 'washer', capacity_kg: 18, count: 1, price: 10, cycles_day: 2 },
+  { id: 'dry_14kg_default', type: 'dryer', capacity_kg: 14, count: 2, price: 2, cycles_day: 5 },
+  { id: 'dry_18kg_default', type: 'dryer', capacity_kg: 18, count: 1, price: 3, cycles_day: 4 },
+];
+
+// Valeurs par défaut pour un nouveau projet (pré-rempli avec valeurs indicatives)
 export const defaultSimulationProject: SimulationProject = {
   name: '',
   location: '',
-  surface_m2: 0,
-  opening_hours_description: '',
-  machines: [],
+  surface_m2: 40,
+  opening_hours_description: '7h - 21h',
+  zone_type: 'urbain',
+  machines: [...defaultMachines],
   fixed_costs: [...defaultFixedCosts],
   variable_costs: [...defaultVariableCosts],
 };
