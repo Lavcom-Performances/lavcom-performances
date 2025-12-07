@@ -4,7 +4,7 @@ import { Check, Building2, ArrowRight, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
+import lavcomLogo from "@/assets/lavcom-logo-header.png";
 
 const pricingTiers = [
   { min: 1, max: 1, priceMonthly: 20, priceAnnual: 220, discount: 0 },
@@ -46,11 +46,17 @@ export default function Pricing() {
           <Link to="/" className="flex items-center gap-3">
             <img src={lavcomLogo} alt="Lavcom Analytics" className="h-10 w-auto" />
           </Link>
-          <div className="flex items-center gap-4">
+          <nav className="hidden md:flex items-center gap-6">
+            <Link to="/#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Fonctionnalités
+            </Link>
+            <Link to="/simulation" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Simulation
+            </Link>
             <Link to="/login">
               <Button variant="ghost">Se connecter</Button>
             </Link>
-          </div>
+          </nav>
         </div>
       </header>
 

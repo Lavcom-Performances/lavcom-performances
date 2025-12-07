@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
+import lavcomLogo from "@/assets/lavcom-logo-header.png";
 
 interface CompanyInfo {
   raisonSociale: string;
