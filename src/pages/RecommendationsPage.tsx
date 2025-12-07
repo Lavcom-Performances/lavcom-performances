@@ -26,16 +26,16 @@ interface InsightCardProps {
 
 function InsightCard({ title, description, type, icon: Icon, metric }: InsightCardProps) {
   const colors = {
-    success: "border-l-green-500 bg-green-50/50",
-    warning: "border-l-amber-500 bg-amber-50/50",
-    info: "border-l-blue-500 bg-blue-50/50",
-    action: "border-l-primary bg-primary/5",
+    success: "border-l-green-500 bg-green-500/10 dark:bg-green-500/20",
+    warning: "border-l-amber-500 bg-amber-500/10 dark:bg-amber-500/20",
+    info: "border-l-blue-500 bg-blue-500/10 dark:bg-blue-500/20",
+    action: "border-l-primary bg-primary/10 dark:bg-primary/20",
   };
 
   const iconColors = {
-    success: "text-green-600",
-    warning: "text-amber-600",
-    info: "text-blue-600",
+    success: "text-green-600 dark:text-green-400",
+    warning: "text-amber-600 dark:text-amber-400",
+    info: "text-blue-600 dark:text-blue-400",
     action: "text-primary",
   };
 
@@ -45,7 +45,7 @@ function InsightCard({ title, description, type, icon: Icon, metric }: InsightCa
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Icon className={`h-5 w-5 ${iconColors[type]}`} />
-            <CardTitle className="text-base font-semibold">{title}</CardTitle>
+            <CardTitle className="text-base font-semibold text-foreground">{title}</CardTitle>
           </div>
           {metric && (
             <span className={`text-lg font-bold ${iconColors[type]}`}>{metric}</span>
@@ -53,7 +53,7 @@ function InsightCard({ title, description, type, icon: Icon, metric }: InsightCa
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <p className="text-sm text-foreground/70">{description}</p>
       </CardContent>
     </Card>
   );
