@@ -31,42 +31,47 @@ interface InsightCardProps {
 }
 
 function InsightCard({ title, description, type, icon: Icon, metric, financialImpact, effort }: InsightCardProps) {
-  // Bordure colorée selon le type, mais fond neutre pour éviter la confusion
+  // Couleurs Lavcom exactes du logo
+  // Vert lime (#A3C615) = point fort (success)
+  // Jaune/Or (#FCD259) = problème (warning)
+  // Cyan/Teal (#6DBFB8) = opportunité (info/action)
+  
   const borderColors = {
-    success: "border-l-green-500",
-    warning: "border-l-amber-500",
-    info: "border-l-blue-500",
-    action: "border-l-primary",
+    success: "border-l-[#A3C615]",      // Vert Lavcom - point fort
+    warning: "border-l-[#FCD259]",       // Jaune Lavcom - problème
+    info: "border-l-[#6DBFB8]",          // Cyan Lavcom - opportunité
+    action: "border-l-[#6DBFB8]",        // Cyan Lavcom - opportunité
   };
 
   const iconColors = {
-    success: "text-green-600 dark:text-green-400",
-    warning: "text-amber-600 dark:text-amber-400",
-    info: "text-blue-600 dark:text-blue-400",
-    action: "text-primary",
+    success: "text-[#A3C615]",
+    warning: "text-[#FCD259]",
+    info: "text-[#6DBFB8]",
+    action: "text-[#6DBFB8]",
   };
 
   const metricColors = {
-    success: "text-green-600 dark:text-green-400",
-    warning: "text-amber-600 dark:text-amber-400",
-    info: "text-blue-600 dark:text-blue-400",
-    action: "text-primary",
+    success: "text-[#A3C615]",
+    warning: "text-[#d4a843]",           // Jaune plus foncé pour lisibilité
+    info: "text-[#6DBFB8]",
+    action: "text-[#6DBFB8]",
   };
 
   const effortConfig = {
     low: { 
       label: "Faible", 
-      className: "bg-emerald-500 text-white hover:bg-emerald-500 border-0" 
+      className: "bg-[#A3C615] text-white hover:bg-[#A3C615] border-0" 
     },
     medium: { 
       label: "Moyen", 
-      className: "bg-amber-500 text-white hover:bg-amber-500 border-0" 
+      className: "bg-[#FCD259] text-gray-800 hover:bg-[#FCD259] border-0" 
     },
     high: { 
       label: "Fort", 
       className: "bg-red-500 text-white hover:bg-red-500 border-0" 
     },
   };
+
 
   return (
     <Card className={`border-l-4 ${borderColors[type]} bg-card hover:shadow-md transition-shadow`}>
