@@ -10,6 +10,8 @@ interface LaundryData {
   transactions: number;
   occupancyRate: number;
   trend: number; // percentage vs previous period
+  breakEvenRevenue?: number | null;
+  estimatedProfit?: number | null;
 }
 
 interface LaundryComparisonTableProps {
@@ -42,12 +44,16 @@ export function LaundryComparisonTable({ laundries, className }: LaundryComparis
                 <th className="text-right p-3 font-medium text-muted-foreground">% Total</th>
                 <th className="text-right p-3 font-medium text-muted-foreground">Trans.</th>
                 <th className="text-right p-3 font-medium text-muted-foreground">Occup.</th>
+                <th className="text-right p-3 font-medium text-muted-foreground">Seuil rent.</th>
+                <th className="text-right p-3 font-medium text-muted-foreground">Résultat</th>
                 <th className="text-right p-3 font-medium text-muted-foreground">Évol.</th>
               </tr>
             </thead>
             <tbody>
               {sortedLaundries.map((laundry, index) => {
                 const revenueShare = (laundry.revenue / totalRevenue) * 100;
+                const isProfitable = laundry.estimatedProfit !== null && laundry.estimatedProfit !== undefined && laundry.estimatedProfit >= 0;
+                
                 return (
                   <tr key={laundry.id} className={cn(
                     "border-b border-border/50 hover:bg-muted/30 transition-colors",
@@ -92,6 +98,27 @@ export function LaundryComparisonTable({ laundries, className }: LaundryComparis
                       )}>
                         {laundry.occupancyRate}%
                       </span>
+                    </td>
+                    <td className="p-3 text-right">
+                      {laundry.breakEvenRevenue !== null && laundry.breakEvenRevenue !== undefined ? (
+                        <span className="text-muted-foreground">
+                          {laundry.breakEvenRevenue.toLocaleString('fr-FR')} €
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/50">N/A</span>
+                      )}
+                    </td>
+                    <td className="p-3 text-right">
+                      {laundry.estimatedProfit !== null && laundry.estimatedProfit !== undefined ? (
+                        <span className={cn(
+                          "font-semibold",
+                          isProfitable ? "text-[#A5C800]" : "text-red-500"
+                        )}>
+                          {isProfitable ? '+' : ''}{laundry.estimatedProfit.toLocaleString('fr-FR')} €
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/50">N/A</span>
+                      )}
                     </td>
                     <td className="p-3 text-right">
                       <div className={cn(

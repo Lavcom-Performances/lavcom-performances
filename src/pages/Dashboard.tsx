@@ -31,7 +31,9 @@ import { TransactionStats } from "@/components/dashboard/TransactionStats";
 import { MaintenanceAlerts } from "@/components/dashboard/MaintenanceAlerts";
 import { LaundryComparisonTable } from "@/components/dashboard/LaundryComparisonTable";
 import { ProfitabilityKPIs } from "@/components/dashboard/ProfitabilityKPIs";
+import { ProfitabilitySection } from "@/components/dashboard/ProfitabilitySection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { calculateProfitabilityMetrics, LaundryCosts } from "@/types/costs";
 
 // Mock data - CA par mois
 const mockMonthlyData = [
@@ -143,12 +145,31 @@ const mockMaintenanceAlerts = [
   { machineId: "SL2", machineName: "Sèche-Linge #2", type: "dryer" as const, status: "warning" as const, message: "350 cycles - maintenance recommandée", lastMaintenance: "28/10/2024", cyclesSinceMaintenance: 350 },
 ];
 
-// Mock data - Comparaison laveries
+// Mock data - Comparaison laveries (avec données rentabilité)
 const mockLaundriesComparison = [
-  { id: "L1", name: "Laverie Centre-Ville", revenue: 5240, transactions: 732, occupancyRate: 72, trend: 8.5 },
-  { id: "L2", name: "Laverie Gare", revenue: 4180, transactions: 584, occupancyRate: 65, trend: -2.3 },
-  { id: "L3", name: "Laverie Université", revenue: 3890, transactions: 543, occupancyRate: 58, trend: 12.1 },
+  { id: "L1", name: "Laverie Centre-Ville", revenue: 5240, transactions: 732, occupancyRate: 72, trend: 8.5, breakEvenRevenue: 2061, estimatedProfit: 2307 },
+  { id: "L2", name: "Laverie Gare", revenue: 4180, transactions: 584, occupancyRate: 65, trend: -2.3, breakEvenRevenue: 1850, estimatedProfit: 1620 },
+  { id: "L3", name: "Laverie Université", revenue: 3890, transactions: 543, occupancyRate: 58, trend: 12.1, breakEvenRevenue: null, estimatedProfit: null },
 ];
+
+// Mock costs data
+const mockCosts: LaundryCosts = {
+  fixed_rent: 850,
+  fixed_lease: 450,
+  fixed_subscriptions: 120,
+  fixed_insurance: 85,
+  fixed_cleaning: 200,
+  fixed_other: 50,
+  var_energy_water_percent: 12,
+  var_detergent_percent: 3,
+};
+
+// Mock revenue data
+const siteTurnoverMonth = 3495;
+const siteTotalCyclesMonth = 487;
+
+// Calculate profitability metrics
+const profitabilityMetrics = calculateProfitabilityMetrics(mockCosts, siteTurnoverMonth, siteTotalCyclesMonth);
 
 export default function Dashboard() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -342,6 +363,12 @@ export default function Dashboard() {
             <MonthlyRevenueChart data={mockMonthlyData} />
             <PaymentPieChart data={mockPaymentData} />
           </div>
+
+          {/* Section Rentabilité */}
+          <ProfitabilitySection 
+            metrics={profitabilityMetrics}
+            costs={mockCosts}
+          />
 
           <MachinePerformanceTable machines={mockMachinePerformance} />
         </TabsContent>
