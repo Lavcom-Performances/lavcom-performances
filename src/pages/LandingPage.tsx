@@ -12,8 +12,11 @@ import {
   PieChart,
   ArrowRight,
   CheckCircle2,
-  Play
+  Play,
+  Quote,
+  Star
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
 
 const features = [
@@ -56,6 +59,30 @@ const benefits = [
   "Accédez à vos données depuis n'importe où"
 ];
 
+const testimonials = [
+  {
+    name: "Marie Dupont",
+    role: "Gérante, Laverie Express Lyon",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+    quote: "Grâce à Lavcom Analytics, j'ai pu identifier mes heures creuses et ajuster mes tarifs. Mon CA a augmenté de 30% en 6 mois !",
+    rating: 5
+  },
+  {
+    name: "Pierre Martin",
+    role: "Propriétaire, Clean & Fresh Paris",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    quote: "Les alertes de maintenance m'ont permis d'éviter 3 pannes majeures ce trimestre. L'investissement est rentabilisé en quelques semaines.",
+    rating: 5
+  },
+  {
+    name: "Sophie Bernard",
+    role: "Directrice, Réseau LavPlus",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    quote: "Avec 12 laveries, je ne pouvais plus tout gérer manuellement. Lavcom me donne une vue d'ensemble instantanée de tout mon réseau.",
+    rating: 5
+  }
+];
+
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background">
@@ -74,6 +101,9 @@ const LandingPage = () => {
             </a>
             <a href="#benefits" className="text-muted-foreground hover:text-foreground transition-colors">
               Avantages
+            </a>
+            <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">
+              Témoignages
             </a>
             <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Tarifs
@@ -275,6 +305,55 @@ const LandingPage = () => {
                 </Card>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Ils nous font confiance
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Découvrez les témoignages de gérants qui ont transformé leur activité avec Lavcom Analytics
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <Card 
+                key={testimonial.name}
+                className="p-6 card-lavcom-hover relative animate-fade-in"
+                style={{ animationDelay: `${index * 0.15}s` }}
+              >
+                <Quote className="absolute top-4 right-4 h-8 w-8 text-primary/20" />
+                
+                <div className="flex items-center gap-1 mb-4">
+                  {Array.from({ length: testimonial.rating }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-accent text-accent" />
+                  ))}
+                </div>
+                
+                <p className="text-foreground mb-6 leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
+                
+                <div className="flex items-center gap-3 pt-4 border-t border-border">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
+                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                      {testimonial.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold text-foreground">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
