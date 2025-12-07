@@ -113,7 +113,7 @@ export function AppSidebar({
 
       {/* Current Laundromat */}
       {!collapsed && (
-        <div className="px-4 py-3 border-b border-sidebar-border">
+        <div className="px-4 py-3 border-b border-sidebar-border space-y-2">
           <NavLink 
             to="/laundromat-settings"
             className="flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
@@ -121,6 +121,12 @@ export function AppSidebar({
             <Building2 className="h-4 w-4" />
             <span className="text-sm truncate">{currentLaundromat}</span>
             <Settings className="h-3 w-3 ml-auto opacity-50" />
+          </NavLink>
+          <NavLink 
+            to="/select-laundromat"
+            className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors"
+          >
+            <span>← Changer de laverie</span>
           </NavLink>
         </div>
       )}
