@@ -4,42 +4,11 @@ import { Check, Building2, ArrowRight, Minus, Plus, Sparkles } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { 
+  getLaundromatPricing, 
+  LAUNDROMAT_PRICING 
+} from "@/config/pricingConfig";
 import lavcomLogo from "@/assets/lavcom-logo-header.png";
-
-// Logique de prix par paliers
-const getMonthlyPricePerLaundromat = (n: number): number => {
-  if (n <= 0) return 0;
-  if (n <= 2) return 29;
-  if (n <= 5) return 25;
-  return 21;
-};
-
-const getAnnualPricePerLaundromat = (n: number): number => {
-  return getMonthlyPricePerLaundromat(n) * 10; // 2 mois offerts
-};
-
-const getTierLabel = (n: number): string => {
-  if (n <= 2) return "Tarif palier 1–2 laveries";
-  if (n <= 5) return "Tarif palier 3–5 laveries";
-  return "Tarif palier 6+ laveries";
-};
-
-const getPricing = (count: number) => {
-  const monthlyPricePerLav = getMonthlyPricePerLaundromat(count);
-  const annualPricePerLav = getAnnualPricePerLaundromat(count);
-  const monthlyTotal = count * monthlyPricePerLav;
-  const annualTotal = count * annualPricePerLav;
-  const annualSaving = (monthlyTotal * 12) - annualTotal;
-  
-  return {
-    monthlyPricePerLav,
-    annualPricePerLav,
-    monthlyTotal,
-    annualTotal,
-    annualSaving,
-    tierLabel: getTierLabel(count),
-  };
-};
 
 const features = [
   "Accès à toutes les analyses",
@@ -52,7 +21,7 @@ export default function Pricing() {
   const navigate = useNavigate();
   const [laundryCount, setLaundryCount] = useState(1);
 
-  const pricing = getPricing(laundryCount);
+  const pricing = getLaundromatPricing(laundryCount);
 
   const handleSelectPlan = (planId: string) => {
     navigate(`/subscribe?plan=${planId}&count=${laundryCount}`);
@@ -73,10 +42,10 @@ export default function Pricing() {
             <Link to="/#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Fonctionnalités
             </Link>
-            <Link to="/simulation" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Simulation
+            <Link to="/simulateur" className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors">
+              Simulation ouverture
             </Link>
-            <Link to="/login">
+            <Link to="/login?mode=exploitant">
               <Button variant="ghost">Se connecter</Button>
             </Link>
           </nav>
@@ -88,7 +57,7 @@ export default function Pricing() {
         {/* Hero section */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <Badge variant="secondary" className="mb-4">
-            Prix dégressif selon le nombre de laveries
+            Tarifs Exploitants – Prix dégressif selon le nombre de laveries
           </Badge>
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
             Choisissez votre abonnement
@@ -237,15 +206,15 @@ export default function Pricing() {
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <span className="w-32 font-medium text-foreground">1 à 2 laveries</span>
-                  <span>29 €/mois par laverie</span>
+                  <span>{LAUNDROMAT_PRICING.monthly.tier1.pricePerLaundromat} €/mois par laverie</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-32 font-medium text-foreground">3 à 5 laveries</span>
-                  <span>25 €/mois par laverie</span>
+                  <span>{LAUNDROMAT_PRICING.monthly.tier2.pricePerLaundromat} €/mois par laverie</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-32 font-medium text-foreground">6 laveries et +</span>
-                  <span>21 €/mois par laverie</span>
+                  <span>{LAUNDROMAT_PRICING.monthly.tier3.pricePerLaundromat} €/mois par laverie</span>
                 </li>
               </ul>
               <p className="text-sm text-muted-foreground mt-4 pt-4 border-t">

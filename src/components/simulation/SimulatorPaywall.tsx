@@ -1,13 +1,25 @@
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Sparkles, Video, Calculator, FileText, Lock } from "lucide-react";
+import { Check, Sparkles, Video, Calculator, Lock } from "lucide-react";
+import { SIMULATOR_PLANS } from "@/config/pricingConfig";
 
 interface SimulatorPaywallProps {
   onSubscribe?: (plan: 'simulator' | 'premium') => void;
 }
 
 export function SimulatorPaywall({ onSubscribe }: SimulatorPaywallProps) {
+  const navigate = useNavigate();
+
+  const handleSubscribe = (plan: 'simulator' | 'premium') => {
+    if (onSubscribe) {
+      onSubscribe(plan);
+    } else {
+      navigate("/subscribe-simulator");
+    }
+  };
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4">
       <div className="max-w-4xl w-full space-y-8">
@@ -33,16 +45,16 @@ export function SimulatorPaywall({ onSubscribe }: SimulatorPaywallProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="h-5 w-5 text-primary" />
-                Pack Simulateur
+                {SIMULATOR_PLANS.simulator.name}
               </CardTitle>
               <CardDescription>
-                Accès complet au simulateur de rentabilité
+                {SIMULATOR_PLANS.simulator.description}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold">79 €</span>
-                <span className="text-muted-foreground">/ mois</span>
+                <span className="text-4xl font-bold">{SIMULATOR_PLANS.simulator.price} €</span>
+                <span className="text-muted-foreground">/ {SIMULATOR_PLANS.simulator.billing}</span>
               </div>
               
               <ul className="space-y-3">
@@ -71,7 +83,7 @@ export function SimulatorPaywall({ onSubscribe }: SimulatorPaywallProps) {
               <Button 
                 className="w-full" 
                 size="lg"
-                onClick={() => onSubscribe?.('simulator')}
+                onClick={() => handleSubscribe('simulator')}
               >
                 Souscrire au Pack Simulateur
               </Button>
@@ -89,15 +101,15 @@ export function SimulatorPaywall({ onSubscribe }: SimulatorPaywallProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Video className="h-5 w-5 text-primary" />
-                Pack Premium
+                {SIMULATOR_PLANS.premium.name}
               </CardTitle>
               <CardDescription>
-                Simulateur + accompagnement personnalisé
+                {SIMULATOR_PLANS.premium.description}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold">279 €</span>
+                <span className="text-4xl font-bold">{SIMULATOR_PLANS.premium.price} €</span>
                 <span className="text-muted-foreground">unique</span>
               </div>
               
@@ -132,7 +144,7 @@ export function SimulatorPaywall({ onSubscribe }: SimulatorPaywallProps) {
                 className="w-full" 
                 size="lg"
                 variant="default"
-                onClick={() => onSubscribe?.('premium')}
+                onClick={() => handleSubscribe('premium')}
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 Choisir le Pack Premium
@@ -144,7 +156,10 @@ export function SimulatorPaywall({ onSubscribe }: SimulatorPaywallProps) {
         {/* Info */}
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
-            Vous avez déjà un abonnement ? <a href="/login" className="text-primary hover:underline">Connectez-vous</a>
+            Vous avez déjà un abonnement ?{" "}
+            <a href="/login?mode=simulateur" className="text-primary hover:underline">
+              Connectez-vous
+            </a>
           </p>
         </div>
       </div>

@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Pricing from "./pages/Pricing";
 import Subscribe from "./pages/Subscribe";
+import SimulateurPage from "./pages/SimulateurPage";
+import SubscribeSimulator from "./pages/SubscribeSimulator";
 import SelectLaundromat from "./pages/SelectLaundromat";
 import Dashboard from "./pages/Dashboard";
 import Operations from "./pages/Operations";
@@ -46,6 +48,8 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/subscribe" element={<Subscribe />} />
+          <Route path="/simulateur" element={<SimulateurPage />} />
+          <Route path="/subscribe-simulator" element={<SubscribeSimulator />} />
           <Route path="/select-laundromat" element={<SelectLaundromat />} />
           <Route path="/company-settings" element={<CompanySettings />} />
           
@@ -56,6 +60,7 @@ const App = () => (
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
             <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/simulation" element={<SimulationPage />} />
             
             {/* Chart pages */}
             <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />
@@ -72,7 +77,6 @@ const App = () => (
             <Route path="/recommendations" element={<RecommendationsPage />} />
             <Route path="/maintenance" element={<PredictiveMaintenance />} />
             <Route path="/profitability" element={<ProfitabilityPage />} />
-            <Route path="/simulation" element={<SimulationPage />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

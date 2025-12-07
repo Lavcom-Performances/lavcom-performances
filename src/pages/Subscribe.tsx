@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
+import { getLaundromatPricing } from "@/config/pricingConfig";
 import lavcomLogo from "@/assets/lavcom-logo-header.png";
 
 interface CompanyInfo {
@@ -26,24 +27,6 @@ interface ContactInfo {
   telephone: string;
   fonction: string;
 }
-
-const pricingTiers = [
-  { min: 1, max: 1, priceMonthly: 20, priceAnnual: 220, discount: 0 },
-  { min: 2, max: 3, priceMonthly: 18, priceAnnual: 198, discount: 10 },
-  { min: 4, max: 5, priceMonthly: 16, priceAnnual: 176, discount: 20 },
-  { min: 6, max: Infinity, priceMonthly: 14, priceAnnual: 154, discount: 30 },
-];
-
-const getPricing = (count: number, plan: string) => {
-  const tier = pricingTiers.find(t => count >= t.min && count <= t.max) || pricingTiers[0];
-  const isAnnual = plan === "annual";
-  return {
-    pricePerLaundry: isAnnual ? tier.priceAnnual : tier.priceMonthly,
-    total: (isAnnual ? tier.priceAnnual : tier.priceMonthly) * count,
-    discount: tier.discount,
-    period: isAnnual ? "an" : "mois",
-  };
-};
 
 const steps = [
   { id: 1, name: "Entreprise", icon: Building2 },
@@ -79,7 +62,10 @@ export default function Subscribe() {
     fonction: "",
   });
 
-  const pricing = getPricing(laundryCount, selectedPlan);
+  const pricing = getLaundromatPricing(laundryCount);
+  const currentPricing = selectedPlan === "annual" 
+    ? { total: pricing.annualTotal, period: "an", perLav: pricing.annualPricePerLav }
+    : { total: pricing.monthlyTotal, period: "mois", perLav: pricing.monthlyPricePerLav };
 
   const incrementCount = () => setLaundryCount(prev => Math.min(prev + 1, 20));
   const decrementCount = () => setLaundryCount(prev => Math.max(prev - 1, 1));
@@ -393,11 +379,9 @@ export default function Subscribe() {
                       <Plus className="h-4 w-4" />
                     </Button>
                     <div className="flex-1 text-right">
-                      {pricing.discount > 0 && (
-                        <Badge className="bg-primary/10 text-primary border-primary/20">
-                          -{pricing.discount}% de réduction
-                        </Badge>
-                      )}
+                      <Badge variant="outline" className="text-muted-foreground">
+                        {pricing.tierLabel}
+                      </Badge>
                     </div>
                   </div>
                 </div>
@@ -423,7 +407,7 @@ export default function Subscribe() {
                           <p className="text-sm text-muted-foreground">Sans engagement</p>
                         </div>
                       </div>
-                      <p className="font-bold text-lg">{getPricing(laundryCount, "monthly").total}€/mois</p>
+                      <p className="font-bold text-lg">{pricing.monthlyTotal}€/mois</p>
                     </label>
                     
                     <label 
@@ -439,42 +423,51 @@ export default function Subscribe() {
                           <p className="text-sm text-primary">2 mois offerts</p>
                         </div>
                       </div>
-                      <p className="font-bold text-lg">{getPricing(laundryCount, "annual").total}€/an</p>
+                      <p className="font-bold text-lg">{pricing.annualTotal}€/an</p>
                     </label>
                   </RadioGroup>
                 </div>
 
                 {/* Summary */}
                 <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                  <h4 className="font-medium">Récapitulatif</h4>
-                  <div className="text-sm space-y-1">
-                    <p><span className="text-muted-foreground">Entreprise :</span> {companyInfo.raisonSociale}</p>
-                    <p><span className="text-muted-foreground">SIRET :</span> {companyInfo.siret}</p>
-                    <p><span className="text-muted-foreground">Contact :</span> {contactInfo.prenom} {contactInfo.nom}</p>
-                    <p><span className="text-muted-foreground">Email :</span> {contactInfo.email}</p>
-                    <p><span className="text-muted-foreground">Laveries :</span> {laundryCount} ({pricing.pricePerLaundry}€/{pricing.period} par laverie)</p>
-                  </div>
-                  <div className="border-t border-border pt-3 flex items-center justify-between">
-                    <span className="font-medium">Total à payer</span>
-                    <div className="text-right">
-                      <span className="text-2xl font-bold text-primary">{pricing.total}€</span>
-                      <span className="text-muted-foreground">/{pricing.period}</span>
+                  <h4 className="font-semibold">Récapitulatif</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Entreprise</span>
+                      <span className="font-medium">{companyInfo.raisonSociale}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Contact</span>
+                      <span className="font-medium">{contactInfo.prenom} {contactInfo.nom}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Nombre de laveries</span>
+                      <span className="font-medium">{laundryCount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Prix par laverie</span>
+                      <span className="font-medium">{currentPricing.perLav}€/{currentPricing.period}</span>
                     </div>
                   </div>
-                </div>
-
-                {/* Payment notice */}
-                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-center">
-                  <CreditCard className="h-8 w-8 text-primary mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">
-                    Vous serez redirigé vers notre page de paiement sécurisé pour finaliser votre abonnement.
-                  </p>
+                  <div className="border-t pt-3 mt-3">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Total</span>
+                      <span className="text-2xl font-bold text-primary">
+                        {currentPricing.total}€/{currentPricing.period}
+                      </span>
+                    </div>
+                    {selectedPlan === "annual" && (
+                      <p className="text-sm text-primary text-right">
+                        Économie de {pricing.annualSaving}€/an
+                      </p>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Navigation buttons */}
+          {/* Navigation */}
           <div className="flex justify-between mt-6">
             <Button
               variant="outline"
@@ -491,15 +484,12 @@ export default function Subscribe() {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={isSubmitting}>
-                {isSubmitting ? (
-                  "Traitement..."
-                ) : (
-                  <>
-                    <Check className="mr-2 h-4 w-4" />
-                    Confirmer et payer
-                  </>
-                )}
+              <Button 
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Traitement..." : "Procéder au paiement"}
+                <CreditCard className="ml-2 h-4 w-4" />
               </Button>
             )}
           </div>
