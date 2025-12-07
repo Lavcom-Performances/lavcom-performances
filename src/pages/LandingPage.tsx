@@ -1,6 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Accordion,
   AccordionContent,
@@ -20,10 +24,23 @@ import {
   CheckCircle2,
   Play,
   Quote,
-  Star
+  Star,
+  Send,
+  Mail,
+  User,
+  MessageSquare,
+  Loader2
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
 import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
+
+const contactSchema = z.object({
+  name: z.string().trim().min(1, "Le nom est requis").max(100, "Le nom est trop long"),
+  email: z.string().trim().email("Email invalide").max(255, "Email trop long"),
+  message: z.string().trim().min(10, "Le message doit contenir au moins 10 caractères").max(1000, "Le message est trop long (max 1000 caractères)")
+});
 
 const features = [
   {
@@ -90,6 +107,40 @@ const testimonials = [
 ];
 
 const LandingPage = () => {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
+  const [contactErrors, setContactErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactErrors({});
+
+    const result = contactSchema.safeParse(contactForm);
+    if (!result.success) {
+      const errors: { name?: string; email?: string; message?: string } = {};
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as keyof typeof errors;
+        errors[field] = err.message;
+      });
+      setContactErrors(errors);
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    
+    toast({
+      title: "Message envoyé !",
+      description: "Nous vous répondrons dans les plus brefs délais.",
+    });
+    
+    setContactForm({ name: "", email: "", message: "" });
+    setIsSubmitting(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -444,6 +495,138 @@ const LandingPage = () => {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+        </div>
+      </section>
+
+      {/* Contact Form Section */}
+      <section id="contact" className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Une question ? Contactez-nous
+              </h2>
+              <p className="text-muted-foreground text-lg mb-8">
+                Notre équipe vous répond sous 24h pour vous accompagner dans votre projet.
+              </p>
+              
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Mail className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Email</h3>
+                    <p className="text-muted-foreground">contact@lavcom-analytics.fr</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Clock className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Horaires</h3>
+                    <p className="text-muted-foreground">Lun-Ven : 9h-18h</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <MessageSquare className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Réponse rapide</h3>
+                    <p className="text-muted-foreground">Nous répondons sous 24h ouvrées</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <Card className="p-6 md:p-8 card-lavcom">
+              <form onSubmit={handleContactSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="contact-name" className="text-foreground font-medium">
+                    Nom complet
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="contact-name"
+                      placeholder="Jean Dupont"
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
+                      className="pl-10"
+                      maxLength={100}
+                    />
+                  </div>
+                  {contactErrors.name && (
+                    <p className="text-sm text-destructive">{contactErrors.name}</p>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="contact-email" className="text-foreground font-medium">
+                    Email
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="contact-email"
+                      type="email"
+                      placeholder="jean.dupont@email.com"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="pl-10"
+                      maxLength={255}
+                    />
+                  </div>
+                  {contactErrors.email && (
+                    <p className="text-sm text-destructive">{contactErrors.email}</p>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="contact-message" className="text-foreground font-medium">
+                    Message
+                  </Label>
+                  <Textarea
+                    id="contact-message"
+                    placeholder="Comment pouvons-nous vous aider ?"
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
+                    rows={4}
+                    maxLength={1000}
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    {contactErrors.message && (
+                      <p className="text-destructive">{contactErrors.message}</p>
+                    )}
+                    <span className="ml-auto">{contactForm.message.length}/1000</span>
+                  </div>
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="w-full btn-bounce bg-primary hover:bg-primary/90"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Envoi en cours...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="mr-2 h-5 w-5" />
+                      Envoyer le message
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Card>
+          </div>
         </div>
       </section>
 
