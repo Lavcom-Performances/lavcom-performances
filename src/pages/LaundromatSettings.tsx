@@ -26,8 +26,20 @@ import {
   Calendar,
   User,
   Wrench,
-  AlertTriangle
+  AlertTriangle,
+  Calculator,
+  Percent,
+  TrendingUp,
+  TrendingDown,
+  Info
 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { 
+  calculateFixedCostsTotal, 
+  calculateVarTotalPercent, 
+  calculateProfitabilityMetrics,
+  hasCostsData 
+} from "@/types/costs";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -66,6 +78,17 @@ interface Objectives {
   annualRevenue: number;
   targetOccupancyRate: number;
   targetBasket: number;
+}
+
+interface LaundryCostsState {
+  fixed_rent: number;
+  fixed_lease: number;
+  fixed_subscriptions: number;
+  fixed_insurance: number;
+  fixed_cleaning: number;
+  fixed_other: number;
+  var_energy_water_percent: number;
+  var_detergent_percent: number;
 }
 
 export default function LaundromatSettings() {
@@ -107,6 +130,22 @@ export default function LaundromatSettings() {
     { id: "SL2", name: "Sèche-linge 2", type: "SL", capacity: 14, cycleDuration: 8, pricePerCycle: 1, maintenanceThreshold: 600, cyclesSinceLastMaintenance: 298, lastMaintenanceDate: "2024-09-15" },
     { id: "SL3", name: "Sèche-linge 3", type: "SL", capacity: 14, cycleDuration: 8, pricePerCycle: 1, maintenanceThreshold: 600, cyclesSinceLastMaintenance: 512, lastMaintenanceDate: "2024-08-01" },
   ]);
+
+  // Charges / Coûts
+  const [costs, setCosts] = useState<LaundryCostsState>({
+    fixed_rent: 850,
+    fixed_lease: 450,
+    fixed_subscriptions: 120,
+    fixed_insurance: 85,
+    fixed_cleaning: 200,
+    fixed_other: 50,
+    var_energy_water_percent: 12,
+    var_detergent_percent: 3,
+  });
+
+  // Mock revenue data for calculations
+  const siteTurnoverMonth = 3495;
+  const siteTotalCyclesMonth = 487;
 
   // Calculate operating hours
   const calculateOperatingHoursValue = (open: string, close: string) => {
@@ -181,6 +220,12 @@ export default function LaundromatSettings() {
     m => m.cyclesSinceLastMaintenance >= m.maintenanceThreshold * 0.8
   );
 
+  // Calculs de rentabilité
+  const fixedCostsTotal = calculateFixedCostsTotal(costs);
+  const varTotalPercent = calculateVarTotalPercent(costs);
+  const profitabilityMetrics = calculateProfitabilityMetrics(costs, siteTurnoverMonth, siteTotalCyclesMonth);
+  const costsConfigured = hasCostsData(costs);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -217,9 +262,10 @@ export default function LaundromatSettings() {
       )}
 
       <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
+        <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
           <TabsTrigger value="general">Général</TabsTrigger>
           <TabsTrigger value="machines">Machines</TabsTrigger>
+          <TabsTrigger value="costs">Charges / Coûts</TabsTrigger>
           <TabsTrigger value="objectives">Objectifs</TabsTrigger>
           <TabsTrigger value="summary">Récapitulatif</TabsTrigger>
         </TabsList>
@@ -555,6 +601,209 @@ export default function LaundromatSettings() {
           </Card>
         </TabsContent>
 
+        {/* Costs Tab */}
+        <TabsContent value="costs" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Charges fixes */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Euro className="h-5 w-5" />
+                  Charges fixes mensuelles
+                </CardTitle>
+                <CardDescription>
+                  Coûts récurrents indépendants du chiffre d'affaires
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fixed_rent">Loyer + charges (€/mois)</Label>
+                  <Input
+                    id="fixed_rent"
+                    type="number"
+                    step="0.01"
+                    value={costs.fixed_rent}
+                    onChange={(e) => setCosts({ ...costs, fixed_rent: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fixed_lease">Prêt / leasing machines (€/mois)</Label>
+                  <Input
+                    id="fixed_lease"
+                    type="number"
+                    step="0.01"
+                    value={costs.fixed_lease}
+                    onChange={(e) => setCosts({ ...costs, fixed_lease: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fixed_subscriptions">Abonnements (centrale, internet, alarmes, etc.) (€/mois)</Label>
+                  <Input
+                    id="fixed_subscriptions"
+                    type="number"
+                    step="0.01"
+                    value={costs.fixed_subscriptions}
+                    onChange={(e) => setCosts({ ...costs, fixed_subscriptions: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fixed_insurance">Assurances (€/mois)</Label>
+                  <Input
+                    id="fixed_insurance"
+                    type="number"
+                    step="0.01"
+                    value={costs.fixed_insurance}
+                    onChange={(e) => setCosts({ ...costs, fixed_insurance: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fixed_cleaning">Ménage / entretien (€/mois)</Label>
+                  <Input
+                    id="fixed_cleaning"
+                    type="number"
+                    step="0.01"
+                    value={costs.fixed_cleaning}
+                    onChange={(e) => setCosts({ ...costs, fixed_cleaning: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fixed_other">Autres charges fixes (€/mois)</Label>
+                  <Input
+                    id="fixed_other"
+                    type="number"
+                    step="0.01"
+                    value={costs.fixed_other}
+                    onChange={(e) => setCosts({ ...costs, fixed_other: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                
+                {/* Total charges fixes */}
+                <div className="pt-4 mt-4 border-t border-border">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-muted-foreground">Total charges fixes mensuelles</span>
+                    <span className="text-xl font-bold text-primary">{fixedCostsTotal.toLocaleString('fr-FR')} €</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Charges variables */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Percent className="h-5 w-5" />
+                  Charges variables (en % du CA)
+                </CardTitle>
+                <CardDescription>
+                  Coûts proportionnels au chiffre d'affaires
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="var_energy_water">Électricité + eau (% du CA)</Label>
+                  <Input
+                    id="var_energy_water"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    value={costs.var_energy_water_percent}
+                    onChange={(e) => setCosts({ ...costs, var_energy_water_percent: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="var_detergent">Lessive / produits (% du CA)</Label>
+                  <Input
+                    id="var_detergent"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    value={costs.var_detergent_percent}
+                    onChange={(e) => setCosts({ ...costs, var_detergent_percent: parseFloat(e.target.value) || 0 })}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Si la lessive est incluse dans vos tarifs
+                  </p>
+                </div>
+                
+                {/* Total charges variables */}
+                <div className="pt-4 mt-4 border-t border-border">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-muted-foreground">Total charges variables</span>
+                    <span className="text-xl font-bold text-primary">{varTotalPercent.toFixed(1)} % du CA</span>
+                  </div>
+                </div>
+
+                <Alert className="mt-4">
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Ces données servent à estimer votre seuil de rentabilité. Les valeurs peuvent être approximatives.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Aperçu rentabilité */}
+          {costsConfigured && (
+            <Card className="bg-primary/5 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calculator className="h-5 w-5" />
+                  Aperçu du seuil de rentabilité
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="text-center p-4 bg-background rounded-lg">
+                    <Target className="h-8 w-8 mx-auto mb-2 text-primary" />
+                    <p className="text-sm text-muted-foreground">Seuil de rentabilité</p>
+                    <p className="text-2xl font-bold text-primary">
+                      {profitabilityMetrics.break_even_revenue_monthly !== null 
+                        ? `${profitabilityMetrics.break_even_revenue_monthly.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €`
+                        : 'N/A'
+                      }
+                    </p>
+                    <p className="text-xs text-muted-foreground">CA mensuel minimum</p>
+                  </div>
+                  <div className="text-center p-4 bg-background rounded-lg">
+                    <WashingMachine className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                    <p className="text-sm text-muted-foreground">Cycles / jour nécessaires</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {profitabilityMetrics.break_even_cycles_day !== null 
+                        ? Math.ceil(profitabilityMetrics.break_even_cycles_day)
+                        : 'N/A'
+                      }
+                    </p>
+                    <p className="text-xs text-muted-foreground">Pour atteindre le seuil</p>
+                  </div>
+                  <div className="text-center p-4 bg-background rounded-lg">
+                    {profitabilityMetrics.estimated_profit_month >= 0 ? (
+                      <TrendingUp className="h-8 w-8 mx-auto mb-2 text-[#A5C800]" />
+                    ) : (
+                      <TrendingDown className="h-8 w-8 mx-auto mb-2 text-destructive" />
+                    )}
+                    <p className="text-sm text-muted-foreground">Résultat estimé</p>
+                    <p className={`text-2xl font-bold ${profitabilityMetrics.estimated_profit_month >= 0 ? 'text-[#A5C800]' : 'text-destructive'}`}>
+                      {profitabilityMetrics.estimated_profit_month >= 0 ? '+' : ''}{profitabilityMetrics.estimated_profit_month.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €
+                    </p>
+                    <p className="text-xs text-muted-foreground">Mois en cours</p>
+                  </div>
+                  <div className="text-center p-4 bg-background rounded-lg">
+                    <Euro className="h-8 w-8 mx-auto mb-2 text-amber-600" />
+                    <p className="text-sm text-muted-foreground">Charges variables</p>
+                    <p className="text-2xl font-bold text-amber-600">
+                      {profitabilityMetrics.estimated_variable_costs.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €
+                    </p>
+                    <p className="text-xs text-muted-foreground">Sur CA de {siteTurnoverMonth} €</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
         {/* Objectives Tab */}
         <TabsContent value="objectives" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -706,6 +955,53 @@ export default function LaundromatSettings() {
             </CardContent>
           </Card>
 
+          {/* Profitability Summary */}
+          <Card className={costsConfigured ? "bg-[#A5C800]/5 border-[#A5C800]/20" : "border-dashed"}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calculator className="h-5 w-5" />
+                Synthèse rentabilité
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {costsConfigured ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total charges fixes mensuelles</p>
+                    <p className="text-xl font-semibold">{fixedCostsTotal.toLocaleString('fr-FR')} €</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Charges variables estimées</p>
+                    <p className="text-xl font-semibold">{varTotalPercent.toFixed(1)} % du CA</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Seuil de rentabilité (CA mensuel)</p>
+                    <p className="text-xl font-semibold text-primary">
+                      {profitabilityMetrics.break_even_revenue_monthly !== null 
+                        ? `${profitabilityMetrics.break_even_revenue_monthly.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €`
+                        : 'N/A'
+                      }
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Cycles nécessaires / jour</p>
+                    <p className="text-xl font-semibold">
+                      {profitabilityMetrics.break_even_cycles_day !== null 
+                        ? `≈ ${Math.ceil(profitabilityMetrics.break_even_cycles_day)} cycles`
+                        : 'N/A'
+                      }
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <AlertTriangle className="h-5 w-5" />
+                  <p>Renseignez vos charges dans l'onglet "Charges / Coûts" pour calculer votre seuil de rentabilité.</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* KPI Indicators */}
           <Card>
             <CardHeader>
@@ -715,7 +1011,7 @@ export default function LaundromatSettings() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
                 <div className="p-3 bg-muted/50 rounded-lg text-center">
                   <p className="text-xs text-muted-foreground">CA/m²</p>
                   <p className="font-bold text-primary">Actif ✓</p>
@@ -739,6 +1035,12 @@ export default function LaundromatSettings() {
                 <div className="p-3 bg-muted/50 rounded-lg text-center">
                   <p className="text-xs text-muted-foreground">Alertes maintenance</p>
                   <p className="font-bold text-primary">Actif ✓</p>
+                </div>
+                <div className={`p-3 rounded-lg text-center ${costsConfigured ? 'bg-[#A5C800]/10' : 'bg-muted/50'}`}>
+                  <p className="text-xs text-muted-foreground">Seuil rentabilité</p>
+                  <p className={`font-bold ${costsConfigured ? 'text-[#A5C800]' : 'text-muted-foreground'}`}>
+                    {costsConfigured ? 'Actif ✓' : 'À configurer'}
+                  </p>
                 </div>
               </div>
             </CardContent>
