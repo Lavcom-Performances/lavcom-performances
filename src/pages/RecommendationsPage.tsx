@@ -74,7 +74,7 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
 
 
   return (
-    <Card className={`border-l-4 ${borderColors[type]} bg-card hover:shadow-md transition-shadow`}>
+    <Card className={`border-l-4 ${borderColors[type]} bg-card hover:shadow-md transition-shadow h-full flex flex-col`}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
@@ -86,14 +86,15 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+      <CardContent className="flex flex-col flex-1">
+        {/* Description avec flex-grow pour pousser le footer en bas */}
+        <p className="text-sm text-muted-foreground leading-relaxed flex-1">{description}</p>
         
-        {/* Impact financier et Effort - Design amélioré */}
+        {/* Impact financier et Effort - Toujours aligné en bas */}
         {(financialImpact !== undefined || effort) && (
-          <div className="flex items-center justify-between gap-4 pt-3 border-t border-border">
+          <div className="flex items-center justify-between gap-4 pt-4 mt-4 border-t border-border">
             {financialImpact !== undefined && (
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col items-start gap-1">
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
                   Impact estimé
                 </span>
@@ -106,7 +107,7 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
               </div>
             )}
             {effort && (
-              <div className="flex flex-col gap-0.5 items-end">
+              <div className="flex flex-col items-end gap-1">
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
                   Effort
                 </span>
