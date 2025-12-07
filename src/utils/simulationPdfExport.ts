@@ -67,6 +67,7 @@ export function generateSimulationReport(
       ['Nom du projet', project.name || 'Non renseigné'],
       ['Localisation', project.location || 'Non renseignée'],
       ['Surface', `${project.surface_m2 || 0} m²`],
+      ['Zone', project.zone_type || 'Non renseignée'],
       ['Horaires envisagés', project.opening_hours_description || 'Non renseignés'],
     ],
     theme: 'striped',
@@ -84,36 +85,29 @@ export function generateSimulationReport(
   yPos += 8;
 
   // Lave-linge
+  const washers = project.machines.filter(m => m.type === 'washer');
+  const washerRows = washers.map(m => {
+    const revenue = results.machine_revenues.find(r => r.id === m.id);
+    return [
+      `${m.capacity_kg} kg`,
+      m.count.toString(),
+      formatCurrency(m.price),
+      m.cycles_day.toString(),
+      formatCurrency(revenue?.turnover_month || 0)
+    ];
+  });
+  
+  if (washerRows.length > 0) {
+    washerRows.push([
+      { content: 'Total lavage', colSpan: 4, styles: { fontStyle: 'bold', halign: 'right' } } as any,
+      { content: formatCurrency(results.total_wash_turnover_month), styles: { fontStyle: 'bold' } } as any
+    ]);
+  }
+
   autoTable(doc, {
     startY: yPos,
     head: [['Lave-linge', 'Nombre', 'Prix/cycle', 'Cycles/jour', 'CA mensuel']],
-    body: [
-      [
-        '7 kg',
-        project.machines.wash_7kg_count.toString(),
-        formatCurrency(project.machines.wash_7kg_price),
-        project.machines.wash_7kg_cycles_day.toString(),
-        formatCurrency(results.wash_7kg_turnover_month)
-      ],
-      [
-        '10 kg',
-        project.machines.wash_10kg_count.toString(),
-        formatCurrency(project.machines.wash_10kg_price),
-        project.machines.wash_10kg_cycles_day.toString(),
-        formatCurrency(results.wash_10kg_turnover_month)
-      ],
-      [
-        '18 kg',
-        project.machines.wash_18kg_count.toString(),
-        formatCurrency(project.machines.wash_18kg_price),
-        project.machines.wash_18kg_cycles_day.toString(),
-        formatCurrency(results.wash_18kg_turnover_month)
-      ],
-      [
-        { content: 'Total lavage', colSpan: 4, styles: { fontStyle: 'bold', halign: 'right' } },
-        { content: formatCurrency(results.total_wash_turnover_month), styles: { fontStyle: 'bold' } }
-      ],
-    ],
+    body: washerRows.length > 0 ? washerRows : [['Aucun lave-linge configuré', '', '', '', '']],
     theme: 'striped',
     headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
     styles: { fontSize: 9, cellPadding: 3 },
@@ -122,29 +116,29 @@ export function generateSimulationReport(
   yPos = (doc as any).lastAutoTable.finalY + 5;
 
   // Sèche-linge
+  const dryers = project.machines.filter(m => m.type === 'dryer');
+  const dryerRows = dryers.map(m => {
+    const revenue = results.machine_revenues.find(r => r.id === m.id);
+    return [
+      `${m.capacity_kg} kg`,
+      m.count.toString(),
+      formatCurrency(m.price),
+      m.cycles_day.toString(),
+      formatCurrency(revenue?.turnover_month || 0)
+    ];
+  });
+  
+  if (dryerRows.length > 0) {
+    dryerRows.push([
+      { content: 'Total séchage', colSpan: 4, styles: { fontStyle: 'bold', halign: 'right' } } as any,
+      { content: formatCurrency(results.total_dry_turnover_month), styles: { fontStyle: 'bold' } } as any
+    ]);
+  }
+
   autoTable(doc, {
     startY: yPos,
     head: [['Sèche-linge', 'Nombre', 'Prix/cycle', 'Cycles/jour', 'CA mensuel']],
-    body: [
-      [
-        'Petit (10-13 kg)',
-        project.machines.dry_small_count.toString(),
-        formatCurrency(project.machines.dry_small_price),
-        project.machines.dry_small_cycles_day.toString(),
-        formatCurrency(results.dry_small_turnover_month)
-      ],
-      [
-        'Grand (15-18 kg)',
-        project.machines.dry_large_count.toString(),
-        formatCurrency(project.machines.dry_large_price),
-        project.machines.dry_large_cycles_day.toString(),
-        formatCurrency(results.dry_large_turnover_month)
-      ],
-      [
-        { content: 'Total séchage', colSpan: 4, styles: { fontStyle: 'bold', halign: 'right' } },
-        { content: formatCurrency(results.total_dry_turnover_month), styles: { fontStyle: 'bold' } }
-      ],
-    ],
+    body: dryerRows.length > 0 ? dryerRows : [['Aucun sèche-linge configuré', '', '', '', '']],
     theme: 'striped',
     headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
     styles: { fontSize: 9, cellPadding: 3 },
@@ -158,21 +152,20 @@ export function generateSimulationReport(
   doc.text('3. CHARGES MENSUELLES', 14, yPos);
   yPos += 8;
 
+  // Charges fixes
+  const fixedCostsRows = project.fixed_costs
+    .filter(c => c.amount > 0)
+    .map(c => [c.label, formatCurrency(c.amount)]);
+  
+  fixedCostsRows.push([
+    { content: 'TOTAL CHARGES FIXES', styles: { fontStyle: 'bold' } } as any,
+    { content: formatCurrency(results.fixed_costs_total), styles: { fontStyle: 'bold' } } as any
+  ]);
+
   autoTable(doc, {
     startY: yPos,
     head: [['Charges fixes', 'Montant']],
-    body: [
-      ['Loyer + charges', formatCurrency(project.costs.fixed_rent)],
-      ['Prêt / leasing machines', formatCurrency(project.costs.fixed_lease)],
-      ['Abonnements', formatCurrency(project.costs.fixed_subscriptions)],
-      ['Assurances', formatCurrency(project.costs.fixed_insurance)],
-      ['Ménage / entretien', formatCurrency(project.costs.fixed_cleaning)],
-      ['Autres charges fixes', formatCurrency(project.costs.fixed_other)],
-      [
-        { content: 'TOTAL CHARGES FIXES', styles: { fontStyle: 'bold' } },
-        { content: formatCurrency(results.fixed_costs_total), styles: { fontStyle: 'bold' } }
-      ],
-    ],
+    body: fixedCostsRows,
     theme: 'striped',
     headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
     styles: { fontSize: 10, cellPadding: 4 },
@@ -181,17 +174,20 @@ export function generateSimulationReport(
 
   yPos = (doc as any).lastAutoTable.finalY + 5;
 
+  // Charges variables
+  const variableCostsRows = project.variable_costs
+    .filter(c => c.percent > 0)
+    .map(c => [c.label, formatPercent(c.percent)]);
+  
+  variableCostsRows.push([
+    { content: 'TOTAL CHARGES VARIABLES', styles: { fontStyle: 'bold' } } as any,
+    { content: formatPercent(results.var_total_percent), styles: { fontStyle: 'bold' } } as any
+  ]);
+
   autoTable(doc, {
     startY: yPos,
     head: [['Charges variables', 'Taux']],
-    body: [
-      ['Électricité + eau', formatPercent(project.costs.var_energy_water_percent)],
-      ['Lessive / produits', formatPercent(project.costs.var_detergent_percent)],
-      [
-        { content: 'TOTAL CHARGES VARIABLES', styles: { fontStyle: 'bold' } },
-        { content: formatPercent(results.var_total_percent), styles: { fontStyle: 'bold' } }
-      ],
-    ],
+    body: variableCostsRows,
     theme: 'striped',
     headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
     styles: { fontSize: 10, cellPadding: 4 },
@@ -279,10 +275,10 @@ export function generateSimulationReport(
       ['Chiffre d\'affaires', formatCurrency(results.project_turnover_month), formatCurrency(results.project_turnover_month * 12)],
       [
         `Charges variables (${formatPercent(results.var_total_percent)})`, 
-        `- ${formatCurrency(results.estimated_variable_costs)}`, 
-        `- ${formatCurrency(results.estimated_variable_costs * 12)}`
+        `- ${formatCurrency(results.variable_costs_total)}`, 
+        `- ${formatCurrency(results.variable_costs_total * 12)}`
       ],
-      ['Marge sur coûts variables', formatCurrency(results.project_turnover_month - results.estimated_variable_costs), formatCurrency((results.project_turnover_month - results.estimated_variable_costs) * 12)],
+      ['Marge sur coûts variables', formatCurrency(results.project_turnover_month - results.variable_costs_total), formatCurrency((results.project_turnover_month - results.variable_costs_total) * 12)],
       ['Charges fixes', `- ${formatCurrency(results.fixed_costs_total)}`, `- ${formatCurrency(results.fixed_costs_total * 12)}`],
       [
         { content: 'RÉSULTAT NET ESTIMÉ', styles: { fontStyle: 'bold' } },

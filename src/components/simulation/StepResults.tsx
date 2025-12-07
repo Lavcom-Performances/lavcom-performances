@@ -34,12 +34,10 @@ const formatCurrency = (value: number): string => {
 
 export function StepResults({ project, results, onEditStep }: StepResultsProps) {
   const isProfitable = results.estimated_profit_month >= 0;
-  const totalMachines = 
-    project.machines.wash_7kg_count + 
-    project.machines.wash_10kg_count + 
-    project.machines.wash_18kg_count +
-    project.machines.dry_small_count +
-    project.machines.dry_large_count;
+  
+  const washersCount = project.machines.filter(m => m.type === 'washer').reduce((sum, m) => sum + m.count, 0);
+  const dryersCount = project.machines.filter(m => m.type === 'dryer').reduce((sum, m) => sum + m.count, 0);
+  const totalMachines = washersCount + dryersCount;
 
   const handleDownloadPdf = () => {
     try {
@@ -95,8 +93,7 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
               <div>
                 <p className="text-sm text-muted-foreground">Configuration</p>
                 <p className="font-medium">
-                  {project.machines.wash_7kg_count + project.machines.wash_10kg_count + project.machines.wash_18kg_count} lave-linge, {' '}
-                  {project.machines.dry_small_count + project.machines.dry_large_count} sèche-linge
+                  {washersCount} lave-linge, {dryersCount} sèche-linge
                 </p>
                 <p className="text-xs text-muted-foreground">{totalMachines} machines au total</p>
               </div>
