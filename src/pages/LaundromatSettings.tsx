@@ -31,7 +31,8 @@ import {
   Percent,
   TrendingUp,
   TrendingDown,
-  Info
+  Info,
+  FileDown
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
@@ -41,6 +42,7 @@ import {
   hasCostsData 
 } from "@/types/costs";
 import { toast } from "sonner";
+import { generateProfitabilityReport } from "@/utils/profitabilityPdfExport";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Machine {
@@ -748,11 +750,36 @@ export default function LaundromatSettings() {
           {/* Aperçu rentabilité */}
           {costsConfigured && (
             <Card className="bg-primary/5 border-primary/20">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="h-5 w-5" />
                   Aperçu du seuil de rentabilité
                 </CardTitle>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2"
+                  onClick={() => {
+                    generateProfitabilityReport({
+                      laundromat: laundryInfo.name,
+                      address: `${laundryInfo.address}, ${laundryInfo.postalCode} ${laundryInfo.city}`,
+                      generatedDate: new Date().toLocaleDateString('fr-FR', { 
+                        day: '2-digit', 
+                        month: 'long', 
+                        year: 'numeric' 
+                      }),
+                      costs: costs,
+                      metrics: profitabilityMetrics,
+                      siteTurnoverMonth: siteTurnoverMonth,
+                      siteTotalCyclesMonth: siteTotalCyclesMonth,
+                      monthlyRevenueObjective: objectives.monthlyRevenue,
+                    });
+                    toast.success("Bilan prévisionnel téléchargé");
+                  }}
+                >
+                  <FileDown className="h-4 w-4" />
+                  Télécharger le bilan PDF
+                </Button>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
