@@ -26,8 +26,11 @@ export function LaundryComparisonTable({ laundries, className }: LaundryComparis
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <Building2 className="h-5 w-5 text-primary" />
-          Benchmark laveries
+          Benchmark de mes laveries
         </CardTitle>
+        <p className="text-xs text-muted-foreground mt-1">
+          Comparaison des laveries de votre entreprise uniquement
+        </p>
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto">
