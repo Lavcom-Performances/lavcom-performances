@@ -5,19 +5,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Badge } from "@/components/ui/badge";
 import { 
   Calculator, 
   CheckCircle2, 
   Lock, 
-  FileText, 
   TrendingUp, 
-  Target,
-  Coins,
-  BarChart3,
   ArrowRight
 } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-logo-header.png";
+import { translations } from "@/lib/i18n";
+import { SIMULATOR_PLANS } from "@/config/pricingConfig";
+
+const t = translations.simulator;
+const tCommon = translations.common;
 
 type TrafficLevel = "low" | "medium" | "high";
 
@@ -70,15 +70,13 @@ export default function SimulateurPage() {
   };
 
   const handleUnlock = () => {
-    // TODO: Check if user is logged in and has access
-    // For now, redirect to subscribe-simulator
     navigate("/subscribe-simulator");
   };
 
   const trafficLabels: Record<TrafficLevel, string> = {
-    low: "Prudent (3 cycles/jour)",
-    medium: "Réaliste (5 cycles/jour)",
-    high: "Ambitieux (7 cycles/jour)",
+    low: t.form.trafficLevels.low,
+    medium: t.form.trafficLevels.medium,
+    high: t.form.trafficLevels.high,
   };
 
   return (
@@ -91,14 +89,14 @@ export default function SimulateurPage() {
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Tarifs Exploitants
+              {t.nav.exploitantPricing}
             </Link>
             <Link to="/login?mode=exploitant">
-              <Button variant="ghost">Connexion Exploitant</Button>
+              <Button variant="ghost">{t.nav.exploitantLogin}</Button>
             </Link>
             <Link to="/login?mode=simulateur">
               <Button variant="outline" className="border-amber-600/50 text-amber-700 dark:text-amber-400 hover:bg-amber-600/10">
-                Connexion Simulateur
+                {t.nav.simulatorLogin}
               </Button>
             </Link>
           </nav>
@@ -110,14 +108,13 @@ export default function SimulateurPage() {
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Calculator className="h-4 w-4" />
-            Estimation gratuite
+            {t.badge}
           </div>
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Simulateur de laverie
+            {t.title}
           </h1>
           <p className="text-muted-foreground text-lg">
-            Répondez à quelques questions et obtenez un ordre de grandeur de votre futur chiffre d'affaires.
-            L'analyse complète (seuil de rentabilité, charges, cycles/jour, rapport PDF) est réservée aux abonnés.
+            {t.subtitle}
           </p>
         </div>
 
@@ -127,17 +124,17 @@ export default function SimulateurPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="h-5 w-5 text-amber-600" />
-                Estimation rapide
+                {t.form.title}
               </CardTitle>
               <CardDescription>
-                Remplissez ces informations pour obtenir une première estimation
+                {t.form.description}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="surface">Surface du local (m²)</Label>
+                    <Label htmlFor="surface">{t.form.surface}</Label>
                     <Input
                       id="surface"
                       type="number"
@@ -148,7 +145,7 @@ export default function SimulateurPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="nbWashers">Nombre de lave-linge</Label>
+                    <Label htmlFor="nbWashers">{t.form.nbWashers}</Label>
                     <Input
                       id="nbWashers"
                       type="number"
@@ -162,7 +159,7 @@ export default function SimulateurPage() {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="nbDryers">Nombre de sèche-linge</Label>
+                    <Label htmlFor="nbDryers">{t.form.nbDryers}</Label>
                     <Input
                       id="nbDryers"
                       type="number"
@@ -173,7 +170,7 @@ export default function SimulateurPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="avgPriceWash">Prix moyen lavage (€)</Label>
+                    <Label htmlFor="avgPriceWash">{t.form.avgPriceWash}</Label>
                     <Input
                       id="avgPriceWash"
                       type="number"
@@ -188,7 +185,7 @@ export default function SimulateurPage() {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="avgPriceDry">Prix moyen séchage (€)</Label>
+                    <Label htmlFor="avgPriceDry">{t.form.avgPriceDry}</Label>
                     <Input
                       id="avgPriceDry"
                       type="number"
@@ -202,7 +199,7 @@ export default function SimulateurPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <Label>Niveau de fréquentation attendu</Label>
+                  <Label>{t.form.trafficLevel}</Label>
                   <RadioGroup
                     value={simulation.trafficLevel}
                     onValueChange={(val) => setSimulation({ ...simulation, trafficLevel: val as TrafficLevel })}
@@ -231,7 +228,7 @@ export default function SimulateurPage() {
                   size="lg"
                 >
                   <Calculator className="mr-2 h-5 w-5" />
-                  Calculer mon estimation
+                  {t.form.submit}
                 </Button>
               </form>
             </CardContent>
@@ -245,32 +242,32 @@ export default function SimulateurPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-400">
                     <TrendingUp className="h-5 w-5" />
-                    Votre estimation
+                    {t.results.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-3">
                     <div className="flex justify-between items-center p-3 bg-background rounded-lg">
-                      <span className="text-muted-foreground">CA lavage estimé</span>
+                      <span className="text-muted-foreground">{t.results.washRevenue}</span>
                       <span className="text-xl font-bold text-foreground">
-                        {results.washTurnoverMonth.toLocaleString("fr-FR")} €/mois
+                        {results.washTurnoverMonth.toLocaleString("fr-FR")} {translations.units.euroPerMonth}
                       </span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-background rounded-lg">
-                      <span className="text-muted-foreground">CA séchage estimé</span>
+                      <span className="text-muted-foreground">{t.results.dryRevenue}</span>
                       <span className="text-xl font-bold text-foreground">
-                        {results.dryTurnoverMonth.toLocaleString("fr-FR")} €/mois
+                        {results.dryTurnoverMonth.toLocaleString("fr-FR")} {translations.units.euroPerMonth}
                       </span>
                     </div>
                     <div className="flex justify-between items-center p-4 bg-amber-500/10 rounded-lg border border-amber-500/30">
-                      <span className="font-medium text-foreground">CA total estimé</span>
+                      <span className="font-medium text-foreground">{t.results.totalRevenue}</span>
                       <span className="text-2xl font-bold text-amber-700 dark:text-amber-400">
-                        {results.totalTurnoverMonth.toLocaleString("fr-FR")} €/mois
+                        {results.totalTurnoverMonth.toLocaleString("fr-FR")} {translations.units.euroPerMonth}
                       </span>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground text-center pt-2">
-                    Estimation basée sur {results.cyclesPerMachinePerDay} cycles/machine/jour
+                    {t.results.basedOn.replace("{cycles}", String(results.cyclesPerMachinePerDay))}
                   </p>
                 </CardContent>
               </Card>
@@ -281,35 +278,17 @@ export default function SimulateurPage() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Lock className="h-5 w-5 text-primary" />
-                  <CardTitle>Analyse détaillée réservée aux abonnés</CardTitle>
+                  <CardTitle>{t.paywall.title}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="space-y-3">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">Calcul de votre seuil de rentabilité (CA/mois)</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">Nombre de cycles/jour nécessaires pour couvrir vos charges</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">Intégration de vos charges fixes et variables</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">Analyse de la rentabilité estimée de votre projet</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">Sauvegarde de plusieurs scénarios de laverie</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">Rapport PDF prêt pour votre banque</span>
-                  </li>
+                  {t.paywall.features.map((feature, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
                 </ul>
 
                 <Button 
@@ -317,12 +296,12 @@ export default function SimulateurPage() {
                   className="w-full"
                   size="lg"
                 >
-                  Débloquer l'analyse complète
+                  {t.paywall.cta}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">
-                  À partir de 79 €/mois
+                  {t.paywall.startingFrom} {SIMULATOR_PLANS.simulator.price} {translations.units.euroPerMonth}
                 </p>
               </CardContent>
             </Card>
@@ -331,8 +310,7 @@ export default function SimulateurPage() {
             <Card className="bg-muted/30 border-muted">
               <CardContent className="pt-4">
                 <p className="text-sm text-muted-foreground">
-                  <strong>Note :</strong> Cette estimation est basée sur des hypothèses moyennes. 
-                  Elle ne remplace pas une étude complète de zone, de local et de charges.
+                  <strong>{t.note.title}</strong> {t.note.content}
                 </p>
               </CardContent>
             </Card>

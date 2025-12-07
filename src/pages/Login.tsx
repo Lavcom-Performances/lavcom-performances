@@ -6,6 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
+import { translations } from "@/lib/i18n";
+
+const t = translations.login;
+const tCommon = translations.common;
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -30,24 +34,22 @@ export default function Login() {
     setTimeout(() => {
       setIsLoading(false);
       toast({
-        title: "Connexion réussie",
-        description: isSimulatorMode 
-          ? "Bienvenue sur Lavcom Analytics Création" 
-          : "Bienvenue sur Lavcom Analytics",
+        title: t.loginSuccess,
+        description: isSimulatorMode ? t.welcomeSimulator : t.welcomeExploitant,
       });
       
       // Redirect based on mode
       if (redirectUrl) {
         navigate(redirectUrl);
       } else if (isSimulatorMode) {
-        // Futur exploitant: redirect to simulator
         navigate("/simulation");
       } else {
-        // Exploitant: redirect to laundromat selection
         navigate("/select-laundromat");
       }
     }, 1000);
   };
+
+  const currentMode = isSimulatorMode ? t.simulator : t.exploitant;
 
   return (
     <div className="min-h-screen flex bg-background relative">
@@ -57,7 +59,7 @@ export default function Login() {
         className="absolute top-4 left-4 z-10 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-3 py-2 rounded-lg border border-border"
       >
         <Home className="h-4 w-4" />
-        Accueil
+        {tCommon.home}
       </Link>
 
       {/* Left side - Branding */}
@@ -72,40 +74,37 @@ export default function Login() {
             className="w-full max-w-md mx-auto mb-8"
           />
           <p className="text-white text-lg">
-            {isSimulatorMode 
-              ? "Simulez la rentabilité de votre future laverie"
-              : "Analysez les performances de vos laveries en un coup d'œil"
-            }
+            {currentMode.leftPanelSubtitle}
           </p>
           <div className="mt-12 grid grid-cols-3 gap-6 text-center">
             {isSimulatorMode ? (
               <>
                 <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">5 min</p>
-                  <p className="text-sm text-white/70">Estimation rapide</p>
+                  <p className="text-3xl font-display font-bold text-white">{t.simulator.stats.quickEstimate}</p>
+                  <p className="text-sm text-white/70">{t.simulator.stats.quickEstimateLabel}</p>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">PDF</p>
-                  <p className="text-sm text-white/70">Rapport banque</p>
+                  <p className="text-3xl font-display font-bold text-white">{t.simulator.stats.bankReport}</p>
+                  <p className="text-sm text-white/70">{t.simulator.stats.bankReportLabel}</p>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">∞</p>
-                  <p className="text-sm text-white/70">Scénarios illimités</p>
+                  <p className="text-3xl font-display font-bold text-white">{t.simulator.stats.unlimitedScenarios}</p>
+                  <p className="text-sm text-white/70">{t.simulator.stats.unlimitedScenariosLabel}</p>
                 </div>
               </>
             ) : (
               <>
                 <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">24/7</p>
-                  <p className="text-sm text-white/70">Suivi temps réel</p>
+                  <p className="text-3xl font-display font-bold text-white">{t.exploitant.stats.realtime}</p>
+                  <p className="text-sm text-white/70">{t.exploitant.stats.realtimeLabel}</p>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">+30%</p>
-                  <p className="text-sm text-white/70">Gain de temps</p>
+                  <p className="text-3xl font-display font-bold text-white">{t.exploitant.stats.timeSaved}</p>
+                  <p className="text-sm text-white/70">{t.exploitant.stats.timeSavedLabel}</p>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">100%</p>
-                  <p className="text-sm text-white/70">Données sécurisées</p>
+                  <p className="text-3xl font-display font-bold text-white">{t.exploitant.stats.secureData}</p>
+                  <p className="text-sm text-white/70">{t.exploitant.stats.secureDataLabel}</p>
                 </div>
               </>
             )}
@@ -127,23 +126,20 @@ export default function Login() {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-display font-semibold text-foreground">
-              {isSimulatorMode ? "Connexion Simulateur" : "Connexion"}
+              {currentMode.title}
             </h2>
             <p className="text-muted-foreground">
-              {isSimulatorMode 
-                ? "Accédez à votre espace simulation"
-                : "Entrez vos identifiants pour accéder à votre espace"
-              }
+              {currentMode.subtitle}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.form.email}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="votre@email.com"
+                placeholder={t.form.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -152,12 +148,12 @@ export default function Login() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password">{t.form.password}</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  placeholder={t.form.passwordPlaceholder}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -178,7 +174,7 @@ export default function Login() {
                 type="button"
                 className="text-sm text-primary hover:underline"
               >
-                Mot de passe oublié ?
+                {t.form.forgotPassword}
               </button>
             </div>
 
@@ -192,21 +188,21 @@ export default function Login() {
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Connexion...
+                  {t.form.connecting}
                 </>
               ) : (
-                "Se connecter"
+                t.form.submit
               )}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            Pas encore abonné ?{" "}
+            {t.notSubscribed}{" "}
             <Link 
               to={isSimulatorMode ? "/subscribe-simulator" : "/pricing"} 
               className="text-primary hover:underline font-medium"
             >
-              {isSimulatorMode ? "Découvrir les packs simulateur" : "Découvrir nos offres"}
+              {isSimulatorMode ? t.discoverSimulatorPacks : t.discoverOffers}
             </Link>
           </p>
 
@@ -215,16 +211,16 @@ export default function Login() {
             <p className="text-center text-sm text-muted-foreground">
               {isSimulatorMode ? (
                 <>
-                  Vous êtes exploitant ?{" "}
+                  {t.switchToExploitant}{" "}
                   <Link to="/login?mode=exploitant" className="text-primary hover:underline">
-                    Connexion exploitant
+                    {t.exploitantLogin}
                   </Link>
                 </>
               ) : (
                 <>
-                  Vous voulez ouvrir une laverie ?{" "}
+                  {t.switchToSimulator}{" "}
                   <Link to="/login?mode=simulateur" className="text-primary hover:underline">
-                    Connexion simulateur
+                    {t.simulatorLogin}
                   </Link>
                 </>
               )}
@@ -232,9 +228,9 @@ export default function Login() {
           </div>
 
           <p className="text-center text-sm text-muted-foreground">
-            Besoin d'aide ?{" "}
+            {tCommon.needHelp}{" "}
             <a href="#" className="text-primary hover:underline">
-              Contactez le support
+              {tCommon.contactSupport}
             </a>
           </p>
         </div>
