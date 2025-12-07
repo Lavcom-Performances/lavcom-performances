@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff, Loader2, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +30,16 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-background relative">
+      {/* Back to home button */}
+      <Link 
+        to="/" 
+        className="absolute top-4 left-4 z-10 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-3 py-2 rounded-lg border border-border"
+      >
+        <Home className="h-4 w-4" />
+        Accueil
+      </Link>
+
       {/* Left side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12" style={{ backgroundColor: '#383838' }}>
         <div className="max-w-lg text-center animate-fade-in">
@@ -145,9 +154,9 @@ export default function Login() {
 
           <p className="text-center text-sm text-muted-foreground">
             Pas encore abonné ?{" "}
-            <a href="/pricing" className="text-primary hover:underline font-medium">
+            <Link to="/pricing" className="text-primary hover:underline font-medium">
               Découvrir nos offres
-            </a>
+            </Link>
           </p>
 
           <p className="text-center text-sm text-muted-foreground">

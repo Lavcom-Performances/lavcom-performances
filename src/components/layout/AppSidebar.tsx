@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Receipt, 
@@ -72,8 +72,14 @@ export function AppSidebar({
   currentLaundromat = "Ma Laverie"
 }: AppSidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [chartsOpen, setChartsOpen] = useState(true);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+
+  const handleLogout = () => {
+    // Pour V1 demo, on redirige simplement vers la page de connexion
+    navigate("/login");
+  };
 
   useEffect(() => {
     const savedLogo = localStorage.getItem("company_logo");
@@ -256,12 +262,19 @@ export function AppSidebar({
       <div className="p-3 border-t border-sidebar-border space-y-1">
         <ThemeToggle collapsed={collapsed} className="sidebar-item" />
         <NavLink
-          to="/logout"
-          className="sidebar-item text-sidebar-foreground/60 hover:text-destructive transition-colors duration-200"
+          to="/"
+          className="sidebar-item text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors duration-200"
+        >
+          <LayoutDashboard className="h-5 w-5 shrink-0" />
+          {!collapsed && <span>Accueil</span>}
+        </NavLink>
+        <button
+          onClick={handleLogout}
+          className="sidebar-item w-full text-sidebar-foreground/60 hover:text-destructive transition-colors duration-200"
         >
           <LogOut className="h-5 w-5 shrink-0" />
           {!collapsed && <span>Déconnexion</span>}
-        </NavLink>
+        </button>
       </div>
     </aside>
   );
