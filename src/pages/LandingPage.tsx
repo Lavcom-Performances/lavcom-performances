@@ -129,16 +129,39 @@ const LandingPage = () => {
 
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    toast({
-      title: "Message envoyé !",
-      description: "Nous vous répondrons dans les plus brefs délais.",
-    });
-    
-    setContactForm({ name: "", email: "", message: "" });
-    setIsSubmitting(false);
+    try {
+      // Remplacez YOUR_FORM_ID par votre ID Formspree (ex: xrgvknwl)
+      const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: contactForm.name,
+          email: contactForm.email,
+          message: contactForm.message,
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message envoyé !",
+          description: "Nous vous répondrons dans les plus brefs délais.",
+        });
+        setContactForm({ name: "", email: "", message: "" });
+      } else {
+        throw new Error("Erreur lors de l'envoi");
+      }
+    } catch (error) {
+      console.error("Formspree error:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
