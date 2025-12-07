@@ -65,7 +65,7 @@ export function StepMachines({ project, results, onUpdate }: StepMachinesProps) 
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-foreground">Configuration des machines</h2>
         <p className="text-muted-foreground mt-2">
-          Ajoutez vos machines avec le poids de votre choix
+          Configuration pré-remplie avec une laverie type – ajustez selon votre projet
         </p>
       </div>
 
