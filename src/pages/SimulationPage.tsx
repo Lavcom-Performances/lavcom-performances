@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home } from "lucide-react";
+import { Link } from "react-router-dom";
 import { SimulationStepper } from "@/components/simulation/SimulationStepper";
 import { StepLocal } from "@/components/simulation/StepLocal";
 import { StepProjectInfo } from "@/components/simulation/StepProjectInfo";
@@ -71,6 +72,14 @@ export default function SimulationPage() {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/" className="gap-2">
+                <Home className="h-4 w-4" />
+                Accueil
+              </Link>
+            </Button>
+          </div>
           <h1 className="text-3xl font-bold text-foreground">Simulation de projet</h1>
           <p className="text-muted-foreground mt-1">
             Estimez la rentabilité de votre future laverie
