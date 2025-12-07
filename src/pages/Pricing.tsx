@@ -9,13 +9,11 @@ import {
   LAUNDROMAT_PRICING 
 } from "@/config/pricingConfig";
 import lavcomLogo from "@/assets/lavcom-logo-header.png";
+import { translations } from "@/lib/i18n";
 
-const features = [
-  "Accès à toutes les analyses",
-  "Tableau de bord complet",
-  "Export PDF des rapports",
-  "Module Recommandations Lavcom Analytics",
-];
+const t = translations.pricing;
+const tNav = translations.nav;
+const tCommon = translations.common;
 
 export default function Pricing() {
   const navigate = useNavigate();
@@ -40,13 +38,13 @@ export default function Pricing() {
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Fonctionnalités
+              {tNav.features}
             </Link>
             <Link to="/simulateur" className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors">
-              Simulation ouverture
+              {tNav.simulationOpening}
             </Link>
             <Link to="/login?mode=exploitant">
-              <Button variant="ghost">Se connecter</Button>
+              <Button variant="ghost">{tCommon.login}</Button>
             </Link>
           </nav>
         </div>
@@ -57,13 +55,13 @@ export default function Pricing() {
         {/* Hero section */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <Badge variant="secondary" className="mb-4">
-            Tarifs Exploitants – Prix dégressif selon le nombre de laveries
+            {t.badge}
           </Badge>
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Choisissez votre abonnement
+            {t.title}
           </h1>
           <p className="text-muted-foreground text-lg sm:text-xl">
-            Plus vous avez de laveries, plus le prix par laverie diminue.
+            {t.subtitle}
           </p>
         </div>
 
@@ -72,7 +70,7 @@ export default function Pricing() {
           <Card className="border-primary/20">
             <CardContent className="pt-6">
               <div className="text-center mb-4">
-                <p className="text-sm text-muted-foreground mb-2">Nombre de laveries</p>
+                <p className="text-sm text-muted-foreground mb-2">{t.laundryCount}</p>
                 <div className="flex items-center justify-center gap-4">
                   <Button 
                     variant="outline" 
@@ -111,31 +109,31 @@ export default function Pricing() {
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
               <Badge className="bg-primary text-primary-foreground shadow-md gap-1">
                 <Sparkles className="h-3 w-3" />
-                Le plus populaire
+                {t.plans.annual.badge}
               </Badge>
             </div>
             
             <CardHeader className="text-center pb-2">
-              <CardTitle className="font-display text-2xl">Annuel</CardTitle>
-              <CardDescription className="text-base">2 mois offerts par rapport au mensuel</CardDescription>
+              <CardTitle className="font-display text-2xl">{t.plans.annual.title}</CardTitle>
+              <CardDescription className="text-base">{t.plans.annual.description}</CardDescription>
             </CardHeader>
             
             <CardContent className="flex-1 text-center">
               <div className="mb-6">
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-5xl font-bold text-foreground">{pricing.annualTotal}€</span>
-                  <span className="text-muted-foreground">/an</span>
+                  <span className="text-muted-foreground">{tCommon.perYear}</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  soit {pricing.annualPricePerLav}€/an par laverie
+                  soit {pricing.annualPricePerLav}€{tCommon.perYear} {t.plans.annual.perLaundry}
                 </p>
                 <p className="text-sm text-primary font-semibold mt-2">
-                  Économie de {pricing.annualSaving}€/an
+                  {t.plans.annual.saving} {pricing.annualSaving}€{tCommon.perYear}
                 </p>
               </div>
               
               <ul className="space-y-3 text-left">
-                {features.map((feature, index) => (
+                {t.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                     <span className="text-foreground">{feature}</span>
@@ -149,7 +147,7 @@ export default function Pricing() {
                 className="w-full h-12 text-base font-medium"
                 onClick={() => handleSelectPlan("annual")}
               >
-                Choisir l'abonnement annuel
+                {t.plans.annual.cta}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>
@@ -158,23 +156,23 @@ export default function Pricing() {
           {/* Monthly */}
           <Card className="relative flex flex-col transition-all duration-300 hover:shadow-xl border-border hover:border-primary/50 order-last md:order-first">
             <CardHeader className="text-center pb-2">
-              <CardTitle className="font-display text-2xl">Mensuel</CardTitle>
-              <CardDescription className="text-base">Flexibilité maximale, sans engagement</CardDescription>
+              <CardTitle className="font-display text-2xl">{t.plans.monthly.title}</CardTitle>
+              <CardDescription className="text-base">{t.plans.monthly.description}</CardDescription>
             </CardHeader>
             
             <CardContent className="flex-1 text-center">
               <div className="mb-6">
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-5xl font-bold text-foreground">{pricing.monthlyTotal}€</span>
-                  <span className="text-muted-foreground">/mois</span>
+                  <span className="text-muted-foreground">{tCommon.perMonth}</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  soit {pricing.monthlyPricePerLav}€/mois par laverie
+                  soit {pricing.monthlyPricePerLav}€{tCommon.perMonth} {t.plans.monthly.perLaundry}
                 </p>
               </div>
               
               <ul className="space-y-3 text-left">
-                {features.map((feature, index) => (
+                {t.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                     <span className="text-foreground">{feature}</span>
@@ -189,7 +187,7 @@ export default function Pricing() {
                 variant="outline"
                 onClick={() => handleSelectPlan("monthly")}
               >
-                Choisir l'abonnement mensuel
+                {t.plans.monthly.cta}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>
@@ -200,26 +198,25 @@ export default function Pricing() {
         <div className="max-w-2xl mx-auto mt-16">
           <Card className="bg-muted/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-semibold">Tarifs dégressifs en fonction du nombre de laveries</CardTitle>
+              <CardTitle className="text-lg font-semibold">{t.tiers.title}</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-center gap-2">
-                  <span className="w-32 font-medium text-foreground">1 à 2 laveries</span>
-                  <span>{LAUNDROMAT_PRICING.monthly.tier1.pricePerLaundromat} €/mois par laverie</span>
+                  <span className="w-32 font-medium text-foreground">{t.tiers.tier1}</span>
+                  <span>{LAUNDROMAT_PRICING.monthly.tier1.pricePerLaundromat} {t.tiers.perMonthPerLaundry}</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-32 font-medium text-foreground">3 à 5 laveries</span>
-                  <span>{LAUNDROMAT_PRICING.monthly.tier2.pricePerLaundromat} €/mois par laverie</span>
+                  <span className="w-32 font-medium text-foreground">{t.tiers.tier2}</span>
+                  <span>{LAUNDROMAT_PRICING.monthly.tier2.pricePerLaundromat} {t.tiers.perMonthPerLaundry}</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-32 font-medium text-foreground">6 laveries et +</span>
-                  <span>{LAUNDROMAT_PRICING.monthly.tier3.pricePerLaundromat} €/mois par laverie</span>
+                  <span className="w-32 font-medium text-foreground">{t.tiers.tier3}</span>
+                  <span>{LAUNDROMAT_PRICING.monthly.tier3.pricePerLaundromat} {t.tiers.perMonthPerLaundry}</span>
                 </li>
               </ul>
               <p className="text-sm text-muted-foreground mt-4 pt-4 border-t">
-                Le montant affiché s'adapte automatiquement lorsque vous modifiez le nombre de laveries.
-                L'abonnement annuel vous offre 2 mois gratuits.
+                {t.tiers.note}
               </p>
             </CardContent>
           </Card>
@@ -227,15 +224,15 @@ export default function Pricing() {
 
         {/* Trust badges */}
         <div className="mt-16 text-center">
-          <p className="text-muted-foreground mb-6">Paiement sécurisé par carte bancaire</p>
+          <p className="text-muted-foreground mb-6">{tCommon.securePayment}</p>
           <div className="flex items-center justify-center gap-8 opacity-60">
             <div className="flex items-center gap-2">
               <Building2 className="h-5 w-5" />
-              <span className="text-sm">Facturation professionnelle</span>
+              <span className="text-sm">{tCommon.professionalBilling}</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="h-5 w-5" />
-              <span className="text-sm">Annulation à tout moment</span>
+              <span className="text-sm">{tCommon.cancelAnytime}</span>
             </div>
           </div>
         </div>

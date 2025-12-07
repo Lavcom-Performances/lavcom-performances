@@ -2,6 +2,8 @@
 // CONFIGURATION CENTRALISÉE DES TARIFS
 // ============================================
 
+import { translations } from "@/lib/i18n";
+
 // Tarifs EXPLOITANTS : abonnements par laverie
 export const LAUNDROMAT_PRICING = {
   monthly: {
@@ -30,9 +32,10 @@ export function getAnnualPricePerLaundromat(n: number): number {
 }
 
 export function getTierLabel(n: number): string {
-  if (n <= LAUNDROMAT_PRICING.monthly.tier1.max) return "Tarif palier 1–2 laveries";
-  if (n <= LAUNDROMAT_PRICING.monthly.tier2.max) return "Tarif palier 3–5 laveries";
-  return "Tarif palier 6+ laveries";
+  const { tierLabels } = translations.pricing;
+  if (n <= LAUNDROMAT_PRICING.monthly.tier1.max) return tierLabels.tier1;
+  if (n <= LAUNDROMAT_PRICING.monthly.tier2.max) return tierLabels.tier2;
+  return tierLabels.tier3;
 }
 
 export function getLaundromatPricing(count: number) {
@@ -56,15 +59,15 @@ export function getLaundromatPricing(count: number) {
 export const SIMULATOR_PLANS = {
   simulator: {
     id: "simulator",
-    name: "Pack Simulateur",
-    description: "Accès au simulateur complet Lavcom Analytics Création",
+    name: translations.subscribeSimulator.plans.simulator.title,
+    description: translations.subscribeSimulator.plans.simulator.description,
     price: 79,
     billing: "mois" as const,
   },
   premium: {
     id: "premium",
-    name: "Pack Premium",
-    description: "Simulateur complet + 1h de visio avec un expert en gestion d'entreprise",
+    name: translations.subscribeSimulator.plans.premium.title,
+    description: translations.subscribeSimulator.plans.premium.description,
     price: 279,
     billing: "forfait" as const,
   },

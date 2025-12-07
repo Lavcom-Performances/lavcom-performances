@@ -15,15 +15,17 @@ import {
 } from "lucide-react";
 import { SIMULATOR_PLANS } from "@/config/pricingConfig";
 import lavcomLogo from "@/assets/lavcom-logo-header.png";
+import { translations } from "@/lib/i18n";
+
+const t = translations.subscribeSimulator;
+const tNav = translations.nav;
+const tCommon = translations.common;
 
 export default function SubscribeSimulator() {
   const navigate = useNavigate();
 
   const handleSubscribe = (planId: string) => {
-    // TODO: Integrate with payment system (Stripe)
     console.log("Subscribe to plan:", planId);
-    // For now, simulate successful subscription
-    // In production: redirect to Stripe checkout, then on success set user.hasSimulatorAccess = true
     navigate("/simulation");
   };
 
@@ -38,7 +40,7 @@ export default function SubscribeSimulator() {
           <Link to="/simulateur">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Retour au simulateur
+              {tNav.backToSimulator}
             </Button>
           </Link>
         </div>
@@ -48,13 +50,13 @@ export default function SubscribeSimulator() {
         {/* Hero */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <Badge className="mb-4 bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30">
-            Lavcom Analytics Création
+            {t.badge}
           </Badge>
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Choisissez votre formule
+            {t.title}
           </h1>
           <p className="text-muted-foreground text-lg">
-            Accédez au simulateur complet et préparez votre projet de laverie avec tous les outils dont vous avez besoin.
+            {t.subtitle}
           </p>
         </div>
 
@@ -66,9 +68,9 @@ export default function SubscribeSimulator() {
               <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center mx-auto mb-4">
                 <Calculator className="h-6 w-6 text-amber-600" />
               </div>
-              <CardTitle className="font-display text-2xl">{SIMULATOR_PLANS.simulator.name}</CardTitle>
+              <CardTitle className="font-display text-2xl">{t.plans.simulator.title}</CardTitle>
               <CardDescription className="text-base">
-                Accès complet à l'espace Futur exploitant
+                {t.plans.simulator.description}
               </CardDescription>
             </CardHeader>
             
@@ -76,35 +78,25 @@ export default function SubscribeSimulator() {
               <div className="text-center mb-6">
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-5xl font-bold text-foreground">{SIMULATOR_PLANS.simulator.price} €</span>
-                  <span className="text-muted-foreground">TTC/{SIMULATOR_PLANS.simulator.billing}</span>
+                  <span className="text-muted-foreground">{tCommon.ttc}/{SIMULATOR_PLANS.simulator.billing}</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">Sans engagement</p>
+                <p className="text-sm text-muted-foreground mt-2">{t.plans.simulator.noCommitment}</p>
               </div>
               
               <ul className="space-y-3 flex-1">
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                  <span className="text-foreground">Simulateur détaillé : local, machines, charges</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                  <span className="text-foreground">Calcul du seuil de rentabilité</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                  <span className="text-foreground">Scénarios illimités</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                  <span className="text-foreground">Rapport PDF pour votre banque</span>
-                </li>
+                {t.plans.simulator.features.map((feature, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                    <span className="text-foreground">{feature}</span>
+                  </li>
+                ))}
               </ul>
 
               <Button 
                 className="w-full mt-6 bg-amber-600 hover:bg-amber-700 text-white h-12 text-base"
                 onClick={() => handleSubscribe("simulator")}
               >
-                Choisir le Pack Simulateur
+                {t.plans.simulator.cta}
               </Button>
             </CardContent>
           </Card>
@@ -114,7 +106,7 @@ export default function SubscribeSimulator() {
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
               <Badge className="bg-primary text-primary-foreground shadow-md gap-1">
                 <Sparkles className="h-3 w-3" />
-                Recommandé
+                {t.plans.premium.badge}
               </Badge>
             </div>
             
@@ -122,9 +114,9 @@ export default function SubscribeSimulator() {
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mx-auto mb-4">
                 <Video className="h-6 w-6 text-primary" />
               </div>
-              <CardTitle className="font-display text-2xl">{SIMULATOR_PLANS.premium.name}</CardTitle>
+              <CardTitle className="font-display text-2xl">{t.plans.premium.title}</CardTitle>
               <CardDescription className="text-base">
-                Simulateur + accompagnement personnalisé
+                {t.plans.premium.description}
               </CardDescription>
             </CardHeader>
             
@@ -132,36 +124,18 @@ export default function SubscribeSimulator() {
               <div className="text-center mb-6">
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-5xl font-bold text-foreground">{SIMULATOR_PLANS.premium.price} €</span>
-                  <span className="text-muted-foreground">TTC</span>
+                  <span className="text-muted-foreground">{tCommon.ttc}</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">Paiement unique</p>
+                <p className="text-sm text-muted-foreground mt-2">{t.plans.premium.oneTimePayment}</p>
               </div>
               
               <ul className="space-y-3 flex-1">
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground font-medium">1 mois d'accès simulateur complet</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground font-medium">1h de visio avec un expert</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Analyse personnalisée de votre projet</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Conseils sur le choix du local</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Recommandations équipements</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Compte-rendu écrit post-visio</span>
-                </li>
+                {t.plans.premium.features.map((feature, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className={`text-foreground ${index < 2 ? "font-medium" : ""}`}>{feature}</span>
+                  </li>
+                ))}
               </ul>
 
               <Button 
@@ -169,7 +143,7 @@ export default function SubscribeSimulator() {
                 onClick={() => handleSubscribe("premium")}
               >
                 <Sparkles className="mr-2 h-4 w-4" />
-                Choisir le Pack Premium
+                {t.plans.premium.cta}
               </Button>
             </CardContent>
           </Card>
@@ -179,7 +153,7 @@ export default function SubscribeSimulator() {
         <div className="max-w-3xl mx-auto mt-16">
           <Card className="bg-muted/30">
             <CardHeader className="text-center">
-              <CardTitle className="text-lg">Ce que vous obtenez</CardTitle>
+              <CardTitle className="text-lg">{t.whatYouGet}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -187,25 +161,25 @@ export default function SubscribeSimulator() {
                   <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
                     <Target className="h-5 w-5 text-amber-600" />
                   </div>
-                  <p className="text-sm font-medium">Seuil de rentabilité</p>
+                  <p className="text-sm font-medium">{t.features.profitability}</p>
                 </div>
                 <div className="text-center">
                   <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
                     <Layers className="h-5 w-5 text-amber-600" />
                   </div>
-                  <p className="text-sm font-medium">Scénarios multiples</p>
+                  <p className="text-sm font-medium">{t.features.scenarios}</p>
                 </div>
                 <div className="text-center">
                   <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
                     <FileText className="h-5 w-5 text-amber-600" />
                   </div>
-                  <p className="text-sm font-medium">Rapports PDF</p>
+                  <p className="text-sm font-medium">{t.features.reports}</p>
                 </div>
                 <div className="text-center">
                   <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
                     <Clock className="h-5 w-5 text-amber-600" />
                   </div>
-                  <p className="text-sm font-medium">Accès illimité</p>
+                  <p className="text-sm font-medium">{t.features.unlimitedAccess}</p>
                 </div>
               </div>
             </CardContent>
@@ -215,9 +189,9 @@ export default function SubscribeSimulator() {
         {/* Already subscribed */}
         <div className="text-center mt-12">
           <p className="text-sm text-muted-foreground">
-            Vous avez déjà un abonnement ?{" "}
+            {t.alreadySubscribed}{" "}
             <Link to="/login?mode=simulateur" className="text-primary hover:underline">
-              Connectez-vous
+              {t.connectHere}
             </Link>
           </p>
         </div>
