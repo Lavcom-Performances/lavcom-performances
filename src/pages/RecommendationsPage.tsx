@@ -88,17 +88,27 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
         {(financialImpact !== undefined || effort) && (
           <div className="flex items-center justify-between gap-4 pt-3 border-t border-border">
             {financialImpact !== undefined && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/30 rounded-full">
-                <Euro className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                  +{financialImpact} €/mois
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                  Impact estimé
                 </span>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/30 rounded-md">
+                  <Euro className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                    +{financialImpact} €/mois
+                  </span>
+                </div>
               </div>
             )}
             {effort && (
-              <Badge className={`${effortConfig[effort].className} text-xs px-3 py-1`}>
-                {effortConfig[effort].label}
-              </Badge>
+              <div className="flex flex-col gap-0.5 items-end">
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                  Effort
+                </span>
+                <Badge className={`${effortConfig[effort].className} text-xs px-3 py-1`}>
+                  {effortConfig[effort].label}
+                </Badge>
+              </div>
             )}
           </div>
         )}
