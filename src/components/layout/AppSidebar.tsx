@@ -6,7 +6,6 @@ import {
   Users, 
   Settings,
   LogOut,
-  Building2,
   ChevronLeft,
   BarChart3,
   LineChart,
@@ -29,7 +28,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { useState } from "react";
+import { CompanyLogoUpload } from "./CompanyLogoUpload";
+import { useState, useEffect } from "react";
 
 interface AppSidebarProps {
   collapsed?: boolean;
@@ -73,6 +73,14 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const location = useLocation();
   const [chartsOpen, setChartsOpen] = useState(true);
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedLogo = localStorage.getItem("company_logo");
+    if (savedLogo) {
+      setCompanyLogo(savedLogo);
+    }
+  }, []);
   
   const hasPermission = (permission: string) => {
     const adminPermissions = ["MANAGE_USERS", "MANAGE_OPTIONS", "IMPORT_DATA"];
@@ -119,8 +127,12 @@ export function AppSidebar({
             to="/laundromat-settings"
             className="flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
           >
-            <Building2 className="h-4 w-4" />
-            <span className="text-sm truncate">{currentLaundromat}</span>
+            <CompanyLogoUpload 
+              logo={companyLogo} 
+              onLogoChange={setCompanyLogo}
+              size="sm"
+            />
+            <span className="text-sm truncate flex-1">{currentLaundromat}</span>
             <Settings className="h-3 w-3 ml-auto opacity-50" />
           </NavLink>
           <NavLink 
