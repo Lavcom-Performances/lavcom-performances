@@ -42,6 +42,38 @@ export interface VariableCostItem {
   category: 'electricity' | 'water' | 'gas' | 'detergent' | 'other';
 }
 
+// Types pour les contraintes du local
+export type LocalShape = 'rectangular' | 'narrow_long' | 'l_shaped' | 'corner_windows';
+export type StructuralObstacles = 'none' | 'some' | 'many';
+export type FacadeModifiable = 'yes' | 'no' | 'unknown';
+export type TechnicalConstraintsLevel = 'ok' | 'check_with_installer' | 'heavy_works';
+
+// Labels pour les options
+export const LOCAL_SHAPE_OPTIONS = [
+  { value: 'rectangular', label: 'Rectangulaire, murs plutôt pleins' },
+  { value: 'narrow_long', label: 'Long et étroit' },
+  { value: 'l_shaped', label: 'En L / découpé' },
+  { value: 'corner_windows', label: 'Angle avec beaucoup de vitrines' },
+] as const;
+
+export const STRUCTURAL_OBSTACLES_OPTIONS = [
+  { value: 'none', label: 'Aucun obstacle particulier' },
+  { value: 'some', label: 'Quelques poteaux / gaines le long des murs' },
+  { value: 'many', label: 'Plusieurs poteaux / murs porteurs gênants' },
+] as const;
+
+export const FACADE_MODIFIABLE_OPTIONS = [
+  { value: 'yes', label: 'Oui, il est possible de déposer une vitrine' },
+  { value: 'no', label: 'Non, façade non modifiable' },
+  { value: 'unknown', label: 'Je ne sais pas encore' },
+] as const;
+
+export const TECHNICAL_CONSTRAINTS_OPTIONS = [
+  { value: 'ok', label: 'A priori OK (eau, évacuation, puissance, ventilation)' },
+  { value: 'check_with_installer', label: 'À vérifier avec un installateur' },
+  { value: 'heavy_works', label: 'Gros travaux à prévoir' },
+] as const;
+
 // Projet de simulation complet
 export interface SimulationProject {
   id?: string;
@@ -53,6 +85,13 @@ export interface SimulationProject {
   zone_type?: string;
   surface_m2: number;
   opening_hours_description: string;
+  
+  // Contraintes du local (Étape 0)
+  local_shape?: LocalShape;
+  has_structural_obstacles?: StructuralObstacles;
+  door_width_cm?: number;
+  can_modify_facade?: FacadeModifiable;
+  technical_constraints_level?: TechnicalConstraintsLevel;
   
   // Machines avec configuration flexible
   machines: MachineConfig[];
@@ -126,10 +165,52 @@ export const defaultSimulationProject: SimulationProject = {
   surface_m2: 40,
   opening_hours_description: '7h - 21h',
   zone_type: 'urbain',
+  // Contraintes du local par défaut
+  local_shape: 'rectangular',
+  has_structural_obstacles: 'none',
+  door_width_cm: 90,
+  can_modify_facade: 'unknown',
+  technical_constraints_level: 'check_with_installer',
   machines: [...defaultMachines],
   fixed_costs: [...defaultFixedCosts],
   variable_costs: [...defaultVariableCosts],
 };
+
+// Fonctions de calcul des contraintes du local
+export function getShapeFactor(localShape?: LocalShape): number {
+  switch (localShape) {
+    case 'rectangular': return 1.0;
+    case 'narrow_long': return 0.85;
+    case 'l_shaped': return 0.8;
+    case 'corner_windows': return 0.8;
+    default: return 1.0;
+  }
+}
+
+export function getObstacleFactor(obstacles?: StructuralObstacles): number {
+  switch (obstacles) {
+    case 'none': return 1.0;
+    case 'some': return 0.9;
+    case 'many': return 0.8;
+    default: return 1.0;
+  }
+}
+
+export function calculateMaxMachinesEstimate(project: SimulationProject): number {
+  const usableArea = project.surface_m2 * 0.7;
+  const shapeFactor = getShapeFactor(project.local_shape);
+  const obstacleFactor = getObstacleFactor(project.has_structural_obstacles);
+  const baseCapacity = usableArea / 3.5; // 3.5 m² par machine
+  return Math.floor(baseCapacity * shapeFactor * obstacleFactor);
+}
+
+export function getTotalUserMachines(project: SimulationProject): number {
+  return project.machines.reduce((sum, m) => sum + m.count, 0);
+}
+
+export function hasLargeWashers(project: SimulationProject): boolean {
+  return project.machines.some(m => m.type === 'washer' && m.capacity_kg >= 18 && m.count > 0);
+}
 
 // Fonctions de calcul
 export function calculateSimulationResults(project: SimulationProject): SimulationResults {
