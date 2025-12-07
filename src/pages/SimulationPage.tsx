@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SimulationStepper } from "@/components/simulation/SimulationStepper";
+import { StepLocal } from "@/components/simulation/StepLocal";
 import { StepProjectInfo } from "@/components/simulation/StepProjectInfo";
 import { StepMachines } from "@/components/simulation/StepMachines";
 import { StepCosts } from "@/components/simulation/StepCosts";
@@ -14,6 +15,7 @@ import {
 } from "@/types/simulation";
 
 const steps = [
+  { id: 0, name: "Local", description: "Contraintes & configuration" },
   { id: 1, name: "Mon projet", description: "Informations générales" },
   { id: 2, name: "Machines", description: "Configuration & recettes" },
   { id: 3, name: "Charges", description: "Coûts & rentabilité" },
@@ -25,7 +27,7 @@ export default function SimulationPage() {
   // En production, cela viendrait de l'authentification/base de données
   const [hasSimulatorAccess] = useState(true); // Mettre à false pour tester le paywall
   
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0); // Commence à l'étape 0
   const [project, setProject] = useState<SimulationProject>(defaultSimulationProject);
 
   // Calcul des résultats à chaque modification
@@ -36,7 +38,7 @@ export default function SimulationPage() {
   };
 
   const goToStep = (step: number) => {
-    if (step >= 1 && step <= 4) {
+    if (step >= 0 && step <= 4) {
       setCurrentStep(step);
     }
   };
@@ -48,7 +50,7 @@ export default function SimulationPage() {
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
@@ -86,6 +88,12 @@ export default function SimulationPage() {
 
         {/* Contenu de l'étape */}
         <div className="mb-8">
+          {currentStep === 0 && (
+            <StepLocal 
+              project={project} 
+              onUpdate={updateProject} 
+            />
+          )}
           {currentStep === 1 && (
             <StepProjectInfo 
               project={project} 
@@ -121,7 +129,7 @@ export default function SimulationPage() {
             <Button
               variant="outline"
               onClick={handlePrevious}
-              disabled={currentStep === 1}
+              disabled={currentStep === 0}
               className="gap-2"
             >
               <ChevronLeft className="h-4 w-4" />

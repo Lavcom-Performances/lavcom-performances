@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   Building2, 
   MapPin, 
@@ -11,9 +12,18 @@ import {
   Target,
   Calculator,
   FileDown,
-  MessageCircle
+  MessageCircle,
+  AlertTriangle,
+  BookOpen,
+  ExternalLink
 } from "lucide-react";
-import { SimulationProject, SimulationResults } from "@/types/simulation";
+import { 
+  SimulationProject, 
+  SimulationResults,
+  calculateMaxMachinesEstimate,
+  getTotalUserMachines,
+  hasLargeWashers
+} from "@/types/simulation";
 import { generateSimulationReport } from "@/utils/simulationPdfExport";
 import { toast } from "@/hooks/use-toast";
 
@@ -38,6 +48,19 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
   const washersCount = project.machines.filter(m => m.type === 'washer').reduce((sum, m) => sum + m.count, 0);
   const dryersCount = project.machines.filter(m => m.type === 'dryer').reduce((sum, m) => sum + m.count, 0);
   const totalMachines = washersCount + dryersCount;
+
+  // Calculs pour les avertissements
+  const maxMachinesEstimate = calculateMaxMachinesEstimate(project);
+  const userTotalMachines = getTotalUserMachines(project);
+  const hasLargeWashersMachines = hasLargeWashers(project);
+  
+  // Conditions d'avertissement
+  const showCapacityWarning = maxMachinesEstimate > 0 && userTotalMachines > maxMachinesEstimate;
+  const showDoorWarning = project.door_width_cm && project.door_width_cm > 0 && 
+    project.door_width_cm < 90 && 
+    project.can_modify_facade === 'no' && 
+    hasLargeWashersMachines;
+  const showTechnicalWarning = project.technical_constraints_level === 'heavy_works';
 
   const handleDownloadPdf = () => {
     try {
@@ -243,6 +266,55 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
         </CardContent>
       </Card>
 
+      {/* Avertissements */}
+      {(showCapacityWarning || showDoorWarning || showTechnicalWarning) && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            Points d'attention
+          </h3>
+          
+          {showCapacityWarning && (
+            <Alert variant="destructive" className="border-amber-500/50 bg-amber-500/10">
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <AlertTitle className="text-amber-700 dark:text-amber-400">Capacité du local à vérifier</AlertTitle>
+              <AlertDescription className="text-amber-700/80 dark:text-amber-400/80">
+                Selon la surface et la configuration indiquées, nous estimons qu'il sera difficile d'installer 
+                plus de <strong>{maxMachinesEstimate} machines</strong>. Vous avez saisi <strong>{userTotalMachines} machines</strong>.
+                <br />
+                Utilisez cette simulation comme un ordre de grandeur et faites valider le dimensionnement par un installateur.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {showDoorWarning && (
+            <Alert variant="destructive" className="border-amber-500/50 bg-amber-500/10">
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <AlertTitle className="text-amber-700 dark:text-amber-400">Attention aux gros lave-linge</AlertTitle>
+              <AlertDescription className="text-amber-700/80 dark:text-amber-400/80">
+                Avec une porte inférieure à 90 cm et une façade non modifiable, l'installation de gros lave-linge 
+                (18–20 kg) peut être complexe ou impossible.
+                <br />
+                Parlez-en avec votre installateur et prévoyez que le coût réel d'installation peut être plus élevé.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {showTechnicalWarning && (
+            <Alert variant="destructive" className="border-amber-500/50 bg-amber-500/10">
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <AlertTitle className="text-amber-700 dark:text-amber-400">Travaux techniques importants à prévoir</AlertTitle>
+              <AlertDescription className="text-amber-700/80 dark:text-amber-400/80">
+                Vous indiquez que des travaux significatifs sont nécessaires (électricité, évacuation, ventilation…).
+                <br />
+                Les montants réels d'investissement peuvent être nettement supérieurs à ceux de cette simulation.
+                Faites valider ces points par un installateur et un artisan avant toute décision.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+      )}
+
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <Button 
@@ -278,6 +350,33 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
             <Badge variant="secondary" className="bg-amber-500/20 text-amber-700 dark:text-amber-400 hover:bg-amber-500/30">
               279 €
             </Badge>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Encart e-book */}
+      <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/30">
+        <CardContent className="py-6">
+          <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
+            <div className="p-3 rounded-full bg-primary/20">
+              <BookOpen className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground">Aller plus loin : valider sérieusement votre projet</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Cette simulation vous donne un ordre de grandeur financier. Pour analyser votre zone, 
+                votre local et votre rentabilité de façon plus complète (étude de zone en 6 points, 
+                grilles d'audit, budget CAPEX/OPEX, check-list "Prêt à ouvrir"…), consultez le guide :
+              </p>
+              <p className="text-sm font-medium text-primary mt-2">
+                "Avant d'ouvrir : le guide du futur exploitant de laverie"
+                <span className="text-muted-foreground font-normal"> – Collection Laverie Pro by Lavcom</span>
+              </p>
+            </div>
+            <Button variant="outline" className="gap-2 shrink-0">
+              <ExternalLink className="h-4 w-4" />
+              Découvrir le guide
+            </Button>
           </div>
         </CardContent>
       </Card>
