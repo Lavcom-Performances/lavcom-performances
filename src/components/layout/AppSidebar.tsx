@@ -28,6 +28,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useState } from "react";
 
 interface AppSidebarProps {
@@ -240,10 +241,11 @@ export function AppSidebar({
       </nav>
 
       {/* User Section */}
-      <div className="p-3 border-t border-sidebar-border">
+      <div className="p-3 border-t border-sidebar-border space-y-1">
+        <ThemeToggle collapsed={collapsed} className="sidebar-item" />
         <NavLink
           to="/logout"
-          className="sidebar-item text-sidebar-foreground/60 hover:text-destructive"
+          className="sidebar-item text-sidebar-foreground/60 hover:text-destructive transition-colors duration-200"
         >
           <LogOut className="h-5 w-5 shrink-0" />
           {!collapsed && <span>Déconnexion</span>}

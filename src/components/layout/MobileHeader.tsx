@@ -1,8 +1,10 @@
-import { Menu, Building2 } from "lucide-react";
+import { Menu, Building2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AppSidebar } from "./AppSidebar";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface MobileHeaderProps {
   userRole?: string;
@@ -16,28 +18,47 @@ export function MobileHeader({
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-border bg-background sticky top-0 z-50">
+    <header className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-transform duration-200 hover:scale-110">
           <span className="text-primary-foreground font-bold text-sm">L</span>
         </div>
         <span className="font-display font-semibold text-foreground">Lavcom</span>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex items-center gap-1">
+        <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground mr-2">
           <Building2 className="h-4 w-4" />
           <span className="truncate max-w-[150px]">{currentLaundromat}</span>
         </div>
         
+        <ThemeToggle collapsed className="text-foreground" />
+        
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-foreground">
-              <Menu className="h-5 w-5" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={cn(
+                "text-foreground relative transition-all duration-300",
+                open && "rotate-90"
+              )}
+            >
+              <Menu className={cn(
+                "h-5 w-5 absolute transition-all duration-300",
+                open ? "opacity-0 rotate-90" : "opacity-100 rotate-0"
+              )} />
+              <X className={cn(
+                "h-5 w-5 absolute transition-all duration-300",
+                open ? "opacity-100 rotate-0" : "opacity-0 -rotate-90"
+              )} />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-72">
-            <div onClick={() => setOpen(false)}>
+          <SheetContent 
+            side="left" 
+            className="p-0 w-72 border-r-primary/20"
+          >
+            <div onClick={() => setOpen(false)} className="animate-slide-in-left">
               <AppSidebar 
                 collapsed={false}
                 userRole={userRole}
