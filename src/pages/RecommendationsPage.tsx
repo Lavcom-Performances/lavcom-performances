@@ -32,26 +32,26 @@ interface InsightCardProps {
 
 function InsightCard({ title, description, type, icon: Icon, metric, financialImpact, effort }: InsightCardProps) {
   // Couleurs Lavcom exactes du logo
-  // Vert lime (#A3C615) = point fort (success)
+  // Vert lime (#A5C800) = point fort (success)
   // Jaune/Or (#FCD259) = problème (warning)
   // Cyan/Teal (#6DBFB8) = opportunité (info/action)
   
   const borderColors = {
-    success: "border-l-[#A3C615]",      // Vert Lavcom - point fort
+    success: "border-l-[#A5C800]",      // Vert Lavcom - point fort
     warning: "border-l-[#FCD259]",       // Jaune Lavcom - problème
     info: "border-l-[#6DBFB8]",          // Cyan Lavcom - opportunité
     action: "border-l-[#6DBFB8]",        // Cyan Lavcom - opportunité
   };
 
   const iconColors = {
-    success: "text-[#A3C615]",
+    success: "text-[#A5C800]",
     warning: "text-[#FCD259]",
     info: "text-[#6DBFB8]",
     action: "text-[#6DBFB8]",
   };
 
   const metricColors = {
-    success: "text-[#A3C615]",
+    success: "text-[#A5C800]",
     warning: "text-[#d4a843]",           // Jaune plus foncé pour lisibilité
     info: "text-[#6DBFB8]",
     action: "text-[#6DBFB8]",
@@ -60,7 +60,7 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
   const effortConfig = {
     low: { 
       label: "Faible", 
-      className: "bg-[#A3C615] text-white hover:bg-[#A3C615] border-0" 
+      className: "bg-[#A5C800] text-white hover:bg-[#A5C800] border-0" 
     },
     medium: { 
       label: "Moyen", 
