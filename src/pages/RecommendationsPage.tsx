@@ -265,6 +265,23 @@ export default function RecommendationsPage() {
         </Button>
       </div>
 
+      {/* Légende des couleurs */}
+      <div className="flex flex-wrap items-center gap-6 p-4 bg-muted/50 rounded-lg border border-border">
+        <span className="text-sm font-medium text-muted-foreground">Légende :</span>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded-sm bg-[#A5C800]" />
+          <span className="text-sm text-foreground">Point fort</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded-sm bg-[#FCD259]" />
+          <span className="text-sm text-foreground">Problème à traiter</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded-sm bg-[#6DBFB8]" />
+          <span className="text-sm text-foreground">Opportunité</span>
+        </div>
+      </div>
+
       {/* Performance Insights */}
       <section className="space-y-4">
         <h2 className="text-lg font-display font-semibold flex items-center gap-2">
