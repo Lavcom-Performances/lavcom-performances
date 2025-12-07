@@ -16,6 +16,7 @@ import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 import LaundromatSettings from "./pages/LaundromatSettings";
 import CompanySettings from "./pages/CompanySettings";
+import SimulationPage from "./pages/SimulationPage";
 
 import MonthlyRevenuePage from "./pages/charts/MonthlyRevenuePage";
 import DailyRevenuePage from "./pages/charts/DailyRevenuePage";
@@ -71,6 +72,7 @@ const App = () => (
             <Route path="/recommendations" element={<RecommendationsPage />} />
             <Route path="/maintenance" element={<PredictiveMaintenance />} />
             <Route path="/profitability" element={<ProfitabilityPage />} />
+            <Route path="/simulation" element={<SimulationPage />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
