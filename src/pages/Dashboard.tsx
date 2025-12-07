@@ -7,10 +7,13 @@ import {
   Banknote, 
   ShoppingCart, 
   TrendingUp,
+  TrendingDown,
   Target,
   Percent,
   Clock,
-  WashingMachine
+  WashingMachine,
+  Activity,
+  Zap
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -27,6 +30,7 @@ import { WeekdayPerformanceChart } from "@/components/dashboard/WeekdayPerforman
 import { TransactionStats } from "@/components/dashboard/TransactionStats";
 import { MaintenanceAlerts } from "@/components/dashboard/MaintenanceAlerts";
 import { LaundryComparisonTable } from "@/components/dashboard/LaundryComparisonTable";
+import { ProfitabilityKPIs } from "@/components/dashboard/ProfitabilityKPIs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Mock data - CA par mois
@@ -221,6 +225,14 @@ export default function Dashboard() {
               subtitle="LL: 68% | SL: 55%"
             />
           </div>
+
+          {/* Nouveaux KPIs Rentabilité */}
+          <ProfitabilityKPIs
+            lostRevenue={187}
+            avgRotation={6.8}
+            peakSaturation={88}
+            peakSlot="16h-19h"
+          />
 
           {/* Objectifs et comparaisons rapides */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
