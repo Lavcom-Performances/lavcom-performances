@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { SimulationLayout } from "@/components/layout/SimulationLayout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Pricing from "./pages/Pricing";
@@ -18,7 +19,12 @@ import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 import LaundromatSettings from "./pages/LaundromatSettings";
 import CompanySettings from "./pages/CompanySettings";
-import SimulationPage from "./pages/SimulationPage";
+
+// Simulation pages (new layout)
+import SimulationProjectPage from "./pages/simulation/SimulationProjectPage";
+import SimulationLocalPage from "./pages/simulation/SimulationLocalPage";
+import SimulationChargesPage from "./pages/simulation/SimulationChargesPage";
+import SimulationResultsPage from "./pages/simulation/SimulationResultsPage";
 
 import MonthlyRevenuePage from "./pages/charts/MonthlyRevenuePage";
 import DailyRevenuePage from "./pages/charts/DailyRevenuePage";
@@ -53,6 +59,14 @@ const App = () => (
           <Route path="/select-laundromat" element={<SelectLaundromat />} />
           <Route path="/company-settings" element={<CompanySettings />} />
           
+          {/* Simulation routes with dedicated layout (no sidebar) */}
+          <Route element={<SimulationLayout />}>
+            <Route path="/simulation" element={<SimulationProjectPage />} />
+            <Route path="/simulation/local" element={<SimulationLocalPage />} />
+            <Route path="/simulation/charges" element={<SimulationChargesPage />} />
+            <Route path="/simulation/results" element={<SimulationResultsPage />} />
+          </Route>
+          
           {/* App routes with sidebar layout */}
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -60,7 +74,6 @@ const App = () => (
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
             <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/simulation" element={<SimulationPage />} />
             
             {/* Chart pages */}
             <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />
