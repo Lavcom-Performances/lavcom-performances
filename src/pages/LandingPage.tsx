@@ -50,6 +50,7 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import lavcomLogo from "@/assets/lavcom-logo-header.png";
 import { t } from "@/lib/i18n";
+import { HeroValueSlider } from "@/components/landing/HeroValueSlider";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, t("validation").nameRequired).max(100, t("validation").nameTooLong),
@@ -246,16 +247,11 @@ const LandingPage = () => {
             {t("landing").hero.badge}
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 animate-fade-in stagger-1 leading-tight">
-            Lavcom Analytics pour les laveries automatiques
-          </h1>
-          
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto animate-fade-in stagger-2">
-            Analysez vos laveries existantes ou simulez votre futur projet, avec une plateforme pensée 100 % laveries automatiques.
-          </p>
+          {/* Slider des propositions de valeur */}
+          <HeroValueSlider />
           
           {/* Deux boutons principaux côte à côte */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in stagger-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 animate-fade-in">
             <a href="#exploitants">
               <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-lg px-8">
                 <Building2 className="mr-2 h-5 w-5" />
@@ -271,7 +267,7 @@ const LandingPage = () => {
           </div>
           
           {/* Phrase de positionnement */}
-          <p className="mt-8 text-sm text-muted-foreground animate-fade-in stagger-4 italic">
+          <p className="mt-8 text-sm text-muted-foreground animate-fade-in italic">
             "La couche d'intelligence au-dessus de vos centrales de paiement"
           </p>
         </div>
