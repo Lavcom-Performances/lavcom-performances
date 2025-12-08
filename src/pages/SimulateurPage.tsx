@@ -12,8 +12,10 @@ import {
   TrendingUp, 
   ArrowRight
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import lavcomLogo from "@/assets/lavcom-logo-header.png";
 import { translations } from "@/lib/i18n";
+import { WASHER_CAPACITIES, DRYER_CAPACITIES } from "@/types/simulation";
 import { SIMULATOR_PLANS } from "@/config/pricingConfig";
 
 const t = translations.simulator;
@@ -25,6 +27,8 @@ interface QuickSimulation {
   surface: number;
   nbWashers: number;
   nbDryers: number;
+  washerCapacity: number;
+  dryerCapacity: number;
   avgPriceWash: number;
   avgPriceDry: number;
   trafficLevel: TrafficLevel;
@@ -57,6 +61,8 @@ export default function SimulateurPage() {
     surface: 50,
     nbWashers: 5,
     nbDryers: 4,
+    washerCapacity: 10,
+    dryerCapacity: 14,
     avgPriceWash: 5,
     avgPriceDry: 3,
     trafficLevel: "medium",
@@ -159,15 +165,22 @@ export default function SimulateurPage() {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="nbDryers">{t.form.nbDryers}</Label>
-                    <Input
-                      id="nbDryers"
-                      type="number"
-                      min={1}
-                      max={20}
-                      value={simulation.nbDryers}
-                      onChange={(e) => setSimulation({ ...simulation, nbDryers: Number(e.target.value) })}
-                    />
+                    <Label htmlFor="washerCapacity">Capacité moyenne lave-linge</Label>
+                    <Select
+                      value={String(simulation.washerCapacity)}
+                      onValueChange={(val) => setSimulation({ ...simulation, washerCapacity: Number(val) })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Capacité" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {WASHER_CAPACITIES.map((cap) => (
+                          <SelectItem key={cap} value={String(cap)}>
+                            {cap} kg
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="avgPriceWash">{t.form.avgPriceWash}</Label>
@@ -180,6 +193,38 @@ export default function SimulateurPage() {
                       value={simulation.avgPriceWash}
                       onChange={(e) => setSimulation({ ...simulation, avgPriceWash: Number(e.target.value) })}
                     />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nbDryers">{t.form.nbDryers}</Label>
+                    <Input
+                      id="nbDryers"
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={simulation.nbDryers}
+                      onChange={(e) => setSimulation({ ...simulation, nbDryers: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dryerCapacity">Capacité moyenne sèche-linge</Label>
+                    <Select
+                      value={String(simulation.dryerCapacity)}
+                      onValueChange={(val) => setSimulation({ ...simulation, dryerCapacity: Number(val) })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Capacité" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DRYER_CAPACITIES.map((cap) => (
+                          <SelectItem key={cap} value={String(cap)}>
+                            {cap} kg
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
