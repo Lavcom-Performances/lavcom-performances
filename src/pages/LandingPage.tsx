@@ -11,6 +11,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   BarChart3, 
   TrendingUp, 
@@ -31,58 +37,60 @@ import {
   MessageSquare,
   Loader2,
   Calculator,
-  Rocket
+  Rocket,
+  Building2,
+  ChevronDown,
+  FileText,
+  Target,
+  Users,
+  MapPin
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import lavcomLogo from "@/assets/lavcom-logo-header.png";
+import { t } from "@/lib/i18n";
 
 const contactSchema = z.object({
-  name: z.string().trim().min(1, "Le nom est requis").max(100, "Le nom est trop long"),
-  email: z.string().trim().email("Email invalide").max(255, "Email trop long"),
-  message: z.string().trim().min(10, "Le message doit contenir au moins 10 caractères").max(1000, "Le message est trop long (max 1000 caractères)")
+  name: z.string().trim().min(1, t("validation").nameRequired).max(100, t("validation").nameTooLong),
+  email: z.string().trim().email(t("validation").invalidEmail).max(255, t("validation").emailTooLong),
+  message: z.string().trim().min(10, t("validation").messageMinLength).max(1000, t("validation").messageMaxLength)
 });
 
 const features = [
   {
     icon: BarChart3,
-    title: "Tableaux de bord en temps réel",
-    description: "Visualisez vos performances avec des KPIs clairs et des graphiques interactifs."
+    title: t("landing").features.items.dashboards.title,
+    description: t("landing").features.items.dashboards.description
   },
   {
     icon: TrendingUp,
-    title: "Analyses prédictives",
-    description: "Anticipez les tendances et optimisez votre chiffre d'affaires grâce à l'IA."
+    title: t("landing").features.items.predictive.title,
+    description: t("landing").features.items.predictive.description
   },
   {
     icon: Bell,
-    title: "Alertes intelligentes",
-    description: "Soyez notifié instantanément des anomalies et des opportunités."
+    title: t("landing").features.items.alerts.title,
+    description: t("landing").features.items.alerts.description
   },
   {
     icon: LineChart,
-    title: "Suivi des revenus",
-    description: "Analysez vos revenus par période, machine et mode de paiement."
+    title: t("landing").features.items.revenue.title,
+    description: t("landing").features.items.revenue.description
   },
   {
     icon: Shield,
-    title: "Maintenance prédictive",
-    description: "Réduisez les pannes grâce aux recommandations de maintenance."
+    title: t("landing").features.items.maintenance.title,
+    description: t("landing").features.items.maintenance.description
   },
   {
     icon: Zap,
-    title: "Optimisation opérationnelle",
-    description: "Identifiez les heures creuses et maximisez le taux d'occupation."
+    title: t("landing").features.items.optimization.title,
+    description: t("landing").features.items.optimization.description
   }
 ];
 
-const benefits = [
-  "Augmentez votre chiffre d'affaires jusqu'à 25%",
-  "Réduisez les temps d'arrêt machine de 40%",
-  "Gagnez 10h/semaine sur la gestion administrative",
-  "Accédez à vos données depuis n'importe où"
-];
+const benefits = t("landing").benefits.items;
 
 const testimonials = [
   {
@@ -132,7 +140,6 @@ const LandingPage = () => {
     setIsSubmitting(true);
     
     try {
-      // Remplacez YOUR_FORM_ID par votre ID Formspree (ex: xrgvknwl)
       const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
         method: "POST",
         headers: {
@@ -147,8 +154,8 @@ const LandingPage = () => {
 
       if (response.ok) {
         toast({
-          title: "Message envoyé !",
-          description: "Nous vous répondrons dans les plus brefs délais.",
+          title: t("landing").contact.successTitle,
+          description: t("landing").contact.successDescription,
         });
         setContactForm({ name: "", email: "", message: "" });
       } else {
@@ -157,8 +164,8 @@ const LandingPage = () => {
     } catch (error) {
       console.error("Formspree error:", error);
       toast({
-        title: "Erreur",
-        description: "Une erreur est survenue. Veuillez réessayer.",
+        title: t("landing").contact.errorTitle,
+        description: t("landing").contact.errorDescription,
         variant: "destructive",
       });
     } finally {
@@ -176,124 +183,222 @@ const LandingPage = () => {
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-              Exploitants
+              {t("nav").exploitants}
             </Link>
             <Link to="/simulateur" className="text-amber-600 hover:text-amber-700 font-medium transition-colors">
-              Simulation ouverture
+              {t("nav").simulationOpening}
             </Link>
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-              Fonctionnalités
+              {t("nav").features}
             </a>
             <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">
-              Témoignages
+              {t("nav").testimonials}
             </a>
             <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">
-              FAQ
+              {t("nav").faq}
             </a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link to="/login?mode=exploitant">
-              <Button variant="ghost" className="btn-bounce">
-                Connexion
-              </Button>
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="btn-bounce">
+                  {t("common").login}
+                  <ChevronDown className="ml-1 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/login?mode=exploitant" className="flex items-center gap-2 cursor-pointer">
+                    <Building2 className="h-4 w-4" />
+                    <div>
+                      <p className="font-medium">Exploitant</p>
+                      <p className="text-xs text-muted-foreground">Accès à mes laveries</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/login?mode=simulateur" className="flex items-center gap-2 cursor-pointer">
+                    <Calculator className="h-4 w-4" />
+                    <div>
+                      <p className="font-medium">Futur exploitant</p>
+                      <p className="text-xs text-muted-foreground">Accès au simulateur</p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link to="/pricing">
               <Button className="btn-bounce bg-primary hover:bg-primary/90">
-                Tarifs exploitants
+                {t("nav").exploitantPricing}
               </Button>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
+      {/* ========================================== */}
+      {/* BLOC A – HERO */}
+      {/* ========================================== */}
+      <section className="pt-32 pb-16 px-4">
         <div className="container mx-auto text-center max-w-4xl">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6 animate-fade-in">
             <Zap className="h-4 w-4" />
-            Solution n°1 pour les laveries automatiques
+            {t("landing").hero.badge}
           </div>
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 animate-fade-in stagger-1 leading-tight">
-            Vos centrales collectent les données,{" "}
-            <span className="text-primary">Lavcom Analytics les transforme en décisions concrètes.</span>
+            Lavcom Analytics pour les laveries automatiques
           </h1>
           
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto animate-fade-in stagger-2">
-            Lavcom Analytics analyse les données de vos centrales de paiement et vous dit quoi faire pour augmenter la rentabilité de vos laveries.
+          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto animate-fade-in stagger-2">
+            Analysez vos laveries existantes ou simulez votre futur projet, avec une plateforme pensée 100 % laveries automatiques.
           </p>
           
+          {/* Deux boutons principaux côte à côte */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in stagger-3">
-            <Link to="/login">
-              <Button size="lg" className="btn-bounce bg-primary hover:bg-primary/90 text-lg px-8">
-                Commencer maintenant
-                <ArrowRight className="ml-2 h-5 w-5" />
+            <a href="#exploitants">
+              <Button size="lg" className="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white text-lg px-8">
+                <Building2 className="mr-2 h-5 w-5" />
+                Je gère déjà une laverie
               </Button>
-            </Link>
-            <a href="#demo">
-              <Button size="lg" variant="outline" className="btn-bounce text-lg px-8">
-                <Play className="mr-2 h-5 w-5" />
-                Voir la démo
+            </a>
+            <a href="#futurs-exploitants">
+              <Button size="lg" className="btn-bounce bg-amber-600 hover:bg-amber-700 text-white text-lg px-8">
+                <Rocket className="mr-2 h-5 w-5" />
+                Je veux ouvrir une laverie
               </Button>
             </a>
           </div>
+          
+          {/* Phrase de positionnement */}
+          <p className="mt-8 text-sm text-muted-foreground animate-fade-in stagger-4 italic">
+            "La couche d'intelligence au-dessus de vos centrales de paiement"
+          </p>
         </div>
       </section>
 
-      {/* Section Futurs Exploitants */}
-      <section className="py-16 px-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20">
-        <div className="container mx-auto max-w-5xl">
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-            <div className="flex-1 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                <Rocket className="h-4 w-4" />
-                Vous souhaitez ouvrir une laverie ?
+      {/* ========================================== */}
+      {/* BLOC B – PARCOURS EXPLOITANTS */}
+      {/* ========================================== */}
+      <section id="exploitants" className="py-20 px-4 bg-gradient-to-br from-emerald-500/5 via-emerald-500/10 to-emerald-500/5 border-y border-emerald-500/20">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Contenu texte */}
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                <Building2 className="h-4 w-4" />
+                Pour les exploitants de laveries
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                Simulez la rentabilité de votre projet
+              
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Vous gérez déjà une ou plusieurs laveries ?
               </h2>
-              <p className="text-muted-foreground mb-6">
-                Avant d'investir, testez différents scénarios : nombre de machines, tarifs, charges...
-                Notre simulateur calcule votre seuil de rentabilité et votre bénéfice estimé.
+              
+              <p className="text-muted-foreground text-lg mb-6">
+                Connectez vos centrales de paiement, visualisez vos chiffres et recevez des recommandations concrètes pour améliorer la rentabilité de vos sites.
               </p>
-              <ul className="space-y-2 mb-6 text-left">
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" />
-                  <span>Configuration machines personnalisée</span>
+              
+              {/* Puces avantages exploitants */}
+              <ul className="space-y-3 mb-8 text-left">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="text-foreground">Suivez votre chiffre d'affaires par machine et par laverie</span>
                 </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" />
-                  <span>Calcul du seuil de rentabilité</span>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="text-foreground">Identifiez vos machines sous-performantes et vos créneaux saturés</span>
                 </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="h-4 w-4 text-amber-600 shrink-0" />
-                  <span>Export PDF du bilan prévisionnel</span>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="text-foreground">Recevez des recommandations concrètes sur les prix, horaires et parc machines</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="text-foreground">Générez des rapports PDF à partager avec vos partenaires</span>
                 </li>
               </ul>
+              
+              {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                <Link to="/simulateur">
-                  <Button size="lg" className="btn-bounce bg-amber-600 hover:bg-amber-700 text-white">
-                    <Calculator className="mr-2 h-5 w-5" />
-                    Tester le simulateur
+                <Link to="/pricing">
+                  <Button size="lg" className="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white">
+                    Voir les tarifs exploitants
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <Link to="/subscribe-simulator">
-                  <Button size="lg" variant="outline" className="btn-bounce border-amber-600/50 text-amber-700 dark:text-amber-400 hover:bg-amber-600/10">
-                    Voir les packs
+                <Link to="/login?mode=exploitant">
+                  <Button size="lg" variant="outline" className="btn-bounce border-emerald-600/50 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-600/10">
+                    Se connecter à mon espace
                   </Button>
                 </Link>
               </div>
             </div>
-            <div className="flex-shrink-0">
-              <Card className="p-6 bg-card/80 backdrop-blur border-amber-500/30 shadow-xl">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto">
-                    <Calculator className="h-8 w-8 text-amber-600" />
+            
+            {/* Visuel / Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { value: "24/7", label: "Suivi temps réel", icon: Clock },
+                { value: "+25%", label: "CA moyen constaté", icon: TrendingUp },
+                { value: "10h", label: "Gagnées par semaine", icon: Zap },
+                { value: "40%", label: "Réduction des pannes", icon: Shield }
+              ].map((stat, index) => (
+                <Card 
+                  key={stat.label}
+                  className="p-6 text-center card-lavcom-hover animate-fade-in bg-card/80 backdrop-blur border-emerald-500/20"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <stat.icon className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
+                  <div className="text-3xl font-bold text-emerald-600 mb-1">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {stat.label}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================== */}
+      {/* BLOC C – PARCOURS FUTURS EXPLOITANTS */}
+      {/* ========================================== */}
+      <section id="futurs-exploitants" className="py-20 px-4 bg-gradient-to-br from-amber-500/5 via-orange-500/10 to-amber-500/5 border-y border-amber-500/20">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Visuel / Card simulateur */}
+            <div className="order-2 lg:order-1">
+              <Card className="p-8 bg-card/80 backdrop-blur border-amber-500/30 shadow-xl">
+                <div className="text-center space-y-6">
+                  <div className="w-20 h-20 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto">
+                    <Calculator className="h-10 w-10 text-amber-600" />
                   </div>
                   <div>
                     <p className="text-3xl font-bold text-foreground">Simulateur</p>
-                    <p className="text-sm text-muted-foreground">de rentabilité</p>
+                    <p className="text-muted-foreground">de rentabilité</p>
                   </div>
+                  
+                  {/* Mini-aperçu des fonctionnalités */}
+                  <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Target className="h-4 w-4 text-amber-600" />
+                      <span>Seuil de rentabilité</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <PieChart className="h-4 w-4 text-amber-600" />
+                      <span>Analyse charges</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <FileText className="h-4 w-4 text-amber-600" />
+                      <span>Rapport PDF</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <BarChart3 className="h-4 w-4 text-amber-600" />
+                      <span>Scénarios multiples</span>
+                    </div>
+                  </div>
+                  
                   <div className="pt-4 border-t border-border space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Pack Simulateur</span>
@@ -307,6 +412,57 @@ const LandingPage = () => {
                 </div>
               </Card>
             </div>
+            
+            {/* Contenu texte */}
+            <div className="order-1 lg:order-2 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                <Rocket className="h-4 w-4" />
+                Pour les futurs exploitants
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Vous voulez ouvrir une laverie ?
+              </h2>
+              
+              <p className="text-muted-foreground text-lg mb-6">
+                Simulez votre projet avant d'investir : chiffre d'affaires, charges, seuil de rentabilité, cycles nécessaires par jour.
+              </p>
+              
+              {/* Puces avantages simulateur */}
+              <ul className="space-y-3 mb-8 text-left">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                  <span className="text-foreground">Estimez votre CA lavage + séchage selon vos hypothèses</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                  <span className="text-foreground">Calculez votre seuil de rentabilité avec vos charges</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                  <span className="text-foreground">Sachez combien de cycles/jour vous devez atteindre</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                  <span className="text-foreground">Générez un rapport pour votre banque ou vos partenaires</span>
+                </li>
+              </ul>
+              
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                <Link to="/simulateur">
+                  <Button size="lg" className="btn-bounce bg-amber-600 hover:bg-amber-700 text-white">
+                    <Calculator className="mr-2 h-5 w-5" />
+                    Tester le simulateur
+                  </Button>
+                </Link>
+                <Link to="/subscribe-simulator">
+                  <Button size="lg" variant="outline" className="btn-bounce border-amber-600/50 text-amber-700 dark:text-amber-400 hover:bg-amber-600/10">
+                    Découvrir les packs
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -316,10 +472,10 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Découvrez Lavcom Analytics en action
+              {t("landing").demo.title}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Une interface intuitive pour piloter votre activité
+              {t("landing").demo.subtitle}
             </p>
           </div>
           
@@ -330,29 +486,21 @@ const LandingPage = () => {
                   <Play className="h-10 w-10 text-primary ml-1" />
                 </div>
                 <p className="text-muted-foreground">
-                  Cliquez pour lancer la vidéo de démonstration
+                  {t("landing").demo.playVideo}
                 </p>
                 <p className="text-sm text-muted-foreground/70 mt-2">
-                  Durée : 2 minutes
+                  {t("landing").demo.duration}
                 </p>
               </div>
             </div>
-            {/* Placeholder for actual video - replace src with real video URL */}
-            {/* <video 
-              className="w-full h-full object-cover"
-              controls
-              poster="/video-thumbnail.jpg"
-            >
-              <source src="/demo-video.mp4" type="video/mp4" />
-            </video> */}
           </Card>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
             {[
-              { icon: BarChart3, label: "Dashboard temps réel" },
-              { icon: PieChart, label: "Analyses détaillées" },
-              { icon: Bell, label: "Alertes & notifications" },
-              { icon: Clock, label: "Historique complet" }
+              { icon: BarChart3, label: t("landing").demo.features.dashboard },
+              { icon: PieChart, label: t("landing").demo.features.detailedAnalytics },
+              { icon: Bell, label: t("landing").demo.features.alertsNotifications },
+              { icon: Clock, label: t("landing").demo.features.fullHistory }
             ].map((item, index) => (
               <div 
                 key={item.label}
@@ -372,10 +520,10 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Tout ce dont vous avez besoin
+              {t("landing").features.title}
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Des outils puissants pour analyser et optimiser chaque aspect de votre laverie
+              {t("landing").features.subtitle}
             </p>
           </div>
           
@@ -407,10 +555,10 @@ const LandingPage = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                Des résultats concrets pour votre activité
+                {t("landing").benefits.title}
               </h2>
               <p className="text-muted-foreground text-lg mb-8">
-                Nos clients constatent des améliorations significatives dès les premiers mois d'utilisation.
+                {t("landing").benefits.subtitle}
               </p>
               
               <ul className="space-y-4">
@@ -515,10 +663,10 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Questions fréquentes
+              {t("landing").faq.title}
             </h2>
             <p className="text-muted-foreground text-lg">
-              Tout ce que vous devez savoir sur Lavcom Analytics
+              {t("landing").faq.subtitle}
             </p>
           </div>
           
@@ -609,7 +757,7 @@ const LandingPage = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                    <p className="text-muted-foreground">contact@lavcom-analytics.fr</p>
+                    <p className="text-muted-foreground">contact@lavcom.fr</p>
                   </div>
                 </div>
                 
@@ -707,12 +855,12 @@ const LandingPage = () => {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Envoi en cours...
+                      {t("landing").contact.sending}
                     </>
                   ) : (
                     <>
                       <Send className="mr-2 h-5 w-5" />
-                      Envoyer le message
+                      {t("landing").contact.send}
                     </>
                   )}
                 </Button>
@@ -733,14 +881,16 @@ const LandingPage = () => {
               Rejoignez les centaines de gérants qui font confiance à Lavcom Analytics pour développer leur activité.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/login">
-                <Button size="lg" className="btn-bounce bg-primary hover:bg-primary/90 text-lg px-8">
-                  Démarrer gratuitement
+              <Link to="/pricing">
+                <Button size="lg" className="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white text-lg px-8">
+                  <Building2 className="mr-2 h-5 w-5" />
+                  Tarifs exploitants
                 </Button>
               </Link>
-              <Link to="/pricing">
-                <Button size="lg" variant="outline" className="btn-bounce text-lg px-8 border-card-foreground/30 text-card-foreground hover:bg-card-foreground/10">
-                  Voir les tarifs
+              <Link to="/simulateur">
+                <Button size="lg" className="btn-bounce bg-amber-600 hover:bg-amber-700 text-white text-lg px-8">
+                  <Calculator className="mr-2 h-5 w-5" />
+                  Tester le simulateur
                 </Button>
               </Link>
             </div>
@@ -748,20 +898,95 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 px-4 border-t border-border">
-        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <img src={lavcomLogo} alt="Lavcom" className="h-8 w-auto" />
+      {/* ========================================== */}
+      {/* BLOC D – FOOTER */}
+      {/* ========================================== */}
+      <footer className="py-12 px-4 border-t border-border bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          {/* Infos société */}
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            {/* Logo et description */}
+            <div>
+              <Link to="/" className="inline-block mb-4">
+                <img src={lavcomLogo} alt="Lavcom Analytics" className="h-8 w-auto" />
+              </Link>
+              <p className="text-sm text-muted-foreground">
+                La plateforme d'analyse et d'optimisation pour les laveries automatiques.
+              </p>
+            </div>
+            
+            {/* Liens rapides */}
+            <div>
+              <h4 className="font-semibold text-foreground mb-4">Liens rapides</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+                    Tarifs exploitants
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/simulateur" className="text-muted-foreground hover:text-foreground transition-colors">
+                    Simulateur
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/subscribe-simulator" className="text-muted-foreground hover:text-foreground transition-colors">
+                    Packs simulateur
+                  </Link>
+                </li>
+                <li>
+                  <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">
+                    FAQ
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
+            
+            {/* Contact */}
+            <div>
+              <h4 className="font-semibold text-foreground mb-4">Contact</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  contact@lavcom.fr
+                </li>
+                <li className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  88 avenue de Grammont, 37000 Tours
+                </li>
+                <li className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Lun-Ven : 9h-18h
+                </li>
+              </ul>
+            </div>
           </div>
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Mentions légales</a>
-            <a href="#" className="hover:text-foreground transition-colors">Confidentialité</a>
-            <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+          
+          {/* Séparateur */}
+          <div className="border-t border-border pt-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              {/* Mention légale société */}
+              <p className="text-xs text-muted-foreground text-center md:text-left">
+                Lavcom Analytics est une marque commerciale de Lavcom, elle-même marque commerciale de la société My'Po SARL – 88 avenue de Grammont, 37000 Tours
+              </p>
+              
+              {/* Liens légaux */}
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <a href="#" className="hover:text-foreground transition-colors">Mentions légales</a>
+                <a href="#" className="hover:text-foreground transition-colors">Confidentialité</a>
+                <a href="#" className="hover:text-foreground transition-colors">CGV</a>
+              </div>
+            </div>
+            
+            <p className="text-xs text-muted-foreground text-center mt-4">
+              © {new Date().getFullYear()} Lavcom Analytics. Tous droits réservés.
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            © 2024 Lavcom Analytics. Tous droits réservés.
-          </p>
         </div>
       </footer>
     </div>
