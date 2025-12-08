@@ -1,0 +1,4 @@
+project_id = "betvwipgtcrhmludzgxw"
+
+[functions.fetch-from-siret]
+verify_jwt = false
