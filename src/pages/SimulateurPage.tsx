@@ -21,7 +21,17 @@ import { SIMULATOR_PLANS } from "@/config/pricingConfig";
 const t = translations.simulator;
 const tCommon = translations.common;
 
-type TrafficLevel = "low" | "medium" | "high";
+// Constantes de calcul
+const HOURS_OPEN = 14; // heures d'ouverture par jour
+const WASH_CYCLE_DURATION = 35; // minutes
+const DRY_CYCLE_DURATION = 45; // minutes
+
+// Taux d'occupation par scénario
+const OCCUPANCY_RATES = {
+  pessimiste: 0.15,
+  central: 0.20,
+  optimiste: 0.25,
+};
 
 interface QuickSimulation {
   surface: number;
@@ -31,26 +41,49 @@ interface QuickSimulation {
   dryerCapacity: number;
   avgPriceWash: number;
   avgPriceDry: number;
-  trafficLevel: TrafficLevel;
+  hoursOpen: number;
 }
 
-function getCyclesPerMachinePerDay(level: TrafficLevel): number {
-  if (level === "low") return 3;
-  if (level === "medium") return 5;
-  return 7;
+interface ScenarioResult {
+  name: string;
+  rate: number;
+  washCyclesPerDay: number;
+  dryCyclesPerDay: number;
+  turnoverPerDay: number;
+  turnoverPerMonth: number;
 }
 
 function calculateQuickEstimation(sim: QuickSimulation) {
-  const cyclesPerMachinePerDay = getCyclesPerMachinePerDay(sim.trafficLevel);
-  const washTurnoverMonth = sim.nbWashers * cyclesPerMachinePerDay * sim.avgPriceWash * 30;
-  const dryTurnoverMonth = sim.nbDryers * cyclesPerMachinePerDay * sim.avgPriceDry * 30;
-  const totalTurnoverMonth = washTurnoverMonth + dryTurnoverMonth;
+  // Capacité max par machine par jour
+  const washCapacityPerMachinePerDay = (sim.hoursOpen * 60) / WASH_CYCLE_DURATION;
+  const dryCapacityPerMachinePerDay = (sim.hoursOpen * 60) / DRY_CYCLE_DURATION;
+  
+  // Capacité totale par jour
+  const totalWashCapacityPerDay = washCapacityPerMachinePerDay * sim.nbWashers;
+  const totalDryCapacityPerDay = dryCapacityPerMachinePerDay * sim.nbDryers;
+
+  // Calcul pour chaque scénario
+  const scenarios: ScenarioResult[] = [
+    { name: "Pessimiste", rate: OCCUPANCY_RATES.pessimiste, washCyclesPerDay: 0, dryCyclesPerDay: 0, turnoverPerDay: 0, turnoverPerMonth: 0 },
+    { name: "Central", rate: OCCUPANCY_RATES.central, washCyclesPerDay: 0, dryCyclesPerDay: 0, turnoverPerDay: 0, turnoverPerMonth: 0 },
+    { name: "Optimiste", rate: OCCUPANCY_RATES.optimiste, washCyclesPerDay: 0, dryCyclesPerDay: 0, turnoverPerDay: 0, turnoverPerMonth: 0 },
+  ];
+
+  for (const scenario of scenarios) {
+    scenario.washCyclesPerDay = totalWashCapacityPerDay * scenario.rate;
+    scenario.dryCyclesPerDay = totalDryCapacityPerDay * scenario.rate;
+    
+    const washTurnoverPerDay = scenario.washCyclesPerDay * sim.avgPriceWash;
+    const dryTurnoverPerDay = scenario.dryCyclesPerDay * sim.avgPriceDry;
+    
+    scenario.turnoverPerDay = washTurnoverPerDay + dryTurnoverPerDay;
+    scenario.turnoverPerMonth = scenario.turnoverPerDay * 30;
+  }
 
   return {
-    washTurnoverMonth,
-    dryTurnoverMonth,
-    totalTurnoverMonth,
-    cyclesPerMachinePerDay,
+    scenarios,
+    maxWashCyclesPerDay: totalWashCapacityPerDay,
+    maxDryCyclesPerDay: totalDryCapacityPerDay,
   };
 }
 
@@ -65,7 +98,7 @@ export default function SimulateurPage() {
     dryerCapacity: 14,
     avgPriceWash: 5,
     avgPriceDry: 3,
-    trafficLevel: "medium",
+    hoursOpen: HOURS_OPEN,
   });
 
   const results = calculateQuickEstimation(simulation);
@@ -77,12 +110,6 @@ export default function SimulateurPage() {
 
   const handleUnlock = () => {
     navigate("/subscribe-simulator");
-  };
-
-  const trafficLabels: Record<TrafficLevel, string> = {
-    low: t.form.trafficLevels.low,
-    medium: t.form.trafficLevels.medium,
-    high: t.form.trafficLevels.high,
   };
 
   return (
@@ -241,30 +268,17 @@ export default function SimulateurPage() {
                       onChange={(e) => setSimulation({ ...simulation, avgPriceDry: Number(e.target.value) })}
                     />
                   </div>
-                </div>
-
-                <div className="space-y-3">
-                  <Label>{t.form.trafficLevel}</Label>
-                  <RadioGroup
-                    value={simulation.trafficLevel}
-                    onValueChange={(val) => setSimulation({ ...simulation, trafficLevel: val as TrafficLevel })}
-                    className="grid gap-2"
-                  >
-                    {(["low", "medium", "high"] as TrafficLevel[]).map((level) => (
-                      <label
-                        key={level}
-                        htmlFor={level}
-                        className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
-                          simulation.trafficLevel === level 
-                            ? "border-amber-600 bg-amber-500/10" 
-                            : "border-border hover:border-amber-600/50"
-                        }`}
-                      >
-                        <RadioGroupItem value={level} id={level} />
-                        <span className="text-sm">{trafficLabels[level]}</span>
-                      </label>
-                    ))}
-                  </RadioGroup>
+                  <div className="space-y-2">
+                    <Label htmlFor="hoursOpen">Heures d'ouverture / jour</Label>
+                    <Input
+                      id="hoursOpen"
+                      type="number"
+                      min={8}
+                      max={24}
+                      value={simulation.hoursOpen}
+                      onChange={(e) => setSimulation({ ...simulation, hoursOpen: Number(e.target.value) })}
+                    />
+                  </div>
                 </div>
 
                 <Button 
@@ -289,30 +303,46 @@ export default function SimulateurPage() {
                     <TrendingUp className="h-5 w-5" />
                     {t.results.title}
                   </CardTitle>
+                  <p className="text-xs text-muted-foreground">
+                    Basé sur {simulation.hoursOpen}h d'ouverture, cycle lavage {WASH_CYCLE_DURATION} min, séchage {DRY_CYCLE_DURATION} min
+                  </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-3">
-                    <div className="flex justify-between items-center p-3 bg-background rounded-lg">
-                      <span className="text-muted-foreground">{t.results.washRevenue}</span>
-                      <span className="text-xl font-bold text-foreground">
-                        {results.washTurnoverMonth.toLocaleString("fr-FR")} {translations.units.euroPerMonth}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-background rounded-lg">
-                      <span className="text-muted-foreground">{t.results.dryRevenue}</span>
-                      <span className="text-xl font-bold text-foreground">
-                        {results.dryTurnoverMonth.toLocaleString("fr-FR")} {translations.units.euroPerMonth}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center p-4 bg-amber-500/10 rounded-lg border border-amber-500/30">
-                      <span className="font-medium text-foreground">{t.results.totalRevenue}</span>
-                      <span className="text-2xl font-bold text-amber-700 dark:text-amber-400">
-                        {results.totalTurnoverMonth.toLocaleString("fr-FR")} {translations.units.euroPerMonth}
-                      </span>
-                    </div>
+                    {results.scenarios.map((scenario, index) => {
+                      const bgColor = index === 0 
+                        ? "bg-red-500/10 border-red-500/30" 
+                        : index === 1 
+                          ? "bg-amber-500/10 border-amber-500/30" 
+                          : "bg-green-500/10 border-green-500/30";
+                      const textColor = index === 0 
+                        ? "text-red-700 dark:text-red-400" 
+                        : index === 1 
+                          ? "text-amber-700 dark:text-amber-400" 
+                          : "text-green-700 dark:text-green-400";
+                      
+                      return (
+                        <div key={scenario.name} className={`p-4 rounded-lg border ${bgColor}`}>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className={`font-semibold ${textColor}`}>
+                              {scenario.name} ({Math.round(scenario.rate * 100)}% occupation)
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-muted-foreground text-sm">CA mensuel estimé</span>
+                            <span className={`text-xl font-bold ${textColor}`}>
+                              {Math.round(scenario.turnoverPerMonth).toLocaleString("fr-FR")} €/mois
+                            </span>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            ~{Math.round(scenario.washCyclesPerDay)} lavages + {Math.round(scenario.dryCyclesPerDay)} séchages / jour
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                   <p className="text-xs text-muted-foreground text-center pt-2">
-                    {t.results.basedOn.replace("{cycles}", String(results.cyclesPerMachinePerDay))}
+                    Capacité max : {Math.round(results.maxWashCyclesPerDay)} lavages + {Math.round(results.maxDryCyclesPerDay)} séchages / jour
                   </p>
                 </CardContent>
               </Card>
