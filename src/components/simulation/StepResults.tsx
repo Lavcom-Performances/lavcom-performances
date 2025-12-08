@@ -335,7 +335,10 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
       </div>
 
       {/* CTA Premium */}
-      <Card className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30">
+      <Card 
+        className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 cursor-pointer hover:border-amber-500/50 transition-colors"
+        onClick={() => window.location.href = '/subscribe-simulator'}
+      >
         <CardContent className="py-6">
           <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
             <div className="p-3 rounded-full bg-amber-500/20">
@@ -347,9 +350,12 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
                 Découvrez le Pack Premium : 1h de visio avec un expert en gestion de laverie pour affiner votre projet.
               </p>
             </div>
-            <Badge variant="secondary" className="bg-amber-500/20 text-amber-700 dark:text-amber-400 hover:bg-amber-500/30">
-              279 €
-            </Badge>
+            <Button 
+              variant="outline" 
+              className="bg-amber-500/20 text-amber-700 dark:text-amber-400 hover:bg-amber-500/30 border-amber-500/30"
+            >
+              Voir les tarifs
+            </Button>
           </div>
         </CardContent>
       </Card>
