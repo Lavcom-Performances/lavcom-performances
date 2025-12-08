@@ -5,9 +5,9 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import heroSlide1 from "@/assets/hero-slide-new.png";
-import heroSlide2 from "@/assets/hero-slide-2.png";
-import heroSlide3 from "@/assets/hero-slide-3.png";
-import heroSlide4 from "@/assets/hero-slide-4.png";
+import heroSlide2 from "@/assets/hero-slide-2-new.png";
+import heroSlide3 from "@/assets/hero-slide-3-new.png";
+import heroSlide4 from "@/assets/hero-slide-4-new.png";
 
 type HeroSlideId = "slide1" | "slide2" | "slide3" | "slide4";
 
