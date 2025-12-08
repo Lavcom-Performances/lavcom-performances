@@ -214,21 +214,26 @@ export const HeroValueSlider = () => {
               "transition-all duration-700 ease-out",
               isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
             )} style={{ transitionDelay: isTransitioning ? "0ms" : "300ms" }}>
-              {isAnchorLink ? (
-                <Button asChild size="lg" className="group rounded-full px-8">
-                  <a href={ctaHref}>
-                    {currentSlide.ctaLabel}
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </a>
-                </Button>
-              ) : (
-                <Button asChild size="lg" className="group rounded-full px-8">
-                  <Link to={ctaHref}>
-                    {currentSlide.ctaLabel}
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-              )}
+              <div className="flex items-center gap-3">
+                {isAnchorLink ? (
+                  <Button asChild size="lg" className="group rounded-full px-8">
+                    <a href={ctaHref}>
+                      {currentSlide.ctaLabel}
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </a>
+                  </Button>
+                ) : (
+                  <Button asChild size="lg" className="group rounded-full px-8">
+                    <Link to={ctaHref}>
+                      {currentSlide.ctaLabel}
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                )}
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold text-white" style={{ backgroundColor: '#A5C800' }}>
+                  Gratuit
+                </span>
+              </div>
             </div>
 
             {/* Dots indicator */}
