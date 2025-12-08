@@ -139,9 +139,9 @@ export default function SimulateurPage() {
       <main className="container mx-auto px-4 py-12">
         {/* Hero */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white mb-4" style={{ backgroundColor: '#A5C800' }}>
             <Calculator className="h-4 w-4" />
-            {t.badge}
+            Gratuit
           </div>
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
             {t.title}
