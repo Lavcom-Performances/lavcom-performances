@@ -185,7 +185,7 @@ const LandingPage = () => {
             <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               {t("nav").exploitants}
             </Link>
-            <Link to="/simulateur" className="text-amber-600 hover:text-amber-700 font-medium transition-colors">
+            <Link to="/simulateur" className="text-lavcom-orange hover:text-lavcom-orange-dark font-medium transition-colors">
               {t("nav").simulationOpening}
             </Link>
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -257,13 +257,13 @@ const LandingPage = () => {
           {/* Deux boutons principaux côte à côte */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in stagger-3">
             <a href="#exploitants">
-              <Button size="lg" className="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white text-lg px-8">
+              <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-lg px-8">
                 <Building2 className="mr-2 h-5 w-5" />
                 Je gère déjà une laverie
               </Button>
             </a>
             <a href="#futurs-exploitants">
-              <Button size="lg" className="btn-bounce bg-amber-600 hover:bg-amber-700 text-white text-lg px-8">
+              <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-lg px-8">
                 <Rocket className="mr-2 h-5 w-5" />
                 Je veux ouvrir une laverie
               </Button>
@@ -280,12 +280,12 @@ const LandingPage = () => {
       {/* ========================================== */}
       {/* BLOC B – PARCOURS EXPLOITANTS */}
       {/* ========================================== */}
-      <section id="exploitants" className="py-20 px-4 bg-gradient-to-br from-emerald-500/5 via-emerald-500/10 to-emerald-500/5 border-y border-emerald-500/20">
+      <section id="exploitants" className="py-20 px-4 bg-gradient-to-br from-lavcom-green/5 via-lavcom-green/10 to-lavcom-green/5 border-y border-lavcom-green/20">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Contenu texte */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <div className="inline-flex items-center gap-2 bg-lavcom-green/20 text-lavcom-green-dark dark:text-lavcom-green px-4 py-2 rounded-full text-sm font-medium mb-4">
                 <Building2 className="h-4 w-4" />
                 Pour les exploitants de laveries
               </div>
@@ -301,19 +301,19 @@ const LandingPage = () => {
               {/* Puces avantages exploitants */}
               <ul className="space-y-3 mb-8 text-left">
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
                   <span className="text-foreground">Suivez votre chiffre d'affaires par machine et par laverie</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
                   <span className="text-foreground">Identifiez vos machines sous-performantes et vos créneaux saturés</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
                   <span className="text-foreground">Recevez des recommandations concrètes sur les prix, horaires et parc machines</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
                   <span className="text-foreground">Générez des rapports PDF à partager avec vos partenaires</span>
                 </li>
               </ul>
@@ -321,13 +321,13 @@ const LandingPage = () => {
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Link to="/pricing">
-                  <Button size="lg" className="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white">
+                  <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white">
                     Voir les tarifs exploitants
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link to="/login?mode=exploitant">
-                  <Button size="lg" variant="outline" className="btn-bounce border-emerald-600/50 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-600/10">
+                  <Button size="lg" variant="outline" className="btn-bounce border-lavcom-green/50 text-lavcom-green-dark dark:text-lavcom-green hover:bg-lavcom-green/10">
                     Se connecter à mon espace
                   </Button>
                 </Link>
@@ -344,11 +344,11 @@ const LandingPage = () => {
               ].map((stat, index) => (
                 <Card 
                   key={stat.label}
-                  className="p-6 text-center card-lavcom-hover animate-fade-in bg-card/80 backdrop-blur border-emerald-500/20"
+                  className="p-6 text-center card-lavcom-hover animate-fade-in bg-card/80 backdrop-blur border-lavcom-green/20"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <stat.icon className="h-6 w-6 text-emerald-600 mx-auto mb-2" />
-                  <div className="text-3xl font-bold text-emerald-600 mb-1">
+                  <stat.icon className="h-6 w-6 text-lavcom-green mx-auto mb-2" />
+                  <div className="text-3xl font-bold text-lavcom-green mb-1">
                     {stat.value}
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -364,15 +364,15 @@ const LandingPage = () => {
       {/* ========================================== */}
       {/* BLOC C – PARCOURS FUTURS EXPLOITANTS */}
       {/* ========================================== */}
-      <section id="futurs-exploitants" className="py-20 px-4 bg-gradient-to-br from-amber-500/5 via-orange-500/10 to-amber-500/5 border-y border-amber-500/20">
+      <section id="futurs-exploitants" className="py-20 px-4 bg-gradient-to-br from-lavcom-orange/5 via-lavcom-orange/10 to-lavcom-orange/5 border-y border-lavcom-orange/20">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Visuel / Card simulateur */}
             <div className="order-2 lg:order-1">
-              <Card className="p-8 bg-card/80 backdrop-blur border-amber-500/30 shadow-xl">
+              <Card className="p-8 bg-card/80 backdrop-blur border-lavcom-orange/30 shadow-xl">
                 <div className="text-center space-y-6">
-                  <div className="w-20 h-20 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto">
-                    <Calculator className="h-10 w-10 text-amber-600" />
+                  <div className="w-20 h-20 rounded-full bg-lavcom-orange/20 flex items-center justify-center mx-auto">
+                    <Calculator className="h-10 w-10 text-lavcom-orange" />
                   </div>
                   <div>
                     <p className="text-3xl font-bold text-foreground">Simulateur</p>
@@ -382,19 +382,19 @@ const LandingPage = () => {
                   {/* Mini-aperçu des fonctionnalités */}
                   <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border">
                     <div className="flex items-center gap-2 text-sm">
-                      <Target className="h-4 w-4 text-amber-600" />
+                      <Target className="h-4 w-4 text-lavcom-orange" />
                       <span>Seuil de rentabilité</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <PieChart className="h-4 w-4 text-amber-600" />
+                      <PieChart className="h-4 w-4 text-lavcom-orange" />
                       <span>Analyse charges</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <FileText className="h-4 w-4 text-amber-600" />
+                      <FileText className="h-4 w-4 text-lavcom-orange" />
                       <span>Rapport PDF</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <BarChart3 className="h-4 w-4 text-amber-600" />
+                      <BarChart3 className="h-4 w-4 text-lavcom-orange" />
                       <span>Scénarios multiples</span>
                     </div>
                   </div>
@@ -406,7 +406,7 @@ const LandingPage = () => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Pack Premium</span>
-                      <span className="font-semibold text-amber-600">279 € (+ visio expert)</span>
+                      <span className="font-semibold text-lavcom-orange">279 € (+ visio expert)</span>
                     </div>
                   </div>
                 </div>
@@ -415,7 +415,7 @@ const LandingPage = () => {
             
             {/* Contenu texte */}
             <div className="order-1 lg:order-2 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-700 dark:text-amber-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <div className="inline-flex items-center gap-2 bg-lavcom-orange/20 text-lavcom-orange-dark dark:text-lavcom-orange px-4 py-2 rounded-full text-sm font-medium mb-4">
                 <Rocket className="h-4 w-4" />
                 Pour les futurs exploitants
               </div>
@@ -431,19 +431,19 @@ const LandingPage = () => {
               {/* Puces avantages simulateur */}
               <ul className="space-y-3 mb-8 text-left">
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-orange shrink-0 mt-0.5" />
                   <span className="text-foreground">Estimez votre CA lavage + séchage selon vos hypothèses</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-orange shrink-0 mt-0.5" />
                   <span className="text-foreground">Calculez votre seuil de rentabilité avec vos charges</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-orange shrink-0 mt-0.5" />
                   <span className="text-foreground">Sachez combien de cycles/jour vous devez atteindre</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-orange shrink-0 mt-0.5" />
                   <span className="text-foreground">Générez un rapport pour votre banque ou vos partenaires</span>
                 </li>
               </ul>
@@ -451,13 +451,13 @@ const LandingPage = () => {
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Link to="/simulateur">
-                  <Button size="lg" className="btn-bounce bg-amber-600 hover:bg-amber-700 text-white">
+                  <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white">
                     <Calculator className="mr-2 h-5 w-5" />
                     Tester le simulateur
                   </Button>
                 </Link>
                 <Link to="/subscribe-simulator">
-                  <Button size="lg" variant="outline" className="btn-bounce border-amber-600/50 text-amber-700 dark:text-amber-400 hover:bg-amber-600/10">
+                  <Button size="lg" variant="outline" className="btn-bounce border-lavcom-orange/50 text-lavcom-orange-dark dark:text-lavcom-orange hover:bg-lavcom-orange/10">
                     Découvrir les packs
                   </Button>
                 </Link>
