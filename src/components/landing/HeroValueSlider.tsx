@@ -61,69 +61,58 @@ export const HeroValueSlider = () => {
 
   return (
     <section className="relative w-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] overflow-hidden">
-      {/* Background image - full width */}
+      {/* Layer 1: Background image - full width */}
       <div 
         className={cn(
-          "absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700",
+          "absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700",
           isAnimating ? "opacity-0" : "opacity-100"
         )}
         style={{ backgroundImage: `url(${currentProposition.image})` }}
       />
 
-      {/* Blur layer on left side */}
+      {/* Layer 2: Gradient overlay - from solid left to transparent right */}
       <div 
-        className="absolute inset-y-0 left-0 w-[60%] dark:hidden"
-        style={{
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          maskImage: 'linear-gradient(to right, black 0%, black 50%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, black 0%, black 50%, transparent 100%)'
-        }}
-      />
-      
-      {/* Dark mode blur layer */}
-      <div 
-        className="absolute inset-y-0 left-0 w-[60%] hidden dark:block"
-        style={{
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          maskImage: 'linear-gradient(to right, black 0%, black 50%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, black 0%, black 50%, transparent 100%)'
-        }}
-      />
-
-      {/* Gradient overlay - from solid left to transparent right */}
-      <div 
-        className="absolute inset-0 dark:hidden"
+        className="absolute inset-0 z-[1] dark:hidden"
         style={{
           background: `linear-gradient(
             to right,
             hsl(80, 25%, 92%) 0%,
-            hsl(80, 25%, 92%, 0.92) 20%,
-            hsl(80, 25%, 92%, 0.75) 35%,
-            hsl(80, 25%, 92%, 0.4) 50%,
-            transparent 65%
+            hsl(80, 25%, 92%, 0.95) 25%,
+            hsl(80, 25%, 92%, 0.8) 40%,
+            hsl(80, 25%, 92%, 0.5) 55%,
+            transparent 70%
           )`
         }}
       />
 
-      {/* Dark mode gradient overlay */}
+      {/* Layer 2: Dark mode gradient overlay */}
       <div 
-        className="absolute inset-0 hidden dark:block"
+        className="absolute inset-0 z-[1] hidden dark:block"
         style={{
           background: `linear-gradient(
             to right,
             hsl(80, 10%, 15%) 0%,
-            hsl(80, 10%, 15%, 0.92) 20%,
-            hsl(80, 10%, 15%, 0.75) 35%,
-            hsl(80, 10%, 15%, 0.4) 50%,
-            transparent 65%
+            hsl(80, 10%, 15%, 0.95) 25%,
+            hsl(80, 10%, 15%, 0.8) 40%,
+            hsl(80, 10%, 15%, 0.5) 55%,
+            transparent 70%
           )`
         }}
       />
 
-      {/* Text content - positioned on left */}
-      <div className="relative z-10 h-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] flex items-center">
+      {/* Layer 3: Blur effect on left side - using pseudo element approach */}
+      <div 
+        className="absolute inset-y-0 left-0 w-[55%] z-[2]"
+        style={{
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          maskImage: 'linear-gradient(to right, black 0%, black 40%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, black 0%, black 40%, transparent 100%)'
+        }}
+      />
+
+      {/* Layer 4: Text content - positioned on left */}
+      <div className="relative z-[3] h-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] flex items-center">
         <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
           <div className="max-w-xl">
             <h1 
