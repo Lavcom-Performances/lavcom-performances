@@ -86,52 +86,57 @@ function getHeroCtaHref(slideId: HeroSlideId, user?: UserContext): string {
 
 export const HeroValueSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [previousIndex, setPreviousIndex] = useState<number | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   
   // TODO: Replace with actual auth context when implemented
   const user: UserContext | undefined = undefined;
 
+  const goToSlide = (newIndex: number) => {
+    if (newIndex === currentIndex || isTransitioning) return;
+    setPreviousIndex(currentIndex);
+    setCurrentIndex(newIndex);
+    setIsTransitioning(true);
+    
+    // End transition after animation completes
+    setTimeout(() => {
+      setPreviousIndex(null);
+      setIsTransitioning(false);
+    }, 800);
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setIsAnimating(true);
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % heroSlides.length);
-        setIsAnimating(false);
-      }, 500);
+      const nextIndex = (currentIndex + 1) % heroSlides.length;
+      goToSlide(nextIndex);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentIndex, isTransitioning]);
 
   const currentSlide = heroSlides[currentIndex];
+  const previousSlide = previousIndex !== null ? heroSlides[previousIndex] : null;
   const ctaHref = getHeroCtaHref(currentSlide.id, user);
-
-  const handleDotClick = (index: number) => {
-    if (index === currentIndex) return;
-    setIsAnimating(true);
-    setTimeout(() => {
-      setCurrentIndex(index);
-      setIsAnimating(false);
-    }, 300);
-  };
-
-  // Handle anchor links vs route links
   const isAnchorLink = ctaHref.startsWith("/#");
 
   return (
     <section className="relative w-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] overflow-hidden">
-      {/* Layer 1: Background image - full width */}
-      <div 
-        className={cn(
-          "absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700",
-          isAnimating ? "opacity-0" : "opacity-100"
-        )}
-        style={{ backgroundImage: `url(${currentSlide.image})` }}
-      />
+      {/* Layer 1: Background images with crossfade */}
+      {heroSlides.map((slide, index) => (
+        <div 
+          key={slide.id}
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700 ease-in-out"
+          style={{ 
+            backgroundImage: `url(${slide.image})`,
+            opacity: index === currentIndex ? 1 : 0,
+            zIndex: index === currentIndex ? 1 : 0
+          }}
+        />
+      ))}
 
       {/* Layer 2: Gradient overlay - from solid left to transparent right */}
       <div 
-        className="absolute inset-0 z-[1] dark:hidden"
+        className="absolute inset-0 z-[2] dark:hidden"
         style={{
           background: `linear-gradient(
             to right,
@@ -146,7 +151,7 @@ export const HeroValueSlider = () => {
 
       {/* Layer 2: Dark mode gradient overlay */}
       <div 
-        className="absolute inset-0 z-[1] hidden dark:block"
+        className="absolute inset-0 z-[2] hidden dark:block"
         style={{
           background: `linear-gradient(
             to right,
@@ -161,7 +166,7 @@ export const HeroValueSlider = () => {
 
       {/* Layer 3: Blur effect on left side */}
       <div 
-        className="absolute inset-y-0 left-0 w-[55%] z-[2]"
+        className="absolute inset-y-0 left-0 w-[55%] z-[3]"
         style={{
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
@@ -170,34 +175,45 @@ export const HeroValueSlider = () => {
         }}
       />
 
-      {/* Layer 4: Text content - positioned on left */}
-      <div className="relative z-[3] h-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] flex items-center">
+      {/* Layer 4: Text content with crossfade */}
+      <div className="relative z-[4] h-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] flex items-center">
         <div className="w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
-          <div className="max-w-xl">
-            <h1 
-              className={cn(
-                "text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6 leading-tight transition-all duration-500",
-                isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
-              )}
-            >
-              {currentSlide.title}
-            </h1>
-            
-            <p 
-              className={cn(
-                "text-base md:text-lg text-muted-foreground mb-6 md:mb-8 transition-all duration-500 delay-100 leading-relaxed",
-                isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
-              )}
-            >
-              {currentSlide.subtitle}
-            </p>
+          <div className="max-w-xl relative">
+            {/* Previous slide text (fading out) */}
+            {previousSlide && (
+              <div className="absolute inset-0 animate-fade-out pointer-events-none">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
+                  {previousSlide.title}
+                </h1>
+                <p className="text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed">
+                  {previousSlide.subtitle}
+                </p>
+              </div>
+            )}
 
-            <div 
-              className={cn(
-                "transition-all duration-500 delay-200",
-                isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
-              )}
-            >
+            {/* Current slide text (fading in) */}
+            <div className={cn(
+              "transition-all duration-700 ease-out",
+              isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
+            )} style={{ transitionDelay: isTransitioning ? "0ms" : "100ms" }}>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
+                {currentSlide.title}
+              </h1>
+            </div>
+            
+            <div className={cn(
+              "transition-all duration-700 ease-out",
+              isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
+            )} style={{ transitionDelay: isTransitioning ? "0ms" : "200ms" }}>
+              <p className="text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed">
+                {currentSlide.subtitle}
+              </p>
+            </div>
+
+            <div className={cn(
+              "transition-all duration-700 ease-out",
+              isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
+            )} style={{ transitionDelay: isTransitioning ? "0ms" : "300ms" }}>
               {isAnchorLink ? (
                 <Button asChild size="lg" className="group rounded-full px-8">
                   <a href={ctaHref}>
@@ -220,7 +236,7 @@ export const HeroValueSlider = () => {
               {heroSlides.map((_, index) => (
                 <button
                   key={index}
-                  onClick={() => handleDotClick(index)}
+                  onClick={() => goToSlide(index)}
                   className={cn(
                     "h-2 rounded-full transition-all duration-300",
                     index === currentIndex 
