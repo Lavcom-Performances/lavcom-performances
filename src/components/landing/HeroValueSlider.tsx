@@ -9,38 +9,93 @@ import heroSlide2 from "@/assets/hero-slide-2.png";
 import heroSlide3 from "@/assets/hero-slide-3.png";
 import heroSlide4 from "@/assets/hero-slide-4.png";
 
-const valuePropositions = [
+type HeroSlideId = "slide1" | "slide2" | "slide3" | "slide4";
+
+type HeroSlide = {
+  id: HeroSlideId;
+  title: string;
+  subtitle: string;
+  ctaLabel: string;
+  image: string;
+};
+
+const heroSlides: HeroSlide[] = [
   {
+    id: "slide1",
     title: "Gagnez plus avec vos laveries",
     subtitle: "Suivez votre CA en temps réel, identifiez vos machines sous-performantes et prenez les bonnes décisions pour augmenter votre rentabilité.",
+    ctaLabel: "Découvrir le tableau de bord",
     image: heroSlide1
   },
   {
+    id: "slide2",
     title: "Fini les laveries qui tournent à perte",
-    subtitle: "Visualisez enfin ce qui se passe vraiment dans votre laverie : recettes, taux d'occupation, rentabilité par machine.",
+    subtitle: "Visualisez enfin ce qui se passe vraiment dans votre laverie : recettes, taux d'occupation, rentabilité par machine. Et simulez votre prochain projet avant d'investir.",
+    ctaLabel: "Comprendre mes chiffres",
     image: heroSlide2
   },
   {
-    title: "Savez-vous combien vous rapporte chaque machine ?",
-    subtitle: "Lavcom Analytics connecte vos centrales de paiement et vous montre exactement où optimiser votre rentabilité.",
+    id: "slide3",
+    title: "Transformez vos données de paiement en décisions rentables",
+    subtitle: "La première plateforme analytics 100% dédiée aux exploitants de laveries automatiques.",
+    ctaLabel: "Voir comment ça marche",
     image: heroSlide3
   },
   {
-    title: "Transformez vos données en décisions rentables",
-    subtitle: "La première plateforme analytics 100% dédiée aux exploitants de laveries automatiques.",
+    id: "slide4",
+    title: "Savez-vous vraiment combien vous rapporte chaque machine ?",
+    subtitle: "Lavcom Analytics connecte vos centrales de paiement et vous montre exactement où optimiser votre rentabilité.",
+    ctaLabel: "Analyser mes machines",
     image: heroSlide4
   }
 ];
 
+type UserContext = {
+  isAuthenticated: boolean;
+  hasLaundromat?: boolean;
+};
+
+function getHeroCtaHref(slideId: HeroSlideId, user?: UserContext): string {
+  switch (slideId) {
+    case "slide1":
+      // Découvrir le tableau de bord
+      if (user?.isAuthenticated && user?.hasLaundromat) {
+        return "/dashboard";
+      }
+      return "/pricing";
+
+    case "slide2":
+      // Comprendre mes chiffres → simulateur
+      return "/simulateur";
+
+    case "slide3":
+      // Voir comment ça marche → section de la landing
+      return "/#how-it-works";
+
+    case "slide4":
+      // Analyser mes machines
+      if (user?.isAuthenticated && user?.hasLaundromat) {
+        return "/dashboard";
+      }
+      return "/pricing";
+
+    default:
+      return "/";
+  }
+}
+
 export const HeroValueSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // TODO: Replace with actual auth context when implemented
+  const user: UserContext | undefined = undefined;
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIsAnimating(true);
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % valuePropositions.length);
+        setCurrentIndex((prev) => (prev + 1) % heroSlides.length);
         setIsAnimating(false);
       }, 500);
     }, 5000);
@@ -48,7 +103,8 @@ export const HeroValueSlider = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const currentProposition = valuePropositions[currentIndex];
+  const currentSlide = heroSlides[currentIndex];
+  const ctaHref = getHeroCtaHref(currentSlide.id, user);
 
   const handleDotClick = (index: number) => {
     if (index === currentIndex) return;
@@ -59,6 +115,9 @@ export const HeroValueSlider = () => {
     }, 300);
   };
 
+  // Handle anchor links vs route links
+  const isAnchorLink = ctaHref.startsWith("/#");
+
   return (
     <section className="relative w-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] overflow-hidden">
       {/* Layer 1: Background image - full width */}
@@ -67,7 +126,7 @@ export const HeroValueSlider = () => {
           "absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700",
           isAnimating ? "opacity-0" : "opacity-100"
         )}
-        style={{ backgroundImage: `url(${currentProposition.image})` }}
+        style={{ backgroundImage: `url(${currentSlide.image})` }}
       />
 
       {/* Layer 2: Gradient overlay - from solid left to transparent right */}
@@ -100,7 +159,7 @@ export const HeroValueSlider = () => {
         }}
       />
 
-      {/* Layer 3: Blur effect on left side - using pseudo element approach */}
+      {/* Layer 3: Blur effect on left side */}
       <div 
         className="absolute inset-y-0 left-0 w-[55%] z-[2]"
         style={{
@@ -121,7 +180,7 @@ export const HeroValueSlider = () => {
                 isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
               )}
             >
-              {currentProposition.title}
+              {currentSlide.title}
             </h1>
             
             <p 
@@ -130,7 +189,7 @@ export const HeroValueSlider = () => {
                 isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
               )}
             >
-              {currentProposition.subtitle}
+              {currentSlide.subtitle}
             </p>
 
             <div 
@@ -139,17 +198,26 @@ export const HeroValueSlider = () => {
                 isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
               )}
             >
-              <Button asChild size="lg" className="group rounded-full px-8">
-                <Link to="/pricing">
-                  Découvrir Lavcom Analytics
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
+              {isAnchorLink ? (
+                <Button asChild size="lg" className="group rounded-full px-8">
+                  <a href={ctaHref}>
+                    {currentSlide.ctaLabel}
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </a>
+                </Button>
+              ) : (
+                <Button asChild size="lg" className="group rounded-full px-8">
+                  <Link to={ctaHref}>
+                    {currentSlide.ctaLabel}
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              )}
             </div>
 
             {/* Dots indicator */}
             <div className="flex items-center gap-2 mt-8 md:mt-12">
-              {valuePropositions.map((_, index) => (
+              {heroSlides.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => handleDotClick(index)}
@@ -159,7 +227,7 @@ export const HeroValueSlider = () => {
                       ? "bg-primary w-8" 
                       : "bg-foreground/30 hover:bg-foreground/50 w-2"
                   )}
-                  aria-label={`Proposition ${index + 1}`}
+                  aria-label={`Slide ${index + 1}`}
                 />
               ))}
             </div>

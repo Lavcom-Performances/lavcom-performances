@@ -518,6 +518,68 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Comment ça marche ?
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              En 3 étapes simples, transformez vos données de paiement en décisions rentables
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                step: "1",
+                title: "Connectez vos centrales",
+                description: "Reliez vos terminaux de paiement (Nayax, LMPay, CPI...) en quelques clics. Aucune installation technique requise."
+              },
+              {
+                step: "2",
+                title: "Visualisez vos données",
+                description: "Accédez à votre tableau de bord en temps réel : CA, taux d'occupation, performance par machine, tendances."
+              },
+              {
+                step: "3",
+                title: "Optimisez votre rentabilité",
+                description: "Identifiez les machines sous-performantes, ajustez vos tarifs et prenez des décisions basées sur des données concrètes."
+              }
+            ].map((item, index) => (
+              <div 
+                key={item.step}
+                className="relative text-center animate-fade-in"
+                style={{ animationDelay: `${index * 0.15}s` }}
+              >
+                <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+                  {item.step}
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-3">
+                  {item.title}
+                </h3>
+                <p className="text-muted-foreground">
+                  {item.description}
+                </p>
+                {index < 2 && (
+                  <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-primary/50 to-transparent" />
+                )}
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link to="/pricing">
+              <Button size="lg" className="btn-bounce">
+                Commencer maintenant
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
