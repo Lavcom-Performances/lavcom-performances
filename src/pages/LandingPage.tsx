@@ -451,11 +451,11 @@ const LandingPage = () => {
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Link to="/simulateur">
-                  <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white relative">
+                  <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white">
                     <Calculator className="mr-2 h-5 w-5" />
                     Tester le simulateur
-                    <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md">
-                      GRATUIT
+                    <span className="ml-2 bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                      Gratuit
                     </span>
                   </Button>
                 </Link>
