@@ -67,8 +67,17 @@ export default function Subscribe() {
     ? { total: pricing.annualTotal, period: "an", perLav: pricing.annualPricePerLav }
     : { total: pricing.monthlyTotal, period: "mois", perLav: pricing.monthlyPricePerLav };
 
-  const incrementCount = () => setLaundryCount(prev => Math.min(prev + 1, 20));
+  const incrementCount = () => setLaundryCount(prev => Math.min(prev + 1, 100));
   const decrementCount = () => setLaundryCount(prev => Math.max(prev - 1, 1));
+
+  const handleCountChange = (value: string) => {
+    const num = parseInt(value, 10);
+    if (isNaN(num) || value === "") {
+      setLaundryCount(1);
+    } else {
+      setLaundryCount(Math.min(Math.max(num, 1), 100));
+    }
+  };
 
   const validateStep1 = () => {
     if (!companyInfo.raisonSociale || !companyInfo.siret || !companyInfo.adresse || !companyInfo.codePostal || !companyInfo.ville) {
@@ -367,14 +376,19 @@ export default function Subscribe() {
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <span className="text-2xl font-bold text-foreground w-12 text-center">
-                      {laundryCount}
-                    </span>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={laundryCount}
+                      onChange={(e) => handleCountChange(e.target.value)}
+                      className="w-20 text-center text-xl font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
                     <Button 
                       variant="outline" 
                       size="icon"
                       onClick={incrementCount}
-                      disabled={laundryCount >= 20}
+                      disabled={laundryCount >= 100}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
