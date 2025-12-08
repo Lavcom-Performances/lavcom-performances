@@ -379,7 +379,11 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
                 <span className="text-muted-foreground font-normal"> – Collection Laverie Pro by Lavcom</span>
               </p>
             </div>
-            <Button variant="outline" className="gap-2 shrink-0">
+            <Button 
+              variant="outline" 
+              className="gap-2 shrink-0"
+              onClick={() => window.open('https://lavcom.fr/nos-ebooks-2/', '_blank')}
+            >
               <ExternalLink className="h-4 w-4" />
               Découvrir le guide
             </Button>
