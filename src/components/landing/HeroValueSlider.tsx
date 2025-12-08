@@ -70,18 +70,39 @@ export const HeroValueSlider = () => {
         style={{ backgroundImage: `url(${currentProposition.image})` }}
       />
 
+      {/* Blur layer on left side */}
+      <div 
+        className="absolute inset-y-0 left-0 w-[60%] dark:hidden"
+        style={{
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          maskImage: 'linear-gradient(to right, black 0%, black 50%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, black 0%, black 50%, transparent 100%)'
+        }}
+      />
+      
+      {/* Dark mode blur layer */}
+      <div 
+        className="absolute inset-y-0 left-0 w-[60%] hidden dark:block"
+        style={{
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          maskImage: 'linear-gradient(to right, black 0%, black 50%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, black 0%, black 50%, transparent 100%)'
+        }}
+      />
+
       {/* Gradient overlay - from solid left to transparent right */}
       <div 
-        className="absolute inset-0"
+        className="absolute inset-0 dark:hidden"
         style={{
           background: `linear-gradient(
             to right,
             hsl(80, 25%, 92%) 0%,
-            hsl(80, 25%, 92%, 0.95) 15%,
-            hsl(80, 25%, 92%, 0.85) 30%,
-            hsl(80, 25%, 92%, 0.6) 45%,
-            hsl(80, 25%, 92%, 0.3) 55%,
-            transparent 70%
+            hsl(80, 25%, 92%, 0.92) 20%,
+            hsl(80, 25%, 92%, 0.75) 35%,
+            hsl(80, 25%, 92%, 0.4) 50%,
+            transparent 65%
           )`
         }}
       />
@@ -93,11 +114,10 @@ export const HeroValueSlider = () => {
           background: `linear-gradient(
             to right,
             hsl(80, 10%, 15%) 0%,
-            hsl(80, 10%, 15%, 0.95) 15%,
-            hsl(80, 10%, 15%, 0.85) 30%,
-            hsl(80, 10%, 15%, 0.6) 45%,
-            hsl(80, 10%, 15%, 0.3) 55%,
-            transparent 70%
+            hsl(80, 10%, 15%, 0.92) 20%,
+            hsl(80, 10%, 15%, 0.75) 35%,
+            hsl(80, 10%, 15%, 0.4) 50%,
+            transparent 65%
           )`
         }}
       />
