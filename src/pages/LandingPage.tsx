@@ -454,7 +454,7 @@ const LandingPage = () => {
                   <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white">
                     <Calculator className="mr-2 h-5 w-5" />
                     Tester le simulateur
-                    <span className="ml-2 bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
+                    <span className="ml-2 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide" style={{ backgroundColor: '#A5C800' }}>
                       Gratuit
                     </span>
                   </Button>
