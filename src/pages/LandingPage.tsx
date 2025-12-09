@@ -947,7 +947,7 @@ const LandingPage = () => {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/pricing">
-                <Button size="lg" className="btn-bounce bg-emerald-600 hover:bg-emerald-700 text-white text-lg px-8">
+                <Button size="lg" className="btn-bounce text-white text-lg px-8" style={{ backgroundColor: '#A5C800' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8FB300'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#A5C800'}>
                   <Building2 className="mr-2 h-5 w-5" />
                   Tarifs exploitants
                 </Button>
