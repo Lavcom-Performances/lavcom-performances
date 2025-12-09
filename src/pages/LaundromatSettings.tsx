@@ -45,6 +45,8 @@ import { toast } from "sonner";
 import { generateProfitabilityReport } from "@/utils/profitabilityPdfExport";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { ReportVariantDialog } from "@/components/report/ReportVariantDialog";
+import { ReportVariant } from "@/types/report";
 
 interface Machine {
   id: string;
@@ -237,6 +239,36 @@ export default function LaundromatSettings() {
   const varTotalPercent = calculateVarTotalPercent(costs);
   const profitabilityMetrics = calculateProfitabilityMetrics(costs, siteTurnoverMonth, siteTotalCyclesMonth);
   const costsConfigured = hasCostsData(costs);
+
+  // Report variant dialog state
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
+
+  const handleDownloadReport = (variant: ReportVariant) => {
+    setReportLoading(true);
+    try {
+      generateProfitabilityReport({
+        laundromat: laundryInfo.name,
+        address: `${laundryInfo.address}, ${laundryInfo.postalCode} ${laundryInfo.city}`,
+        generatedDate: new Date().toLocaleDateString('fr-FR', { 
+          day: '2-digit', 
+          month: 'long', 
+          year: 'numeric' 
+        }),
+        costs: costs,
+        metrics: profitabilityMetrics,
+        siteTurnoverMonth: siteTurnoverMonth,
+        siteTotalCyclesMonth: siteTotalCyclesMonth,
+        monthlyRevenueObjective: objectives.monthlyRevenue,
+      });
+      toast.success(`Rapport ${variant === 'express' ? 'Express' : variant === 'bank' ? 'Banque' : 'Complet'} téléchargé`);
+      setReportDialogOpen(false);
+    } catch (error) {
+      toast.error("Erreur lors de la génération du rapport");
+    } finally {
+      setReportLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -791,23 +823,7 @@ export default function LaundromatSettings() {
                   variant="outline" 
                   size="sm" 
                   className="gap-2"
-                  onClick={() => {
-                    generateProfitabilityReport({
-                      laundromat: laundryInfo.name,
-                      address: `${laundryInfo.address}, ${laundryInfo.postalCode} ${laundryInfo.city}`,
-                      generatedDate: new Date().toLocaleDateString('fr-FR', { 
-                        day: '2-digit', 
-                        month: 'long', 
-                        year: 'numeric' 
-                      }),
-                      costs: costs,
-                      metrics: profitabilityMetrics,
-                      siteTurnoverMonth: siteTurnoverMonth,
-                      siteTotalCyclesMonth: siteTotalCyclesMonth,
-                      monthlyRevenueObjective: objectives.monthlyRevenue,
-                    });
-                    toast.success("Bilan prévisionnel téléchargé");
-                  }}
+                  onClick={() => setReportDialogOpen(true)}
                 >
                   <FileDown className="h-4 w-4" />
                   Télécharger le bilan PDF
@@ -1106,6 +1122,14 @@ export default function LaundromatSettings() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Report Variant Dialog */}
+      <ReportVariantDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        onDownload={handleDownloadReport}
+        isLoading={reportLoading}
+      />
     </div>
   );
 }

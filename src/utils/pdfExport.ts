@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { ReportVariant, ReportSectionConfig, getReportConfigForVariant } from "@/types/report";
 
 interface MonthlyReportData {
   laundromat: string;
@@ -47,7 +48,21 @@ const COLORS = {
   white: [255, 255, 255] as [number, number, number],
 };
 
-export function generateMonthlyReport(data: MonthlyReportData): void {
+// Get report variant suffix for filename
+function getVariantSuffix(variant: ReportVariant): string {
+  switch (variant) {
+    case "express": return "_EXPRESS";
+    case "bank": return "_BANQUE";
+    case "full":
+    default: return "_COMPLET";
+  }
+}
+
+export function generateMonthlyReport(
+  data: MonthlyReportData,
+  variant: ReportVariant = "full"
+): void {
+  const config = getReportConfigForVariant(variant);
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
@@ -205,46 +220,48 @@ export function generateMonthlyReport(data: MonthlyReportData): void {
   doc.setFont("helvetica", "bold");
   doc.text(`${data.summary.moyenneJour.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`, margin + (boxWidth + 10) * 2 + 5, bottomY + 15);
 
-  // Page 2 - Daily details
-  doc.addPage();
-  
-  // Header page 2
-  doc.setFillColor(...COLORS.green);
-  doc.rect(0, 0, pageWidth, 20, "F");
-  doc.setTextColor(...COLORS.white);
-  doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
-  doc.text(`Détail journalier - ${data.month} ${data.year}`, pageWidth / 2, 13, { align: "center" });
+  // Page 2 - Daily details (only for full report)
+  if (config.dailyTable) {
+    doc.addPage();
+    
+    // Header page 2
+    doc.setFillColor(...COLORS.green);
+    doc.rect(0, 0, pageWidth, 20, "F");
+    doc.setTextColor(...COLORS.white);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Détail journalier - ${data.month} ${data.year}`, pageWidth / 2, 13, { align: "center" });
 
-  // Daily table
-  autoTable(doc, {
-    startY: 30,
-    head: [["Date", "CA ESP", "CA CB", "Total", "Ventes ESP", "Ventes CB", "Total"]],
-    body: data.dailyData.map(d => [
-      d.date,
-      `${d.caEsp.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
-      `${d.caCb.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
-      `${d.caTotal.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
-      d.ventesEsp.toString(),
-      d.ventesCb.toString(),
-      d.ventesTotal.toString(),
-    ]),
-    theme: "grid",
-    headStyles: {
-      fillColor: COLORS.green,
-      textColor: COLORS.white,
-      fontSize: 8,
-      fontStyle: "bold",
-    },
-    bodyStyles: {
-      fontSize: 7,
-      textColor: COLORS.darkGray,
-    },
-    alternateRowStyles: {
-      fillColor: [250, 250, 250],
-    },
-    margin: { left: margin, right: margin },
-  });
+    // Daily table
+    autoTable(doc, {
+      startY: 30,
+      head: [["Date", "CA ESP", "CA CB", "Total", "Ventes ESP", "Ventes CB", "Total"]],
+      body: data.dailyData.map(d => [
+        d.date,
+        `${d.caEsp.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
+        `${d.caCb.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
+        `${d.caTotal.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
+        d.ventesEsp.toString(),
+        d.ventesCb.toString(),
+        d.ventesTotal.toString(),
+      ]),
+      theme: "grid",
+      headStyles: {
+        fillColor: COLORS.green,
+        textColor: COLORS.white,
+        fontSize: 8,
+        fontStyle: "bold",
+      },
+      bodyStyles: {
+        fontSize: 7,
+        textColor: COLORS.darkGray,
+      },
+      alternateRowStyles: {
+        fillColor: [250, 250, 250],
+      },
+      margin: { left: margin, right: margin },
+    });
+  }
 
   // Footer
   const totalPages = doc.getNumberOfPages();
@@ -260,8 +277,8 @@ export function generateMonthlyReport(data: MonthlyReportData): void {
     );
   }
 
-  // Save the PDF
-  doc.save(`${data.laundromat.replace(/\s+/g, "_")}_CA_${data.month.toUpperCase()}_${data.year}.pdf`);
+  // Save the PDF with variant suffix
+  doc.save(`${data.laundromat.replace(/\s+/g, "_")}_CA_${data.month.toUpperCase()}_${data.year}${getVariantSuffix(variant)}.pdf`);
 }
 
 // Mock data generator for demo
