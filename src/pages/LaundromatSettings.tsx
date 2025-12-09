@@ -32,9 +32,7 @@ import {
   TrendingUp,
   TrendingDown,
   Info,
-  FileDown,
-  Search,
-  Loader2
+  FileDown
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
@@ -102,9 +100,6 @@ interface LaundryCostsState {
 }
 
 export default function LaundromatSettings() {
-  // SIRET loading state
-  const [siretLoading, setSiretLoading] = useState(false);
-
   // Laundromat info
   const [laundryInfo, setLaundryInfo] = useState<LaundryInfo>({
     name: "Laverie Centre-Ville",
@@ -122,63 +117,6 @@ export default function LaundromatSettings() {
     tradeName: "",
     nafCode: "",
   });
-
-  // Fonction pour remplir automatiquement via SIRET
-  const handleFillFromSiret = async () => {
-    const siret = laundryInfo.siret.replace(/\s/g, '');
-
-    // Validation de base
-    if (!siret || siret.length !== 14 || !/^[0-9]+$/.test(siret)) {
-      toast.error("Merci de saisir un SIRET valide (14 chiffres).");
-      return;
-    }
-
-    setSiretLoading(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke('fetch-from-siret', {
-        body: null,
-        headers: {},
-      });
-
-      // L'edge function attend un paramètre query, on doit l'appeler différemment
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-from-siret?siret=${siret}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Erreur lors de la récupération des données");
-      }
-
-      const result = await response.json();
-
-      // Mapper les champs
-      setLaundryInfo(prev => ({
-        ...prev,
-        companyName: result.company_name || prev.companyName,
-        tradeName: result.trade_name || prev.tradeName,
-        name: result.trade_name || result.company_name || prev.name,
-        address: result.address_line1 || prev.address,
-        postalCode: result.postal_code || prev.postalCode,
-        city: result.city || prev.city,
-        nafCode: result.naf_code || prev.nafCode,
-      }));
-
-      toast.success("Informations pré-remplies à partir du SIRET. Vous pouvez les modifier si besoin.");
-    } catch (error) {
-      console.error('SIRET fetch error:', error);
-      toast.error("Impossible de récupérer les informations pour ce SIRET. Vérifiez le numéro ou complétez les champs manuellement.");
-    } finally {
-      setSiretLoading(false);
-    }
-  };
 
   // Operating hours
   const [operatingHours, setOperatingHours] = useState<OperatingHours>({
@@ -346,78 +284,6 @@ export default function LaundromatSettings() {
 
         {/* General Tab */}
         <TabsContent value="general" className="space-y-6">
-          {/* SIRET Auto-fill Block */}
-          <Card className="border-lavcom-green/30 bg-lavcom-green/5">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Search className="h-5 w-5 text-lavcom-green" />
-                Remplissage automatique via SIRET
-              </CardTitle>
-              <CardDescription>
-                Si vous connaissez le SIRET de votre établissement, nous pouvons pré-remplir automatiquement le nom de l'entreprise et l'adresse.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1 space-y-2">
-                  <Label htmlFor="siret">SIRET de l'établissement</Label>
-                  <Input
-                    id="siret"
-                    placeholder="12345678901234"
-                    value={laundryInfo.siret}
-                    onChange={(e) => setLaundryInfo({ ...laundryInfo, siret: e.target.value })}
-                    maxLength={14}
-                    className="font-mono"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    14 chiffres, sans espaces
-                  </p>
-                </div>
-                <div className="flex items-end">
-                  <Button 
-                    onClick={handleFillFromSiret}
-                    disabled={siretLoading || !laundryInfo.siret}
-                    className="gap-2 bg-lavcom-green hover:bg-lavcom-green/90"
-                  >
-                    {siretLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Search className="h-4 w-4" />
-                    )}
-                    Remplir automatiquement
-                  </Button>
-                </div>
-              </div>
-              
-              {/* Affichage des infos société si renseignées */}
-              {(laundryInfo.companyName || laundryInfo.nafCode) && (
-                <div className="mt-4 p-4 bg-background rounded-lg border space-y-2">
-                  <p className="text-sm font-medium">Informations récupérées :</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                    {laundryInfo.companyName && (
-                      <div>
-                        <span className="text-muted-foreground">Raison sociale : </span>
-                        <span className="font-medium">{laundryInfo.companyName}</span>
-                      </div>
-                    )}
-                    {laundryInfo.tradeName && (
-                      <div>
-                        <span className="text-muted-foreground">Nom commercial : </span>
-                        <span className="font-medium">{laundryInfo.tradeName}</span>
-                      </div>
-                    )}
-                    {laundryInfo.nafCode && (
-                      <div>
-                        <span className="text-muted-foreground">Code NAF : </span>
-                        <span className="font-medium">{laundryInfo.nafCode}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Identity */}
             <Card>
@@ -479,6 +345,28 @@ export default function LaundromatSettings() {
                       type="email"
                       value={laundryInfo.email}
                       onChange={(e) => setLaundryInfo({ ...laundryInfo, email: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="siret">SIRET de l'établissement (optionnel)</Label>
+                    <Input
+                      id="siret"
+                      placeholder="12345678901234"
+                      value={laundryInfo.siret}
+                      onChange={(e) => setLaundryInfo({ ...laundryInfo, siret: e.target.value })}
+                      maxLength={14}
+                      className="font-mono"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="nafCode">Code NAF (optionnel)</Label>
+                    <Input
+                      id="nafCode"
+                      placeholder="96.01A"
+                      value={laundryInfo.nafCode}
+                      onChange={(e) => setLaundryInfo({ ...laundryInfo, nafCode: e.target.value })}
                     />
                   </div>
                 </div>
