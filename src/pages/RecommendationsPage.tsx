@@ -10,13 +10,16 @@ import {
   Zap,
   Download,
   Loader2,
-  Euro
+  Euro,
+  Megaphone
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { generateRecommendationsReport, getRecommendationsData } from "@/utils/recommendationsPdfExport";
+import { generateMarketingRecommendations, getMockAnalyticsData } from "@/utils/marketingRecommendations";
+import type { Recommendation } from "@/types/recommendations";
 
 type EffortLevel = "low" | "medium" | "high";
 
@@ -236,6 +239,20 @@ export default function RecommendationsPage() {
     },
   ];
 
+  // Generate marketing recommendations from analytics data
+  const analyticsData = getMockAnalyticsData();
+  const marketingRecommendations = generateMarketingRecommendations(analyticsData);
+
+  // Convert marketing recommendations to InsightCard format
+  const marketingInsights = marketingRecommendations.map((reco: Recommendation) => ({
+    title: reco.title,
+    description: reco.description,
+    type: "info" as const,
+    icon: Megaphone,
+    financialImpact: reco.impactEstimate ? parseInt(reco.impactEstimate.replace(/[^\d]/g, "")) : undefined,
+    effort: (reco.difficulty === "Faible" ? "low" : reco.difficulty === "Moyen" ? "medium" : "high") as EffortLevel,
+  }));
+
   return (
     <div className="p-6 lg:p-8 space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -321,6 +338,26 @@ export default function RecommendationsPage() {
           ))}
         </div>
       </section>
+
+      {/* Marketing Recommendations Section */}
+      {marketingInsights.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-lg font-display font-semibold flex items-center gap-2">
+            <Megaphone className="h-5 w-5 text-primary" />
+            Idées Communication & Marketing
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Ces suggestions marketing sont générées automatiquement à partir des chiffres de votre laverie 
+            (fréquentation, répartition du CA, machines sous-utilisées…). Elles ne sont pas des obligations 
+            mais des pistes d'actions simples à tester sur un mois. Adaptez-les à votre quartier, votre clientèle et vos moyens.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {marketingInsights.map((insight, index) => (
+              <InsightCard key={index} {...insight} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Summary KPIs */}
       <section className="kpi-card">
