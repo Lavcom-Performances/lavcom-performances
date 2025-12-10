@@ -21,6 +21,21 @@ export interface LaundromatAnalyticsData {
   cardPaymentShare: number;           // Ex: 0.81 for 81%
   peakHour: string;                   // Ex: "18h"
   machines: MachinePerformance[];
+  
+  // Fidélisation
+  returningCustomerRate: number;      // Ex: 0.35 for 35% de clients réguliers
+  averageVisitsPerMonth: number;      // Ex: 2.3 visites/mois par client fidèle
+  
+  // Panier moyen
+  averageBasket: number;              // Ex: 8.50€
+  averageBasketTrend: number;         // Ex: -0.05 for -5% vs mois précédent
+  bigLoadsShare: number;              // Ex: 0.15 for 15% de gros cycles (>10€)
+  
+  // Saisonnalité
+  currentMonth: number;               // 1-12
+  monthlyRevenueVsAverage: number;    // Ex: -0.12 for -12% vs moyenne annuelle
+  isLowSeason: boolean;               // Période creuse identifiée
+  previousYearSameMonthDelta: number; // Ex: +0.08 for +8% vs même mois N-1
 }
 
 export interface MachinePerformance {
