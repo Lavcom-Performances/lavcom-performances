@@ -11,7 +11,15 @@ import {
   Download,
   Loader2,
   Euro,
-  Megaphone
+  Megaphone,
+  Users,
+  ShoppingCart,
+  Sun,
+  Heart,
+  TrendingUp as TrendUp,
+  Repeat,
+  Crown,
+  type LucideIcon
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +28,29 @@ import { useToast } from "@/hooks/use-toast";
 import { generateRecommendationsReport, getRecommendationsData } from "@/utils/recommendationsPdfExport";
 import { generateMarketingRecommendations, getMockAnalyticsData } from "@/utils/marketingRecommendations";
 import type { Recommendation } from "@/types/recommendations";
+
+// Map recommendation IDs to specific icons
+const getMarketingIcon = (recoId: string): LucideIcon => {
+  // Fidélisation
+  if (recoId.includes("loyalty") || recoId.includes("frequency")) return Heart;
+  if (recoId.includes("momentum") || recoId.includes("capitalize")) return TrendUp;
+  
+  // Panier moyen
+  if (recoId.includes("basket") || recoId.includes("big-loads")) return ShoppingCart;
+  if (recoId.includes("premium")) return Crown;
+  
+  // Saisonnalité
+  if (recoId.includes("season") || recoId.includes("morning")) return Sun;
+  if (recoId.includes("sunday") || recoId.includes("push")) return Calendar;
+  
+  // Visibilité / Communication
+  if (recoId.includes("drop") || recoId.includes("visibility")) return Users;
+  if (recoId.includes("card") || recoId.includes("promote")) return Zap;
+  if (recoId.includes("highlight") || recoId.includes("dryer")) return Repeat;
+  
+  // Par défaut
+  return Megaphone;
+};
 
 type EffortLevel = "low" | "medium" | "high";
 
@@ -243,12 +274,12 @@ export default function RecommendationsPage() {
   const analyticsData = getMockAnalyticsData();
   const marketingRecommendations = generateMarketingRecommendations(analyticsData);
 
-  // Convert marketing recommendations to InsightCard format
+  // Convert marketing recommendations to InsightCard format with specific icons
   const marketingInsights = marketingRecommendations.map((reco: Recommendation) => ({
     title: reco.title,
     description: reco.description,
     type: "info" as const,
-    icon: Megaphone,
+    icon: getMarketingIcon(reco.id),
     financialImpact: reco.impactEstimate ? parseInt(reco.impactEstimate.replace(/[^\d]/g, "")) : undefined,
     effort: (reco.difficulty === "Faible" ? "low" : reco.difficulty === "Moyen" ? "medium" : "high") as EffortLevel,
   }));
