@@ -1,5 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { generateMarketingRecommendations, getMockAnalyticsData } from "@/utils/marketingRecommendations";
+import type { Recommendation } from "@/types/recommendations";
 
 interface InsightData {
   title: string;
@@ -14,12 +16,14 @@ interface RecommendationsReportData {
   performanceInsights: InsightData[];
   optimizationInsights: InsightData[];
   actionItems: InsightData[];
+  marketingRecommendations: Recommendation[];
   kpis: {
     caAnnuel: string;
     variation: string;
     heurePointe: string;
     jourActif: string;
   };
+  includeMarketing?: boolean;
 }
 
 // Lavcom brand colors
@@ -216,6 +220,58 @@ export function generateRecommendationsReport(data: RecommendationsReportData): 
     margin: { left: margin, right: margin },
   });
 
+  currentY = (doc as any).lastAutoTable.finalY + 12;
+
+  // Marketing Recommendations Section (if included)
+  if (data.includeMarketing !== false && data.marketingRecommendations.length > 0) {
+    // Check if we need a new page
+    if (currentY > 200) {
+      doc.addPage();
+      currentY = 25;
+    }
+
+    doc.setTextColor(...COLORS.darkGray);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Idées Communication & Marketing", margin, currentY);
+    currentY += 6;
+
+    // Introduction text
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    const introText = "Ces suggestions marketing sont générées automatiquement à partir des chiffres de votre laverie (fréquentation, répartition du CA, machines sous-utilisées…). Elles ne sont pas des obligations mais des pistes d'actions simples à tester sur un mois. Adaptez-les à votre quartier, votre clientèle et vos moyens.";
+    const introLines = doc.splitTextToSize(introText, pageWidth - margin * 2);
+    doc.text(introLines, margin, currentY + 4);
+    currentY += introLines.length * 4 + 8;
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [["Recommandation", "Effort", "Détails"]],
+      body: data.marketingRecommendations.map(reco => [
+        reco.title,
+        reco.difficulty || "-",
+        reco.description,
+      ]),
+      theme: "grid",
+      headStyles: {
+        fillColor: [109, 191, 184] as [number, number, number], // Cyan Lavcom
+        textColor: COLORS.white,
+        fontSize: 9,
+        fontStyle: "bold",
+      },
+      bodyStyles: {
+        fontSize: 8,
+        textColor: COLORS.darkGray,
+      },
+      columnStyles: {
+        0: { cellWidth: 45, fontStyle: "bold" },
+        1: { cellWidth: 20, halign: "center" },
+        2: { cellWidth: "auto" },
+      },
+      margin: { left: margin, right: margin },
+    });
+  }
+
   // Footer
   const totalPages = doc.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
@@ -235,9 +291,13 @@ export function generateRecommendationsReport(data: RecommendationsReportData): 
   doc.save(`${data.laundromat.replace(/\s+/g, "_")}_Recommandations_${dateFormatted}.pdf`);
 }
 
-export function getRecommendationsData(): RecommendationsReportData {
+export function getRecommendationsData(includeMarketing: boolean = true): RecommendationsReportData {
   const today = new Date();
   const dateStr = today.toLocaleDateString("fr-FR");
+
+  // Generate marketing recommendations from analytics data
+  const analyticsData = getMockAnalyticsData();
+  const marketingRecos = generateMarketingRecommendations(analyticsData);
 
   return {
     laundromat: "My Co'Laverie",
@@ -299,6 +359,8 @@ export function getRecommendationsData(): RecommendationsReportData {
         type: "action",
       },
     ],
+    marketingRecommendations: marketingRecos,
+    includeMarketing,
     kpis: {
       caAnnuel: "64 121€",
       variation: "-27%",
