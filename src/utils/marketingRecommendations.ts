@@ -14,60 +14,80 @@ export function generateMarketingRecommendations(data: LaundromatAnalyticsData):
       category: "marketing",
       title: "Renforcer votre visibilité locale",
       description:
-        `Votre chiffre d'affaires est en baisse de ${Math.abs(Math.round(data.yearlyDropPercent))}% vs l'année dernière. Plan d'action recommandé : publier au moins 1 fois par semaine sur Google Business et Facebook, renouveler les photos de la laverie et distribuer des flyers dans le quartier (commerces de proximité, résidences, Airbnb).`,
+        `Votre chiffre d'affaires est en baisse de ${Math.round(Math.abs(data.yearlyDropPercent))}% par rapport à l'année dernière. ` +
+        "Plan d'action recommandé : publier au moins une fois par semaine sur votre fiche Google Business et sur vos réseaux sociaux (Facebook, Instagram), " +
+        "mettre à jour les photos de la laverie et distribuer quelques flyers dans le quartier (commerces de proximité, résidences, Airbnb, hôtels). " +
+        "L'objectif est de rappeler votre présence aux habitants et d'attirer de nouveaux clients.",
       difficulty: "Moyen",
       impactEstimate: "+200€/mois",
     });
   }
 
-  // 2) Heures creuses très peu utilisées (ex. matin < 5% du CA)
-  if (data.morningRevenueShare < 0.05) {
+  // 2) Heures creuses du matin très faibles (< 5 % du CA)
+  if (data.morningRevenueShare !== undefined && data.morningRevenueShare < 0.05) {
     recos.push({
       id: "mkt-morning-offer",
       category: "marketing",
       title: "Animer vos heures creuses du matin",
       description:
-        `Les heures de début de matinée représentent seulement ${Math.round(data.morningRevenueShare * 100)}% de votre CA. Idée à tester : une offre -20% avant 10h, annoncée sur vos réseaux sociaux, votre fiche Google et via une affiche A4 à l'entrée de la laverie.`,
+        `Les premières heures de la journée représentent seulement ${Math.round(data.morningRevenueShare * 100)}% de votre chiffre d'affaires. ` +
+        "Vous pouvez tester une offre spécifique sur ce créneau (ex. -20 % avant 10h ou avantage fidélité). " +
+        "Annoncez cette offre sur vos réseaux sociaux, sur votre fiche Google Business et via une affiche A4 à l'entrée de la laverie. " +
+        "Le but est de lisser la fréquentation et de mieux utiliser vos machines en dehors des heures de pointe.",
       difficulty: "Faible",
       impactEstimate: "+150€/mois",
     });
   }
 
-  // 3) Machine ou SL sous-performant
-  const weakDryer = data.machines.find(m => m.type === "dryer" && m.revenueRatioVsTop < 0.5);
+  // 3) Sèche-linge ou machine très sous-performant(e)
+  const weakDryer = data.machines?.find(
+    (m) => m.type === "dryer" && m.revenueRatioVsTop !== undefined && m.revenueRatioVsTop < 0.5
+  );
   if (weakDryer) {
     recos.push({
       id: "mkt-highlight-weak-dryer",
       category: "marketing",
-      title: `Mettre en avant votre ${weakDryer.displayName}`,
+      title: `Mettre davantage en avant votre ${weakDryer.displayName}`,
       description:
-        `Le ${weakDryer.displayName} génère beaucoup moins de CA que vos autres sèche-linges. En plus du contrôle technique, ajoutez un sticker "Pensez à utiliser aussi ce sèche-linge" sur la machine et un petit rappel visuel dans la laverie (mur, table) pour répartir les clients.`,
+        `Le ${weakDryer.displayName} génère nettement moins de chiffre d'affaires que vos autres sèche-linges. ` +
+        "En complément d'un contrôle technique, vous pouvez améliorer sa visibilité : " +
+        "ajout d'un sticker sur la machine (\"Pensez aussi à utiliser ce sèche-linge\"), " +
+        "flèches ou pictogrammes au sol, et un petit message dans la laverie expliquant qu'il est disponible pour réduire le temps d'attente. " +
+        "Ce type de micro-signalétique permet souvent de mieux répartir les clients sur l'ensemble du parc.",
       difficulty: "Faible",
       impactEstimate: "+80€/mois",
     });
   }
 
   // 4) Dimanche ou week-end très fort
-  if (data.sundayShare >= 0.18) {
+  if (data.sundayShare !== undefined && data.sundayShare >= 0.18) {
     recos.push({
       id: "mkt-sunday-push",
       category: "marketing",
       title: "Capitaliser sur vos dimanches forts",
       description:
-        `Le dimanche représente environ ${Math.round(data.sundayShare * 100)}% de vos cycles. Vous pouvez renforcer ce jour fort avec un message récurrent : post Facebook/Instagram le samedi soir et affichage "Pensez à vos couettes et draps demain" à l'intérieur de la laverie.`,
+        `Le dimanche représente environ ${Math.round(data.sundayShare * 100)}% de vos cycles. ` +
+        "Vous pouvez renforcer ce jour fort avec une communication récurrente : " +
+        "un post Facebook / Instagram chaque samedi soir pour rappeler vos horaires du dimanche, " +
+        "et un message en laverie du type \"Pensez à vos couettes et draps ce week-end\". " +
+        "Cela aide vos clients à intégrer un réflexe régulier, notamment pour le linge volumineux.",
       difficulty: "Faible",
       impactEstimate: "+100€/mois",
     });
   }
 
   // 5) Paiement CB quasi exclusif
-  if (data.cardPaymentShare > 0.75) {
+  if (data.cardPaymentShare !== undefined && data.cardPaymentShare > 0.75) {
     recos.push({
       id: "mkt-promote-card",
       category: "marketing",
       title: "Mettre en avant le paiement sans contact",
       description:
-        `Plus de ${Math.round(data.cardPaymentShare * 100)}% de vos paiements sont faits en CB ou sans contact. Ajoutez des visuels en vitrine et sur Google Business pour rassurer les nouveaux clients : "CB / Sans contact / Smartphone acceptés".`,
+        `Plus de ${Math.round(data.cardPaymentShare * 100)}% de vos paiements sont réalisés en CB ou sans contact. ` +
+        "C'est un vrai atout pour rassurer les nouveaux clients. " +
+        "Ajoutez un visuel clair en vitrine (\"CB / Sans contact / Smartphone acceptés\") et mettez cette information " +
+        "en avant sur votre fiche Google Business ainsi que sur vos réseaux sociaux. " +
+        "C'est un détail simple qui peut lever une barrière psychologique chez certains clients.",
       difficulty: "Faible",
       impactEstimate: "+50€/mois",
     });
