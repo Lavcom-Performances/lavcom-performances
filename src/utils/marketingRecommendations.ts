@@ -73,6 +73,99 @@ export function generateMarketingRecommendations(data: LaundromatAnalyticsData):
     });
   }
 
+  // 6) Faible taux de clients fidèles
+  if (data.returningCustomerRate < 0.25) {
+    recos.push({
+      id: "mkt-loyalty-program",
+      category: "marketing",
+      title: "Lancer un programme de fidélité simple",
+      description:
+        `Seulement ${Math.round(data.returningCustomerRate * 100)}% de vos clients reviennent régulièrement. Testez une carte de fidélité papier (10 lavages = 1 offert) ou un système de points via QR code. Annoncez-le sur vos réseaux et avec une affiche en vitrine.`,
+      difficulty: "Moyen",
+      impactEstimate: "+180€/mois",
+    });
+  }
+
+  // 7) Panier moyen en baisse
+  if (data.averageBasketTrend <= -0.08) {
+    recos.push({
+      id: "mkt-basket-boost",
+      category: "marketing",
+      title: "Stimuler le panier moyen",
+      description:
+        `Votre panier moyen a baissé de ${Math.abs(Math.round(data.averageBasketTrend * 100))}% ce mois-ci. Proposez des offres combinées : "Lavage + Séchage à tarif réduit" ou mettez en avant vos machines grande capacité avec un sticker "Idéal couettes & draps".`,
+      difficulty: "Faible",
+      impactEstimate: "+100€/mois",
+    });
+  }
+
+  // 8) Peu de gros cycles (grande capacité sous-utilisée)
+  if (data.bigLoadsShare < 0.10) {
+    recos.push({
+      id: "mkt-promote-big-loads",
+      category: "marketing",
+      title: "Promouvoir les machines grande capacité",
+      description:
+        `Les cycles >10€ ne représentent que ${Math.round(data.bigLoadsShare * 100)}% de votre CA. Ciblez les familles et les locations Airbnb avec une communication dédiée : "Lavez couettes, rideaux et draps en une seule fois". Distribuez des flyers dans les résidences proches.`,
+      difficulty: "Faible",
+      impactEstimate: "+120€/mois",
+    });
+  }
+
+  // 9) Période creuse saisonnière
+  if (data.isLowSeason && data.monthlyRevenueVsAverage < -0.10) {
+    const monthNames = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+    const currentMonthName = monthNames[data.currentMonth - 1] || "ce mois";
+    recos.push({
+      id: "mkt-low-season-action",
+      category: "marketing",
+      title: `Action spéciale ${currentMonthName}`,
+      description:
+        `${currentMonthName.charAt(0).toUpperCase() + currentMonthName.slice(1)} est habituellement un mois creux (${Math.round(data.monthlyRevenueVsAverage * 100)}% vs moyenne). Lancez une offre temporaire : "-15% sur les séchages" ou "2ème lavage à -50%" pour dynamiser la fréquentation. Relayez sur Google Business et vos réseaux.`,
+      difficulty: "Moyen",
+      impactEstimate: "+150€/mois",
+    });
+  }
+
+  // 10) Bonne performance vs N-1 même mois – capitaliser
+  if (data.previousYearSameMonthDelta >= 0.10) {
+    recos.push({
+      id: "mkt-momentum-capitalize",
+      category: "marketing",
+      title: "Capitaliser sur votre dynamique positive",
+      description:
+        `Vous êtes en hausse de ${Math.round(data.previousYearSameMonthDelta * 100)}% vs le même mois l'an dernier. Profitez de cet élan pour collecter des avis Google, poster des photos de votre laverie bien remplie et remercier vos clients fidèles sur les réseaux.`,
+      difficulty: "Faible",
+      impactEstimate: "+80€/mois",
+    });
+  }
+
+  // 11) Clients fidèles peu fréquents
+  if (data.returningCustomerRate >= 0.30 && data.averageVisitsPerMonth < 1.5) {
+    recos.push({
+      id: "mkt-increase-frequency",
+      category: "marketing",
+      title: "Augmenter la fréquence de visite",
+      description:
+        `Vos clients fidèles viennent en moyenne ${data.averageVisitsPerMonth.toFixed(1)} fois/mois. Envoyez un rappel SMS ou email mi-mois : "Votre linge s'accumule ? Pensez à nous !" ou proposez un tarif préférentiel en semaine pour les habitués.`,
+      difficulty: "Moyen",
+      impactEstimate: "+130€/mois",
+    });
+  }
+
+  // 12) Panier moyen élevé – upsell services
+  if (data.averageBasket >= 12) {
+    recos.push({
+      id: "mkt-premium-services",
+      category: "marketing",
+      title: "Proposer des services premium",
+      description:
+        `Votre panier moyen de ${data.averageBasket.toFixed(2)}€ montre une clientèle prête à payer. Envisagez des services additionnels : pressing express, pliage, livraison à domicile. Testez d'abord avec une affiche "Service pliage disponible sur demande".`,
+      difficulty: "Élevé",
+      impactEstimate: "+250€/mois",
+    });
+  }
+
   return recos;
 }
 
@@ -93,5 +186,17 @@ export function getMockAnalyticsData(): LaundromatAnalyticsData {
       { id: "ll1", displayName: "Lave-linge 1", type: "washer", revenue: 1200, revenueRatioVsTop: 1 },
       { id: "ll2", displayName: "Lave-linge 2", type: "washer", revenue: 980, revenueRatioVsTop: 0.82 },
     ],
+    // Fidélisation
+    returningCustomerRate: 0.22,
+    averageVisitsPerMonth: 1.8,
+    // Panier moyen
+    averageBasket: 8.50,
+    averageBasketTrend: -0.12,
+    bigLoadsShare: 0.08,
+    // Saisonnalité
+    currentMonth: 12,
+    monthlyRevenueVsAverage: -0.15,
+    isLowSeason: true,
+    previousYearSameMonthDelta: 0.05,
   };
 }
