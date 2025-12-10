@@ -299,8 +299,10 @@ export function getRecommendationsData(includeMarketing: boolean = true): Recomm
   const analyticsData = getMockAnalyticsData();
   const marketingRecos = generateMarketingRecommendations(analyticsData);
 
+  // IMPORTANT : ne jamais utiliser "My Co'Laverie" en dur.
+  // Toujours utiliser laundromat.name ou un libellé générique ("Votre laverie", "Laverie Démo").
   return {
-    laundromat: "My Co'Laverie",
+    laundromat: "Laverie Démo",
     date: dateStr,
     performanceInsights: [
       {

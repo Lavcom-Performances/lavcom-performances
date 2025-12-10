@@ -22,29 +22,29 @@ type HeroSlide = {
 const heroSlides: HeroSlide[] = [
   {
     id: "slide1",
-    title: "Gagnez plus avec vos laveries",
-    subtitle: "Suivez votre CA en temps réel, identifiez vos machines sous-performantes et prenez les bonnes décisions pour augmenter votre rentabilité.",
+    title: "Combien d'argent votre laverie laisse-t-elle sur la table ?",
+    subtitle: "Vos centrales vous montrent ce que vous encaissez. Lavcom Analytics vous montre ce que vous auriez pu encaisser : machines qui ne tournent pas, créneaux saturés, prix mal positionnés. Une laverie peut faire 150 000 € de chiffre d'affaires par an et laisser 10 à 20 000 € de potentiel inexploité.",
     ctaLabel: "Découvrir le tableau de bord",
     image: heroSlide1
   },
   {
     id: "slide2",
-    title: "Fini les laveries qui tournent à perte",
-    subtitle: "Visualisez enfin ce qui se passe vraiment dans votre laverie : recettes, taux d'occupation, rentabilité par machine. Et simulez votre prochain projet avant d'investir.",
+    title: "Une laverie peut tourner… et perdre de l'argent. Sans que vous le voyiez.",
+    subtitle: "Beaucoup d'exploitants ne savent pas si leur laverie est vraiment rentable. Lavcom Analytics calcule pour vous : votre seuil de rentabilité, les machines qui couvrent vos charges et celles qui grignotent votre marge. Vous ne regarderez plus votre chiffre d'affaires de la même façon.",
     ctaLabel: "Comprendre mes chiffres",
     image: heroSlide2
   },
   {
     id: "slide3",
-    title: "Transformez vos données de paiement en décisions rentables",
-    subtitle: "La première plateforme analytics 100% dédiée aux exploitants de laveries automatiques.",
+    title: "Voir ses chiffres ne suffit pas. Il faut savoir quoi en faire.",
+    subtitle: "Vos centrales collectent déjà des milliers de lignes de données. Problème : personne n'a le temps de les analyser. Lavcom Analytics transforme ces données en recommandations claires : \"Augmenter tel prix\", \"Réduire tel horaire\", \"Vérifier telle machine\". 3 actions concrètes par mois, pas 300 tableaux Excel.",
     ctaLabel: "Voir comment ça marche",
     image: heroSlide3
   },
   {
     id: "slide4",
-    title: "Savez-vous vraiment combien vous rapporte chaque machine ?",
-    subtitle: "Lavcom Analytics connecte vos centrales de paiement et vous montre exactement où optimiser votre rentabilité.",
+    title: "Vous connaissez le prix d'un cycle. Mais connaissez-vous le profit de chaque machine ?",
+    subtitle: "Deux machines au même prix ne rapportent pas la même chose. Lavcom Analytics vous montre quelles machines financent réellement votre laverie, lesquelles dorment, et où optimiser vos décisions (prix, parc, horaires). C'est la différence entre avoir des machines et piloter un parc rentable.",
     ctaLabel: "Analyser mes machines",
     image: heroSlide4
   }
