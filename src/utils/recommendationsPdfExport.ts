@@ -239,7 +239,7 @@ export function generateRecommendationsReport(data: RecommendationsReportData): 
     // Introduction text
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    const introText = "Ces suggestions marketing sont générées automatiquement à partir des chiffres de votre laverie (fréquentation, répartition du CA, machines sous-utilisées…). Elles ne sont pas des obligations mais des pistes d'actions simples à tester sur un mois. Adaptez-les à votre quartier, votre clientèle et vos moyens.";
+    const introText = "Ces suggestions marketing sont générées automatiquement à partir des chiffres de votre laverie (fréquentation, répartition du chiffre d'affaires, machines moins utilisées…). Elles ont pour objectif de vous donner des pistes concrètes et faciles à tester sur un mois. Adaptez-les à votre quartier, à votre clientèle et à vos moyens.";
     const introLines = doc.splitTextToSize(introText, pageWidth - margin * 2);
     doc.text(introLines, margin, currentY + 4);
     currentY += introLines.length * 4 + 8;

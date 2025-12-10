@@ -378,9 +378,10 @@ export default function RecommendationsPage() {
             Idées Communication & Marketing
           </h2>
           <p className="text-sm text-muted-foreground">
-            Ces suggestions marketing sont générées automatiquement à partir des chiffres de votre laverie 
-            (fréquentation, répartition du CA, machines sous-utilisées…). Elles ne sont pas des obligations 
-            mais des pistes d'actions simples à tester sur un mois. Adaptez-les à votre quartier, votre clientèle et vos moyens.
+            Ces idées sont générées automatiquement à partir des chiffres de votre laverie 
+            (fréquentation, répartition du chiffre d'affaires, machines moins utilisées…). 
+            Ce ne sont pas des obligations, mais des pistes simples à tester sur un mois. 
+            Adaptez-les à votre quartier, votre clientèle et vos moyens.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {marketingInsights.map((insight, index) => (
