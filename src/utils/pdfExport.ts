@@ -282,9 +282,11 @@ export function generateMonthlyReport(
 }
 
 // Mock data generator for demo
+// IMPORTANT : ne jamais utiliser "My Co'Laverie" en dur.
+// Toujours utiliser laundromat.name ou un libellé générique ("Votre laverie", "Laverie Démo").
 export function getMockMonthlyData(month: string, year: number): MonthlyReportData {
   return {
-    laundromat: "My Co'Laverie",
+    laundromat: "Laverie Démo",
     month,
     year,
     summary: {

@@ -291,30 +291,30 @@ const LandingPage = () => {
               </div>
               
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Vous gérez déjà une ou plusieurs laveries ?
+                Vous gérez déjà une laverie ?
               </h2>
               
               <p className="text-muted-foreground text-lg mb-6">
-                Connectez vos centrales de paiement, visualisez vos chiffres et recevez des recommandations concrètes pour améliorer la rentabilité de vos sites.
+                Reliez vos centrales de paiement, visualisez vos chiffres et recevez chaque mois un rapport d'analyse des performances.
               </p>
               
               {/* Puces avantages exploitants */}
               <ul className="space-y-3 mb-8 text-left">
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground">Suivez votre chiffre d'affaires par machine et par laverie</span>
+                  <span className="text-foreground"><strong>Tableau de bord financier :</strong> CA, panier moyen, évolution par rapport à l'année précédente.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground">Identifiez vos machines sous-performantes et vos créneaux saturés</span>
+                  <span className="text-foreground"><strong>Analyse machine par machine :</strong> cycles, taux d'occupation, machines sous-performantes.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground">Recevez des recommandations concrètes sur les prix, horaires et parc machines</span>
+                  <span className="text-foreground"><strong>Recommandations concrètes :</strong> prix, horaires, parc machines, maintenance, communication.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground">Générez des rapports PDF à partager avec vos partenaires</span>
+                  <span className="text-foreground"><strong>Rapport PDF</strong> prêt à partager avec votre banque, votre expert-comptable ou vos partenaires.</span>
                 </li>
               </ul>
               
@@ -322,7 +322,7 @@ const LandingPage = () => {
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Link to="/pricing">
                   <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white">
-                    Voir les tarifs exploitants
+                    Découvrir Lavcom Analytics pour exploitants
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
@@ -421,39 +421,23 @@ const LandingPage = () => {
               </div>
               
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Vous voulez ouvrir une laverie ?
+                Vous souhaitez ouvrir une laverie ?
               </h2>
               
               <p className="text-muted-foreground text-lg mb-6">
-                Simulez votre projet avant d'investir : chiffre d'affaires, charges, seuil de rentabilité, cycles nécessaires par jour.
+                Simulez votre projet avant d'investir : chiffre d'affaires potentiel, charges, seuil de rentabilité et scénarios pessimiste / central / optimiste.
               </p>
               
-              {/* Puces avantages simulateur */}
-              <ul className="space-y-3 mb-8 text-left">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground">Estimez votre CA lavage + séchage selon vos hypothèses</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground">Calculez votre seuil de rentabilité avec vos charges</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground">Sachez combien de cycles/jour vous devez atteindre</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground">Générez un rapport pour votre banque ou vos partenaires</span>
-                </li>
-              </ul>
+              <p className="text-muted-foreground mb-6">
+                Le simulateur Lavcom Analytics vous permet de tester plusieurs configurations de laverie (local, machines, tarifs, horaires) et d'obtenir un rapport chiffré : CA potentiel selon 3 scénarios, estimation de vos charges mensuelles, seuil de rentabilité, rapport PDF structuré pour votre banque ou vos partenaires.
+              </p>
               
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Link to="/simulateur">
                   <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white">
                     <Calculator className="mr-2 h-5 w-5" />
-                    Tester le simulateur
+                    Tester le simulateur de rentabilité
                     <span className="ml-2 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide" style={{ backgroundColor: '#A5C800' }}>
                       Gratuit
                     </span>
@@ -470,50 +454,149 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Video Demo Section */}
+      {/* ========================================== */}
+      {/* BLOC "À QUOI ÇA RESSEMBLE CONCRÈTEMENT" */}
+      {/* ========================================== */}
       <section id="demo" className="py-20 px-4 bg-muted/30">
-        <div className="container mx-auto max-w-5xl">
+        <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              {t("landing").demo.title}
+              À quoi ressemble un rapport Lavcom Analytics ?
             </h2>
-            <p className="text-muted-foreground text-lg">
-              {t("landing").demo.subtitle}
-            </p>
           </div>
           
-          <Card className="relative overflow-hidden rounded-2xl shadow-2xl border-2 border-primary/20 aspect-video bg-gradient-to-br from-sidebar-background to-muted group hover:border-primary/40 transition-all duration-300">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 cursor-pointer">
-                  <Play className="h-10 w-10 text-primary ml-1" />
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Visuel PDF mockup */}
+            <div className="order-2 lg:order-1">
+              <Card className="p-4 bg-card/80 backdrop-blur border-primary/20 shadow-xl">
+                <div className="aspect-[3/4] bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-4 bg-background rounded shadow-lg p-6">
+                    <div className="h-8 w-3/4 bg-lavcom-green/20 rounded mb-4" />
+                    <div className="space-y-2">
+                      <div className="h-3 w-full bg-muted-foreground/10 rounded" />
+                      <div className="h-3 w-5/6 bg-muted-foreground/10 rounded" />
+                      <div className="h-3 w-4/6 bg-muted-foreground/10 rounded" />
+                    </div>
+                    <div className="mt-6 grid grid-cols-2 gap-3">
+                      <div className="h-16 bg-lavcom-green/10 rounded" />
+                      <div className="h-16 bg-primary/10 rounded" />
+                    </div>
+                    <div className="mt-4 h-24 bg-muted-foreground/5 rounded" />
+                  </div>
+                  <div className="absolute bottom-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                    Exemple PDF
+                  </div>
                 </div>
-                <p className="text-muted-foreground">
-                  {t("landing").demo.playVideo}
-                </p>
-                <p className="text-sm text-muted-foreground/70 mt-2">
-                  {t("landing").demo.duration}
-                </p>
-              </div>
+              </Card>
             </div>
-          </Card>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            {[
-              { icon: BarChart3, label: t("landing").demo.features.dashboard },
-              { icon: PieChart, label: t("landing").demo.features.detailedAnalytics },
-              { icon: Bell, label: t("landing").demo.features.alertsNotifications },
-              { icon: Clock, label: t("landing").demo.features.fullHistory }
-            ].map((item, index) => (
-              <div 
-                key={item.label}
-                className="flex items-center gap-3 p-4 bg-card rounded-xl border border-border/50 animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
+            
+            {/* Texte descriptif */}
+            <div className="order-1 lg:order-2 text-center lg:text-left">
+              <p className="text-muted-foreground text-lg mb-6">
+                Chaque mois, vous recevez un rapport d'analyse des performances de votre laverie :
+              </p>
+              
+              <ul className="space-y-3 mb-8 text-left">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-foreground">Synthèse du mois</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-foreground">Chiffres clés (CA, fréquentation, taux d'occupation)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-foreground">Focus machine par machine</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-foreground">Recommandations concrètes pour améliorer vos résultats</span>
+                </li>
+              </ul>
+              
+              <p className="text-muted-foreground mb-8">
+                Un document lisible, que vous pouvez partager avec votre banque, votre expert-comptable ou vos partenaires.
+              </p>
+              
+              <a 
+                href="/exemple-rapport-laverie-demo.pdf" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block"
               >
-                <item.icon className="h-5 w-5 text-primary shrink-0" />
-                <span className="text-sm font-medium text-foreground">{item.label}</span>
-              </div>
-            ))}
+                <Button size="lg" className="btn-bounce">
+                  <FileText className="mr-2 h-5 w-5" />
+                  Voir un exemple de rapport (PDF)
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================== */}
+      {/* BLOC "SANS / AVEC LAVCOM" */}
+      {/* ========================================== */}
+      <section className="py-16 px-4">
+        <div className="container mx-auto max-w-5xl">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-12">
+            Sans Lavcom Analytics / Avec Lavcom Analytics
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Colonne Sans */}
+            <Card className="p-6 border-red-200 dark:border-red-900/30 bg-red-50/50 dark:bg-red-950/10">
+              <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-4 flex items-center gap-2">
+                <span className="text-2xl">✗</span>
+                Sans Lavcom Analytics
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3 text-muted-foreground">
+                  <span className="text-red-500 mt-1">•</span>
+                  <span>Je vois seulement le CA global de la laverie sur ma centrale.</span>
+                </li>
+                <li className="flex items-start gap-3 text-muted-foreground">
+                  <span className="text-red-500 mt-1">•</span>
+                  <span>Je ne sais pas quelles machines sont vraiment rentables.</span>
+                </li>
+                <li className="flex items-start gap-3 text-muted-foreground">
+                  <span className="text-red-500 mt-1">•</span>
+                  <span>Je change mes prix au feeling.</span>
+                </li>
+                <li className="flex items-start gap-3 text-muted-foreground">
+                  <span className="text-red-500 mt-1">•</span>
+                  <span>Je n'ai pas de rapport clair pour ma banque.</span>
+                </li>
+              </ul>
+            </Card>
+            
+            {/* Colonne Avec */}
+            <Card className="p-6 border-lavcom-green/30 bg-lavcom-green/5">
+              <h3 className="text-lg font-semibold text-lavcom-green-dark dark:text-lavcom-green mb-4 flex items-center gap-2">
+                <span className="text-2xl">✓</span>
+                Avec Lavcom Analytics
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3 text-foreground">
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span>Je sais quelles machines prennent en charge mes charges fixes.</span>
+                </li>
+                <li className="flex items-start gap-3 text-foreground">
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span>Je vois où j'ai des créneaux saturés ou sous-utilisés.</span>
+                </li>
+                <li className="flex items-start gap-3 text-foreground">
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span>Je reçois des recommandations concrètes chaque mois.</span>
+                </li>
+                <li className="flex items-start gap-3 text-foreground">
+                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span>J'ai un rapport PDF propre à partager avec ma banque et mon expert-comptable.</span>
+                </li>
+              </ul>
+            </Card>
           </div>
         </div>
       </section>
@@ -935,27 +1018,29 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* ========================================== */}
+      {/* RAPPEL DES DEUX PARCOURS */}
+      {/* ========================================== */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
           <Card className="p-8 md:p-12 text-center bg-gradient-to-br from-sidebar-background to-muted border-0">
             <h2 className="text-3xl md:text-4xl font-bold text-card-foreground mb-4">
-              Prêt à optimiser votre laverie ?
+              Deux façons de travailler avec Lavcom Analytics
             </h2>
             <p className="text-card-foreground/70 text-lg mb-8 max-w-xl mx-auto">
-              Rejoignez les centaines de gérants qui font confiance à Lavcom Analytics pour développer leur activité.
+              Que vous soyez déjà exploitant ou futur exploitant, nous avons une solution adaptée à vos besoins.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/pricing">
-                <Button size="lg" className="btn-bounce text-white text-lg px-8" style={{ backgroundColor: '#A5C800' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8FB300'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#A5C800'}>
+                <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-lg px-8">
                   <Building2 className="mr-2 h-5 w-5" />
-                  Tarifs exploitants
+                  Je gère déjà une laverie
                 </Button>
               </Link>
               <Link to="/simulateur">
-                <Button size="lg" className="btn-bounce bg-amber-600 hover:bg-amber-700 text-white text-lg px-8">
-                  <Calculator className="mr-2 h-5 w-5" />
-                  Tester le simulateur
+                <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-lg px-8">
+                  <Rocket className="mr-2 h-5 w-5" />
+                  Je souhaite ouvrir une laverie
                 </Button>
               </Link>
             </div>
