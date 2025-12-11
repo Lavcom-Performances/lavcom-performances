@@ -88,9 +88,14 @@ export const HeroValueSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [previousIndex, setPreviousIndex] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   
   // TODO: Replace with actual auth context when implemented
   const user: UserContext | undefined = undefined;
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
 
   const goToSlide = (newIndex: number) => {
     if (newIndex === currentIndex || isTransitioning) return;
@@ -105,10 +110,46 @@ export const HeroValueSlider = () => {
     }, 800);
   };
 
+  const goToNext = () => {
+    const nextIndex = (currentIndex + 1) % heroSlides.length;
+    goToSlide(nextIndex);
+  };
+
+  const goToPrev = () => {
+    const prevIndex = (currentIndex - 1 + heroSlides.length) % heroSlides.length;
+    goToSlide(prevIndex);
+  };
+
+  // Touch event handlers
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      goToNext();
+    } else if (isRightSwipe) {
+      goToPrev();
+    }
+    
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
-      const nextIndex = (currentIndex + 1) % heroSlides.length;
-      goToSlide(nextIndex);
+      goToNext();
     }, 5000);
 
     return () => clearInterval(interval);
@@ -120,7 +161,12 @@ export const HeroValueSlider = () => {
   const isAnchorLink = ctaHref.startsWith("/#");
 
   return (
-    <section className="relative w-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] overflow-hidden">
+    <section 
+      className="relative w-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] overflow-hidden touch-pan-y"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       {/* Layer 1: Background images with crossfade */}
       {heroSlides.map((slide, index) => (
         <div 
