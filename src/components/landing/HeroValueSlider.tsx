@@ -223,12 +223,12 @@ export const HeroValueSlider = () => {
 
       {/* Layer 4: Text content with crossfade */}
       <div className="relative z-[4] h-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] flex items-center">
-        <div className="w-full max-w-7xl mx-auto px-8 md:px-16 lg:px-24">
-          <div className="max-w-lg lg:max-w-xl relative">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-16 xl:px-20">
+          <div className="max-w-[520px] lg:max-w-[540px] relative">
             {/* Previous slide text (fading out) */}
             {previousSlide && (
               <div className="absolute inset-0 animate-fade-out pointer-events-none">
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
+                <h1 className="text-xl md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.15] max-w-[480px]">
                   {previousSlide.title}
                 </h1>
                 <p className="hidden md:block text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed">
@@ -242,7 +242,7 @@ export const HeroValueSlider = () => {
               "transition-all duration-700 ease-out",
               isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
             )} style={{ transitionDelay: isTransitioning ? "0ms" : "100ms" }}>
-              <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
+              <h1 className="text-xl md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.15] max-w-[480px]">
                 {currentSlide.title}
               </h1>
             </div>
