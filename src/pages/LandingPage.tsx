@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import pdfMockupPreview from "@/assets/pdf-mockup-preview.png";
 import {
   Accordion,
   AccordionContent,
@@ -468,24 +469,16 @@ const LandingPage = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Visuel PDF mockup */}
             <div className="order-2 lg:order-1">
-              <Card className="p-4 bg-card/80 backdrop-blur border-primary/20 shadow-xl">
-                <div className="aspect-[3/4] bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-4 bg-background rounded shadow-lg p-6">
-                    <div className="h-8 w-3/4 bg-lavcom-green/20 rounded mb-4" />
-                    <div className="space-y-2">
-                      <div className="h-3 w-full bg-muted-foreground/10 rounded" />
-                      <div className="h-3 w-5/6 bg-muted-foreground/10 rounded" />
-                      <div className="h-3 w-4/6 bg-muted-foreground/10 rounded" />
-                    </div>
-                    <div className="mt-6 grid grid-cols-2 gap-3">
-                      <div className="h-16 bg-lavcom-green/10 rounded" />
-                      <div className="h-16 bg-primary/10 rounded" />
-                    </div>
-                    <div className="mt-4 h-24 bg-muted-foreground/5 rounded" />
-                  </div>
-                  <div className="absolute bottom-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
-                    Exemple PDF
-                  </div>
+              <Card className="p-4 bg-card/80 backdrop-blur border-primary/20 shadow-xl overflow-hidden">
+                <img 
+                  src={pdfMockupPreview} 
+                  alt="Exemple de rapport Lavcom Analytics - Analyse des performances" 
+                  className="w-full h-auto rounded-lg shadow-md"
+                />
+                <div className="mt-4 text-center">
+                  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                    Exemple de rapport PDF
+                  </span>
                 </div>
               </Card>
             </div>
