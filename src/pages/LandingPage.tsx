@@ -241,11 +241,11 @@ const LandingPage = () => {
       {/* ========================================== */}
       {/* BLOC A – HERO */}
       {/* ========================================== */}
-      <section className="pt-24 pb-8">
+      <section className="pt-24 pb-6 md:pb-8">
         {/* Badge centré au-dessus du slider */}
-        <div className="text-center mb-6 px-4">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium animate-fade-in">
-            <Zap className="h-4 w-4" />
+        <div className="text-center mb-4 md:mb-6 px-4">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium animate-fade-in">
+            <Zap className="h-3 w-3 md:h-4 md:w-4" />
             {t("landing").hero.badge}
           </div>
         </div>
@@ -254,25 +254,25 @@ const LandingPage = () => {
         <HeroValueSlider />
         
         {/* Boutons et phrase sous le slider */}
-        <div className="container mx-auto text-center max-w-4xl px-4 mt-10">
+        <div className="container mx-auto text-center max-w-4xl px-4 mt-6 md:mt-10">
           {/* Deux boutons principaux côte à côte */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in">
-            <a href="#exploitants">
-              <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-lg px-8">
-                <Building2 className="mr-2 h-5 w-5" />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 animate-fade-in">
+            <a href="#exploitants" className="w-full sm:w-auto">
+              <Button size="default" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-sm md:text-lg px-4 md:px-8 w-full sm:w-auto">
+                <Building2 className="mr-2 h-4 w-4 md:h-5 md:w-5" />
                 Je gère déjà une laverie
               </Button>
             </a>
-            <a href="#futurs-exploitants">
-              <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-lg px-8">
-                <Rocket className="mr-2 h-5 w-5" />
+            <a href="#futurs-exploitants" className="w-full sm:w-auto">
+              <Button size="default" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-sm md:text-lg px-4 md:px-8 w-full sm:w-auto">
+                <Rocket className="mr-2 h-4 w-4 md:h-5 md:w-5" />
                 Je veux ouvrir une laverie
               </Button>
             </a>
           </div>
           
           {/* Phrase de positionnement */}
-          <p className="mt-8 text-sm text-muted-foreground animate-fade-in italic">
+          <p className="mt-6 md:mt-8 text-xs md:text-sm text-muted-foreground animate-fade-in italic px-2">
             "La couche d'intelligence au-dessus de vos centrales de paiement"
           </p>
         </div>
@@ -281,78 +281,78 @@ const LandingPage = () => {
       {/* ========================================== */}
       {/* BLOC B – PARCOURS EXPLOITANTS */}
       {/* ========================================== */}
-      <section id="exploitants" className="py-20 px-4 bg-gradient-to-br from-lavcom-green/5 via-lavcom-green/10 to-lavcom-green/5 border-y border-lavcom-green/20">
+      <section id="exploitants" className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-lavcom-green/5 via-lavcom-green/10 to-lavcom-green/5 border-y border-lavcom-green/20">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Contenu texte */}
-            <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-lavcom-green/20 text-lavcom-green-dark dark:text-lavcom-green px-4 py-2 rounded-full text-sm font-medium mb-4">
-                <Building2 className="h-4 w-4" />
+            <div className="text-left">
+              <div className="inline-flex items-center gap-2 bg-lavcom-green/20 text-lavcom-green-dark dark:text-lavcom-green px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium mb-3 md:mb-4">
+                <Building2 className="h-3 w-3 md:h-4 md:w-4" />
                 Pour les exploitants de laveries
               </div>
               
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px]">
                 Vous gérez déjà une laverie ?
               </h2>
               
-              <p className="text-muted-foreground text-lg mb-6">
+              <p className="text-muted-foreground text-sm md:text-lg mb-4 md:mb-6">
                 Reliez vos centrales de paiement, visualisez vos chiffres et recevez chaque mois un rapport d'analyse des performances.
               </p>
               
               {/* Puces avantages exploitants */}
-              <ul className="space-y-3 mb-8 text-left">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground"><strong>Tableau de bord financier :</strong> CA, panier moyen, évolution par rapport à l'année précédente.</span>
+              <ul className="space-y-2 md:space-y-3 mb-6 md:mb-8 text-left">
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base"><strong>Tableau de bord financier :</strong> CA, panier moyen, évolution.</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground"><strong>Analyse machine par machine :</strong> cycles, taux d'occupation, machines sous-performantes.</span>
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base"><strong>Analyse machine par machine :</strong> cycles, taux d'occupation.</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground"><strong>Recommandations concrètes :</strong> prix, horaires, parc machines, maintenance, communication.</span>
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base"><strong>Recommandations concrètes :</strong> prix, horaires, maintenance.</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground"><strong>Rapport PDF</strong> prêt à partager avec votre banque, votre expert-comptable ou vos partenaires.</span>
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base"><strong>Rapport PDF</strong> prêt à partager.</span>
                 </li>
               </ul>
               
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
                 <Link to="/pricing">
-                  <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white">
-                    Découvrir Lavcom Analytics pour exploitants
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                  <Button size="default" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-sm md:text-base w-full sm:w-auto">
+                    Découvrir pour exploitants
+                    <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </Link>
                 <Link to="/login?mode=exploitant">
-                  <Button size="lg" variant="outline" className="btn-bounce border-lavcom-green/50 text-lavcom-green-dark dark:text-lavcom-green hover:bg-lavcom-green/10">
-                    Se connecter à mon espace
+                  <Button size="default" variant="outline" className="btn-bounce border-lavcom-green/50 text-lavcom-green-dark dark:text-lavcom-green hover:bg-lavcom-green/10 text-sm md:text-base w-full sm:w-auto">
+                    Se connecter
                   </Button>
                 </Link>
               </div>
             </div>
             
             {/* Visuel / Stats */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               {[
                 { value: "24/7", label: "Suivi temps réel", icon: Clock },
                 { value: "+25%", label: "CA moyen constaté", icon: TrendingUp },
-                { value: "10h", label: "Gagnées par semaine", icon: Zap },
-                { value: "40%", label: "Réduction des pannes", icon: Shield }
+                { value: "10h", label: "Gagnées / semaine", icon: Zap },
+                { value: "40%", label: "Réduction pannes", icon: Shield }
               ].map((stat, index) => (
                 <Card 
                   key={stat.label}
-                  className="p-6 text-center card-lavcom-hover animate-fade-in bg-card/80 backdrop-blur border-lavcom-green/20"
+                  className="p-3 md:p-6 text-center card-lavcom-hover animate-fade-in bg-card/80 backdrop-blur border-lavcom-green/20"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <stat.icon className="h-6 w-6 text-lavcom-green mx-auto mb-2" />
-                  <div className="text-3xl font-bold text-lavcom-green mb-1">
+                  <stat.icon className="h-4 w-4 md:h-6 md:w-6 text-lavcom-green mx-auto mb-1 md:mb-2" />
+                  <div className="text-xl md:text-3xl font-bold text-lavcom-green mb-0.5 md:mb-1">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs md:text-sm text-muted-foreground">
                     {stat.label}
                   </div>
                 </Card>
@@ -365,49 +365,49 @@ const LandingPage = () => {
       {/* ========================================== */}
       {/* BLOC C – PARCOURS FUTURS EXPLOITANTS */}
       {/* ========================================== */}
-      <section id="futurs-exploitants" className="py-20 px-4 bg-gradient-to-br from-lavcom-orange/5 via-lavcom-orange/10 to-lavcom-orange/5 border-y border-lavcom-orange/20">
+      <section id="futurs-exploitants" className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-lavcom-orange/5 via-lavcom-orange/10 to-lavcom-orange/5 border-y border-lavcom-orange/20">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Visuel / Card simulateur */}
             <div className="order-2 lg:order-1">
-              <Card className="p-8 bg-card/80 backdrop-blur border-lavcom-orange/30 shadow-xl">
-                <div className="text-center space-y-6">
-                  <div className="w-20 h-20 rounded-full bg-lavcom-orange/20 flex items-center justify-center mx-auto">
-                    <Calculator className="h-10 w-10 text-lavcom-orange" />
+              <Card className="p-4 md:p-8 bg-card/80 backdrop-blur border-lavcom-orange/30 shadow-xl">
+                <div className="text-center space-y-4 md:space-y-6">
+                  <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-lavcom-orange/20 flex items-center justify-center mx-auto">
+                    <Calculator className="h-7 w-7 md:h-10 md:w-10 text-lavcom-orange" />
                   </div>
                   <div>
-                    <p className="text-3xl font-bold text-foreground">Simulateur</p>
-                    <p className="text-muted-foreground">de rentabilité</p>
+                    <p className="text-2xl md:text-3xl font-bold text-foreground">Simulateur</p>
+                    <p className="text-sm md:text-base text-muted-foreground">de rentabilité</p>
                   </div>
                   
                   {/* Mini-aperçu des fonctionnalités */}
-                  <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Target className="h-4 w-4 text-lavcom-orange" />
-                      <span>Seuil de rentabilité</span>
+                  <div className="grid grid-cols-2 gap-2 md:gap-3 pt-3 md:pt-4 border-t border-border">
+                    <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
+                      <Target className="h-3 w-3 md:h-4 md:w-4 text-lavcom-orange shrink-0" />
+                      <span>Seuil rentabilité</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <PieChart className="h-4 w-4 text-lavcom-orange" />
+                    <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
+                      <PieChart className="h-3 w-3 md:h-4 md:w-4 text-lavcom-orange shrink-0" />
                       <span>Analyse charges</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <FileText className="h-4 w-4 text-lavcom-orange" />
+                    <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
+                      <FileText className="h-3 w-3 md:h-4 md:w-4 text-lavcom-orange shrink-0" />
                       <span>Rapport PDF</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <BarChart3 className="h-4 w-4 text-lavcom-orange" />
-                      <span>Scénarios multiples</span>
+                    <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
+                      <BarChart3 className="h-3 w-3 md:h-4 md:w-4 text-lavcom-orange shrink-0" />
+                      <span>Scénarios</span>
                     </div>
                   </div>
                   
-                  <div className="pt-4 border-t border-border space-y-2">
-                    <div className="flex justify-between text-sm">
+                  <div className="pt-3 md:pt-4 border-t border-border space-y-1.5 md:space-y-2">
+                    <div className="flex justify-between text-xs md:text-sm">
                       <span className="text-muted-foreground">Pack Simulateur</span>
                       <span className="font-semibold">79 €/mois</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs md:text-sm">
                       <span className="text-muted-foreground">Pack Premium</span>
-                      <span className="font-semibold text-lavcom-orange">279 € (+ visio expert)</span>
+                      <span className="font-semibold text-lavcom-orange">279 €</span>
                     </div>
                   </div>
                 </div>
@@ -415,37 +415,37 @@ const LandingPage = () => {
             </div>
             
             {/* Contenu texte */}
-            <div className="order-1 lg:order-2 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-lavcom-orange/20 text-lavcom-orange-dark dark:text-lavcom-orange px-4 py-2 rounded-full text-sm font-medium mb-4">
-                <Rocket className="h-4 w-4" />
+            <div className="order-1 lg:order-2 text-left">
+              <div className="inline-flex items-center gap-2 bg-lavcom-orange/20 text-lavcom-orange-dark dark:text-lavcom-orange px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium mb-3 md:mb-4">
+                <Rocket className="h-3 w-3 md:h-4 md:w-4" />
                 Pour les futurs exploitants
               </div>
               
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px]">
                 Vous souhaitez ouvrir une laverie ?
               </h2>
               
-              <p className="text-muted-foreground text-lg mb-6">
-                Simulez votre projet avant d'investir : chiffre d'affaires potentiel, charges, seuil de rentabilité et scénarios pessimiste / central / optimiste.
+              <p className="text-muted-foreground text-sm md:text-lg mb-3 md:mb-6">
+                Simulez votre projet avant d'investir : CA potentiel, charges, seuil de rentabilité et scénarios.
               </p>
               
-              <p className="text-muted-foreground mb-6">
-                Le simulateur Lavcom Analytics vous permet de tester plusieurs configurations de laverie (local, machines, tarifs, horaires) et d'obtenir un rapport chiffré : CA potentiel selon 3 scénarios, estimation de vos charges mensuelles, seuil de rentabilité, rapport PDF structuré pour votre banque ou vos partenaires.
+              <p className="hidden md:block text-muted-foreground text-sm md:text-base mb-6">
+                Le simulateur Lavcom Analytics vous permet de tester plusieurs configurations de laverie et d'obtenir un rapport chiffré pour votre banque ou vos partenaires.
               </p>
               
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
                 <Link to="/simulateur">
-                  <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white">
-                    <Calculator className="mr-2 h-5 w-5" />
-                    Tester le simulateur de rentabilité
-                    <span className="ml-2 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide" style={{ backgroundColor: '#A5C800' }}>
+                  <Button size="default" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-sm md:text-base w-full sm:w-auto">
+                    <Calculator className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                    Tester le simulateur
+                    <span className="ml-2 text-white text-[9px] md:text-[10px] font-bold px-1.5 md:px-2 py-0.5 rounded-full uppercase tracking-wide" style={{ backgroundColor: '#A5C800' }}>
                       Gratuit
                     </span>
                   </Button>
                 </Link>
                 <Link to="/subscribe-simulator">
-                  <Button size="lg" variant="outline" className="btn-bounce border-lavcom-orange/50 text-lavcom-orange-dark dark:text-lavcom-orange hover:bg-lavcom-orange/10">
+                  <Button size="default" variant="outline" className="btn-bounce border-lavcom-orange/50 text-lavcom-orange-dark dark:text-lavcom-orange hover:bg-lavcom-orange/10 text-sm md:text-base w-full sm:w-auto">
                     Découvrir les packs
                   </Button>
                 </Link>
@@ -458,25 +458,25 @@ const LandingPage = () => {
       {/* ========================================== */}
       {/* BLOC "À QUOI ÇA RESSEMBLE CONCRÈTEMENT" */}
       {/* ========================================== */}
-      <section id="demo" className="py-20 px-4 bg-muted/30">
+      <section id="demo" className="py-12 md:py-20 px-4 md:px-6 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="text-left md:text-center mb-8 md:mb-12">
+            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px] md:max-w-none md:mx-auto">
               À quoi ressemble un rapport Lavcom Analytics ?
             </h2>
           </div>
           
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Visuel PDF mockup */}
             <div className="order-2 lg:order-1">
-              <Card className="p-4 bg-card/80 backdrop-blur border-primary/20 shadow-xl overflow-hidden">
+              <Card className="p-3 md:p-4 bg-card/80 backdrop-blur border-primary/20 shadow-xl overflow-hidden">
                 <img 
                   src={pdfMockupPreview} 
                   alt="Exemple de rapport Lavcom Analytics - Analyse des performances" 
                   className="w-full h-auto rounded-lg shadow-md"
                 />
-                <div className="mt-4 text-center">
-                  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
+                <div className="mt-3 md:mt-4 text-center">
+                  <span className="bg-primary text-primary-foreground px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-medium">
                     Exemple de rapport PDF
                   </span>
                 </div>
@@ -484,44 +484,44 @@ const LandingPage = () => {
             </div>
             
             {/* Texte descriptif */}
-            <div className="order-1 lg:order-2 text-center lg:text-left">
-              <p className="text-muted-foreground text-lg mb-6">
+            <div className="order-1 lg:order-2 text-left">
+              <p className="text-muted-foreground text-sm md:text-lg mb-4 md:mb-6">
                 Chaque mois, vous recevez un rapport d'analyse des performances de votre laverie :
               </p>
               
-              <ul className="space-y-3 mb-8 text-left">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Synthèse du mois</span>
+              <ul className="space-y-2 md:space-y-3 mb-6 md:mb-8 text-left">
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base">Synthèse du mois</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Chiffres clés (CA, fréquentation, taux d'occupation)</span>
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base">Chiffres clés (CA, fréquentation, occupation)</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Focus machine par machine</span>
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base">Focus machine par machine</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Recommandations concrètes pour améliorer vos résultats</span>
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base">Recommandations concrètes</span>
                 </li>
               </ul>
               
-              <p className="text-muted-foreground mb-8">
-                Un document lisible, que vous pouvez partager avec votre banque, votre expert-comptable ou vos partenaires.
+              <p className="text-muted-foreground text-sm md:text-base mb-6 md:mb-8">
+                Un document lisible, à partager avec votre banque ou expert-comptable.
               </p>
               
               <a 
                 href="/exemple-rapport-laverie-demo.pdf" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-block"
+                className="inline-block w-full sm:w-auto"
               >
-                <Button size="lg" className="btn-bounce">
-                  <FileText className="mr-2 h-5 w-5" />
-                  Voir un exemple de rapport (PDF)
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                <Button size="default" className="btn-bounce text-sm md:text-base w-full sm:w-auto">
+                  <FileText className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                  Voir un exemple (PDF)
+                  <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               </a>
             </div>
@@ -532,61 +532,61 @@ const LandingPage = () => {
       {/* ========================================== */}
       {/* BLOC "SANS / AVEC LAVCOM" */}
       {/* ========================================== */}
-      <section className="py-16 px-4">
+      <section className="py-12 md:py-16 px-4 md:px-6">
         <div className="container mx-auto max-w-5xl">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-12">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-left md:text-center mb-8 md:mb-12 leading-tight max-w-[400px] md:max-w-none">
             Sans Lavcom Analytics / Avec Lavcom Analytics
           </h2>
           
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-4 md:gap-8">
             {/* Colonne Sans */}
-            <Card className="p-6 border-red-200 dark:border-red-900/30 bg-red-50/50 dark:bg-red-950/10">
-              <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-4 flex items-center gap-2">
-                <span className="text-2xl">✗</span>
+            <Card className="p-4 md:p-6 border-red-200 dark:border-red-900/30 bg-red-50/50 dark:bg-red-950/10">
+              <h3 className="text-base md:text-lg font-semibold text-red-700 dark:text-red-400 mb-3 md:mb-4 flex items-center gap-2">
+                <span className="text-xl md:text-2xl">✗</span>
                 Sans Lavcom Analytics
               </h3>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3 text-muted-foreground">
-                  <span className="text-red-500 mt-1">•</span>
-                  <span>Je vois seulement le CA global de la laverie sur ma centrale.</span>
+              <ul className="space-y-2 md:space-y-3">
+                <li className="flex items-start gap-2 md:gap-3 text-muted-foreground text-sm md:text-base">
+                  <span className="text-red-500 mt-0.5">•</span>
+                  <span>Je vois seulement le CA global.</span>
                 </li>
-                <li className="flex items-start gap-3 text-muted-foreground">
-                  <span className="text-red-500 mt-1">•</span>
-                  <span>Je ne sais pas quelles machines sont vraiment rentables.</span>
+                <li className="flex items-start gap-2 md:gap-3 text-muted-foreground text-sm md:text-base">
+                  <span className="text-red-500 mt-0.5">•</span>
+                  <span>Je ne sais pas quelles machines sont rentables.</span>
                 </li>
-                <li className="flex items-start gap-3 text-muted-foreground">
-                  <span className="text-red-500 mt-1">•</span>
+                <li className="flex items-start gap-2 md:gap-3 text-muted-foreground text-sm md:text-base">
+                  <span className="text-red-500 mt-0.5">•</span>
                   <span>Je change mes prix au feeling.</span>
                 </li>
-                <li className="flex items-start gap-3 text-muted-foreground">
-                  <span className="text-red-500 mt-1">•</span>
-                  <span>Je n'ai pas de rapport clair pour ma banque.</span>
+                <li className="flex items-start gap-2 md:gap-3 text-muted-foreground text-sm md:text-base">
+                  <span className="text-red-500 mt-0.5">•</span>
+                  <span>Pas de rapport clair pour ma banque.</span>
                 </li>
               </ul>
             </Card>
             
             {/* Colonne Avec */}
-            <Card className="p-6 border-lavcom-green/30 bg-lavcom-green/5">
-              <h3 className="text-lg font-semibold text-lavcom-green-dark dark:text-lavcom-green mb-4 flex items-center gap-2">
-                <span className="text-2xl">✓</span>
+            <Card className="p-4 md:p-6 border-lavcom-green/30 bg-lavcom-green/5">
+              <h3 className="text-base md:text-lg font-semibold text-lavcom-green-dark dark:text-lavcom-green mb-3 md:mb-4 flex items-center gap-2">
+                <span className="text-xl md:text-2xl">✓</span>
                 Avec Lavcom Analytics
               </h3>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3 text-foreground">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span>Je sais quelles machines prennent en charge mes charges fixes.</span>
+              <ul className="space-y-2 md:space-y-3">
+                <li className="flex items-start gap-2 md:gap-3 text-foreground text-sm md:text-base">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span>Je connais les machines qui couvrent mes charges.</span>
                 </li>
-                <li className="flex items-start gap-3 text-foreground">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span>Je vois où j'ai des créneaux saturés ou sous-utilisés.</span>
+                <li className="flex items-start gap-2 md:gap-3 text-foreground text-sm md:text-base">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span>Je vois les créneaux saturés ou sous-utilisés.</span>
                 </li>
-                <li className="flex items-start gap-3 text-foreground">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span>Je reçois des recommandations concrètes chaque mois.</span>
+                <li className="flex items-start gap-2 md:gap-3 text-foreground text-sm md:text-base">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span>Recommandations concrètes chaque mois.</span>
                 </li>
-                <li className="flex items-start gap-3 text-foreground">
-                  <CheckCircle2 className="h-5 w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span>J'ai un rapport PDF propre à partager avec ma banque et mon expert-comptable.</span>
+                <li className="flex items-start gap-2 md:gap-3 text-foreground text-sm md:text-base">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
+                  <span>Rapport PDF pour ma banque.</span>
                 </li>
               </ul>
             </Card>
@@ -595,49 +595,51 @@ const LandingPage = () => {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 px-4">
+      <section id="how-it-works" className="py-12 md:py-20 px-4 md:px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="text-left md:text-center mb-10 md:mb-16">
+            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[400px] md:max-w-none">
               Comment ça marche ?
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              En 3 étapes simples, transformez vos données de paiement en décisions rentables
+            <p className="text-muted-foreground text-sm md:text-lg max-w-2xl md:mx-auto">
+              En 3 étapes simples, transformez vos données en décisions rentables
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             {[
               {
                 step: "1",
                 title: "Connectez vos centrales",
-                description: "Reliez vos terminaux de paiement (Nayax, LMPay, CPI...) en quelques clics. Aucune installation technique requise."
+                description: "Reliez vos terminaux (Nayax, LMPay, CPI...) en quelques clics."
               },
               {
                 step: "2",
                 title: "Visualisez vos données",
-                description: "Accédez à votre tableau de bord en temps réel : CA, taux d'occupation, performance par machine, tendances."
+                description: "Tableau de bord en temps réel : CA, occupation, tendances."
               },
               {
                 step: "3",
-                title: "Optimisez votre rentabilité",
-                description: "Identifiez les machines sous-performantes, ajustez vos tarifs et prenez des décisions basées sur des données concrètes."
+                title: "Optimisez la rentabilité",
+                description: "Identifiez les machines sous-performantes, ajustez vos tarifs."
               }
             ].map((item, index) => (
               <div 
                 key={item.step}
-                className="relative text-center animate-fade-in"
+                className="relative text-left md:text-center animate-fade-in flex md:block items-start gap-4"
                 style={{ animationDelay: `${index * 0.15}s` }}
               >
-                <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl md:text-2xl font-bold shrink-0 md:mx-auto md:mb-6">
                   {item.step}
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">
-                  {item.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {item.description}
-                </p>
+                <div className="flex-1 md:flex-none">
+                  <h3 className="text-base md:text-xl font-semibold text-foreground mb-1 md:mb-3">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm md:text-base">
+                    {item.description}
+                  </p>
+                </div>
                 {index < 2 && (
                   <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-primary/50 to-transparent" />
                 )}
@@ -645,11 +647,11 @@ const LandingPage = () => {
             ))}
           </div>
           
-          <div className="text-center mt-12">
+          <div className="text-left md:text-center mt-8 md:mt-12">
             <Link to="/pricing">
-              <Button size="lg" className="btn-bounce">
+              <Button size="default" className="btn-bounce text-sm md:text-base w-full sm:w-auto">
                 Commencer maintenant
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </Link>
           </div>
@@ -657,31 +659,31 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-4">
+      <section id="features" className="py-12 md:py-20 px-4 md:px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="text-left md:text-center mb-10 md:mb-16">
+            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[400px] md:max-w-none">
               {t("landing").features.title}
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-sm md:text-lg max-w-2xl md:mx-auto">
               {t("landing").features.subtitle}
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             {features.map((feature, index) => (
               <Card 
                 key={feature.title}
-                className="p-6 card-lavcom-hover animate-fade-in"
+                className="p-3 md:p-6 card-lavcom-hover animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-primary" />
+                <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center mb-2 md:mb-4">
+                  <feature.icon className="h-4 w-4 md:h-6 md:w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">
+                <h3 className="text-sm md:text-xl font-semibold text-foreground mb-1 md:mb-2 leading-tight">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-xs md:text-base leading-snug">
                   {feature.description}
                 </p>
               </Card>
@@ -691,56 +693,56 @@ const LandingPage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-20 px-4 bg-gradient-to-br from-primary/5 to-accent/5">
+      <section id="benefits" className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-primary/5 to-accent/5">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="text-left">
+              <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4 md:mb-6 leading-tight max-w-[450px]">
                 {t("landing").benefits.title}
               </h2>
-              <p className="text-muted-foreground text-lg mb-8">
+              <p className="text-muted-foreground text-sm md:text-lg mb-6 md:mb-8">
                 {t("landing").benefits.subtitle}
               </p>
               
-              <ul className="space-y-4">
+              <ul className="space-y-2 md:space-y-4">
                 {benefits.map((benefit, index) => (
                   <li 
                     key={benefit}
-                    className="flex items-start gap-3 animate-fade-in"
+                    className="flex items-start gap-2 md:gap-3 animate-fade-in"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-0.5" />
-                    <span className="text-foreground text-lg">{benefit}</span>
+                    <CheckCircle2 className="h-4 w-4 md:h-6 md:w-6 text-primary shrink-0 mt-0.5" />
+                    <span className="text-foreground text-sm md:text-lg">{benefit}</span>
                   </li>
                 ))}
               </ul>
               
-              <div className="mt-8">
+              <div className="mt-6 md:mt-8">
                 <Link to="/pricing">
-                  <Button size="lg" className="btn-bounce bg-primary hover:bg-primary/90">
+                  <Button size="default" className="btn-bounce bg-primary hover:bg-primary/90 text-sm md:text-base w-full sm:w-auto">
                     Découvrir nos offres
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </Link>
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               {[
-                { value: "25%", label: "Augmentation CA moyen" },
+                { value: "25%", label: "Augmentation CA" },
                 { value: "40%", label: "Réduction pannes" },
-                { value: "10h", label: "Gagnées par semaine" },
-                { value: "24/7", label: "Accès aux données" }
+                { value: "10h", label: "Gagnées / semaine" },
+                { value: "24/7", label: "Accès données" }
               ].map((stat, index) => (
                 <Card 
                   key={stat.label}
-                  className="p-6 text-center card-lavcom-hover animate-fade-in"
+                  className="p-3 md:p-6 text-center card-lavcom-hover animate-fade-in"
                   style={{ animationDelay: `${index * 0.15}s` }}
                 >
-                  <div className="text-4xl font-bold text-primary mb-2">
+                  <div className="text-2xl md:text-4xl font-bold text-primary mb-1 md:mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs md:text-sm text-muted-foreground">
                     {stat.label}
                   </div>
                 </Card>
@@ -751,46 +753,46 @@ const LandingPage = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 px-4">
+      <section id="testimonials" className="py-12 md:py-20 px-4 md:px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="text-left md:text-center mb-10 md:mb-16">
+            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[350px] md:max-w-none">
               Ils nous font confiance
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Découvrez les témoignages de gérants qui ont transformé leur activité avec Lavcom Analytics
+            <p className="text-muted-foreground text-sm md:text-lg max-w-2xl md:mx-auto">
+              Témoignages de gérants qui ont transformé leur activité
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
             {testimonials.map((testimonial, index) => (
               <Card 
                 key={testimonial.name}
-                className="p-6 card-lavcom-hover relative animate-fade-in"
+                className="p-4 md:p-6 card-lavcom-hover relative animate-fade-in"
                 style={{ animationDelay: `${index * 0.15}s` }}
               >
-                <Quote className="absolute top-4 right-4 h-8 w-8 text-primary/20" />
+                <Quote className="absolute top-3 right-3 md:top-4 md:right-4 h-6 w-6 md:h-8 md:w-8 text-primary/20" />
                 
-                <div className="flex items-center gap-1 mb-4">
+                <div className="flex items-center gap-0.5 md:gap-1 mb-3 md:mb-4">
                   {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-accent text-accent" />
+                    <Star key={i} className="h-3 w-3 md:h-4 md:w-4 fill-accent text-accent" />
                   ))}
                 </div>
                 
-                <p className="text-foreground mb-6 leading-relaxed">
+                <p className="text-foreground text-sm md:text-base mb-4 md:mb-6 leading-relaxed">
                   "{testimonial.quote}"
                 </p>
                 
-                <div className="flex items-center gap-3 pt-4 border-t border-border">
-                  <Avatar className="h-12 w-12">
+                <div className="flex items-center gap-2 md:gap-3 pt-3 md:pt-4 border-t border-border">
+                  <Avatar className="h-10 w-10 md:h-12 md:w-12">
                     <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                    <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
                       {testimonial.name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold text-foreground">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    <p className="font-semibold text-foreground text-sm md:text-base">{testimonial.name}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">{testimonial.role}</p>
                   </div>
                 </div>
               </Card>
