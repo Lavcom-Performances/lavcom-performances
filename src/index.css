@@ -210,6 +210,29 @@
     animation: shimmer 2s linear infinite;
     background-size: 200% 100%;
   }
+
+  /* ====== LANDING PAGE RESPONSIVE ====== */
+  /* Global mobile overflow fix */
+  @media (max-width: 768px) {
+    html, body {
+      overflow-x: hidden;
+    }
+  }
+
+  /* Section titles on desktop - left aligned, max 3 lines */
+  .landing-section-title {
+    @apply text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight;
+    max-width: 600px;
+  }
+
+  @media (min-width: 1024px) {
+    .landing-section-title {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
 }
 
 @layer utilities {
