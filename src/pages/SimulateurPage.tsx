@@ -136,38 +136,38 @@ export default function SimulateurPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 py-8 md:py-12">
         {/* Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white mb-4" style={{ backgroundColor: '#A5C800' }}>
-            <Calculator className="h-4 w-4" />
+        <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
+          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold text-white mb-3 md:mb-4" style={{ backgroundColor: '#A5C800' }}>
+            <Calculator className="h-3 w-3 md:h-4 md:w-4" />
             Gratuit
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+          <h1 className="font-display text-2xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-3 md:mb-4 leading-tight">
             {t.title}
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-sm md:text-lg px-2">
             {t.subtitle}
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto">
           {/* Formulaire */}
           <Card className="border-amber-500/30">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calculator className="h-5 w-5 text-amber-600" />
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-xl">
+                <Calculator className="h-4 w-4 md:h-5 md:w-5 text-amber-600" />
                 {t.form.title}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs md:text-sm">
                 {t.form.description}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="surface">{t.form.surface}</Label>
+              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
+                  <div className="space-y-1.5 md:space-y-2">
+                    <Label htmlFor="surface" className="text-xs md:text-sm">{t.form.surface}</Label>
                     <Input
                       id="surface"
                       type="number"
@@ -175,10 +175,11 @@ export default function SimulateurPage() {
                       max={500}
                       value={simulation.surface}
                       onChange={(e) => setSimulation({ ...simulation, surface: Number(e.target.value) })}
+                      className="h-9 md:h-10 text-sm"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="nbWashers">{t.form.nbWashers}</Label>
+                  <div className="space-y-1.5 md:space-y-2">
+                    <Label htmlFor="nbWashers" className="text-xs md:text-sm">{t.form.nbWashers}</Label>
                     <Input
                       id="nbWashers"
                       type="number"
@@ -186,6 +187,7 @@ export default function SimulateurPage() {
                       max={20}
                       value={simulation.nbWashers}
                       onChange={(e) => setSimulation({ ...simulation, nbWashers: Number(e.target.value) })}
+                      className="h-9 md:h-10 text-sm"
                     />
                   </div>
                 </div>

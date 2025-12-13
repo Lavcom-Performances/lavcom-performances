@@ -610,8 +610,8 @@ const LandingPage = () => {
             {[
               {
                 step: "1",
-                title: "Connectez vos centrales",
-                description: "Reliez vos terminaux (Nayax, LMPay, CPI...) en quelques clics."
+                title: "Importez vos données de centrales",
+                description: "Importez les fichiers CSV de vos centrales (Nayax, LMPay, CPI…) en quelques clics."
               },
               {
                 step: "2",

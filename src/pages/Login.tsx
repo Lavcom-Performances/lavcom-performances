@@ -56,55 +56,55 @@ export default function Login() {
       {/* Back to home button */}
       <Link 
         to="/" 
-        className="absolute top-4 left-4 z-10 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-3 py-2 rounded-lg border border-border"
+        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border"
       >
-        <Home className="h-4 w-4" />
-        {tCommon.home}
+        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" />
+        <span className="hidden sm:inline">{tCommon.home}</span>
       </Link>
 
       {/* Left side - Branding */}
       <div 
-        className="hidden lg:flex lg:w-1/2 items-center justify-center p-12" 
+        className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 lg:p-12" 
         style={{ backgroundColor: isSimulatorMode ? '#b45309' : '#383838' }}
       >
         <div className="max-w-lg text-center animate-fade-in">
           <img 
             src={lavcomLogo} 
             alt="Lavcom Analytics" 
-            className="w-full max-w-md mx-auto mb-8"
+            className="w-full max-w-md mx-auto mb-6 lg:mb-8"
           />
-          <p className="text-white text-lg">
+          <p className="text-white text-base lg:text-lg">
             {currentMode.leftPanelSubtitle}
           </p>
-          <div className="mt-12 grid grid-cols-3 gap-6 text-center">
+          <div className="mt-8 lg:mt-12 grid grid-cols-3 gap-4 lg:gap-6 text-center">
             {isSimulatorMode ? (
               <>
-                <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">{t.simulator.stats.quickEstimate}</p>
-                  <p className="text-sm text-white/70">{t.simulator.stats.quickEstimateLabel}</p>
+                <div className="space-y-1.5 lg:space-y-2">
+                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.simulator.stats.quickEstimate}</p>
+                  <p className="text-xs lg:text-sm text-white/70">{t.simulator.stats.quickEstimateLabel}</p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">{t.simulator.stats.bankReport}</p>
-                  <p className="text-sm text-white/70">{t.simulator.stats.bankReportLabel}</p>
+                <div className="space-y-1.5 lg:space-y-2">
+                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.simulator.stats.bankReport}</p>
+                  <p className="text-xs lg:text-sm text-white/70">{t.simulator.stats.bankReportLabel}</p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">{t.simulator.stats.unlimitedScenarios}</p>
-                  <p className="text-sm text-white/70">{t.simulator.stats.unlimitedScenariosLabel}</p>
+                <div className="space-y-1.5 lg:space-y-2">
+                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.simulator.stats.unlimitedScenarios}</p>
+                  <p className="text-xs lg:text-sm text-white/70">{t.simulator.stats.unlimitedScenariosLabel}</p>
                 </div>
               </>
             ) : (
               <>
-                <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">{t.exploitant.stats.realtime}</p>
-                  <p className="text-sm text-white/70">{t.exploitant.stats.realtimeLabel}</p>
+                <div className="space-y-1.5 lg:space-y-2">
+                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.exploitant.stats.realtime}</p>
+                  <p className="text-xs lg:text-sm text-white/70">{t.exploitant.stats.realtimeLabel}</p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">{t.exploitant.stats.timeSaved}</p>
-                  <p className="text-sm text-white/70">{t.exploitant.stats.timeSavedLabel}</p>
+                <div className="space-y-1.5 lg:space-y-2">
+                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.exploitant.stats.timeSaved}</p>
+                  <p className="text-xs lg:text-sm text-white/70">{t.exploitant.stats.timeSavedLabel}</p>
                 </div>
-                <div className="space-y-2">
-                  <p className="text-3xl font-display font-bold text-white">{t.exploitant.stats.secureData}</p>
-                  <p className="text-sm text-white/70">{t.exploitant.stats.secureDataLabel}</p>
+                <div className="space-y-1.5 lg:space-y-2">
+                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.exploitant.stats.secureData}</p>
+                  <p className="text-xs lg:text-sm text-white/70">{t.exploitant.stats.secureDataLabel}</p>
                 </div>
               </>
             )}
@@ -113,22 +113,22 @@ export default function Login() {
       </div>
 
       {/* Right side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="w-full max-w-md space-y-8 animate-fade-in">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="w-full max-w-md space-y-6 lg:space-y-8 animate-fade-in">
           {/* Mobile Logo */}
-          <div className="lg:hidden text-center mb-8">
+          <div className="lg:hidden text-center mb-4 sm:mb-6 lg:mb-8">
             <img 
               src={lavcomLogo} 
               alt="Lavcom Analytics" 
-              className="w-48 mx-auto"
+              className="w-36 sm:w-48 mx-auto"
             />
           </div>
 
-          <div className="space-y-2">
-            <h2 className="text-2xl font-display font-semibold text-foreground">
+          <div className="space-y-1.5 md:space-y-2">
+            <h2 className="text-xl md:text-2xl font-display font-semibold text-foreground">
               {currentMode.title}
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-sm md:text-base text-muted-foreground">
               {currentMode.subtitle}
             </p>
           </div>
