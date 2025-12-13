@@ -51,50 +51,52 @@ export default function Pricing() {
       </header>
 
       {/* Main content */}
-      <main className="container mx-auto px-4 py-12 sm:py-16 lg:py-20">
+      <main className="container mx-auto px-4 py-8 sm:py-12 lg:py-20">
         {/* Hero section */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <Badge variant="secondary" className="mb-4">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 lg:mb-16">
+          <Badge variant="secondary" className="mb-3 md:mb-4 text-xs md:text-sm">
             {t.badge}
           </Badge>
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+          <h1 className="font-display text-2xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-3 md:mb-4 leading-tight">
             {t.title}
           </h1>
-          <p className="text-muted-foreground text-lg sm:text-xl">
+          <p className="text-muted-foreground text-sm sm:text-lg lg:text-xl px-2">
             {t.subtitle}
           </p>
         </div>
 
         {/* Laundry count selector */}
-        <div className="max-w-md mx-auto mb-10">
+        <div className="max-w-md mx-auto mb-8 md:mb-10">
           <Card className="border-primary/20">
-            <CardContent className="pt-6">
-              <div className="text-center mb-4">
-                <p className="text-sm text-muted-foreground mb-2">{t.laundryCount}</p>
-                <div className="flex items-center justify-center gap-4">
+            <CardContent className="pt-4 md:pt-6">
+              <div className="text-center mb-3 md:mb-4">
+                <p className="text-xs md:text-sm text-muted-foreground mb-2">{t.laundryCount}</p>
+                <div className="flex items-center justify-center gap-3 md:gap-4">
                   <Button 
                     variant="outline" 
                     size="icon"
+                    className="h-8 w-8 md:h-10 md:w-10"
                     onClick={decrementCount}
                     disabled={laundryCount <= 1}
                   >
-                    <Minus className="h-4 w-4" />
+                    <Minus className="h-3 w-3 md:h-4 md:w-4" />
                   </Button>
-                  <span className="text-4xl font-bold text-foreground w-16 text-center">
+                  <span className="text-3xl md:text-4xl font-bold text-foreground w-12 md:w-16 text-center">
                     {laundryCount}
                   </span>
                   <Button 
                     variant="outline" 
                     size="icon"
+                    className="h-8 w-8 md:h-10 md:w-10"
                     onClick={incrementCount}
                     disabled={laundryCount >= 20}
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-3 w-3 md:h-4 md:w-4" />
                   </Button>
                 </div>
               </div>
               <div className="text-center">
-                <Badge variant="outline" className="text-muted-foreground">
+                <Badge variant="outline" className="text-muted-foreground text-xs">
                   {pricing.tierLabel}
                 </Badge>
               </div>
@@ -103,40 +105,40 @@ export default function Pricing() {
         </div>
 
         {/* Pricing cards - Annual first on mobile */}
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-4 lg:gap-8 max-w-4xl mx-auto">
           {/* Annual - Le plus populaire (first on mobile) */}
           <Card className="relative flex flex-col transition-all duration-300 hover:shadow-xl border-primary shadow-lg ring-2 ring-primary/20 order-first md:order-last">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <Badge className="bg-primary text-primary-foreground shadow-md gap-1">
+              <Badge className="bg-primary text-primary-foreground shadow-md gap-1 text-xs">
                 <Sparkles className="h-3 w-3" />
                 {t.plans.annual.badge}
               </Badge>
             </div>
             
-            <CardHeader className="text-center pb-2">
-              <CardTitle className="font-display text-2xl">{t.plans.annual.title}</CardTitle>
-              <CardDescription className="text-base">{t.plans.annual.description}</CardDescription>
+            <CardHeader className="text-center pb-2 pt-6">
+              <CardTitle className="font-display text-xl md:text-2xl">{t.plans.annual.title}</CardTitle>
+              <CardDescription className="text-sm md:text-base">{t.plans.annual.description}</CardDescription>
             </CardHeader>
             
             <CardContent className="flex-1 text-center">
-              <div className="mb-6">
+              <div className="mb-4 md:mb-6">
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-5xl font-bold text-foreground">{pricing.annualTotal}€</span>
-                  <span className="text-muted-foreground">{tCommon.perYear}</span>
+                  <span className="text-3xl md:text-5xl font-bold text-foreground">{pricing.annualTotal}€</span>
+                  <span className="text-muted-foreground text-sm">{tCommon.perYear}</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-xs md:text-sm text-muted-foreground mt-1">
                   soit {pricing.annualPricePerLav}€{tCommon.perYear} {t.plans.annual.perLaundry}
                 </p>
-                <p className="text-sm text-primary font-semibold mt-2">
+                <p className="text-xs md:text-sm text-primary font-semibold mt-2">
                   {t.plans.annual.saving} {pricing.annualSaving}€{tCommon.perYear}
                 </p>
               </div>
               
-              <ul className="space-y-3 text-left">
+              <ul className="space-y-2 md:space-y-3 text-left">
                 {t.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-foreground">{feature}</span>
+                  <li key={index} className="flex items-start gap-2 md:gap-3">
+                    <Check className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-foreground text-sm md:text-base">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -144,7 +146,7 @@ export default function Pricing() {
             
             <CardFooter>
               <Button 
-                className="w-full h-12 text-base font-medium"
+                className="w-full h-10 md:h-12 text-sm md:text-base font-medium"
                 onClick={() => handleSelectPlan("annual")}
               >
                 {t.plans.annual.cta}
@@ -156,26 +158,26 @@ export default function Pricing() {
           {/* Monthly */}
           <Card className="relative flex flex-col transition-all duration-300 hover:shadow-xl border-border hover:border-primary/50 order-last md:order-first">
             <CardHeader className="text-center pb-2">
-              <CardTitle className="font-display text-2xl">{t.plans.monthly.title}</CardTitle>
-              <CardDescription className="text-base">{t.plans.monthly.description}</CardDescription>
+              <CardTitle className="font-display text-xl md:text-2xl">{t.plans.monthly.title}</CardTitle>
+              <CardDescription className="text-sm md:text-base">{t.plans.monthly.description}</CardDescription>
             </CardHeader>
             
             <CardContent className="flex-1 text-center">
-              <div className="mb-6">
+              <div className="mb-4 md:mb-6">
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-5xl font-bold text-foreground">{pricing.monthlyTotal}€</span>
-                  <span className="text-muted-foreground">{tCommon.perMonth}</span>
+                  <span className="text-3xl md:text-5xl font-bold text-foreground">{pricing.monthlyTotal}€</span>
+                  <span className="text-muted-foreground text-sm">{tCommon.perMonth}</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-xs md:text-sm text-muted-foreground mt-1">
                   soit {pricing.monthlyPricePerLav}€{tCommon.perMonth} {t.plans.monthly.perLaundry}
                 </p>
               </div>
               
-              <ul className="space-y-3 text-left">
+              <ul className="space-y-2 md:space-y-3 text-left">
                 {t.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-foreground">{feature}</span>
+                  <li key={index} className="flex items-start gap-2 md:gap-3">
+                    <Check className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-foreground text-sm md:text-base">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -183,7 +185,7 @@ export default function Pricing() {
             
             <CardFooter>
               <Button 
-                className="w-full h-12 text-base font-medium"
+                className="w-full h-10 md:h-12 text-sm md:text-base font-medium"
                 variant="outline"
                 onClick={() => handleSelectPlan("monthly")}
               >
@@ -195,27 +197,27 @@ export default function Pricing() {
         </div>
 
         {/* Pricing explanation */}
-        <div className="max-w-2xl mx-auto mt-16">
+        <div className="max-w-2xl mx-auto mt-10 md:mt-16">
           <Card className="bg-muted/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-semibold">{t.tiers.title}</CardTitle>
+              <CardTitle className="text-base md:text-lg font-semibold">{t.tiers.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <span className="w-32 font-medium text-foreground">{t.tiers.tier1}</span>
+              <ul className="space-y-2 text-muted-foreground text-sm">
+                <li className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                  <span className="sm:w-32 font-medium text-foreground">{t.tiers.tier1}</span>
                   <span>{LAUNDROMAT_PRICING.monthly.tier1.pricePerLaundromat} {t.tiers.perMonthPerLaundry}</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-32 font-medium text-foreground">{t.tiers.tier2}</span>
+                <li className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                  <span className="sm:w-32 font-medium text-foreground">{t.tiers.tier2}</span>
                   <span>{LAUNDROMAT_PRICING.monthly.tier2.pricePerLaundromat} {t.tiers.perMonthPerLaundry}</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-32 font-medium text-foreground">{t.tiers.tier3}</span>
+                <li className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                  <span className="sm:w-32 font-medium text-foreground">{t.tiers.tier3}</span>
                   <span>{LAUNDROMAT_PRICING.monthly.tier3.pricePerLaundromat} {t.tiers.perMonthPerLaundry}</span>
                 </li>
               </ul>
-              <p className="text-sm text-muted-foreground mt-4 pt-4 border-t">
+              <p className="text-xs md:text-sm text-muted-foreground mt-4 pt-4 border-t">
                 {t.tiers.note}
               </p>
             </CardContent>
@@ -223,16 +225,16 @@ export default function Pricing() {
         </div>
 
         {/* Trust badges */}
-        <div className="mt-16 text-center">
-          <p className="text-muted-foreground mb-6">{tCommon.securePayment}</p>
-          <div className="flex items-center justify-center gap-8 opacity-60">
+        <div className="mt-10 md:mt-16 text-center">
+          <p className="text-muted-foreground text-sm mb-4 md:mb-6">{tCommon.securePayment}</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 opacity-60">
             <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5" />
-              <span className="text-sm">{tCommon.professionalBilling}</span>
+              <Building2 className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="text-xs md:text-sm">{tCommon.professionalBilling}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="h-5 w-5" />
-              <span className="text-sm">{tCommon.cancelAnytime}</span>
+              <Check className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="text-xs md:text-sm">{tCommon.cancelAnytime}</span>
             </div>
           </div>
         </div>

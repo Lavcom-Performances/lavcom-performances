@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { DateRange } from "react-day-picker";
 import { subDays, format, startOfDay, startOfMonth, startOfYear, isWithinInterval, getHours } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Search, Download, Filter } from "lucide-react";
+import { Search, Download, Filter, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -25,6 +25,9 @@ import { cn } from "@/lib/utils";
 import { OperationsKPIRow } from "@/components/operations/OperationsKPIRow";
 import { HourlyBarChart } from "@/components/operations/HourlyBarChart";
 import { MachineCountList } from "@/components/operations/MachineCountList";
+import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
+import { generateOperationsPdf } from "@/utils/operationsPdfExport";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data for V1 - more complete dataset
 const mockOperations = [
@@ -72,6 +75,7 @@ const categoryLabel = (category: string) => {
 };
 
 export default function Operations() {
+  const { toast } = useToast();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 7),
     to: new Date(),
@@ -79,6 +83,8 @@ export default function Operations() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const filteredOperations = mockOperations.filter((op) => {
     const matchesSearch = op.label.toLowerCase().includes(searchQuery.toLowerCase());
@@ -155,6 +161,50 @@ export default function Operations() {
       .sort((a, b) => b.count - a.count);
   }, [filteredOperations]);
 
+  const handleExportPdf = async () => {
+    if (!dateRange?.from || !dateRange?.to) {
+      toast({
+        title: "Sélectionnez une période",
+        description: "Veuillez définir une plage de dates pour l'export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      generateOperationsPdf({
+        laundromatName: "Laverie Démo",
+        dateFrom: dateRange.from,
+        dateTo: dateRange.to,
+        operations: filteredOperations,
+      });
+
+      toast({
+        title: "Export réussi",
+        description: `${filteredOperations.length} opérations exportées en PDF.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de générer le PDF.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleImportComplete = (count: number) => {
+    // In a real app, we would refresh the operations list here
+    // For now, we just close the dialog after a delay
+    setTimeout(() => {
+      setIsImportDialogOpen(false);
+    }, 2000);
+  };
+
   return (
     <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
@@ -167,11 +217,31 @@ export default function Operations() {
             Journal chronologique des transactions
           </p>
         </div>
-        <Button variant="outline">
-          <Download className="h-4 w-4" />
-          Exporter
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => setIsImportDialogOpen(true)}
+            className="bg-lavcom-green hover:bg-lavcom-green-dark text-white"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Importer CSV
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={handleExportPdf}
+            disabled={isExporting || filteredOperations.length === 0}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            {isExporting ? "Export..." : "Exporter"}
+          </Button>
+        </div>
       </div>
+
+      {/* CSV Import Dialog */}
+      <CSVImportDialog 
+        open={isImportDialogOpen} 
+        onOpenChange={setIsImportDialogOpen}
+        onImportComplete={handleImportComplete}
+      />
 
       {/* Filters */}
       <div className="card-lavcom p-4">
