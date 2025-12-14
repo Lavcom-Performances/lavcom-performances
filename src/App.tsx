@@ -5,8 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SimulationLayout } from "@/components/layout/SimulationLayout";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Pricing from "./pages/Pricing";
 import Subscribe from "./pages/Subscribe";
 import SimulateurPage from "./pages/SimulateurPage";
@@ -50,8 +52,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Public routes */}
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/subscribe" element={<Subscribe />} />
           <Route path="/simulateur" element={<SimulateurPage />} />
@@ -67,8 +71,12 @@ const App = () => (
             <Route path="/simulation/results" element={<SimulationResultsPage />} />
           </Route>
           
-          {/* App routes with sidebar layout */}
-          <Route element={<AppLayout />}>
+          {/* Protected app routes with sidebar layout */}
+          <Route element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/laundromat-settings" element={<LaundromatSettings />} />
             <Route path="/operations" element={<Operations />} />

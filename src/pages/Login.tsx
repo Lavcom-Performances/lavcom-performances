@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Eye, EyeOff, Loader2, Home } from "lucide-react";
+import { Eye, EyeOff, Loader2, Home, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
 import { translations } from "@/lib/i18n";
 
@@ -19,26 +20,16 @@ export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { signIn, isAuthenticated, loading } = useAuth();
 
   // Get mode and redirect from URL params
   const mode = searchParams.get("mode") ?? "exploitant";
   const redirectUrl = searchParams.get("redirect");
-
   const isSimulatorMode = mode === "simulateur";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulated login for V1 demo
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: t.loginSuccess,
-        description: isSimulatorMode ? t.welcomeSimulator : t.welcomeExploitant,
-      });
-      
-      // Redirect based on mode
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
       if (redirectUrl) {
         navigate(redirectUrl);
       } else if (isSimulatorMode) {
@@ -46,10 +37,58 @@ export default function Login() {
       } else {
         navigate("/select-laundromat");
       }
-    }, 1000);
+    }
+  }, [loading, isAuthenticated, navigate, redirectUrl, isSimulatorMode]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    const { error } = await signIn(email, password);
+    
+    setIsLoading(false);
+    
+    if (error) {
+      let errorMessage = error.message;
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage = "Email ou mot de passe incorrect";
+      } else if (error.message.includes("Email not confirmed")) {
+        errorMessage = "Veuillez confirmer votre email";
+      }
+      
+      toast({
+        title: "Erreur de connexion",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    toast({
+      title: t.loginSuccess,
+      description: isSimulatorMode ? t.welcomeSimulator : t.welcomeExploitant,
+    });
+    
+    // Redirect based on mode
+    if (redirectUrl) {
+      navigate(redirectUrl);
+    } else if (isSimulatorMode) {
+      navigate("/simulation");
+    } else {
+      navigate("/select-laundromat");
+    }
   };
 
   const currentMode = isSimulatorMode ? t.simulator : t.exploitant;
+
+  // Don't render if already authenticated and loading
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-background relative">
@@ -195,6 +234,23 @@ export default function Login() {
               )}
             </Button>
           </form>
+
+          {/* Free trial CTA */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">ou</span>
+            </div>
+          </div>
+
+          <Link to="/signup" className="block">
+            <Button variant="outline" size="lg" className="w-full group">
+              <Sparkles className="h-4 w-4 mr-2 text-primary group-hover:text-primary" />
+              Essai gratuit 14 jours
+            </Button>
+          </Link>
 
           <p className="text-center text-sm text-muted-foreground">
             {t.notSubscribed}{" "}

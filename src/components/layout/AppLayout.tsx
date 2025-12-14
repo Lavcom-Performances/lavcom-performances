@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { AppSidebar } from "./AppSidebar";
 import { MobileHeader } from "./MobileHeader";
+import { TrialBanner } from "@/components/trial/TrialBanner";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface AppLayoutProps {
   userRole?: string;
@@ -13,6 +15,9 @@ export function AppLayout({
   currentLaundromat = "Laverie Saint-Michel" 
 }: AppLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { daysRemaining, trialStatus, planType } = useSubscription();
+
+  const showTrialWarning = planType === 'trial' && (trialStatus === 'warning' || trialStatus === 'critical');
 
   return (
     <div className="flex flex-col h-screen w-full bg-background">
@@ -33,9 +38,22 @@ export function AppLayout({
           />
         </div>
         
-        <main className="flex-1 overflow-auto">
-          <Outlet />
-        </main>
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Trial warning banner - only show on desktop when trial is warning/critical */}
+          {showTrialWarning && (
+            <div className="hidden lg:block">
+              <TrialBanner 
+                daysRemaining={daysRemaining} 
+                status={trialStatus}
+                variant="compact"
+              />
+            </div>
+          )}
+          
+          <main className="flex-1 overflow-auto">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   );
