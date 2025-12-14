@@ -31,6 +31,9 @@ import {
 } from "@/components/ui/collapsible";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { CompanyLogoUpload } from "./CompanyLogoUpload";
+import { TrialBanner } from "@/components/trial/TrialBanner";
+import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useState, useEffect } from "react";
 
 interface AppSidebarProps {
@@ -79,9 +82,12 @@ export function AppSidebar({
   const navigate = useNavigate();
   const [chartsOpen, setChartsOpen] = useState(true);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+  
+  const { signOut } = useAuth();
+  const { daysRemaining, trialStatus, planType } = useSubscription();
 
-  const handleLogout = () => {
-    // Pour V1 demo, on redirige simplement vers la page de connexion
+  const handleLogout = async () => {
+    await signOut();
     navigate("/login");
   };
 
@@ -100,6 +106,8 @@ export function AppSidebar({
     if (userRole === "GUEST" && permission === "READ_VIEWS") return true;
     return false;
   };
+
+  const showTrialBanner = planType === 'trial';
 
   return (
     <aside 
@@ -129,6 +137,17 @@ export function AppSidebar({
           <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
         </Button>
       </div>
+
+      {/* Trial Banner - only show when not collapsed and on trial */}
+      {!collapsed && showTrialBanner && (
+        <div className="py-2">
+          <TrialBanner 
+            daysRemaining={daysRemaining} 
+            status={trialStatus}
+            variant="sidebar"
+          />
+        </div>
+      )}
 
       {/* Current Laundromat */}
       {!collapsed && (
