@@ -260,7 +260,7 @@ const LandingPage = () => {
             <a href="#exploitants" className="w-full sm:w-auto">
               <Button size="default" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-sm md:text-lg px-4 md:px-8 w-full sm:w-auto">
                 <Building2 className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                Je gère déjà une laverie
+                Je veux optimiser mes laveries
               </Button>
             </a>
             <a href="#futurs-exploitants" className="w-full sm:w-auto">
@@ -323,7 +323,7 @@ const LandingPage = () => {
               <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
                 <Link to="/pricing">
                   <Button size="default" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-sm md:text-base w-full sm:w-auto">
-                    Découvrir pour exploitants
+                    Améliorer mes performances
                     <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </Link>
