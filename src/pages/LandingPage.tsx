@@ -230,8 +230,11 @@ const LandingPage = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <Link to="/pricing">
-              <Button className="btn-bounce bg-primary hover:bg-primary/90">
+              <Button className="btn-bounce bg-primary hover:bg-primary/90 relative">
                 {t("nav").exploitantPricing}
+                <span className="absolute -top-2 -right-2 bg-lavcom-green text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
+                  14j gratuits
+                </span>
               </Button>
             </Link>
           </div>
@@ -271,8 +274,26 @@ const LandingPage = () => {
             </a>
           </div>
           
+          {/* Ligne de réassurance essai gratuit */}
+          <div className="mt-4 md:mt-6 flex flex-wrap items-center justify-center gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground animate-fade-in">
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-lavcom-green" />
+              Essai gratuit 14 jours
+            </span>
+            <span className="hidden sm:inline text-border">•</span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-lavcom-green" />
+              Sans engagement
+            </span>
+            <span className="hidden sm:inline text-border">•</span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-lavcom-green" />
+              Sans carte bancaire
+            </span>
+          </div>
+          
           {/* Phrase de positionnement */}
-          <p className="mt-6 md:mt-8 text-xs md:text-sm text-muted-foreground animate-fade-in italic px-2">
+          <p className="mt-4 md:mt-6 text-xs md:text-sm text-muted-foreground animate-fade-in italic px-2">
             "La couche d'intelligence au-dessus de vos centrales de paiement"
           </p>
         </div>
@@ -321,9 +342,9 @@ const LandingPage = () => {
               
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
-                <Link to="/pricing">
+                <Link to="/signup">
                   <Button size="default" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-sm md:text-base w-full sm:w-auto">
-                    Améliorer mes performances
+                    Essayer 14 jours gratuits
                     <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </Link>
