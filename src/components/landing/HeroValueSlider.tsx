@@ -23,28 +23,28 @@ const heroSlides: HeroSlide[] = [
   {
     id: "slide1",
     title: "Combien d'argent votre laverie laisse-t-elle sur la table ?",
-    subtitle: "Vos centrales vous montrent ce que vous encaissez. Lavcom Analytics vous montre ce que vous auriez pu encaisser : machines qui ne tournent pas, créneaux saturés, prix mal positionnés. Une laverie peut faire 150 000 € de chiffre d'affaires par an et laisser 10 à 20 000 € de potentiel inexploité.",
+    subtitle: "Vos centrales vous montrent ce que vous encaissez. Lavcom Performances vous montre ce que vous auriez pu encaisser : machines qui ne tournent pas, créneaux saturés, prix mal positionnés. Une laverie peut faire 150 000 € de chiffre d'affaires par an et laisser 10 à 20 000 € de potentiel inexploité.",
     ctaLabel: "Découvrir le tableau de bord",
     image: heroSlide1
   },
   {
     id: "slide2",
     title: "Une laverie peut tourner… et perdre de l'argent. Sans que vous le voyiez.",
-    subtitle: "Beaucoup d'exploitants ne savent pas si leur laverie est vraiment rentable. Lavcom Analytics calcule pour vous : votre seuil de rentabilité, les machines qui couvrent vos charges et celles qui grignotent votre marge. Vous ne regarderez plus votre chiffre d'affaires de la même façon.",
+    subtitle: "Beaucoup d'exploitants ne savent pas si leur laverie est vraiment rentable. Lavcom Performances calcule pour vous : votre seuil de rentabilité, les machines qui couvrent vos charges et celles qui grignotent votre marge. Vous ne regarderez plus votre chiffre d'affaires de la même façon.",
     ctaLabel: "Comprendre mes chiffres",
     image: heroSlide2
   },
   {
     id: "slide3",
     title: "Voir ses chiffres ne suffit pas. Il faut savoir quoi en faire.",
-    subtitle: "Vos centrales collectent déjà des milliers de lignes de données. Problème : personne n'a le temps de les analyser. Lavcom Analytics transforme ces données en recommandations claires : \"Augmenter tel prix\", \"Réduire tel horaire\", \"Vérifier telle machine\". 3 actions concrètes par mois, pas 300 tableaux Excel.",
+    subtitle: "Vos centrales collectent déjà des milliers de lignes de données. Problème : personne n'a le temps de les analyser. Lavcom Performances transforme ces données en recommandations claires : \"Augmenter tel prix\", \"Réduire tel horaire\", \"Vérifier telle machine\". 3 actions concrètes par mois, pas 300 tableaux Excel.",
     ctaLabel: "Voir comment ça marche",
     image: heroSlide3
   },
   {
     id: "slide4",
     title: "Vous connaissez le prix d'un cycle. Mais connaissez-vous le profit de chaque machine ?",
-    subtitle: "Deux machines au même prix ne rapportent pas la même chose. Lavcom Analytics vous montre quelles machines financent réellement votre laverie, lesquelles dorment, et où optimiser vos décisions (prix, parc, horaires). C'est la différence entre avoir des machines et piloter un parc rentable.",
+    subtitle: "Deux machines au même prix ne rapportent pas la même chose. Lavcom Performances vous montre quelles machines financent réellement votre laverie, lesquelles dorment, et où optimiser vos décisions (prix, parc, horaires). C'est la différence entre avoir des machines et piloter un parc rentable.",
     ctaLabel: "Analyser mes machines",
     image: heroSlide4
   }

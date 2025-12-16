@@ -180,7 +180,7 @@ export default function CompanySettings() {
                 Paramètres entreprise
               </h1>
               <p className="text-muted-foreground">
-                Personnalisez votre espace Lavcom Analytics
+                Personnalisez votre espace Lavcom Performances
               </p>
             </div>
           </div>

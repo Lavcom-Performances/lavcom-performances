@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
+import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { z } from "zod";
+import { formatFirstName, formatLastName } from "@/lib/textUtils";
 
 const signupSchema = z.object({
   email: z.string().email("Adresse email invalide"),
@@ -57,9 +58,13 @@ export default function Signup() {
     
     setIsLoading(true);
     
+    // Format names before sending (TAEX-066)
+    const formattedFirstName = formatFirstName(firstName);
+    const formattedLastName = formatLastName(lastName);
+    
     const { error } = await signUp(email, password, {
-      first_name: firstName,
-      last_name: lastName,
+      first_name: formattedFirstName,
+      last_name: formattedLastName,
       company_name: companyName,
     });
     
@@ -117,7 +122,7 @@ export default function Signup() {
         <div className="max-w-lg text-center animate-fade-in">
           <img 
             src={lavcomLogo} 
-            alt="Lavcom Analytics" 
+            alt="Lavcom Performances" 
             className="w-full max-w-md mx-auto mb-6 lg:mb-8"
           />
           
@@ -148,7 +153,7 @@ export default function Signup() {
           <div className="lg:hidden text-center mb-4 sm:mb-6">
             <img 
               src={lavcomLogo} 
-              alt="Lavcom Analytics" 
+              alt="Lavcom Performances" 
               className="w-36 sm:w-48 mx-auto"
             />
           </div>
