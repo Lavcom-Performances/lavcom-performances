@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Lock, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import lavcomLogo from "@/assets/lavcom-analytics-logo.png";
+import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 
 interface TrialExpiredPaywallProps {
   onContactSupport?: () => void;
@@ -34,7 +34,7 @@ export function TrialExpiredPaywall({ onContactSupport }: TrialExpiredPaywallPro
             Votre essai gratuit est terminé
           </CardTitle>
           <CardDescription className="text-base mt-2">
-            Continuez à optimiser vos laveries avec Lavcom Analytics Pro
+            Continuez à optimiser vos laveries avec Lavcom Performances Pro
           </CardDescription>
         </CardHeader>
 
@@ -42,7 +42,7 @@ export function TrialExpiredPaywall({ onContactSupport }: TrialExpiredPaywallPro
           <div className="text-center">
             <img 
               src={lavcomLogo} 
-              alt="Lavcom Analytics" 
+              alt="Lavcom Performances" 
               className="h-10 mx-auto mb-4 opacity-50"
             />
           </div>

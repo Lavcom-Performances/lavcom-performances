@@ -99,7 +99,7 @@ const testimonials = [
     name: "Marie Dupont",
     role: "Gérante, Laverie Express Lyon",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-    quote: "Grâce à Lavcom Analytics, j'ai pu identifier mes heures creuses et ajuster mes tarifs. Mon CA a augmenté de 30% en 6 mois !",
+    quote: "Grâce à Lavcom Performances, j'ai pu identifier mes heures creuses et ajuster mes tarifs. Mon CA a augmenté de 30% en 6 mois !",
     rating: 5
   },
   {
@@ -181,7 +181,7 @@ const LandingPage = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center">
-            <img src={lavcomLogo} alt="Lavcom Analytics" className="h-8 w-auto" />
+            <img src={lavcomLogo} alt="Lavcom Performances" className="h-8 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -451,7 +451,7 @@ const LandingPage = () => {
               </p>
               
               <p className="hidden md:block text-muted-foreground text-sm md:text-base mb-6">
-                Le simulateur Lavcom Analytics vous permet de tester plusieurs configurations de laverie et d'obtenir un rapport chiffré pour votre banque ou vos partenaires.
+                Le simulateur Lavcom Performances vous permet de tester plusieurs configurations de laverie et d'obtenir un rapport chiffré pour votre banque ou vos partenaires.
               </p>
               
               {/* CTAs */}
@@ -483,7 +483,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="text-left md:text-center mb-8 md:mb-12">
             <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px] md:max-w-none md:mx-auto">
-              À quoi ressemble un rapport Lavcom Analytics ?
+              À quoi ressemble un rapport Lavcom Performances ?
             </h2>
           </div>
           
@@ -493,7 +493,7 @@ const LandingPage = () => {
               <Card className="p-3 md:p-4 bg-card/80 backdrop-blur border-primary/20 shadow-xl overflow-hidden">
                 <img 
                   src={pdfMockupPreview} 
-                  alt="Exemple de rapport Lavcom Analytics - Analyse des performances" 
+                  alt="Exemple de rapport Lavcom Performances - Analyse des performances" 
                   className="w-full h-auto rounded-lg shadow-md"
                 />
                 <div className="mt-3 md:mt-4 text-center">
@@ -556,7 +556,7 @@ const LandingPage = () => {
       <section className="py-12 md:py-16 px-4 md:px-6">
         <div className="container mx-auto max-w-5xl">
           <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-left md:text-center mb-8 md:mb-12 leading-tight max-w-[400px] md:max-w-none">
-            Sans Lavcom Analytics / Avec Lavcom Analytics
+            Sans Lavcom Performances / Avec Lavcom Performances
           </h2>
           
           <div className="grid md:grid-cols-2 gap-4 md:gap-8">
@@ -564,7 +564,7 @@ const LandingPage = () => {
             <Card className="p-4 md:p-6 border-red-200 dark:border-red-900/30 bg-red-50/50 dark:bg-red-950/10">
               <h3 className="text-base md:text-lg font-semibold text-red-700 dark:text-red-400 mb-3 md:mb-4 flex items-center gap-2">
                 <span className="text-xl md:text-2xl">✗</span>
-                Sans Lavcom Analytics
+                Sans Lavcom Performances
               </h3>
               <ul className="space-y-2 md:space-y-3">
                 <li className="flex items-start gap-2 md:gap-3 text-muted-foreground text-sm md:text-base">
@@ -590,7 +590,7 @@ const LandingPage = () => {
             <Card className="p-4 md:p-6 border-lavcom-green/30 bg-lavcom-green/5">
               <h3 className="text-base md:text-lg font-semibold text-lavcom-green-dark dark:text-lavcom-green mb-3 md:mb-4 flex items-center gap-2">
                 <span className="text-xl md:text-2xl">✓</span>
-                Avec Lavcom Analytics
+                Avec Lavcom Performances
               </h3>
               <ul className="space-y-2 md:space-y-3">
                 <li className="flex items-start gap-2 md:gap-3 text-foreground text-sm md:text-base">
@@ -837,10 +837,10 @@ const LandingPage = () => {
           <Accordion type="single" collapsible className="space-y-4">
             <AccordionItem value="item-1" className="bg-card rounded-xl border border-border/50 px-6">
               <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
-                Comment Lavcom Analytics se connecte-t-il à mes machines ?
+                Comment Lavcom Performances se connecte-t-il à mes machines ?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Lavcom Analytics s'intègre facilement avec la plupart des systèmes de paiement et de gestion de laverie. 
+                Lavcom Performances s'intègre facilement avec la plupart des systèmes de paiement et de gestion de laverie. 
                 Notre équipe technique vous accompagne dans la configuration initiale qui prend généralement moins de 2 heures.
                 Aucune modification matérielle n'est nécessaire.
               </AccordionContent>
@@ -862,7 +862,7 @@ const LandingPage = () => {
                 Puis-je gérer plusieurs laveries avec un seul compte ?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Oui ! Lavcom Analytics est conçu pour gérer aussi bien une seule laverie qu'un réseau complet. 
+                Oui ! Lavcom Performances est conçu pour gérer aussi bien une seule laverie qu'un réseau complet. 
                 Vous pouvez visualiser les performances de chaque établissement individuellement ou obtenir une vue consolidée de tout votre réseau.
               </AccordionContent>
             </AccordionItem>
@@ -1041,7 +1041,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-4xl">
           <Card className="p-8 md:p-12 text-center bg-gradient-to-br from-sidebar-background to-muted border-0">
             <h2 className="text-3xl md:text-4xl font-bold text-card-foreground mb-4">
-              Deux façons de travailler avec Lavcom Analytics
+              Deux façons de travailler avec Lavcom Performances
             </h2>
             <p className="text-card-foreground/70 text-lg mb-8 max-w-xl mx-auto">
               Que vous soyez déjà exploitant ou futur exploitant, nous avons une solution adaptée à vos besoins.
@@ -1074,7 +1074,7 @@ const LandingPage = () => {
             {/* Logo et description */}
             <div>
               <Link to="/" className="inline-block mb-4">
-                <img src={lavcomLogo} alt="Lavcom Analytics" className="h-8 w-auto" />
+                <img src={lavcomLogo} alt="Lavcom Performances" className="h-8 w-auto" />
               </Link>
               <p className="text-sm text-muted-foreground">
                 La plateforme d'analyse et d'optimisation pour les laveries automatiques.
@@ -1138,7 +1138,7 @@ const LandingPage = () => {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               {/* Mention légale société */}
               <p className="text-xs text-muted-foreground text-center md:text-left">
-                Lavcom Analytics est une marque commerciale de Lavcom, elle-même marque commerciale de la société My'Po SARL – 88 avenue de Grammont, 37000 Tours
+                Lavcom Performances est une marque commerciale de Lavcom, elle-même marque commerciale de la société My'Po SARL – 88 avenue de Grammont, 37000 Tours
               </p>
               
               {/* Liens légaux */}
@@ -1150,7 +1150,7 @@ const LandingPage = () => {
             </div>
             
             <p className="text-xs text-muted-foreground text-center mt-4">
-              © {new Date().getFullYear()} Lavcom Analytics. Tous droits réservés.
+              © {new Date().getFullYear()} Lavcom Performances. Tous droits réservés.
             </p>
           </div>
         </div>

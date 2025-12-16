@@ -60,8 +60,8 @@ export const translations = {
     hero: {
       badge: "Solution n°1 pour les laveries automatiques",
       title: "Vos centrales collectent les données,",
-      titleHighlight: "Lavcom Analytics les transforme en décisions concrètes.",
-      subtitle: "Lavcom Analytics analyse les données de vos centrales de paiement et vous dit quoi faire pour augmenter la rentabilité de vos laveries.",
+      titleHighlight: "Lavcom Performances les transforme en décisions concrètes.",
+      subtitle: "Lavcom Performances analyse les données de vos centrales de paiement et vous dit quoi faire pour augmenter la rentabilité de vos laveries.",
       cta: "Commencer maintenant",
       watchDemo: "Voir la démo",
     },
@@ -83,7 +83,7 @@ export const translations = {
       expertCall: "+ visio expert",
     },
     demo: {
-      title: "Découvrez Lavcom Analytics en action",
+      title: "Découvrez Lavcom Performances en action",
       subtitle: "Une interface intuitive pour piloter votre activité",
       playVideo: "Cliquez pour lancer la vidéo de démonstration",
       duration: "Durée : 2 minutes",
@@ -153,7 +153,7 @@ export const translations = {
     },
     faq: {
       title: "Questions fréquentes",
-      subtitle: "Tout ce que vous devez savoir sur Lavcom Analytics",
+      subtitle: "Tout ce que vous devez savoir sur Lavcom Performances",
     },
   },
 
@@ -185,7 +185,7 @@ export const translations = {
       "Accès à toutes les analyses",
       "Tableau de bord complet",
       "Export PDF des rapports",
-      "Module Recommandations Lavcom Analytics",
+      "Module Recommandations Lavcom Performances",
     ],
     tiers: {
       title: "Tarifs dégressifs en fonction du nombre de laveries",
@@ -260,7 +260,7 @@ export const translations = {
   // SUBSCRIBE SIMULATOR PAGE
   // ============================================
   subscribeSimulator: {
-    badge: "Lavcom Analytics Création",
+    badge: "Lavcom Performances Création",
     title: "Choisissez votre formule",
     subtitle: "Accédez au simulateur complet et préparez votre projet de laverie avec tous les outils dont vous avez besoin.",
     plans: {
@@ -358,7 +358,7 @@ export const translations = {
     },
     success: {
       title: "Inscription réussie !",
-      description: "Votre abonnement a été activé. Bienvenue sur Lavcom Analytics !",
+      description: "Votre abonnement a été activé. Bienvenue sur Lavcom Performances !",
     },
     proceedPayment: "Procéder au paiement",
     processing: "Traitement...",
@@ -410,8 +410,8 @@ export const translations = {
     exploitantLogin: "Connexion exploitant",
     switchToSimulator: "Vous voulez ouvrir une laverie ?",
     simulatorLogin: "Connexion simulateur",
-    welcomeExploitant: "Bienvenue sur Lavcom Analytics",
-    welcomeSimulator: "Bienvenue sur Lavcom Analytics Création",
+    welcomeExploitant: "Bienvenue sur Lavcom Performances",
+    welcomeSimulator: "Bienvenue sur Lavcom Performances Création",
     loginSuccess: "Connexion réussie",
   },
 

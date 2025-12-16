@@ -331,7 +331,7 @@ export function generateSimulationReport(
   yPos = doc.internal.pageSize.getHeight() - 20;
   doc.setTextColor(150, 150, 150);
   doc.setFontSize(8);
-  doc.text('Simulation réalisée avec Lavcom Analytics | Ces données sont des estimations basées sur vos hypothèses.', pageWidth / 2, yPos, { align: 'center' });
+  doc.text('Simulation réalisée avec Lavcom Performances | Ces données sont des estimations basées sur vos hypothèses.', pageWidth / 2, yPos, { align: 'center' });
 
   // Sauvegarder le PDF
   const fileName = `simulation_${project.name?.replace(/\s+/g, '_') || 'projet'}_${new Date().toISOString().split('T')[0]}.pdf`;

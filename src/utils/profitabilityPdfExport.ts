@@ -336,7 +336,7 @@ export function generateProfitabilityReport(data: ProfitabilityReportData): void
     { align: "center" }
   );
   doc.text(
-    `${data.laundromat} | Lavcom Analytics | ${data.generatedDate}`,
+    `${data.laundromat} | Lavcom Performances | ${data.generatedDate}`,
     pageWidth / 2,
     pageHeight - 10,
     { align: "center" }
