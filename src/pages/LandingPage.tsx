@@ -29,8 +29,6 @@ import {
   PieChart,
   ArrowRight,
   CheckCircle2,
-  Play,
-  Quote,
   Star,
   Send,
   Mail,
@@ -43,8 +41,10 @@ import {
   ChevronDown,
   FileText,
   Target,
-  Users,
-  MapPin
+  MapPin,
+  Eye,
+  Lightbulb,
+  BookOpen
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -58,41 +58,6 @@ const contactSchema = z.object({
   email: z.string().trim().email(t("validation").invalidEmail).max(255, t("validation").emailTooLong),
   message: z.string().trim().min(10, t("validation").messageMinLength).max(1000, t("validation").messageMaxLength)
 });
-
-const features = [
-  {
-    icon: BarChart3,
-    title: t("landing").features.items.dashboards.title,
-    description: t("landing").features.items.dashboards.description
-  },
-  {
-    icon: TrendingUp,
-    title: t("landing").features.items.predictive.title,
-    description: t("landing").features.items.predictive.description
-  },
-  {
-    icon: Bell,
-    title: t("landing").features.items.alerts.title,
-    description: t("landing").features.items.alerts.description
-  },
-  {
-    icon: LineChart,
-    title: t("landing").features.items.revenue.title,
-    description: t("landing").features.items.revenue.description
-  },
-  {
-    icon: Shield,
-    title: t("landing").features.items.maintenance.title,
-    description: t("landing").features.items.maintenance.description
-  },
-  {
-    icon: Zap,
-    title: t("landing").features.items.optimization.title,
-    description: t("landing").features.items.optimization.description
-  }
-];
-
-const benefits = t("landing").benefits.items;
 
 const testimonials = [
   {
@@ -291,11 +256,57 @@ const LandingPage = () => {
               Sans carte bancaire
             </span>
           </div>
+        </div>
+      </section>
+
+      {/* ========================================== */}
+      {/* BLOC – CHOISISSEZ VOTRE PARCOURS */}
+      {/* ========================================== */}
+      <section className="py-12 md:py-16 px-4 md:px-6">
+        <div className="container mx-auto max-w-5xl">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-center mb-8 md:mb-12">
+            Choisissez votre parcours
+          </h2>
           
-          {/* Phrase de positionnement */}
-          <p className="mt-4 md:mt-6 text-xs md:text-sm text-muted-foreground animate-fade-in italic px-2">
-            "La couche d'intelligence au-dessus de vos centrales de paiement"
-          </p>
+          <div className="grid md:grid-cols-2 gap-4 md:gap-8">
+            {/* Colonne Exploitant */}
+            <Card className="p-4 md:p-6 border-lavcom-green/30 bg-lavcom-green/5 hover:shadow-lg transition-shadow">
+              <div className="flex items-center gap-2 mb-3 md:mb-4">
+                <Building2 className="h-5 w-5 md:h-6 md:w-6 text-lavcom-green" />
+                <h3 className="text-base md:text-lg font-semibold text-lavcom-green-dark dark:text-lavcom-green">
+                  Je gère déjà une ou plusieurs laveries
+                </h3>
+              </div>
+              <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
+                Suivez vos laveries, vos machines et votre chiffre d'affaires. Lavcom Performances vous aide à améliorer vos résultats, pas à faire plus de paperasse.
+              </p>
+              <Link to="/signup">
+                <Button className="w-full btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white">
+                  Découvrir le tableau de bord
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </Card>
+            
+            {/* Colonne Futur exploitant */}
+            <Card className="p-4 md:p-6 border-lavcom-orange/30 bg-lavcom-orange/5 hover:shadow-lg transition-shadow">
+              <div className="flex items-center gap-2 mb-3 md:mb-4">
+                <Rocket className="h-5 w-5 md:h-6 md:w-6 text-lavcom-orange" />
+                <h3 className="text-base md:text-lg font-semibold text-lavcom-orange-dark dark:text-lavcom-orange">
+                  Je prépare l'ouverture d'une laverie
+                </h3>
+              </div>
+              <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
+                Simulez vos charges, vos recettes possibles et votre seuil de rentabilité avant d'investir.
+              </p>
+              <Link to="/simulateur">
+                <Button className="w-full btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white">
+                  Tester le simulateur d'ouverture
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </Card>
+          </div>
         </div>
       </section>
 
@@ -313,32 +324,28 @@ const LandingPage = () => {
               </div>
               
               <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px]">
-                Vous gérez déjà une laverie ?
+                Pour les exploitants qui veulent tirer le meilleur de leurs laveries
               </h2>
               
-              <p className="text-muted-foreground text-sm md:text-lg mb-4 md:mb-6">
-                Reliez vos centrales de paiement, visualisez vos chiffres et recevez chaque mois un rapport d'analyse des performances.
-              </p>
-              
-              {/* Puces avantages exploitants */}
-              <ul className="space-y-2 md:space-y-3 mb-6 md:mb-8 text-left">
+              {/* 3 bénéfices en bullet points */}
+              <ul className="space-y-2 md:space-y-3 mb-4 md:mb-6 text-left">
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base"><strong>Tableau de bord financier :</strong> CA, panier moyen, évolution.</span>
+                  <span className="text-foreground text-sm md:text-base">Voir en un coup d'œil ce que chaque laverie rapporte vraiment.</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base"><strong>Analyse machine par machine :</strong> cycles, taux d'occupation.</span>
+                  <span className="text-foreground text-sm md:text-base">Repérer les machines qui marchent fort et celles qui pourraient mieux tourner.</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base"><strong>Recommandations concrètes :</strong> prix, horaires, maintenance.</span>
-                </li>
-                <li className="flex items-start gap-2 md:gap-3">
-                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base"><strong>Rapport PDF</strong> prêt à partager.</span>
+                  <span className="text-foreground text-sm md:text-base">Recevoir des idées simples d'actions : ajuster un prix, ajouter un séchoir, revoir un horaire d'ouverture.</span>
                 </li>
               </ul>
+              
+              <p className="text-muted-foreground text-sm md:text-base mb-6 md:mb-8 italic">
+                Vous gardez le contrôle. Lavcom Performances vous aide juste à voir plus clair et à décider plus vite.
+              </p>
               
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
@@ -443,15 +450,30 @@ const LandingPage = () => {
               </div>
               
               <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px]">
-                Vous souhaitez ouvrir une laverie ?
+                Pour ceux qui veulent ouvrir une laverie avec des chiffres réalistes
               </h2>
               
-              <p className="text-muted-foreground text-sm md:text-lg mb-3 md:mb-6">
-                Simulez votre projet avant d'investir : CA potentiel, charges, seuil de rentabilité et scénarios.
+              <p className="text-muted-foreground text-sm md:text-lg mb-4 md:mb-6">
+                Le simulateur Lavcom Performances vous aide à estimer :
               </p>
               
-              <p className="hidden md:block text-muted-foreground text-sm md:text-base mb-6">
-                Le simulateur Lavcom Performances vous permet de tester plusieurs configurations de laverie et d'obtenir un rapport chiffré pour votre banque ou vos partenaires.
+              <ul className="space-y-2 md:space-y-3 mb-4 md:mb-6 text-left">
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-orange shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base">Vos charges principales (loyer, prêts, énergie, eau, etc.)</span>
+                </li>
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-orange shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base">Vos recettes possibles selon la fréquentation</span>
+                </li>
+                <li className="flex items-start gap-2 md:gap-3">
+                  <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-orange shrink-0 mt-0.5" />
+                  <span className="text-foreground text-sm md:text-base">Votre seuil de rentabilité</span>
+                </li>
+              </ul>
+              
+              <p className="text-muted-foreground text-sm md:text-base mb-6 md:mb-8 italic">
+                Vous ne devinez pas. Vous partez avec des ordres de grandeur clairs.
               </p>
               
               {/* CTAs */}
@@ -459,10 +481,7 @@ const LandingPage = () => {
                 <Link to="/simulateur">
                   <Button size="default" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-sm md:text-base w-full sm:w-auto">
                     <Calculator className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                    Tester le simulateur
-                    <span className="ml-2 text-white text-[9px] md:text-[10px] font-bold px-1.5 md:px-2 py-0.5 rounded-full uppercase tracking-wide" style={{ backgroundColor: '#A5C800' }}>
-                      Gratuit
-                    </span>
+                    Essayer le simulateur
                   </Button>
                 </Link>
                 <Link to="/subscribe-simulator">
@@ -615,34 +634,33 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
+      {/* ========================================== */}
+      {/* BLOC "COMMENT ÇA MARCHE CONCRÈTEMENT ?" */}
+      {/* ========================================== */}
       <section id="how-it-works" className="py-12 md:py-20 px-4 md:px-6">
         <div className="container mx-auto max-w-6xl">
           <div className="text-left md:text-center mb-10 md:mb-16">
             <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[400px] md:max-w-none">
-              Comment ça marche ?
+              Comment ça marche concrètement ?
             </h2>
-            <p className="text-muted-foreground text-sm md:text-lg max-w-2xl md:mx-auto">
-              En 3 étapes simples, transformez vos données en décisions rentables
-            </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             {[
               {
                 step: "1",
-                title: "Importez vos données de centrales",
-                description: "Importez les fichiers CSV de vos centrales (Nayax, LMPay, CPI…) en quelques clics."
+                title: "Importez vos données",
+                description: "Téléchargez vos fichiers d'encaissements depuis votre centrale de paiement et importez-les dans Lavcom Performances."
               },
               {
                 step: "2",
-                title: "Visualisez vos données",
-                description: "Tableau de bord en temps réel : CA, occupation, tendances."
+                title: "Visualisez vos résultats",
+                description: "Vous voyez vos recettes par laverie, par machine, par créneau horaire, ainsi que vos périodes plus calmes."
               },
               {
                 step: "3",
-                title: "Optimisez la rentabilité",
-                description: "Identifiez les machines sous-performantes, ajustez vos tarifs."
+                title: "Passez à l'action",
+                description: "La plateforme vous suggère des pistes : où ajuster un prix, quels créneaux renforcer, quelles machines surveiller davantage."
               }
             ].map((item, index) => (
               <div 
@@ -669,7 +687,7 @@ const LandingPage = () => {
           </div>
           
           <div className="text-left md:text-center mt-8 md:mt-12">
-            <Link to="/pricing">
+            <Link to="/signup">
               <Button size="default" className="btn-bounce text-sm md:text-base w-full sm:w-auto">
                 Commencer maintenant
                 <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
@@ -679,32 +697,47 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-12 md:py-20 px-4 md:px-6">
+      {/* ========================================== */}
+      {/* BLOC "POURQUOI UTILISER LAVCOM PERFORMANCES ?" */}
+      {/* ========================================== */}
+      <section id="features" className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-primary/5 to-accent/5">
         <div className="container mx-auto max-w-6xl">
           <div className="text-left md:text-center mb-10 md:mb-16">
             <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[400px] md:max-w-none">
-              {t("landing").features.title}
+              Pourquoi utiliser Lavcom Performances ?
             </h2>
-            <p className="text-muted-foreground text-sm md:text-lg max-w-2xl md:mx-auto">
-              {t("landing").features.subtitle}
-            </p>
           </div>
           
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-            {features.map((feature, index) => (
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+            {[
+              {
+                icon: Eye,
+                title: "Voir ce qui se passe vraiment dans vos laveries",
+                description: "Plus besoin de faire des tableaux à la main : vous voyez vos chiffres clés automatiquement."
+              },
+              {
+                icon: Clock,
+                title: "Gagner du temps sur le suivi",
+                description: "Vous passez moins de temps à chercher l'information, et plus de temps à décider."
+              },
+              {
+                icon: TrendingUp,
+                title: "Améliorer votre chiffre d'affaires sans tout révolutionner",
+                description: "Quelques ajustements bien ciblés peuvent déjà faire une vraie différence sur vos résultats."
+              }
+            ].map((feature, index) => (
               <Card 
                 key={feature.title}
-                className="p-3 md:p-6 card-lavcom-hover animate-fade-in"
+                className="p-4 md:p-6 card-lavcom-hover animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center mb-2 md:mb-4">
-                  <feature.icon className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3 md:mb-4">
+                  <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                 </div>
-                <h3 className="text-sm md:text-xl font-semibold text-foreground mb-1 md:mb-2 leading-tight">
+                <h3 className="text-sm md:text-lg font-semibold text-foreground mb-2 md:mb-3 leading-tight">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground text-xs md:text-base leading-snug">
+                <p className="text-muted-foreground text-xs md:text-base leading-relaxed">
                   {feature.description}
                 </p>
               </Card>
@@ -713,75 +746,50 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section id="benefits" className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="text-left">
-              <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4 md:mb-6 leading-tight max-w-[450px]">
-                {t("landing").benefits.title}
-              </h2>
-              <p className="text-muted-foreground text-sm md:text-lg mb-6 md:mb-8">
-                {t("landing").benefits.subtitle}
-              </p>
-              
-              <ul className="space-y-2 md:space-y-4">
-                {benefits.map((benefit, index) => (
-                  <li 
-                    key={benefit}
-                    className="flex items-start gap-2 md:gap-3 animate-fade-in"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <CheckCircle2 className="h-4 w-4 md:h-6 md:w-6 text-primary shrink-0 mt-0.5" />
-                    <span className="text-foreground text-sm md:text-lg">{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-              
-              <div className="mt-6 md:mt-8">
-                <Link to="/pricing">
-                  <Button size="default" className="btn-bounce bg-primary hover:bg-primary/90 text-sm md:text-base w-full sm:w-auto">
-                    Découvrir nos offres
-                    <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+      {/* ========================================== */}
+      {/* BLOC "ALLER PLUS LOIN AVANT D'OUVRIR" (Guide) */}
+      {/* ========================================== */}
+      <section className="py-12 md:py-20 px-4 md:px-6">
+        <div className="container mx-auto max-w-4xl">
+          <Card className="p-6 md:p-10 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30">
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
+              <div className="text-center md:text-left">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-lavcom-orange/20 flex items-center justify-center mx-auto md:mx-0 mb-4">
+                  <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-lavcom-orange" />
+                </div>
+              </div>
+              <div>
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2 md:mb-3">
+                  Aller plus loin avant d'ouvrir
+                </h2>
+                <h3 className="text-base md:text-lg font-semibold text-lavcom-orange mb-3 md:mb-4">
+                  Le guide pratique "Avant d'ouvrir"
+                </h3>
+                <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
+                  Un guide concret pour vous aider à préparer votre projet de laverie : choix du local, configuration, fournisseurs, erreurs à éviter. Le simulateur vous donne les chiffres, le guide vous aide à poser les bonnes décisions autour.
+                </p>
+                <Link to="/subscribe-simulator">
+                  <Button className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white w-full sm:w-auto">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    Découvrir le guide "Avant d'ouvrir"
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
               </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
-              {[
-                { value: "25%", label: "Augmentation CA" },
-                { value: "40%", label: "Réduction pannes" },
-                { value: "10h", label: "Gagnées / semaine" },
-                { value: "24/7", label: "Accès données" }
-              ].map((stat, index) => (
-                <Card 
-                  key={stat.label}
-                  className="p-3 md:p-6 text-center card-lavcom-hover animate-fade-in"
-                  style={{ animationDelay: `${index * 0.15}s` }}
-                >
-                  <div className="text-2xl md:text-4xl font-bold text-primary mb-1 md:mb-2">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs md:text-sm text-muted-foreground">
-                    {stat.label}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
+          </Card>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-12 md:py-20 px-4 md:px-6">
+      <section id="testimonials" className="py-12 md:py-20 px-4 md:px-6 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
           <div className="text-left md:text-center mb-10 md:mb-16">
-            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[350px] md:max-w-none">
-              Ils nous font confiance
+            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[400px] md:max-w-none">
+              {t("landing").testimonials.title}
             </h2>
             <p className="text-muted-foreground text-sm md:text-lg max-w-2xl md:mx-auto">
-              Témoignages de gérants qui ont transformé leur activité
+              {t("landing").testimonials.subtitle}
             </p>
           </div>
           
@@ -789,14 +797,12 @@ const LandingPage = () => {
             {testimonials.map((testimonial, index) => (
               <Card 
                 key={testimonial.name}
-                className="p-4 md:p-6 card-lavcom-hover relative animate-fade-in"
-                style={{ animationDelay: `${index * 0.15}s` }}
+                className="p-4 md:p-6 card-lavcom-hover animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <Quote className="absolute top-3 right-3 md:top-4 md:right-4 h-6 w-6 md:h-8 md:w-8 text-primary/20" />
-                
-                <div className="flex items-center gap-0.5 md:gap-1 mb-3 md:mb-4">
-                  {Array.from({ length: testimonial.rating }).map((_, i) => (
-                    <Star key={i} className="h-3 w-3 md:h-4 md:w-4 fill-accent text-accent" />
+                <div className="flex items-center gap-1 mb-3 md:mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
                 
@@ -1035,6 +1041,28 @@ const LandingPage = () => {
       </section>
 
       {/* ========================================== */}
+      {/* BANDEAU 14 JOURS D'ESSAI */}
+      {/* ========================================== */}
+      <section className="py-12 md:py-16 px-4">
+        <div className="container mx-auto max-w-4xl">
+          <Card className="p-6 md:p-10 text-center bg-gradient-to-br from-lavcom-green/20 to-lavcom-green/10 border-lavcom-green/30">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3">
+              Essayez Lavcom Performances gratuitement pendant 14 jours
+            </h2>
+            <p className="text-muted-foreground text-base md:text-lg mb-6">
+              Sans engagement, vous arrêtez quand vous voulez.
+            </p>
+            <Link to="/signup">
+              <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-lg px-8">
+                Créer mon compte gratuit
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </Card>
+        </div>
+      </section>
+
+      {/* ========================================== */}
       {/* RAPPEL DES DEUX PARCOURS */}
       {/* ========================================== */}
       <section className="py-20 px-4">
@@ -1077,7 +1105,7 @@ const LandingPage = () => {
                 <img src={lavcomLogo} alt="Lavcom Performances" className="h-8 w-auto" />
               </Link>
               <p className="text-sm text-muted-foreground">
-                La plateforme d'analyse et d'optimisation pour les laveries automatiques.
+                La plateforme qui vous aide à tirer le meilleur de vos laveries automatiques.
               </p>
             </div>
             
