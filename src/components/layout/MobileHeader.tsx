@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AppSidebar } from "./AppSidebar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -19,18 +20,16 @@ export function MobileHeader({
 
   return (
     <header className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-transform duration-200 hover:scale-110">
           <span className="text-primary-foreground font-bold text-sm">L</span>
         </div>
-        <span className="font-display font-semibold text-foreground">Lavcom</span>
+        <span className="font-display font-semibold text-foreground hidden xs:inline">Lavcom</span>
       </div>
 
       <div className="flex items-center gap-1">
-        <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground mr-2">
-          <Building2 className="h-4 w-4" />
-          <span className="truncate max-w-[150px]">{currentLaundromat}</span>
-        </div>
+        {/* View Mode Toggle - compact on mobile */}
+        <ViewModeToggle variant="compact" className="mr-1" />
         
         <ThemeToggle collapsed className="text-foreground" />
         
