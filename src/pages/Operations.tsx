@@ -28,6 +28,7 @@ import { MachineCountList } from "@/components/operations/MachineCountList";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
 import { generateOperationsPdf } from "@/utils/operationsPdfExport";
 import { useToast } from "@/hooks/use-toast";
+import { useViewMode } from "@/hooks/useViewMode";
 
 // Mock data for V1 - more complete dataset
 const mockOperations = [
@@ -75,6 +76,7 @@ const categoryLabel = (category: string) => {
 };
 
 export default function Operations() {
+  const { isExpert } = useViewMode();
   const { toast } = useToast();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 7),
@@ -287,9 +289,15 @@ export default function Operations() {
       </div>
 
       {/* KPIs + Chart + Machine counts */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className={cn(
+        "grid gap-4",
+        isExpert ? "grid-cols-1 lg:grid-cols-12" : "grid-cols-1"
+      )}>
         {/* KPIs Column */}
-        <div className="lg:col-span-4 card-lavcom p-4 space-y-3">
+        <div className={cn(
+          "card-lavcom p-4 space-y-3",
+          isExpert ? "lg:col-span-4" : ""
+        )}>
           <OperationsKPIRow 
             label="JOUR" 
             total={kpis.day.total} 
@@ -311,27 +319,31 @@ export default function Operations() {
           />
         </div>
 
-        {/* Hourly Chart */}
-        <div className="lg:col-span-5 card-lavcom p-4">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-2">CA par heure</h3>
-          <div className="flex items-center gap-4 mb-2 text-xs">
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded" style={{ backgroundColor: 'hsl(var(--chart-cb))' }}></div>
-              <span>CB</span>
+        {/* Expert: Hourly Chart */}
+        {isExpert && (
+          <div className="lg:col-span-5 card-lavcom p-4">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-2">CA par heure</h3>
+            <div className="flex items-center gap-4 mb-2 text-xs">
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: 'hsl(var(--chart-cb))' }}></div>
+                <span>CB</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: 'hsl(var(--chart-esp))' }}></div>
+                <span>ESP</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded" style={{ backgroundColor: 'hsl(var(--chart-esp))' }}></div>
-              <span>ESP</span>
-            </div>
+            <HourlyBarChart data={hourlyData} />
           </div>
-          <HourlyBarChart data={hourlyData} />
-        </div>
+        )}
 
-        {/* Machine counts */}
-        <div className="lg:col-span-3 card-lavcom p-4">
-          <h3 className="text-sm font-semibold text-muted-foreground mb-2">Machines utilisées</h3>
-          <MachineCountList machines={machineCounts} />
-        </div>
+        {/* Expert: Machine counts */}
+        {isExpert && (
+          <div className="lg:col-span-3 card-lavcom p-4">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-2">Machines utilisées</h3>
+            <MachineCountList machines={machineCounts} />
+          </div>
+        )}
       </div>
 
       {/* Table */}
