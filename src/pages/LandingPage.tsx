@@ -150,7 +150,7 @@ const LandingPage = () => {
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t("nav").exploitants}
+              Tarifs
             </Link>
             <Link to="/simulateur" className="text-lavcom-orange hover:text-lavcom-orange-dark font-medium transition-colors">
               {t("nav").simulationOpening}
@@ -194,12 +194,10 @@ const LandingPage = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link to="/pricing">
-              <Button className="btn-bounce bg-primary hover:bg-primary/90 relative">
-                {t("nav").exploitantPricing}
-                <span className="absolute -top-2 -right-2 bg-lavcom-green text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
-                  14j gratuits
-                </span>
+            <Link to="/signup">
+              <Button className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white font-semibold">
+                14j gratuits
+                <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             </Link>
           </div>
