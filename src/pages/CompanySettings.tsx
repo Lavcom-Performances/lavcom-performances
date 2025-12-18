@@ -8,7 +8,8 @@ import {
   ArrowLeft,
   X,
   Check,
-  Image as ImageIcon
+  Image as ImageIcon,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -16,10 +17,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { nafCodes, formatNafDisplay } from "@/data/nafCodes";
+import { 
+  isValidSiret, 
+  formatSiretDisplay, 
+  formatPhoneNumber, 
+  formatPhoneDisplay 
+} from "@/lib/textUtils";
 
 interface CompanyInfo {
   name: string;
   siret: string;
+  nafCode: string;
   address: string;
   phone: string;
   email: string;
@@ -48,13 +58,16 @@ export default function CompanySettings() {
   
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
     name: "Ma Société de Laveries",
-    siret: "123 456 789 00012",
+    siret: "",
+    nafCode: "",
     address: "10 Rue de la Laverie, 75001 Paris",
-    phone: "01 23 45 67 89",
+    phone: "",
     email: "contact@masociete.fr",
     website: "www.masociete.fr",
     logoUrl: null,
   });
+
+  const [siretError, setSiretError] = useState<string | null>(null);
 
   const [themeColors, setThemeColors] = useState<ThemeColors>({
     primary: "#A3C615",
@@ -115,7 +128,36 @@ export default function CompanySettings() {
     setSelectedPreset(preset.name);
   };
 
+  // TAEX-064: SIRET validation on blur
+  const handleSiretBlur = () => {
+    const cleanedSiret = companyInfo.siret.replace(/\s/g, '');
+    if (cleanedSiret && !isValidSiret(cleanedSiret)) {
+      setSiretError("Le SIRET doit contenir exactement 14 chiffres");
+    } else {
+      setSiretError(null);
+    }
+  };
+
+  // TAEX-067: Format phone on blur
+  const handlePhoneBlur = () => {
+    if (companyInfo.phone) {
+      const formatted = formatPhoneNumber(companyInfo.phone);
+      setCompanyInfo(prev => ({ ...prev, phone: formatted }));
+    }
+  };
+
   const handleSave = () => {
+    // Validate SIRET before saving
+    const cleanedSiret = companyInfo.siret.replace(/\s/g, '');
+    if (cleanedSiret && !isValidSiret(cleanedSiret)) {
+      toast({
+        title: "Erreur de validation",
+        description: "Le numéro SIRET n'est pas valide. Il doit contenir exactement 14 chiffres.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // TODO: Save to database/localStorage
     toast({
       title: "Paramètres sauvegardés",
@@ -287,9 +329,57 @@ export default function CompanySettings() {
                   <Input
                     id="siret"
                     value={companyInfo.siret}
-                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, siret: e.target.value }))}
+                    onChange={(e) => {
+                      setSiretError(null);
+                      setCompanyInfo(prev => ({ ...prev, siret: e.target.value }));
+                    }}
+                    onBlur={handleSiretBlur}
+                    placeholder="123 456 789 00012"
+                    maxLength={17}
+                    className={`font-mono ${siretError ? 'border-destructive' : ''}`}
                   />
+                  {siretError && (
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {siretError}
+                    </p>
+                  )}
                 </div>
+                
+                {/* TAEX-065: NAF dropdown */}
+                <div className="space-y-2">
+                  <Label htmlFor="naf-code">Code NAF</Label>
+                  <Select
+                    value={companyInfo.nafCode}
+                    onValueChange={(value) => setCompanyInfo(prev => ({ ...prev, nafCode: value }))}
+                  >
+                    <SelectTrigger id="naf-code">
+                      <SelectValue placeholder="Sélectionnez un code NAF" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {nafCodes.map((naf) => (
+                        <SelectItem key={naf.code} value={naf.code}>
+                          {formatNafDisplay(naf.code)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Téléphone</Label>
+                  <Input
+                    id="phone"
+                    value={formatPhoneDisplay(companyInfo.phone)}
+                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, phone: e.target.value }))}
+                    onBlur={handlePhoneBlur}
+                    placeholder="06 12 34 56 78"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Format automatique : +33 X XX XX XX XX
+                  </p>
+                </div>
+
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="address">Adresse</Label>
                   <Input
@@ -298,14 +388,7 @@ export default function CompanySettings() {
                     onChange={(e) => setCompanyInfo(prev => ({ ...prev, address: e.target.value }))}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Téléphone</Label>
-                  <Input
-                    id="phone"
-                    value={companyInfo.phone}
-                    onChange={(e) => setCompanyInfo(prev => ({ ...prev, phone: e.target.value }))}
-                  />
-                </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -315,7 +398,7 @@ export default function CompanySettings() {
                     onChange={(e) => setCompanyInfo(prev => ({ ...prev, email: e.target.value }))}
                   />
                 </div>
-                <div className="space-y-2 sm:col-span-2">
+                <div className="space-y-2">
                   <Label htmlFor="website">Site web</Label>
                   <Input
                     id="website"
@@ -458,37 +541,27 @@ export default function CompanySettings() {
                 </div>
 
                 {/* Preview */}
-                <div className="mt-6 p-4 rounded-xl border border-border bg-muted/30">
-                  <p className="text-sm font-medium mb-3">Aperçu</p>
-                  <div className="flex gap-3 items-center">
+                <div className="mt-6 p-4 rounded-xl border border-border">
+                  <p className="text-sm text-muted-foreground mb-3">Aperçu</p>
+                  <div className="flex items-center gap-4">
                     <div 
-                      className="w-12 h-12 rounded-lg flex items-center justify-center"
+                      className="w-16 h-24 rounded-lg"
                       style={{ backgroundColor: themeColors.sidebar }}
-                    >
-                      <Building2 className="h-6 w-6" style={{ color: themeColors.primary }} />
+                    />
+                    <div className="space-y-2">
+                      <div 
+                        className="h-8 w-32 rounded-md"
+                        style={{ backgroundColor: themeColors.primary }}
+                      />
+                      <div 
+                        className="h-4 w-24 rounded"
+                        style={{ backgroundColor: themeColors.accent }}
+                      />
                     </div>
-                    <div>
-                      <p className="font-semibold" style={{ color: themeColors.primary }}>
-                        Exemple de titre
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Texte d'accompagnement
-                      </p>
-                    </div>
-                    <Button 
-                      className="ml-auto"
-                      style={{ 
-                        backgroundColor: themeColors.primary,
-                        color: "white"
-                      }}
-                    >
-                      Bouton
-                    </Button>
                   </div>
                 </div>
 
-                <Button onClick={applyTheme} className="w-full gap-2">
-                  <Palette className="h-4 w-4" />
+                <Button onClick={applyTheme} className="w-full sm:w-auto">
                   Appliquer le thème
                 </Button>
               </CardContent>

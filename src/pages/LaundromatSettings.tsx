@@ -71,11 +71,6 @@ interface LaundryInfo {
   openingDate: string;
   surface: number;
   notes: string;
-  // Champs SIRET
-  siret: string;
-  companyName: string;
-  tradeName: string;
-  nafCode: string;
 }
 
 interface OperatingHours {
@@ -114,10 +109,6 @@ export default function LaundromatSettings() {
     openingDate: "2020-03-15",
     surface: 45,
     notes: "",
-    siret: "",
-    companyName: "",
-    tradeName: "",
-    nafCode: "",
   });
 
   // Operating hours
@@ -377,28 +368,6 @@ export default function LaundromatSettings() {
                       type="email"
                       value={laundryInfo.email}
                       onChange={(e) => setLaundryInfo({ ...laundryInfo, email: e.target.value })}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="siret">SIRET de l'établissement (optionnel)</Label>
-                    <Input
-                      id="siret"
-                      placeholder="12345678901234"
-                      value={laundryInfo.siret}
-                      onChange={(e) => setLaundryInfo({ ...laundryInfo, siret: e.target.value })}
-                      maxLength={14}
-                      className="font-mono"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="nafCode">Code NAF (optionnel)</Label>
-                    <Input
-                      id="nafCode"
-                      placeholder="96.01A"
-                      value={laundryInfo.nafCode}
-                      onChange={(e) => setLaundryInfo({ ...laundryInfo, nafCode: e.target.value })}
                     />
                   </div>
                 </div>

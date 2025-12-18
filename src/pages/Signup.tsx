@@ -92,7 +92,7 @@ export default function Signup() {
       description: "Votre essai gratuit de 14 jours commence maintenant.",
     });
     
-    navigate("/select-laundromat");
+    navigate("/dashboard");
   };
 
   const trialFeatures = [
