@@ -49,7 +49,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import lavcomLogo from "@/assets/lavcom-logo-header.png";
+import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { t } from "@/lib/i18n";
 import { HeroValueSlider } from "@/components/landing/HeroValueSlider";
 
