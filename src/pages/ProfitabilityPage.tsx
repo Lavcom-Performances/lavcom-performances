@@ -36,6 +36,7 @@ import {
   Line,
   Legend,
 } from "recharts";
+import { useViewMode } from "@/hooks/useViewMode";
 
 // Mock data - CA perdu estimé par machine
 const lostRevenueData = [
@@ -109,6 +110,7 @@ const chartConfig = {
 };
 
 export default function ProfitabilityPage() {
+  const { isExpert } = useViewMode();
   const totalLostRevenue = lostRevenueData.reduce((acc, d) => acc + d.lostRevenue, 0);
   const avgRotation = rotationData.reduce((acc, d) => acc + d.cyclesPerDay, 0) / rotationData.length;
   const peakSaturation = Math.max(...saturationData.map(d => d.saturation));
@@ -158,11 +160,11 @@ export default function ProfitabilityPage() {
       </div>
 
       <Tabs defaultValue="losses" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className={isExpert ? "grid w-full grid-cols-4" : "grid w-full grid-cols-2"}>
           <TabsTrigger value="losses">Pertes</TabsTrigger>
           <TabsTrigger value="efficiency">Efficacité</TabsTrigger>
-          <TabsTrigger value="machines">Machines</TabsTrigger>
-          <TabsTrigger value="trends">Tendances</TabsTrigger>
+          {isExpert && <TabsTrigger value="machines">Machines</TabsTrigger>}
+          {isExpert && <TabsTrigger value="trends">Tendances</TabsTrigger>}
         </TabsList>
 
         {/* Onglet Pertes */}
@@ -310,8 +312,8 @@ export default function ProfitabilityPage() {
           </Card>
         </TabsContent>
 
-        {/* Onglet Machines */}
-        <TabsContent value="machines" className="space-y-6">
+        {/* Onglet Machines - Expert only */}
+        {isExpert && <TabsContent value="machines" className="space-y-6">
           <KPISection title="Machines Sous-Performantes" icon={TrendingDown}>
             <div className="grid gap-4">
               {underperformingMachines.map((item, index) => (
@@ -393,10 +395,10 @@ export default function ProfitabilityPage() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent>}
 
-        {/* Onglet Tendances */}
-        <TabsContent value="trends" className="space-y-6">
+        {/* Onglet Tendances - Expert only */}
+        {isExpert && <TabsContent value="trends" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -467,7 +469,7 @@ export default function ProfitabilityPage() {
               <p className="text-xs text-muted-foreground">CA estimé</p>
             </Card>
           </div>
-        </TabsContent>
+        </TabsContent>}
       </Tabs>
     </div>
   );

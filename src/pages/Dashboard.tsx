@@ -34,6 +34,7 @@ import { ProfitabilityKPIs } from "@/components/dashboard/ProfitabilityKPIs";
 import { ProfitabilitySection } from "@/components/dashboard/ProfitabilitySection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateProfitabilityMetrics, LaundryCosts } from "@/types/costs";
+import { useViewMode } from "@/hooks/useViewMode";
 
 // Mock data - CA par mois
 const mockMonthlyData = [
@@ -172,6 +173,7 @@ const siteTotalCyclesMonth = 487;
 const profitabilityMetrics = calculateProfitabilityMetrics(mockCosts, siteTurnoverMonth, siteTotalCyclesMonth);
 
 export default function Dashboard() {
+  const { isExpert } = useViewMode();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: subDays(new Date(), 7),
     to: new Date(),
@@ -247,59 +249,63 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Nouveaux KPIs Rentabilité */}
-          <ProfitabilityKPIs
-            lostRevenue={187}
-            avgRotation={6.8}
-            peakSaturation={88}
-            peakSlot="16h-19h"
-          />
+          {/* Expert: Nouveaux KPIs Rentabilité */}
+          {isExpert && (
+            <ProfitabilityKPIs
+              lostRevenue={187}
+              avgRotation={6.8}
+              peakSaturation={88}
+              peakSlot="16h-19h"
+            />
+          )}
 
-          {/* Objectifs et comparaisons rapides */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <MiniProgressCard 
-              title="Objectif mensuel" 
-              current={3495} 
-              target={4500} 
-            />
-            <MiniProgressCard 
-              title="Cycles réalisés" 
-              current={487} 
-              target={600} 
-              unit="cycles"
-            />
-            <ComparisonCard 
-              title="CA Mois" 
-              current="3 495 €" 
-              previous="3 108 €"
-              currentLabel="Dec 2024"
-              previousLabel="Dec 2023"
-              percentageChange={12.5}
-            />
-            <ComparisonCard 
-              title="Transactions" 
-              current="487" 
-              previous="452"
-              currentLabel="Ce mois"
-              previousLabel="N-1"
-              percentageChange={7.7}
-            />
-          </div>
+          {/* Expert: Objectifs et comparaisons rapides */}
+          {isExpert && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <MiniProgressCard 
+                title="Objectif mensuel" 
+                current={3495} 
+                target={4500} 
+              />
+              <MiniProgressCard 
+                title="Cycles réalisés" 
+                current={487} 
+                target={600} 
+                unit="cycles"
+              />
+              <ComparisonCard 
+                title="CA Mois" 
+                current="3 495 €" 
+                previous="3 108 €"
+                currentLabel="Dec 2024"
+                previousLabel="Dec 2023"
+                percentageChange={12.5}
+              />
+              <ComparisonCard 
+                title="Transactions" 
+                current="487" 
+                previous="452"
+                currentLabel="Ce mois"
+                previousLabel="N-1"
+                percentageChange={7.7}
+              />
+            </div>
+          )}
 
           {/* Charts Row 1 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <MonthlyRevenueChart data={mockMonthlyData} />
-            <DailyRevenueChart data={mockDailyData} />
+            {isExpert && <DailyRevenueChart data={mockDailyData} />}
           </div>
 
           {/* Charts Row 2 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <PaymentPieChart data={mockPaymentData} />
-            <WeekdayPerformanceChart data={mockWeekdayData} />
+            {isExpert && <WeekdayPerformanceChart data={mockWeekdayData} />}
           </div>
 
-          {/* Heatmap */}
-          <SalesHeatmap data={mockHeatmapData} />
+          {/* Expert: Heatmap */}
+          {isExpert && <SalesHeatmap data={mockHeatmapData} />}
         </TabsContent>
 
         {/* Financier */}
