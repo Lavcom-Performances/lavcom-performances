@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import lavcomLogo from "@/assets/lavcom-logo-header.png";
+import lavcomLogo from "@/assets/lavcom-performances-header.png";
 
 interface Step {
   id: string;

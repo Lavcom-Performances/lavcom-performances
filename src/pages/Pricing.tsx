@@ -8,7 +8,7 @@ import {
   getLaundromatPricing, 
   LAUNDROMAT_PRICING 
 } from "@/config/pricingConfig";
-import lavcomLogo from "@/assets/lavcom-logo-header.png";
+import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { translations } from "@/lib/i18n";
 
 const t = translations.pricing;

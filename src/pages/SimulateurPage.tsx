@@ -13,7 +13,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import lavcomLogo from "@/assets/lavcom-logo-header.png";
+import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { translations } from "@/lib/i18n";
 import { WASHER_CAPACITIES, DRYER_CAPACITIES } from "@/types/simulation";
 import { SIMULATOR_PLANS } from "@/config/pricingConfig";
