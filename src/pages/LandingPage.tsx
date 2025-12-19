@@ -260,86 +260,14 @@ const LandingPage = () => {
       {/* ========================================== */}
       {/* BLOC – DEUX PROFILS, DEUX SOLUTIONS */}
       {/* ========================================== */}
-      <section className="py-12 md:py-16 px-4 md:px-6">
-        <div className="container mx-auto max-w-5xl">
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-center mb-3 md:mb-4">
+      <section className="py-8 md:py-12 px-4 md:px-6">
+        <div className="container mx-auto max-w-3xl text-center">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3 md:mb-4">
             Deux profils, deux solutions
           </h2>
-          <p className="text-muted-foreground text-center text-sm md:text-base mb-8 md:mb-12 max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
             Que vous gériez déjà une laverie ou que vous prépariez votre projet, Lavcom Performances s'adapte à vos besoins.
           </p>
-          
-          <div className="grid md:grid-cols-2 gap-4 md:gap-8">
-            {/* Colonne Exploitant - Informatif */}
-            <Card className="p-4 md:p-6 border-lavcom-green/30 bg-lavcom-green/5">
-              <div className="flex items-center gap-2 mb-3 md:mb-4">
-                <Building2 className="h-5 w-5 md:h-6 md:w-6 text-lavcom-green" />
-                <h3 className="text-base md:text-lg font-semibold text-lavcom-green-dark dark:text-lavcom-green">
-                  Exploitants de laveries
-                </h3>
-              </div>
-              <p className="text-muted-foreground text-sm md:text-base mb-4">
-                Optimisez la performance de vos laveries existantes.
-              </p>
-              <ul className="space-y-2 md:space-y-3">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Tableau de bord CA et rentabilité</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Analyse par machine et par créneau</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Alertes maintenance prédictive</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Recommandations d'optimisation</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Rapports PDF automatisés</span>
-                </li>
-              </ul>
-            </Card>
-            
-            {/* Colonne Futur exploitant - Informatif */}
-            <Card className="p-4 md:p-6 border-lavcom-orange/30 bg-lavcom-orange/5">
-              <div className="flex items-center gap-2 mb-3 md:mb-4">
-                <Rocket className="h-5 w-5 md:h-6 md:w-6 text-lavcom-orange" />
-                <h3 className="text-base md:text-lg font-semibold text-lavcom-orange-dark dark:text-lavcom-orange">
-                  Futurs exploitants
-                </h3>
-              </div>
-              <p className="text-muted-foreground text-sm md:text-base mb-4">
-                Préparez votre projet avec des données fiables.
-              </p>
-              <ul className="space-y-2 md:space-y-3">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Simulateur de rentabilité complet</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Calcul du seuil de rentabilité</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Estimation des charges et recettes</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Scénarios comparatifs</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm">Business plan PDF exportable</span>
-                </li>
-              </ul>
-            </Card>
-          </div>
         </div>
       </section>
 
