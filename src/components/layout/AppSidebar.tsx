@@ -21,8 +21,7 @@ import {
   Lightbulb,
   Wrench,
   DollarSign,
-  Calculator,
-  UserCircle
+  Calculator
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -37,6 +36,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { CompanyLogoUpload } from "./CompanyLogoUpload";
@@ -64,8 +64,14 @@ export function AppSidebar({
   const [chartsOpen, setChartsOpen] = useState(true);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   
-  const { signOut } = useAuth();
+  const { signOut, profile } = useAuth();
   const { daysRemaining, trialStatus, planType } = useSubscription();
+
+  const getInitials = () => {
+    const first = profile?.first_name?.charAt(0)?.toUpperCase() || "";
+    const last = profile?.last_name?.charAt(0)?.toUpperCase() || "";
+    return first + last || "?";
+  };
 
   const chartsNavigation = [
     { name: t('app:charts.annualRevenue'), href: "/charts/annual", icon: TrendingUp },
@@ -339,7 +345,12 @@ export function AppSidebar({
             location.pathname === "/profile" && "sidebar-item-active"
           )}
         >
-          <UserCircle className="h-5 w-5 shrink-0" />
+          <Avatar className="h-5 w-5 shrink-0">
+            <AvatarImage src={profile?.avatar_url || undefined} alt="Avatar" />
+            <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+              {getInitials()}
+            </AvatarFallback>
+          </Avatar>
           {!collapsed && <span>{t('app:nav.profile')}</span>}
         </NavLink>
         <ThemeToggle collapsed={collapsed} className="sidebar-item" />
