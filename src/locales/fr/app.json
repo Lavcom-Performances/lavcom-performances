@@ -129,6 +129,30 @@
     },
     "decorativeText": "Rejoignez les gérants de laveries qui optimisent leurs performances"
   },
+  "forgotPassword": {
+    "title": "Mot de passe oublié",
+    "subtitle": "Entrez votre email pour recevoir un lien de réinitialisation",
+    "submit": "Envoyer le lien",
+    "sending": "Envoi en cours...",
+    "successTitle": "Email envoyé !",
+    "successDescription": "Un lien de réinitialisation a été envoyé à {{email}}. Vérifiez votre boîte de réception.",
+    "backToLogin": "Retour à la connexion",
+    "securityTitle": "Sécurité de votre compte",
+    "securityDescription": "Nous vous enverrons un lien sécurisé pour réinitialiser votre mot de passe. Ce lien expire après 1 heure."
+  },
+  "resetPassword": {
+    "title": "Nouveau mot de passe",
+    "subtitle": "Choisissez un nouveau mot de passe sécurisé",
+    "newPassword": "Nouveau mot de passe",
+    "submit": "Réinitialiser le mot de passe",
+    "updating": "Mise à jour...",
+    "successTitle": "Mot de passe mis à jour !",
+    "successDescription": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.",
+    "goToLogin": "Se connecter",
+    "invalidLink": "Lien invalide ou expiré",
+    "invalidLinkDescription": "Ce lien de réinitialisation n'est plus valide. Veuillez demander un nouveau lien.",
+    "requestNewLink": "Demander un nouveau lien"
+  },
   "pricing": {
     "badge": "Tarifs Exploitants – Prix dégressif selon le nombre de laveries",
     "title": "Choisissez votre abonnement",

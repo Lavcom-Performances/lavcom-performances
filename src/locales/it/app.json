@@ -129,6 +129,30 @@
     },
     "decorativeText": "Unisciti agli operatori di lavanderie che ottimizzano le loro performance"
   },
+  "forgotPassword": {
+    "title": "Password dimenticata",
+    "subtitle": "Inserisci la tua email per ricevere un link di reimpostazione",
+    "submit": "Invia link",
+    "sending": "Invio in corso...",
+    "successTitle": "Email inviata!",
+    "successDescription": "Un link di reimpostazione è stato inviato a {{email}}. Controlla la tua casella di posta.",
+    "backToLogin": "Torna al login",
+    "securityTitle": "Sicurezza dell'account",
+    "securityDescription": "Ti invieremo un link sicuro per reimpostare la password. Questo link scade dopo 1 ora."
+  },
+  "resetPassword": {
+    "title": "Nuova password",
+    "subtitle": "Scegli una nuova password sicura",
+    "newPassword": "Nuova password",
+    "submit": "Reimposta password",
+    "updating": "Aggiornamento...",
+    "successTitle": "Password aggiornata!",
+    "successDescription": "La tua password è stata reimpostata con successo. Ora puoi accedere.",
+    "goToLogin": "Accedi",
+    "invalidLink": "Link non valido o scaduto",
+    "invalidLinkDescription": "Questo link di reimpostazione non è più valido. Richiedi un nuovo link.",
+    "requestNewLink": "Richiedi nuovo link"
+  },
   "pricing": {
     "badge": "Tariffe Operatori – Prezzo decrescente in base al numero di lavanderie",
     "title": "Scegli il tuo abbonamento",

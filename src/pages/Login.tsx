@@ -217,12 +217,12 @@ export default function Login() {
             </div>
 
             <div className="flex items-center justify-end">
-              <button
-                type="button"
+              <Link
+                to="/forgot-password"
                 className="text-sm text-primary hover:underline"
               >
                 {t('app:login.form.forgotPassword')}
-              </button>
+              </Link>
             </div>
 
             <Button

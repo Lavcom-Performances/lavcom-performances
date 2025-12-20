@@ -129,6 +129,30 @@
     },
     "decorativeText": "Únase a los operadores de lavanderías que optimizan su rendimiento"
   },
+  "forgotPassword": {
+    "title": "Contraseña olvidada",
+    "subtitle": "Introduzca su correo electrónico para recibir un enlace de restablecimiento",
+    "submit": "Enviar enlace",
+    "sending": "Enviando...",
+    "successTitle": "¡Correo enviado!",
+    "successDescription": "Se ha enviado un enlace de restablecimiento a {{email}}. Revise su bandeja de entrada.",
+    "backToLogin": "Volver al inicio de sesión",
+    "securityTitle": "Seguridad de la cuenta",
+    "securityDescription": "Le enviaremos un enlace seguro para restablecer su contraseña. Este enlace expira después de 1 hora."
+  },
+  "resetPassword": {
+    "title": "Nueva contraseña",
+    "subtitle": "Elija una nueva contraseña segura",
+    "newPassword": "Nueva contraseña",
+    "submit": "Restablecer contraseña",
+    "updating": "Actualizando...",
+    "successTitle": "¡Contraseña actualizada!",
+    "successDescription": "Su contraseña se ha restablecido correctamente. Ahora puede iniciar sesión.",
+    "goToLogin": "Iniciar sesión",
+    "invalidLink": "Enlace inválido o expirado",
+    "invalidLinkDescription": "Este enlace de restablecimiento ya no es válido. Por favor, solicite uno nuevo.",
+    "requestNewLink": "Solicitar nuevo enlace"
+  },
   "pricing": {
     "badge": "Tarifas Operadores – Precio decreciente según número de lavanderías",
     "title": "Elija su suscripción",
