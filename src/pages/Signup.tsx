@@ -115,34 +115,42 @@ export default function Signup() {
       </Link>
 
       {/* Left side - Branding */}
-      <div 
-        className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 lg:p-12" 
-        style={{ backgroundColor: '#A5C800' }}
-      >
-        <div className="max-w-lg text-center animate-fade-in">
-          <img 
-            src={lavcomLogo} 
-            alt="Lavcom Performances" 
-            className="w-full max-w-md mx-auto mb-6 lg:mb-8"
-          />
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 lg:p-12 bg-gradient-to-br from-muted/30 via-background to-primary/5 border-r border-border">
+        <div className="max-w-md text-center animate-fade-in">
+          {/* Logo */}
+          <div className="mb-10">
+            <img 
+              src={lavcomLogo} 
+              alt="Lavcom Performances" 
+              className="w-full max-w-xs mx-auto"
+            />
+          </div>
           
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mt-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Gift className="h-6 w-6 text-white" />
-              <h3 className="text-xl font-display font-bold text-white">
+          {/* Features card */}
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-center gap-2 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Gift className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="text-lg font-display font-semibold text-foreground">
                 14 jours d'essai gratuit
               </h3>
             </div>
             
             <ul className="space-y-3 text-left">
               {trialFeatures.map((feature, index) => (
-                <li key={index} className="flex items-center gap-2 text-white/90">
-                  <CheckCircle2 className="h-5 w-5 text-white shrink-0" />
+                <li key={index} className="flex items-center gap-3 text-muted-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                   <span className="text-sm">{feature}</span>
                 </li>
               ))}
             </ul>
           </div>
+          
+          {/* Decorative element */}
+          <p className="mt-8 text-sm text-muted-foreground">
+            Rejoignez les gérants de laveries qui optimisent leurs performances
+          </p>
         </div>
       </div>
 
