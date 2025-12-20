@@ -3,7 +3,9 @@
     "avatar": {
       "rotateLeft": "Rotar -90°",
       "rotateRight": "Rotar +90°",
-      "preview": "Vista previa"
+      "preview": "Vista previa",
+      "flip": "Voltear",
+      "flipHorizontal": "Espejo horizontal"
     }
   },
   "accessibility": {
