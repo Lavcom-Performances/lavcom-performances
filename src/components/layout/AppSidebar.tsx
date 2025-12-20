@@ -119,14 +119,14 @@ export function AppSidebar({
       {/* Logo */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border">
         {!collapsed && (
-          <div className="flex items-center gap-2">
+          <NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">L</span>
             </div>
             <span className="font-display font-semibold text-sidebar-foreground">
               Lavcom
             </span>
-          </div>
+          </NavLink>
         )}
         <Button
           variant="ghost"

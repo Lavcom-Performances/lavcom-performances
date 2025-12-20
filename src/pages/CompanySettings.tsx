@@ -1,11 +1,12 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { 
   Building2, 
   Upload, 
   Palette, 
   Save, 
   ArrowLeft,
+  Home,
   X,
   Check,
   Image as ImageIcon,
@@ -217,6 +218,13 @@ export default function CompanySettings() {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
+            <Link 
+              to="/" 
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Accueil</span>
+            </Link>
             <div>
               <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground">
                 Paramètres entreprise
