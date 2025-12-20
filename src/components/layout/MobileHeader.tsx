@@ -5,8 +5,11 @@ import { AppSidebar } from "./AppSidebar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 
 interface MobileHeaderProps {
   userRole?: string;
@@ -18,6 +21,13 @@ export function MobileHeader({
   currentLaundromat = "Laverie Saint-Michel" 
 }: MobileHeaderProps) {
   const [open, setOpen] = useState(false);
+  const { profile } = useAuth();
+
+  const getInitials = () => {
+    const first = profile?.first_name?.charAt(0)?.toUpperCase() || "";
+    const last = profile?.last_name?.charAt(0)?.toUpperCase() || "";
+    return first + last || "?";
+  };
 
   return (
     <header className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
@@ -34,6 +44,16 @@ export function MobileHeader({
       </a>
 
       <div className="flex items-center gap-1">
+        {/* Avatar link to profile */}
+        <Link to="/profile" className="mr-1">
+          <Avatar className="h-8 w-8 border border-border">
+            <AvatarImage src={profile?.avatar_url || undefined} alt="Avatar" />
+            <AvatarFallback className="text-xs bg-primary/10 text-primary">
+              {getInitials()}
+            </AvatarFallback>
+          </Avatar>
+        </Link>
+        
         {/* View Mode Toggle - compact on mobile */}
         <ViewModeToggle variant="compact" className="mr-1" />
         
