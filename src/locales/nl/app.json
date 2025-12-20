@@ -15,11 +15,20 @@
       "presets": {
         "title": "Voorinstellingen",
         "selectPlaceholder": "Voorinstelling laden...",
+        "customPlaceholder": "Mijn aangepaste voorinstellingen...",
         "namePlaceholder": "Naam voorinstelling",
         "save": "Opslaan",
         "delete": "Verwijderen",
         "saveSuccess": "Voorinstelling opgeslagen",
-        "deleteSuccess": "Voorinstelling verwijderd"
+        "deleteSuccess": "Voorinstelling verwijderd",
+        "defaults": {
+          "default_bw": "Zwart-wit",
+          "default_vintage": "Vintage",
+          "default_hd": "Hoge definitie",
+          "default_warm": "Warm",
+          "default_soft": "Zacht",
+          "default_dramatic": "Dramatisch"
+        }
       }
     }
   },

@@ -15,11 +15,20 @@
       "presets": {
         "title": "Presets",
         "selectPlaceholder": "Load a preset...",
+        "customPlaceholder": "My custom presets...",
         "namePlaceholder": "Preset name",
         "save": "Save",
         "delete": "Delete",
         "saveSuccess": "Preset saved",
-        "deleteSuccess": "Preset deleted"
+        "deleteSuccess": "Preset deleted",
+        "defaults": {
+          "default_bw": "Black & White",
+          "default_vintage": "Vintage",
+          "default_hd": "High Definition",
+          "default_warm": "Warm",
+          "default_soft": "Soft",
+          "default_dramatic": "Dramatic"
+        }
       }
     }
   },

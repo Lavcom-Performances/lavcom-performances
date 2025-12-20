@@ -15,11 +15,20 @@
       "presets": {
         "title": "Preset",
         "selectPlaceholder": "Carica un preset...",
+        "customPlaceholder": "I miei preset personalizzati...",
         "namePlaceholder": "Nome del preset",
         "save": "Salva",
         "delete": "Elimina",
         "saveSuccess": "Preset salvato",
-        "deleteSuccess": "Preset eliminato"
+        "deleteSuccess": "Preset eliminato",
+        "defaults": {
+          "default_bw": "Bianco e nero",
+          "default_vintage": "Vintage",
+          "default_hd": "Alta definizione",
+          "default_warm": "Caldo",
+          "default_soft": "Morbido",
+          "default_dramatic": "Drammatico"
+        }
       }
     }
   },

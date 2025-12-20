@@ -15,11 +15,20 @@
       "presets": {
         "title": "Voreinstellungen",
         "selectPlaceholder": "Voreinstellung laden...",
+        "customPlaceholder": "Meine eigenen Voreinstellungen...",
         "namePlaceholder": "Name der Voreinstellung",
         "save": "Speichern",
         "delete": "Löschen",
         "saveSuccess": "Voreinstellung gespeichert",
-        "deleteSuccess": "Voreinstellung gelöscht"
+        "deleteSuccess": "Voreinstellung gelöscht",
+        "defaults": {
+          "default_bw": "Schwarz-Weiß",
+          "default_vintage": "Vintage",
+          "default_hd": "Hohe Auflösung",
+          "default_warm": "Warm",
+          "default_soft": "Sanft",
+          "default_dramatic": "Dramatisch"
+        }
       }
     }
   },

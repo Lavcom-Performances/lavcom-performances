@@ -15,11 +15,20 @@
       "presets": {
         "title": "Préréglages",
         "selectPlaceholder": "Charger un préréglage...",
+        "customPlaceholder": "Mes préréglages personnalisés...",
         "namePlaceholder": "Nom du préréglage",
         "save": "Sauvegarder",
         "delete": "Supprimer",
         "saveSuccess": "Préréglage sauvegardé",
-        "deleteSuccess": "Préréglage supprimé"
+        "deleteSuccess": "Préréglage supprimé",
+        "defaults": {
+          "default_bw": "Noir et blanc",
+          "default_vintage": "Vintage",
+          "default_hd": "Haute définition",
+          "default_warm": "Chaud",
+          "default_soft": "Doux",
+          "default_dramatic": "Dramatique"
+        }
       }
     }
   },

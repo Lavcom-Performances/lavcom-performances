@@ -32,7 +32,18 @@ interface FilterPreset {
   saturation: number;
   blur: number;
   sharpen: number;
+  isDefault?: boolean;
 }
+
+// Default presets with translation keys
+const DEFAULT_PRESETS: Omit<FilterPreset, "name">[] = [
+  { id: "default_bw", brightness: 100, contrast: 110, saturation: 0, blur: 0, sharpen: 20, isDefault: true },
+  { id: "default_vintage", brightness: 105, contrast: 90, saturation: 70, blur: 0.5, sharpen: 0, isDefault: true },
+  { id: "default_hd", brightness: 100, contrast: 105, saturation: 105, blur: 0, sharpen: 50, isDefault: true },
+  { id: "default_warm", brightness: 105, contrast: 100, saturation: 120, blur: 0, sharpen: 10, isDefault: true },
+  { id: "default_soft", brightness: 105, contrast: 95, saturation: 90, blur: 1, sharpen: 0, isDefault: true },
+  { id: "default_dramatic", brightness: 95, contrast: 130, saturation: 110, blur: 0, sharpen: 30, isDefault: true },
+];
 
 function loadPresets(): FilterPreset[] {
   try {
@@ -512,11 +523,34 @@ export function AvatarCropDialog({
             <div className="border-t pt-3 mt-2 space-y-3">
               <span className="text-xs sm:text-sm font-medium text-muted-foreground">{t("app:profile.avatar.presets.title")}</span>
               
-              {/* Load preset */}
+              {/* Default presets */}
+              <div className="flex flex-wrap gap-2">
+                {DEFAULT_PRESETS.map((preset) => (
+                  <Button
+                    key={preset.id}
+                    type="button"
+                    variant={selectedPresetId === preset.id ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => {
+                      setBrightness(preset.brightness);
+                      setContrast(preset.contrast);
+                      setSaturation(preset.saturation);
+                      setBlur(preset.blur);
+                      setSharpen(preset.sharpen);
+                      setSelectedPresetId(preset.id);
+                    }}
+                  >
+                    {t(`app:profile.avatar.presets.defaults.${preset.id}`)}
+                  </Button>
+                ))}
+              </div>
+              
+              {/* Custom presets dropdown */}
               {presets.length > 0 && (
                 <div className="flex items-center gap-2">
                   <Select
-                    value={selectedPresetId}
+                    value={selectedPresetId.startsWith("default_") ? "" : selectedPresetId}
                     onValueChange={(id) => {
                       const preset = presets.find(p => p.id === id);
                       if (preset) {
@@ -530,7 +564,7 @@ export function AvatarCropDialog({
                     }}
                   >
                     <SelectTrigger className="flex-1">
-                      <SelectValue placeholder={t("app:profile.avatar.presets.selectPlaceholder")} />
+                      <SelectValue placeholder={t("app:profile.avatar.presets.customPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {presets.map((preset) => (
@@ -540,7 +574,7 @@ export function AvatarCropDialog({
                       ))}
                     </SelectContent>
                   </Select>
-                  {selectedPresetId && (
+                  {selectedPresetId && !selectedPresetId.startsWith("default_") && (
                     <Button
                       type="button"
                       variant="destructive"
