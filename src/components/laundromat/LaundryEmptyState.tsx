@@ -1,22 +1,24 @@
-import { Upload, Plus, Play, Sparkles, Loader2, ArrowRight } from "lucide-react";
+import { Upload, Plus, Play, Sparkles, Loader2, ArrowRight, Files } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 interface LaundryEmptyStateProps {
   onAddLaundry: () => void;
   onViewDemo: () => void;
+  onMultiImport?: () => void;
   isDemoLoading?: boolean;
 }
 
 export function LaundryEmptyState({ 
   onAddLaundry, 
-  onViewDemo, 
+  onViewDemo,
+  onMultiImport,
   isDemoLoading = false 
 }: LaundryEmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center px-4 text-center">
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl mb-4">
         {/* Import CSV Card */}
         <Link to="/operations" className="group">
           <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 p-6 h-full transition-all duration-300 hover:border-primary hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1">
@@ -57,6 +59,27 @@ export function LaundryEmptyState({
           </div>
         </button>
       </div>
+
+      {/* Multi-import CTA */}
+      {onMultiImport && (
+        <button
+          onClick={onMultiImport}
+          className="w-full max-w-xl mb-8 group flex items-center justify-center gap-3 px-6 py-4 rounded-xl border border-border bg-card hover:border-primary/50 hover:bg-primary/5 transition-all"
+        >
+          <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+            <Files className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+          <div className="text-left flex-1">
+            <span className="text-sm font-medium text-foreground block">
+              Importer plusieurs CSV
+            </span>
+            <span className="text-xs text-muted-foreground">
+              Multi-sites ou plusieurs jours
+            </span>
+          </div>
+          <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+        </button>
+      )}
 
       {/* Demo Section */}
       <div className="w-full max-w-xl">
