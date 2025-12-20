@@ -334,7 +334,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      owns_operation_site: {
+        Args: { _site_id: string; _user_id: string }
+        Returns: boolean
+      }
+      owns_site: { Args: { _site_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
