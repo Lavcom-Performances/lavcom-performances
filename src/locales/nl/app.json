@@ -1,68 +1,68 @@
 {
   "nav": {
-    "dashboard": "Tableau de bord",
-    "profitability": "Rentabilité",
-    "simulation": "Simulation",
-    "recommendations": "Recommandations",
-    "maintenance": "Maintenance",
-    "operations": "Opérations",
-    "importExport": "Import / Export",
-    "users": "Utilisateurs",
-    "settings": "Paramètres",
-    "charts": "Graphiques",
+    "dashboard": "Dashboard",
+    "profitability": "Winstgevendheid",
+    "simulation": "Simulatie",
+    "recommendations": "Aanbevelingen",
+    "maintenance": "Onderhoud",
+    "operations": "Operaties",
+    "importExport": "Importeren / Exporteren",
+    "users": "Gebruikers",
+    "settings": "Instellingen",
+    "charts": "Grafieken",
     "analyses": "Analyses",
-    "administration": "Administration",
-    "changeLaundry": "Changer de laverie",
-    "backToHome": "Retour à l'accueil"
+    "administration": "Beheer",
+    "changeLaundry": "Wasserette wisselen",
+    "backToHome": "Terug naar home"
   },
   "charts": {
-    "annualRevenue": "CA Annuel",
-    "monthlyRevenue": "CA par mois",
-    "dailyRevenue": "CA par jour",
-    "payments": "Paiements",
+    "annualRevenue": "Jaaromzet",
+    "monthlyRevenue": "Maandomzet",
+    "dailyRevenue": "Dagomzet",
+    "payments": "Betalingen",
     "machines": "Machines",
-    "occupancyRate": "Taux occupation",
-    "hourlyFreq": "Fréq. par heure",
-    "dailyFreq": "Fréq. par jour",
-    "halfHourlyFreq": "Fréq. 30 min",
-    "heatmap": "Affluence (Heatmap)",
-    "products": "Produits"
+    "occupancyRate": "Bezettingsgraad",
+    "hourlyFreq": "Uurlijkse freq.",
+    "dailyFreq": "Dagelijkse freq.",
+    "halfHourlyFreq": "30 min. freq.",
+    "heatmap": "Drukte (Heatmap)",
+    "products": "Producten"
   },
   "login": {
     "exploitant": {
-      "title": "Connexion",
-      "subtitle": "Entrez vos identifiants pour accéder à votre espace",
-      "leftPanelSubtitle": "Analysez les performances de vos laveries en un coup d'œil"
+      "title": "Inloggen",
+      "subtitle": "Voer uw gegevens in om toegang te krijgen tot uw ruimte",
+      "leftPanelSubtitle": "Analyseer de prestaties van uw wasserettes in één oogopslag"
     },
     "simulator": {
-      "title": "Connexion Simulateur",
-      "subtitle": "Accédez à votre espace simulation",
-      "leftPanelSubtitle": "Simulez la rentabilité de votre future laverie"
+      "title": "Simulator inloggen",
+      "subtitle": "Toegang tot uw simulatieruimte",
+      "leftPanelSubtitle": "Simuleer de winstgevendheid van uw toekomstige wasserette"
     },
     "form": {
-      "email": "Email",
-      "emailPlaceholder": "votre@email.com",
-      "password": "Mot de passe",
+      "email": "E-mail",
+      "emailPlaceholder": "uw@email.com",
+      "password": "Wachtwoord",
       "passwordPlaceholder": "••••••••",
-      "forgotPassword": "Mot de passe oublié ?",
-      "submit": "Se connecter",
-      "connecting": "Connexion..."
+      "forgotPassword": "Wachtwoord vergeten?",
+      "submit": "Inloggen",
+      "connecting": "Verbinden..."
     },
-    "notSubscribed": "Pas encore abonné ?",
-    "discoverOffers": "Découvrir nos offres",
-    "discoverSimulatorPacks": "Découvrir les packs simulateur",
-    "switchToExploitant": "Vous êtes exploitant ?",
-    "exploitantLogin": "Connexion exploitant",
-    "switchToSimulator": "Vous voulez ouvrir une laverie ?",
-    "simulatorLogin": "Connexion simulateur",
-    "welcomeExploitant": "Bienvenue sur Lavcom Performances",
-    "welcomeSimulator": "Bienvenue sur Lavcom Performances Création",
-    "loginSuccess": "Connexion réussie"
+    "notSubscribed": "Nog niet geabonneerd?",
+    "discoverOffers": "Ontdek onze aanbiedingen",
+    "discoverSimulatorPacks": "Ontdek de simulator-pakketten",
+    "switchToExploitant": "Bent u exploitant?",
+    "exploitantLogin": "Exploitant inloggen",
+    "switchToSimulator": "Wilt u een wasserette openen?",
+    "simulatorLogin": "Simulator inloggen",
+    "welcomeExploitant": "Welkom bij Lavcom Performances",
+    "welcomeSimulator": "Welkom bij Lavcom Performances Oprichting",
+    "loginSuccess": "Succesvol ingelogd"
   },
   "dropdown": {
     "exploitant": "Exploitant",
-    "exploitantDesc": "Accès à mes laveries",
-    "futureExploitant": "Futur exploitant",
-    "futureExploitantDesc": "Accès au simulateur"
+    "exploitantDesc": "Toegang tot mijn wasserettes",
+    "futureExploitant": "Toekomstige exploitant",
+    "futureExploitantDesc": "Toegang tot de simulator"
   }
 }

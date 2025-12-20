@@ -1,30 +1,30 @@
 {
   "validation": {
-    "nameRequired": "Le nom est requis",
-    "nameTooLong": "Le nom est trop long",
-    "invalidEmail": "Email invalide",
-    "emailTooLong": "Email trop long",
-    "messageMinLength": "Le message doit contenir au moins 10 caractères",
-    "messageMaxLength": "Le message est trop long (max 1000 caractères)",
-    "invalidSiret": "SIRET invalide",
-    "siretMust14": "Le numéro SIRET doit contenir 14 chiffres",
-    "incompleteInfo": "Informations incomplètes",
-    "fillAllFields": "Veuillez remplir tous les champs obligatoires"
+    "nameRequired": "Name ist erforderlich",
+    "nameTooLong": "Name ist zu lang",
+    "invalidEmail": "Ungültige E-Mail",
+    "emailTooLong": "E-Mail zu lang",
+    "messageMinLength": "Nachricht muss mindestens 10 Zeichen enthalten",
+    "messageMaxLength": "Nachricht ist zu lang (max. 1000 Zeichen)",
+    "invalidSiret": "Ungültige SIRET",
+    "siretMust14": "SIRET-Nummer muss 14 Ziffern enthalten",
+    "incompleteInfo": "Unvollständige Informationen",
+    "fillAllFields": "Bitte füllen Sie alle Pflichtfelder aus"
   },
   "network": {
-    "serviceUnavailable": "Service temporairement indisponible",
-    "tryAgain": "Veuillez réessayer",
-    "connectionError": "Erreur de connexion"
+    "serviceUnavailable": "Dienst vorübergehend nicht verfügbar",
+    "tryAgain": "Bitte versuchen Sie es erneut",
+    "connectionError": "Verbindungsfehler"
   },
   "siret": {
-    "lookupUnavailable": "Recherche SIRET indisponible pour le moment. Vous pouvez continuer en remplissant les champs manuellement.",
-    "retry": "Réessayer",
-    "helpText": "Le SIRET sert uniquement à pré-remplir. Vous pouvez le laisser vide.",
-    "prefilledBadge": "Pré-rempli via SIRET",
-    "invalidFormat": "Format SIRET invalide (14 chiffres attendus)"
+    "lookupUnavailable": "SIRET-Suche momentan nicht verfügbar. Sie können fortfahren, indem Sie die Felder manuell ausfüllen.",
+    "retry": "Erneut versuchen",
+    "helpText": "SIRET dient nur zum Vorausfüllen. Sie können es leer lassen.",
+    "prefilledBadge": "Über SIRET vorausgefüllt",
+    "invalidFormat": "Ungültiges SIRET-Format (14 Ziffern erwartet)"
   },
   "generic": {
-    "somethingWentWrong": "Une erreur est survenue",
-    "pleaseTryAgain": "Veuillez réessayer plus tard"
+    "somethingWentWrong": "Etwas ist schiefgelaufen",
+    "pleaseTryAgain": "Bitte versuchen Sie es später erneut"
   }
 }
