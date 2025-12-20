@@ -182,14 +182,36 @@ export function AvatarCropDialog({
             <div className="flex items-center gap-3">
               <RotateCw className="h-4 w-4 text-muted-foreground shrink-0" />
               <span className="text-sm text-muted-foreground w-16">{t("app:profile.avatar.rotate")}</span>
-              <Slider
-                value={[rotate]}
-                onValueChange={(values) => setRotate(values[0])}
-                min={-180}
-                max={180}
-                step={1}
-                className="flex-1"
-              />
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setRotate((prev) => Math.max(-180, prev - 90))}
+                  title={t("app:profile.avatar.rotateLeft")}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+                <Slider
+                  value={[rotate]}
+                  onValueChange={(values) => setRotate(values[0])}
+                  min={-180}
+                  max={180}
+                  step={1}
+                  className="flex-1 min-w-[100px]"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setRotate((prev) => Math.min(180, prev + 90))}
+                  title={t("app:profile.avatar.rotateRight")}
+                >
+                  <RotateCw className="h-4 w-4" />
+                </Button>
+              </div>
               <span className="text-sm text-muted-foreground w-12 text-right">{rotate}°</span>
             </div>
 
