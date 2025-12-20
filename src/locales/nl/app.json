@@ -62,7 +62,8 @@
       "cropConfirm": "Toepassen",
       "cropping": "Verwerken...",
       "zoom": "Zoom",
-      "rotate": "Draaien"
+      "rotate": "Draaien",
+      "reset": "Herstellen"
     },
     "password": {
       "title": "Wachtwoord wijzigen",

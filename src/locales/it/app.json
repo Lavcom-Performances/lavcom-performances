@@ -62,7 +62,8 @@
       "cropConfirm": "Applica",
       "cropping": "Elaborazione...",
       "zoom": "Zoom",
-      "rotate": "Ruota"
+      "rotate": "Ruota",
+      "reset": "Reimposta"
     },
     "password": {
       "title": "Cambia password",
