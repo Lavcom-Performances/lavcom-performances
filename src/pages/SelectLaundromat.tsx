@@ -168,239 +168,238 @@ export default function SelectLaundromat() {
   const hasSites = sites.length > 0;
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6 md:p-8 relative">
-      {/* Back to home button */}
-      <Link 
-        to="/" 
-        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border"
-      >
-        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" />
-        <span className="hidden sm:inline">Accueil</span>
-      </Link>
-      
-      <div className="w-full max-w-2xl space-y-6 sm:space-y-8 animate-fade-in">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4 sm:mb-6">
-            <Building2 className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-display font-bold text-foreground">
-            {hasSites ? "Sélectionnez une laverie" : "Bienvenue"}
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            {hasSites 
-              ? "Choisissez la laverie que vous souhaitez consulter"
-              : "Configurez votre première laverie pour commencer"
-            }
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col relative">
+      {/* Header */}
+      <header className="w-full border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          <Link 
+            to="/" 
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Home className="h-4 w-4" />
+            <span className="hidden sm:inline">Accueil</span>
+          </Link>
+          
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="gap-2 text-muted-foreground"
+            onClick={() => navigate("/company-settings")}
+          >
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">Entreprise</span>
+          </Button>
         </div>
+      </header>
 
-        {/* Empty state or Sites list */}
-        {!hasSites ? (
-          <LaundryEmptyState 
-            onAddLaundry={openAddDialog} 
-            onViewDemo={createDemoSite}
-            isDemoLoading={isCreatingDemo}
-          />
-        ) : (
-          <>
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-              <Button onClick={openAddDialog} className="gap-2 w-full sm:w-auto">
-                <Plus className="h-4 w-4" />
-                Ajouter une laverie
-              </Button>
-
-              <Button 
-                variant="outline" 
-                className="gap-2 w-full sm:w-auto"
-                onClick={() => navigate("/company-settings")}
-              >
-                <Settings className="h-4 w-4" />
-                Paramètres entreprise
-              </Button>
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8">
+        <div className="w-full max-w-2xl space-y-8 sm:space-y-10 animate-fade-in">
+          {/* Hero Header */}
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
+              <Building2 className="h-4 w-4" />
+              {hasSites ? `${sites.length} laverie${sites.length > 1 ? 's' : ''}` : "Nouvelle entreprise"}
             </div>
-
-            {/* Sites list */}
-            <div className="space-y-2 sm:space-y-3">
-              {sites.map((site) => (
-                <button
-                  key={site.id}
-                  onClick={() => handleSelectLaundromat(site.id)}
-                  className="w-full p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 text-left flex items-center justify-between group border-border bg-card hover:border-primary hover:shadow-lavcom"
-                >
-                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center transition-colors shrink-0 bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground">
-                      <Building2 className="h-5 w-5 sm:h-6 sm:w-6" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{site.name}</h3>
-                      {(site.address || site.city) && (
-                        <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
-                          <MapPin className="h-3 w-3 shrink-0" />
-                          <span className="truncate">
-                            {[site.address, site.city, site.postal_code].filter(Boolean).join(", ")}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <ChevronRight className="h-5 w-5 transition-colors shrink-0 text-muted-foreground group-hover:text-primary" />
-                </button>
-              ))}
-            </div>
-
-            <p className="text-center text-xs sm:text-sm text-muted-foreground px-2">
-              L'import de fichiers CSV se fait depuis le menu <strong>Opérations</strong> après avoir sélectionné une laverie.
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-foreground tracking-tight">
+              {hasSites ? "Vos laveries" : "Bienvenue"}
+            </h1>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto">
+              {hasSites 
+                ? "Sélectionnez une laverie pour accéder à son tableau de bord"
+                : "Configurez votre première laverie pour commencer l'analyse de vos performances"
+              }
             </p>
-          </>
-        )}
+          </div>
 
-        {/* Settings button for empty state */}
-        {!hasSites && (
-          <div className="flex justify-center">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="gap-2 text-muted-foreground"
-              onClick={() => navigate("/company-settings")}
-            >
-              <Settings className="h-4 w-4" />
-              Paramètres entreprise
+          {/* Empty state or Sites list */}
+          {!hasSites ? (
+            <LaundryEmptyState 
+              onAddLaundry={openAddDialog} 
+              onViewDemo={createDemoSite}
+              isDemoLoading={isCreatingDemo}
+            />
+          ) : (
+            <>
+              {/* Actions */}
+              <div className="flex justify-center">
+                <Button onClick={openAddDialog} className="gap-2" size="lg">
+                  <Plus className="h-4 w-4" />
+                  Ajouter une laverie
+                </Button>
+              </div>
+
+              {/* Sites list */}
+              <div className="space-y-3">
+                {sites.map((site) => (
+                  <button
+                    key={site.id}
+                    onClick={() => handleSelectLaundromat(site.id)}
+                    className="w-full p-4 sm:p-5 rounded-2xl border-2 transition-all duration-300 text-left flex items-center justify-between group border-border bg-card hover:border-primary hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5"
+                  >
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center transition-all shrink-0 bg-gradient-to-br from-muted to-muted/50 text-muted-foreground group-hover:from-primary group-hover:to-primary/80 group-hover:text-primary-foreground">
+                        <Building2 className="h-6 w-6" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-foreground text-base sm:text-lg truncate">{site.name}</h3>
+                        {(site.address || site.city) && (
+                          <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-0.5">
+                            <MapPin className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate">
+                              {[site.address, site.city, site.postal_code].filter(Boolean).join(", ")}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors hidden sm:block">
+                        Accéder
+                      </span>
+                      <ChevronRight className="h-5 w-5 transition-all text-muted-foreground group-hover:text-primary group-hover:translate-x-1" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <p className="text-center text-sm text-muted-foreground px-2 py-4 rounded-xl bg-muted/30 border border-border/50">
+                💡 L'import de fichiers CSV se fait depuis le menu <strong>Opérations</strong> après avoir sélectionné une laverie.
+              </p>
+            </>
+          )}
+        </div>
+      </main>
+
+      {/* Add Laundry Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Nouvelle laverie</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* SIRET Field */}
+            <div className="space-y-2">
+              <Label htmlFor="siret" className="flex items-center gap-2">
+                N° SIRET
+                <span className="text-xs text-muted-foreground font-normal">(optionnel - pré-remplit les champs)</span>
+              </Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="siret"
+                  placeholder="14 chiffres (ex: 12345678901234)"
+                  value={newLaundromat.siret}
+                  onChange={(e) => handleSiretChange(e.target.value)}
+                  className={`pl-10 pr-10 ${siretError ? 'border-destructive' : siretSuccess ? 'border-green-500' : ''}`}
+                  maxLength={14}
+                />
+                {isLoadingSiret && (
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                )}
+                {siretSuccess && !isLoadingSiret && (
+                  <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+                )}
+              </div>
+              {siretError && (
+                <p className="text-xs text-destructive">{siretError}</p>
+              )}
+              {newLaundromat.siret.length > 0 && newLaundromat.siret.length < 14 && (
+                <p className="text-xs text-muted-foreground">
+                  {14 - newLaundromat.siret.length} chiffres restants
+                </p>
+              )}
+            </div>
+
+            {/* Name */}
+            <div className="space-y-2">
+              <Label htmlFor="laundry-name">Nom de la laverie *</Label>
+              <Input
+                id="laundry-name"
+                placeholder="Ex: Laverie Montmartre"
+                value={newLaundromat.name}
+                onChange={(e) => setNewLaundromat(prev => ({ ...prev, name: e.target.value }))}
+              />
+            </div>
+
+            {/* Address with autocomplete */}
+            <div className="space-y-2">
+              <Label>Adresse *</Label>
+              <AddressAutocomplete
+                value={newLaundromat.address}
+                onSelect={(result) => {
+                  setNewLaundromat(prev => ({
+                    ...prev,
+                    address: result.address,
+                    city: result.city,
+                    postalCode: result.postalCode,
+                  }));
+                }}
+                onChange={(value) => setNewLaundromat(prev => ({ ...prev, address: value }))}
+                placeholder="Rechercher une adresse..."
+              />
+            </div>
+
+            {/* City with autocomplete */}
+            <div className="space-y-2">
+              <Label>Ville *</Label>
+              <CityAutocomplete
+                value={newLaundromat.city ? `${newLaundromat.city}${newLaundromat.postalCode ? ` (${newLaundromat.postalCode})` : ''}` : ''}
+                onSelect={(result) => {
+                  setNewLaundromat(prev => ({
+                    ...prev,
+                    city: result.city,
+                    postalCode: result.postalCode,
+                  }));
+                }}
+                placeholder="Rechercher une ville..."
+              />
+            </div>
+
+            {/* Postal Code (read-only, filled by autocomplete) */}
+            <div className="space-y-2">
+              <Label htmlFor="postal-code">Code postal</Label>
+              <Input
+                id="postal-code"
+                placeholder="Rempli automatiquement"
+                value={newLaundromat.postalCode}
+                onChange={(e) => setNewLaundromat(prev => ({ ...prev, postalCode: e.target.value }))}
+                className="bg-muted/50"
+              />
+            </div>
+
+            {/* NAF Code */}
+            <div className="space-y-2">
+              <Label htmlFor="naf-code" className="flex items-center gap-2">
+                Code NAF
+                <span className="text-xs text-muted-foreground font-normal">(optionnel)</span>
+              </Label>
+              <Input
+                id="naf-code"
+                placeholder="Ex: 96.01A"
+                value={newLaundromat.nafCode}
+                onChange={(e) => setNewLaundromat(prev => ({ ...prev, nafCode: e.target.value }))}
+              />
+              {newLaundromat.nafCode && (
+                <p className="text-xs text-muted-foreground">
+                  Code APE/NAF de l'établissement
+                </p>
+              )}
+            </div>
+
+            <Button onClick={handleAddLaundromat} className="w-full" disabled={isCreating}>
+              {isCreating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Ajout en cours...
+                </>
+              ) : (
+                "Ajouter"
+              )}
             </Button>
           </div>
-        )}
-
-        {/* Add Laundry Dialog */}
-        <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
-          <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Nouvelle laverie</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              {/* SIRET Field */}
-              <div className="space-y-2">
-                <Label htmlFor="siret" className="flex items-center gap-2">
-                  N° SIRET
-                  <span className="text-xs text-muted-foreground font-normal">(optionnel - pré-remplit les champs)</span>
-                </Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="siret"
-                    placeholder="14 chiffres (ex: 12345678901234)"
-                    value={newLaundromat.siret}
-                    onChange={(e) => handleSiretChange(e.target.value)}
-                    className={`pl-10 pr-10 ${siretError ? 'border-destructive' : siretSuccess ? 'border-green-500' : ''}`}
-                    maxLength={14}
-                  />
-                  {isLoadingSiret && (
-                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
-                  )}
-                  {siretSuccess && !isLoadingSiret && (
-                    <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
-                  )}
-                </div>
-                {siretError && (
-                  <p className="text-xs text-destructive">{siretError}</p>
-                )}
-                {newLaundromat.siret.length > 0 && newLaundromat.siret.length < 14 && (
-                  <p className="text-xs text-muted-foreground">
-                    {14 - newLaundromat.siret.length} chiffres restants
-                  </p>
-                )}
-              </div>
-
-              {/* Name */}
-              <div className="space-y-2">
-                <Label htmlFor="laundry-name">Nom de la laverie *</Label>
-                <Input
-                  id="laundry-name"
-                  placeholder="Ex: Laverie Montmartre"
-                  value={newLaundromat.name}
-                  onChange={(e) => setNewLaundromat(prev => ({ ...prev, name: e.target.value }))}
-                />
-              </div>
-
-              {/* Address with autocomplete */}
-              <div className="space-y-2">
-                <Label>Adresse *</Label>
-                <AddressAutocomplete
-                  value={newLaundromat.address}
-                  onSelect={(result) => {
-                    setNewLaundromat(prev => ({
-                      ...prev,
-                      address: result.address,
-                      city: result.city,
-                      postalCode: result.postalCode,
-                    }));
-                  }}
-                  onChange={(value) => setNewLaundromat(prev => ({ ...prev, address: value }))}
-                  placeholder="Rechercher une adresse..."
-                />
-              </div>
-
-              {/* City with autocomplete */}
-              <div className="space-y-2">
-                <Label>Ville *</Label>
-                <CityAutocomplete
-                  value={newLaundromat.city ? `${newLaundromat.city}${newLaundromat.postalCode ? ` (${newLaundromat.postalCode})` : ''}` : ''}
-                  onSelect={(result) => {
-                    setNewLaundromat(prev => ({
-                      ...prev,
-                      city: result.city,
-                      postalCode: result.postalCode,
-                    }));
-                  }}
-                  placeholder="Rechercher une ville..."
-                />
-              </div>
-
-              {/* Postal Code (read-only, filled by autocomplete) */}
-              <div className="space-y-2">
-                <Label htmlFor="postal-code">Code postal</Label>
-                <Input
-                  id="postal-code"
-                  placeholder="Rempli automatiquement"
-                  value={newLaundromat.postalCode}
-                  onChange={(e) => setNewLaundromat(prev => ({ ...prev, postalCode: e.target.value }))}
-                  className="bg-muted/50"
-                />
-              </div>
-
-              {/* NAF Code */}
-              <div className="space-y-2">
-                <Label htmlFor="naf-code" className="flex items-center gap-2">
-                  Code NAF
-                  <span className="text-xs text-muted-foreground font-normal">(optionnel)</span>
-                </Label>
-                <Input
-                  id="naf-code"
-                  placeholder="Ex: 96.01A"
-                  value={newLaundromat.nafCode}
-                  onChange={(e) => setNewLaundromat(prev => ({ ...prev, nafCode: e.target.value }))}
-                />
-                {newLaundromat.nafCode && (
-                  <p className="text-xs text-muted-foreground">
-                    Code APE/NAF de l'établissement
-                  </p>
-                )}
-              </div>
-
-              <Button onClick={handleAddLaundromat} className="w-full" disabled={isCreating}>
-                {isCreating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Ajout en cours...
-                  </>
-                ) : (
-                  "Ajouter"
-                )}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
