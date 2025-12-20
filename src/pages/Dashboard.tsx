@@ -7,13 +7,10 @@ import {
   Banknote, 
   ShoppingCart, 
   TrendingUp,
-  TrendingDown,
-  Target,
   Percent,
   Clock,
   WashingMachine,
-  Activity,
-  Zap
+  Loader2,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -21,140 +18,22 @@ import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart"
 import { DailyRevenueChart } from "@/components/dashboard/DailyRevenueChart";
 import { PaymentPieChart } from "@/components/dashboard/PaymentPieChart";
 import { SalesHeatmap } from "@/components/dashboard/SalesHeatmap";
-import { AverageMachinesChart } from "@/components/dashboard/AverageMachinesChart";
 import { KPISection } from "@/components/dashboard/KPISection";
 import { MiniProgressCard } from "@/components/dashboard/MiniProgressCard";
 import { ComparisonCard } from "@/components/dashboard/ComparisonCard";
 import { MachinePerformanceTable } from "@/components/dashboard/MachinePerformanceTable";
 import { WeekdayPerformanceChart } from "@/components/dashboard/WeekdayPerformanceChart";
-import { TransactionStats } from "@/components/dashboard/TransactionStats";
-import { MaintenanceAlerts } from "@/components/dashboard/MaintenanceAlerts";
-import { LaundryComparisonTable } from "@/components/dashboard/LaundryComparisonTable";
 import { ProfitabilityKPIs } from "@/components/dashboard/ProfitabilityKPIs";
 import { ProfitabilitySection } from "@/components/dashboard/ProfitabilitySection";
+import { DashboardEmptyState } from "@/components/dashboard/DashboardEmptyState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateProfitabilityMetrics, LaundryCosts } from "@/types/costs";
 import { useViewMode } from "@/hooks/useViewMode";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useSites } from "@/hooks/useSites";
 
-// Mock data - CA par mois
-const mockMonthlyData = [
-  { month: "Jan", revenue: 4250 },
-  { month: "Fév", revenue: 3890 },
-  { month: "Mar", revenue: 4520 },
-  { month: "Avr", revenue: 4180 },
-  { month: "Mai", revenue: 4750 },
-  { month: "Juin", revenue: 5120 },
-  { month: "Juil", revenue: 5890 },
-  { month: "Août", revenue: 4980 },
-  { month: "Sep", revenue: 4650 },
-  { month: "Oct", revenue: 4890 },
-  { month: "Nov", revenue: 5240 },
-  { month: "Déc", revenue: 3495 },
-];
-
-// Mock data - CA par jour
-const mockDailyData = [
-  { date: "01/12", revenue: 334 },
-  { date: "02/12", revenue: 436 },
-  { date: "03/12", revenue: 385 },
-  { date: "04/12", revenue: 501 },
-  { date: "05/12", revenue: 410 },
-  { date: "06/12", revenue: 589 },
-  { date: "07/12", revenue: 840 },
-];
-
-// Mock data - Répartition des paiements
-const mockPaymentData = [
-  { name: "Carte bancaire", value: 2845, color: "#BED7F0" },
-  { name: "Espèces", value: 568, color: "hsl(72, 80%, 43%)" },
-  { name: "Fidélité", value: 82, color: "#D9D9D9" },
-];
-
-// Mock data - Heatmap
-const mockHeatmapData = [
-  { day: "Lun", hour: 7, cycles: 2 }, { day: "Lun", hour: 8, cycles: 5 }, { day: "Lun", hour: 9, cycles: 8 },
-  { day: "Lun", hour: 10, cycles: 12 }, { day: "Lun", hour: 11, cycles: 10 }, { day: "Lun", hour: 12, cycles: 6 },
-  { day: "Lun", hour: 13, cycles: 4 }, { day: "Lun", hour: 14, cycles: 8 }, { day: "Lun", hour: 15, cycles: 9 },
-  { day: "Lun", hour: 16, cycles: 11 }, { day: "Lun", hour: 17, cycles: 14 }, { day: "Lun", hour: 18, cycles: 16 },
-  { day: "Lun", hour: 19, cycles: 12 }, { day: "Lun", hour: 20, cycles: 8 }, { day: "Lun", hour: 21, cycles: 3 },
-  { day: "Mar", hour: 7, cycles: 1 }, { day: "Mar", hour: 8, cycles: 4 }, { day: "Mar", hour: 9, cycles: 7 },
-  { day: "Mar", hour: 10, cycles: 10 }, { day: "Mar", hour: 11, cycles: 8 }, { day: "Mar", hour: 12, cycles: 5 },
-  { day: "Mar", hour: 13, cycles: 3 }, { day: "Mar", hour: 14, cycles: 6 }, { day: "Mar", hour: 15, cycles: 8 },
-  { day: "Mar", hour: 16, cycles: 10 }, { day: "Mar", hour: 17, cycles: 13 }, { day: "Mar", hour: 18, cycles: 15 },
-  { day: "Mar", hour: 19, cycles: 11 }, { day: "Mar", hour: 20, cycles: 7 }, { day: "Mar", hour: 21, cycles: 2 },
-  { day: "Mer", hour: 7, cycles: 3 }, { day: "Mer", hour: 8, cycles: 6 }, { day: "Mer", hour: 9, cycles: 9 },
-  { day: "Mer", hour: 10, cycles: 14 }, { day: "Mer", hour: 11, cycles: 12 }, { day: "Mer", hour: 12, cycles: 7 },
-  { day: "Mer", hour: 13, cycles: 5 }, { day: "Mer", hour: 14, cycles: 10 }, { day: "Mer", hour: 15, cycles: 11 },
-  { day: "Mer", hour: 16, cycles: 13 }, { day: "Mer", hour: 17, cycles: 16 }, { day: "Mer", hour: 18, cycles: 18 },
-  { day: "Mer", hour: 19, cycles: 14 }, { day: "Mer", hour: 20, cycles: 9 }, { day: "Mer", hour: 21, cycles: 4 },
-  { day: "Jeu", hour: 7, cycles: 2 }, { day: "Jeu", hour: 8, cycles: 5 }, { day: "Jeu", hour: 9, cycles: 8 },
-  { day: "Jeu", hour: 10, cycles: 11 }, { day: "Jeu", hour: 11, cycles: 9 }, { day: "Jeu", hour: 12, cycles: 6 },
-  { day: "Jeu", hour: 13, cycles: 4 }, { day: "Jeu", hour: 14, cycles: 7 }, { day: "Jeu", hour: 15, cycles: 9 },
-  { day: "Jeu", hour: 16, cycles: 12 }, { day: "Jeu", hour: 17, cycles: 14 }, { day: "Jeu", hour: 18, cycles: 17 },
-  { day: "Jeu", hour: 19, cycles: 13 }, { day: "Jeu", hour: 20, cycles: 8 }, { day: "Jeu", hour: 21, cycles: 3 },
-  { day: "Ven", hour: 7, cycles: 3 }, { day: "Ven", hour: 8, cycles: 7 }, { day: "Ven", hour: 9, cycles: 10 },
-  { day: "Ven", hour: 10, cycles: 13 }, { day: "Ven", hour: 11, cycles: 11 }, { day: "Ven", hour: 12, cycles: 8 },
-  { day: "Ven", hour: 13, cycles: 6 }, { day: "Ven", hour: 14, cycles: 9 }, { day: "Ven", hour: 15, cycles: 12 },
-  { day: "Ven", hour: 16, cycles: 15 }, { day: "Ven", hour: 17, cycles: 18 }, { day: "Ven", hour: 18, cycles: 20 },
-  { day: "Ven", hour: 19, cycles: 16 }, { day: "Ven", hour: 20, cycles: 10 }, { day: "Ven", hour: 21, cycles: 5 },
-  { day: "Sam", hour: 7, cycles: 4 }, { day: "Sam", hour: 8, cycles: 8 }, { day: "Sam", hour: 9, cycles: 14 },
-  { day: "Sam", hour: 10, cycles: 18 }, { day: "Sam", hour: 11, cycles: 20 }, { day: "Sam", hour: 12, cycles: 16 },
-  { day: "Sam", hour: 13, cycles: 12 }, { day: "Sam", hour: 14, cycles: 15 }, { day: "Sam", hour: 15, cycles: 17 },
-  { day: "Sam", hour: 16, cycles: 19 }, { day: "Sam", hour: 17, cycles: 22 }, { day: "Sam", hour: 18, cycles: 18 },
-  { day: "Sam", hour: 19, cycles: 14 }, { day: "Sam", hour: 20, cycles: 8 }, { day: "Sam", hour: 21, cycles: 4 },
-  { day: "Dim", hour: 7, cycles: 1 }, { day: "Dim", hour: 8, cycles: 3 }, { day: "Dim", hour: 9, cycles: 6 },
-  { day: "Dim", hour: 10, cycles: 10 }, { day: "Dim", hour: 11, cycles: 12 }, { day: "Dim", hour: 12, cycles: 9 },
-  { day: "Dim", hour: 13, cycles: 7 }, { day: "Dim", hour: 14, cycles: 8 }, { day: "Dim", hour: 15, cycles: 10 },
-  { day: "Dim", hour: 16, cycles: 11 }, { day: "Dim", hour: 17, cycles: 13 }, { day: "Dim", hour: 18, cycles: 10 },
-  { day: "Dim", hour: 19, cycles: 7 }, { day: "Dim", hour: 20, cycles: 4 }, { day: "Dim", hour: 21, cycles: 2 },
-];
-
-// Mock data - Moyenne machines par jour
-const mockAverageMachinesData = [
-  { day: "Lun", average: 42.5 },
-  { day: "Mar", average: 38.2 },
-  { day: "Mer", average: 45.8 },
-  { day: "Jeu", average: 41.3 },
-  { day: "Ven", average: 52.1 },
-  { day: "Sam", average: 68.4 },
-  { day: "Dim", average: 35.6 },
-];
-
-// Mock data - Performance par machine
-const mockMachinePerformance = [
-  { id: "LL1", name: "Lave-Linge 8kg #1", type: "washer" as const, revenue: 1245, cycles: 312, occupancyRate: 78 },
-  { id: "LL2", name: "Lave-Linge 8kg #2", type: "washer" as const, revenue: 1089, cycles: 285, occupancyRate: 71 },
-  { id: "LL3", name: "Lave-Linge 12kg", type: "washer" as const, revenue: 892, cycles: 198, occupancyRate: 62 },
-  { id: "SL1", name: "Sèche-Linge #1", type: "dryer" as const, revenue: 678, cycles: 245, occupancyRate: 58 },
-  { id: "SL2", name: "Sèche-Linge #2", type: "dryer" as const, revenue: 591, cycles: 212, occupancyRate: 52 },
-];
-
-// Mock data - Performance par jour de la semaine
-const mockWeekdayData = [
-  { day: "Lun", revenue: 485, transactions: 68 },
-  { day: "Mar", revenue: 412, transactions: 58 },
-  { day: "Mer", revenue: 534, transactions: 75 },
-  { day: "Jeu", revenue: 467, transactions: 66 },
-  { day: "Ven", revenue: 598, transactions: 84 },
-  { day: "Sam", revenue: 892, transactions: 125 },
-  { day: "Dim", revenue: 356, transactions: 50 },
-];
-
-// Mock data - Alertes maintenance
-const mockMaintenanceAlerts = [
-  { machineId: "LL3", machineName: "Lave-Linge 12kg", type: "washer" as const, status: "critical" as const, message: "500 cycles depuis dernière maintenance", lastMaintenance: "15/09/2024", cyclesSinceMaintenance: 500 },
-  { machineId: "SL2", machineName: "Sèche-Linge #2", type: "dryer" as const, status: "warning" as const, message: "350 cycles - maintenance recommandée", lastMaintenance: "28/10/2024", cyclesSinceMaintenance: 350 },
-];
-
-// Mock data - Comparaison laveries (avec données rentabilité)
-const mockLaundriesComparison = [
-  { id: "L1", name: "Laverie Centre-Ville", revenue: 5240, transactions: 732, occupancyRate: 72, trend: 8.5, breakEvenRevenue: 2061, estimatedProfit: 2307 },
-  { id: "L2", name: "Laverie Gare", revenue: 4180, transactions: 584, occupancyRate: 65, trend: -2.3, breakEvenRevenue: 1850, estimatedProfit: 1620 },
-  { id: "L3", name: "Laverie Université", revenue: 3890, transactions: 543, occupancyRate: 58, trend: 12.1, breakEvenRevenue: null, estimatedProfit: null },
-];
-
-// Mock costs data
-const mockCosts: LaundryCosts = {
+// Default costs for profitability calculation (user can configure these later)
+const defaultCosts: LaundryCosts = {
   fixed_rent: 850,
   fixed_lease: 450,
   fixed_subscriptions: 120,
@@ -165,19 +44,82 @@ const mockCosts: LaundryCosts = {
   var_detergent_percent: 3,
 };
 
-// Mock revenue data
-const siteTurnoverMonth = 3495;
-const siteTotalCyclesMonth = 487;
-
-// Calculate profitability metrics
-const profitabilityMetrics = calculateProfitabilityMetrics(mockCosts, siteTurnoverMonth, siteTotalCyclesMonth);
-
 export default function Dashboard() {
   const { isExpert } = useViewMode();
+  const { getDefaultSite } = useSites();
+  const defaultSite = getDefaultSite();
+  
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 7),
+    from: subDays(new Date(), 30),
     to: new Date(),
   });
+
+  const { stats, isLoading, isEmpty } = useDashboardStats(dateRange, defaultSite?.id);
+
+  // Format currency
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('fr-FR', { 
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0 
+    }).format(Math.round(value)) + ' €';
+  };
+
+  // Calculate profitability metrics
+  const profitabilityMetrics = calculateProfitabilityMetrics(
+    defaultCosts, 
+    stats.totalRevenue, 
+    stats.totalTransactions
+  );
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-lavcom-green mx-auto mb-4" />
+          <p className="text-muted-foreground">Chargement du tableau de bord...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state
+  if (isEmpty) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="flex flex-col gap-4 mb-8">
+          <div>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
+              Tableau de bord
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Vue d'ensemble complète de vos performances
+            </p>
+          </div>
+        </div>
+        
+        <div className="card-lavcom">
+          <DashboardEmptyState />
+        </div>
+      </div>
+    );
+  }
+
+  // Calculate derived values
+  const cardPercentage = stats.totalRevenue > 0 
+    ? Math.round((stats.revenueByCard / stats.totalRevenue) * 100) 
+    : 0;
+  const cashPercentage = stats.totalRevenue > 0 
+    ? Math.round((stats.revenueByCash / stats.totalRevenue) * 100) 
+    : 0;
+
+  // Previous period values for comparison (estimate based on trend)
+  const previousRevenue = stats.revenueTrend !== 0 
+    ? stats.totalRevenue / (1 + stats.revenueTrend / 100)
+    : stats.totalRevenue;
+  const previousTransactions = stats.transactionsTrend !== 0
+    ? stats.totalTransactions / (1 + stats.transactionsTrend / 100)
+    : stats.totalTransactions;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -189,6 +131,7 @@ export default function Dashboard() {
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
             Vue d'ensemble complète de vos performances
+            {defaultSite && <span className="ml-1">• {defaultSite.name}</span>}
           </p>
         </div>
         <DateRangePicker 
@@ -211,51 +154,50 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             <KPICard
               title="CA Total"
-              value="3 495 €"
+              value={formatCurrency(stats.totalRevenue)}
               icon={Euro}
               variant="primary"
-              trend={{ value: 12.5, isPositive: true }}
+              trend={stats.revenueTrend !== 0 ? { value: Math.abs(stats.revenueTrend), isPositive: stats.revenueTrend > 0 } : undefined}
             />
             <KPICard
               title="CA CB"
-              value="2 845 €"
+              value={formatCurrency(stats.revenueByCard)}
               icon={CreditCard}
               variant="success"
-              subtitle="81% du CA"
+              subtitle={`${cardPercentage}% du CA`}
             />
             <KPICard
               title="CA Espèces"
-              value="568 €"
+              value={formatCurrency(stats.revenueByCash)}
               icon={Banknote}
-              subtitle="16% du CA"
+              subtitle={`${cashPercentage}% du CA`}
             />
             <KPICard
               title="Transactions"
-              value="487"
+              value={stats.totalTransactions.toString()}
               icon={ShoppingCart}
-              trend={{ value: 8.3, isPositive: true }}
+              trend={stats.transactionsTrend !== 0 ? { value: Math.abs(stats.transactionsTrend), isPositive: stats.transactionsTrend > 0 } : undefined}
             />
             <KPICard
               title="Panier moyen"
-              value="7,18 €"
+              value={`${stats.averageBasket.toFixed(2)} €`}
               icon={TrendingUp}
-              trend={{ value: 3.2, isPositive: true }}
             />
             <KPICard
               title="Taux occupation"
-              value="65%"
+              value="—"
               icon={Percent}
-              subtitle="LL: 68% | SL: 55%"
+              subtitle="Données insuffisantes"
             />
           </div>
 
           {/* Expert: Nouveaux KPIs Rentabilité */}
-          {isExpert && (
+          {isExpert && stats.totalRevenue > 0 && (
             <ProfitabilityKPIs
-              lostRevenue={187}
-              avgRotation={6.8}
-              peakSaturation={88}
-              peakSlot="16h-19h"
+              lostRevenue={0}
+              avgRotation={stats.totalTransactions > 0 ? stats.totalTransactions / 30 : 0}
+              peakSaturation={0}
+              peakSlot="—"
             />
           )}
 
@@ -264,48 +206,48 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <MiniProgressCard 
                 title="Objectif mensuel" 
-                current={3495} 
+                current={stats.totalRevenue} 
                 target={4500} 
               />
               <MiniProgressCard 
                 title="Cycles réalisés" 
-                current={487} 
+                current={stats.totalTransactions} 
                 target={600} 
                 unit="cycles"
               />
               <ComparisonCard 
-                title="CA Mois" 
-                current="3 495 €" 
-                previous="3 108 €"
-                currentLabel="Dec 2024"
-                previousLabel="Dec 2023"
-                percentageChange={12.5}
+                title="CA Période" 
+                current={formatCurrency(stats.totalRevenue)} 
+                previous={formatCurrency(previousRevenue)}
+                currentLabel="Actuel"
+                previousLabel="Précédent"
+                percentageChange={stats.revenueTrend}
               />
               <ComparisonCard 
                 title="Transactions" 
-                current="487" 
-                previous="452"
-                currentLabel="Ce mois"
-                previousLabel="N-1"
-                percentageChange={7.7}
+                current={stats.totalTransactions.toString()} 
+                previous={Math.round(previousTransactions).toString()}
+                currentLabel="Actuel"
+                previousLabel="Précédent"
+                percentageChange={stats.transactionsTrend}
               />
             </div>
           )}
 
           {/* Charts Row 1 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <MonthlyRevenueChart data={mockMonthlyData} />
-            {isExpert && <DailyRevenueChart data={mockDailyData} />}
+            <MonthlyRevenueChart data={stats.monthlyData} />
+            {isExpert && stats.dailyData.length > 0 && <DailyRevenueChart data={stats.dailyData} />}
           </div>
 
           {/* Charts Row 2 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PaymentPieChart data={mockPaymentData} />
-            {isExpert && <WeekdayPerformanceChart data={mockWeekdayData} />}
+            <PaymentPieChart data={stats.paymentData} />
+            {isExpert && <WeekdayPerformanceChart data={stats.weekdayData} />}
           </div>
 
           {/* Expert: Heatmap */}
-          {isExpert && <SalesHeatmap data={mockHeatmapData} />}
+          {isExpert && <SalesHeatmap data={stats.heatmapData} />}
         </TabsContent>
 
         {/* Financier */}
@@ -314,40 +256,45 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
               <KPICard
                 title="CA Total"
-                value="3 495 €"
+                value={formatCurrency(stats.totalRevenue)}
                 icon={Euro}
                 variant="primary"
-                trend={{ value: 12.5, isPositive: true }}
+                trend={stats.revenueTrend !== 0 ? { value: Math.abs(stats.revenueTrend), isPositive: stats.revenueTrend > 0 } : undefined}
               />
               <KPICard
                 title="CA/Machine"
-                value="699 €"
+                value={stats.machinePerformance.length > 0 
+                  ? formatCurrency(stats.totalRevenue / stats.machinePerformance.length)
+                  : "—"}
                 icon={WashingMachine}
-                subtitle="Moy. 5 machines"
+                subtitle={stats.machinePerformance.length > 0 
+                  ? `Moy. ${stats.machinePerformance.length} machines`
+                  : ""}
               />
               <KPICard
-                title="CA/m²"
-                value="87,38 €"
-                icon={Target}
-                subtitle="40m² surface"
+                title="CA/Jour"
+                value={formatCurrency(stats.totalRevenue / 30)}
+                icon={Clock}
+                subtitle="Moyenne"
               />
               <KPICard
                 title="Panier moyen"
-                value="7,18 €"
+                value={`${stats.averageBasket.toFixed(2)} €`}
                 icon={ShoppingCart}
-                trend={{ value: 3.2, isPositive: true }}
               />
               <KPICard
-                title="CA/Heure"
-                value="8,12 €"
-                icon={Clock}
-                subtitle="12h/jour ouvert"
+                title="CA CB"
+                value={formatCurrency(stats.revenueByCard)}
+                icon={CreditCard}
+                subtitle={`${cardPercentage}%`}
               />
               <KPICard
                 title="Marge brute"
-                value="68%"
+                value={stats.totalRevenue > 0 && profitabilityMetrics.estimated_profit_month !== undefined
+                  ? `${Math.round((profitabilityMetrics.estimated_profit_month / stats.totalRevenue) * 100)}%`
+                  : "—"}
                 icon={Percent}
-                variant="success"
+                variant={profitabilityMetrics.estimated_profit_month > 0 ? "success" : "default"}
               />
             </div>
           </KPISection>
@@ -355,28 +302,30 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <MiniProgressCard 
               title="Objectif CA mensuel" 
-              current={3495} 
+              current={stats.totalRevenue} 
               target={4500} 
             />
             <MiniProgressCard 
               title="Objectif CA annuel" 
-              current={55860} 
+              current={stats.totalRevenue * 12} 
               target={54000} 
             />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <MonthlyRevenueChart data={mockMonthlyData} />
-            <PaymentPieChart data={mockPaymentData} />
+            <MonthlyRevenueChart data={stats.monthlyData} />
+            <PaymentPieChart data={stats.paymentData} />
           </div>
 
           {/* Section Rentabilité */}
           <ProfitabilitySection 
             metrics={profitabilityMetrics}
-            costs={mockCosts}
+            costs={defaultCosts}
           />
 
-          <MachinePerformanceTable machines={mockMachinePerformance} />
+          {stats.machinePerformance.length > 0 && (
+            <MachinePerformanceTable machines={stats.machinePerformance} />
+          )}
         </TabsContent>
 
         {/* Opérations */}
@@ -385,99 +334,100 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
               <KPICard
                 title="Taux occupation"
-                value="65%"
+                value="—"
                 icon={Percent}
-                variant="warning"
-                subtitle="LL: 68% | SL: 55%"
+                variant="default"
+                subtitle="Données insuffisantes"
               />
               <KPICard
                 title="Cycles/jour"
-                value="69,6"
+                value={(stats.totalTransactions / 30).toFixed(1)}
                 icon={Clock}
-                trend={{ value: 5.2, isPositive: true }}
               />
               <KPICard
                 title="Temps moyen cycle"
-                value="45 min"
+                value="—"
                 icon={Clock}
-                subtitle="LL: 50 | SL: 35"
+                subtitle="Non disponible"
               />
               <KPICard
                 title="Machines actives"
-                value="5/5"
+                value={stats.machinePerformance.length > 0 
+                  ? `${stats.machinePerformance.length}`
+                  : "—"}
                 icon={WashingMachine}
                 variant="success"
               />
               <KPICard
                 title="Heure pointe"
-                value="18h"
+                value="—"
                 icon={TrendingUp}
-                subtitle="22 cycles/h max"
+                subtitle="À calculer"
               />
               <KPICard
                 title="Disponibilité"
-                value="98,2%"
-                icon={Target}
-                variant="success"
+                value="—"
+                icon={Percent}
+                subtitle="Non disponible"
               />
             </div>
           </KPISection>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <MachinePerformanceTable machines={mockMachinePerformance} />
-            <MaintenanceAlerts alerts={mockMaintenanceAlerts} />
+            <WeekdayPerformanceChart data={stats.weekdayData} />
+            {stats.machinePerformance.length > 0 && (
+              <MachinePerformanceTable machines={stats.machinePerformance} />
+            )}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AverageMachinesChart data={mockAverageMachinesData} />
-            <TransactionStats 
-              totalTransactions={487}
-              avgTransactionsPerDay={69.6}
-              failedTransactions={12}
-              failedRate={2.4}
-              peakHour="18h-19h"
-              peakTransactions={45}
-            />
-          </div>
-
-          <SalesHeatmap data={mockHeatmapData} />
+          <SalesHeatmap data={stats.heatmapData} />
         </TabsContent>
 
         {/* Comparatifs */}
         <TabsContent value="comparison" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <ComparisonCard 
-              title="CA Mensuel" 
-              current="3 495 €" 
-              previous="3 108 €"
-              currentLabel="Dec 2024"
-              previousLabel="Dec 2023"
-              percentageChange={12.5}
+              title="CA Période" 
+              current={formatCurrency(stats.totalRevenue)} 
+              previous={formatCurrency(previousRevenue)}
+              currentLabel="Actuel"
+              previousLabel="Précédent"
+              percentageChange={stats.revenueTrend}
             />
             <ComparisonCard 
               title="Transactions" 
-              current="487" 
-              previous="452"
-              currentLabel="Ce mois"
-              previousLabel="Mois dernier"
-              percentageChange={7.7}
+              current={stats.totalTransactions.toString()} 
+              previous={Math.round(previousTransactions).toString()}
+              currentLabel="Actuel"
+              previousLabel="Précédent"
+              percentageChange={stats.transactionsTrend}
             />
             <ComparisonCard 
               title="Panier moyen" 
-              current="7,18 €" 
-              previous="6,87 €"
-              currentLabel="Ce mois"
-              previousLabel="N-1"
-              percentageChange={4.5}
+              current={`${stats.averageBasket.toFixed(2)} €`} 
+              previous="—"
+              currentLabel="Actuel"
+              previousLabel="Précédent"
+              percentageChange={0}
+            />
+            <ComparisonCard 
+              title="CA CB" 
+              current={formatCurrency(stats.revenueByCard)} 
+              previous="—"
+              currentLabel="Actuel"
+              previousLabel="Précédent"
+              percentageChange={0}
             />
           </div>
 
-          <LaundryComparisonTable laundries={mockLaundriesComparison} />
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <WeekdayPerformanceChart data={mockWeekdayData} />
-            <MonthlyRevenueChart data={mockMonthlyData} />
+            <MonthlyRevenueChart data={stats.monthlyData} />
+            <WeekdayPerformanceChart data={stats.weekdayData} />
           </div>
+
+          {stats.machinePerformance.length > 0 && (
+            <MachinePerformanceTable machines={stats.machinePerformance} />
+          )}
         </TabsContent>
       </Tabs>
     </div>
