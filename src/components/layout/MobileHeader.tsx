@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { Menu, Building2, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AppSidebar } from "./AppSidebar";
@@ -21,12 +20,17 @@ export function MobileHeader({
 
   return (
     <header className="lg:hidden flex items-center justify-between h-14 px-4 border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
-      <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+      <a 
+        href="/" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 hover:opacity-80 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-lg min-h-[44px] min-w-[44px] px-1"
+      >
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-transform duration-200 hover:scale-110">
-          <span className="text-primary-foreground font-bold text-sm">L</span>
+          <span className="text-primary-foreground font-bold text-sm">LP</span>
         </div>
         <span className="font-display font-semibold text-foreground hidden xs:inline">Lavcom</span>
-      </Link>
+      </a>
 
       <div className="flex items-center gap-1">
         {/* View Mode Toggle - compact on mobile */}

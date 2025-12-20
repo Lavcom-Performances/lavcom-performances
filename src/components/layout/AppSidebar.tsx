@@ -118,25 +118,57 @@ export function AppSidebar({
     >
       {/* Logo */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border">
-        {!collapsed && (
-          <NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">L</span>
+        {collapsed ? (
+          <a 
+            href="/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center cursor-pointer hover:opacity-80 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-sidebar mx-auto"
+            title="Retour à la page d'accueil"
+          >
+            <span className="text-primary-foreground font-bold text-sm">LP</span>
+          </a>
+        ) : (
+          <a 
+            href="/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 hover:opacity-80 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-sidebar rounded-lg"
+            title="Retour à la page d'accueil"
+          >
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-transform duration-200 hover:scale-105">
+              <span className="text-primary-foreground font-bold text-sm">LP</span>
             </div>
             <span className="font-display font-semibold text-sidebar-foreground">
               Lavcom
             </span>
-          </NavLink>
+          </a>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onToggle}
-          className="text-sidebar-foreground hover:bg-sidebar-accent"
-        >
-          <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
-        </Button>
+        {!collapsed && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className="text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
+          </Button>
+        )}
       </div>
+      
+      {/* Collapse toggle for collapsed state */}
+      {collapsed && (
+        <div className="flex justify-center py-2 border-b border-sidebar-border">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggle}
+            className="text-sidebar-foreground hover:bg-sidebar-accent h-8 w-8"
+          >
+            <ChevronLeft className="h-4 w-4 rotate-180" />
+          </Button>
+        </div>
+      )}
 
       {/* Trial Banner - only show when not collapsed and on trial */}
       {!collapsed && showTrialBanner && (
