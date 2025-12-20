@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { getLaundromatPricing } from "@/config/pricingConfig";
+import { Footer } from "@/components/layout/Footer";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 
 interface CompanyInfo {
@@ -509,6 +510,8 @@ export default function Subscribe() {
           </div>
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 }

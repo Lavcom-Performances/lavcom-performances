@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
+import { Footer } from "@/components/layout/Footer";
 import { translations } from "@/lib/i18n";
 import { WASHER_CAPACITIES, DRYER_CAPACITIES } from "@/types/simulation";
 import { SIMULATOR_PLANS } from "@/config/pricingConfig";
@@ -394,6 +395,8 @@ export default function SimulateurPage() {
           </div>
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 }

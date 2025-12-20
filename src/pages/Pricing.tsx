@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Footer } from "@/components/layout/Footer";
 import { Check, Building2, ArrowRight, Minus, Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -239,6 +240,8 @@ export default function Pricing() {
           </div>
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 }
