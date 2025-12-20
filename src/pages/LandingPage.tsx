@@ -49,6 +49,7 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { trackEbookClick, trackContactSubmit } from "@/lib/analytics";
 import { z } from "zod";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import ebookAvantOuvrir from "@/assets/ebook-avant-ouvrir.jpg";
@@ -464,6 +465,7 @@ const LandingPage = () => {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-lavcom-orange transition-colors group"
+                  onClick={() => trackEbookClick('landing_simulator_block')}
                 >
                   <BookOpen className="h-3.5 w-3.5 md:h-4 md:w-4" />
                   <span>
