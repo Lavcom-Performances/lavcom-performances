@@ -1,4 +1,5 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { 
   LayoutDashboard, 
   Receipt, 
@@ -86,6 +87,7 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation(['app', 'common']);
   const [chartsOpen, setChartsOpen] = useState(true);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   
