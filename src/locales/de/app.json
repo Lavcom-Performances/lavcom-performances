@@ -339,5 +339,19 @@
       "title": "💡 Hinweis:",
       "content": "Diese Schätzung basiert auf Branchendurchschnitten. Der vollständige Simulator berücksichtigt Kosten, Standort und viele andere Faktoren."
     }
+  },
+  "passwordStrength": {
+    "label": "Passwortstärke",
+    "weak": "Schwach",
+    "fair": "Mittel",
+    "good": "Gut",
+    "strong": "Stark",
+    "criteria": {
+      "minLength": "Mindestens 8 Zeichen",
+      "hasUppercase": "Ein Großbuchstabe",
+      "hasLowercase": "Ein Kleinbuchstabe",
+      "hasNumber": "Eine Zahl",
+      "hasSpecial": "Ein Sonderzeichen"
+    }
   }
 }

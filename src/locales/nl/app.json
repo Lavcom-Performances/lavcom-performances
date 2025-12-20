@@ -339,5 +339,19 @@
       "title": "💡 Opmerking:",
       "content": "Deze schatting is gebaseerd op sectorgemiddelden. De volledige simulator houdt rekening met kosten, locatie en vele andere factoren."
     }
+  },
+  "passwordStrength": {
+    "label": "Wachtwoordsterkte",
+    "weak": "Zwak",
+    "fair": "Redelijk",
+    "good": "Goed",
+    "strong": "Sterk",
+    "criteria": {
+      "minLength": "Minimaal 8 tekens",
+      "hasUppercase": "Een hoofdletter",
+      "hasLowercase": "Een kleine letter",
+      "hasNumber": "Een cijfer",
+      "hasSpecial": "Een speciaal teken"
+    }
   }
 }
