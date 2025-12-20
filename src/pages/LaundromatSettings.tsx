@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   Building2, 
   Clock, 
@@ -44,6 +45,13 @@ import {
 import { toast } from "sonner";
 import { generateProfitabilityReport } from "@/utils/profitabilityPdfExport";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { ReportVariantDialog } from "@/components/report/ReportVariantDialog";
 import { ReportVariant } from "@/types/report";
@@ -99,8 +107,8 @@ interface LaundryCostsState {
 }
 
 export default function LaundromatSettings() {
-  // Get URL param for site selection from drill-down
-  const [searchParams] = useState(() => new URLSearchParams(window.location.search));
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const siteIdFromUrl = searchParams.get('site');
   
   // Get sites
@@ -110,6 +118,11 @@ export default function LaundromatSettings() {
   const selectedSite = siteIdFromUrl 
     ? sites.find(s => s.id === siteIdFromUrl) || getDefaultSite()
     : getDefaultSite();
+  
+  // Handle site change from selector
+  const handleSiteChange = (siteId: string) => {
+    navigate(`/laundromat-settings?site=${siteId}`, { replace: true });
+  };
   
   // Get site costs from DB
   const { costs: dbCosts, upsertCosts, isLoading: costsLoading } = useSiteCosts(selectedSite?.id);
@@ -304,15 +317,40 @@ export default function LaundromatSettings() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header with Site Selector */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">
-            Paramètres de la laverie
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Configuration complète pour le calcul des KPIs
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div>
+            <h1 className="font-display text-2xl font-bold text-foreground">
+              Paramètres de la laverie
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Configuration complète pour le calcul des KPIs
+            </p>
+          </div>
+          {sites.length > 1 && (
+            <Select 
+              value={selectedSite?.id || ''} 
+              onValueChange={handleSiteChange}
+            >
+              <SelectTrigger className="w-[220px] bg-background">
+                <Building2 className="h-4 w-4 mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Sélectionner une laverie" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-50">
+                {sites.map(site => (
+                  <SelectItem key={site.id} value={site.id}>
+                    <div className="flex flex-col">
+                      <span>{site.name}</span>
+                      {site.city && (
+                        <span className="text-xs text-muted-foreground">{site.city}</span>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
         <Button onClick={handleSave} className="gap-2">
           <Save className="h-4 w-4" />
