@@ -58,29 +58,7 @@ import { HeroValueSlider } from "@/components/landing/HeroValueSlider";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
 import { LanguageSelector } from "@/components/ui/language-selector";
 
-const testimonials = [
-  {
-    name: "Marie Dupont",
-    role: "Gérante, Laverie Express Lyon",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-    quote: "Grâce à Lavcom Performances, j'ai pu identifier mes heures creuses et ajuster mes tarifs. Mon CA a augmenté de 30% en 6 mois !",
-    rating: 5
-  },
-  {
-    name: "Pierre Martin",
-    role: "Propriétaire, Clean & Fresh Paris",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    quote: "Les alertes de maintenance m'ont permis d'éviter 3 pannes majeures ce trimestre. L'investissement est rentabilisé en quelques semaines.",
-    rating: 5
-  },
-  {
-    name: "Sophie Bernard",
-    role: "Directrice, Réseau LavPlus",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    quote: "Avec 12 laveries, je ne pouvais plus tout gérer manuellement. Lavcom me donne une vue d'ensemble instantanée de tout mon réseau.",
-    rating: 5
-  }
-];
+// Testimonials data moved to i18n - see landing:testimonials namespace
 
 const LandingPage = () => {
   const { toast } = useToast();
@@ -549,7 +527,7 @@ const LandingPage = () => {
               >
                 <Button size="default" className="btn-bounce text-sm md:text-base w-full sm:w-auto">
                   <FileText className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                  Voir un exemple (PDF)
+                  {t("landing:pdfExample.cta")}
                   <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               </a>
@@ -564,7 +542,7 @@ const LandingPage = () => {
       <section className="py-12 md:py-16 px-4 md:px-6">
         <div className="container mx-auto max-w-5xl">
           <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground text-left md:text-center mb-8 md:mb-12 leading-tight max-w-[400px] md:max-w-none">
-            Sans Lavcom Performances / Avec Lavcom Performances
+            {t("landing:comparison.title")}
           </h2>
           
           <div className="grid md:grid-cols-2 gap-4 md:gap-8">
@@ -572,24 +550,24 @@ const LandingPage = () => {
             <Card className="p-4 md:p-6 border-red-200 dark:border-red-900/30 bg-red-50/50 dark:bg-red-950/10">
               <h3 className="text-base md:text-lg font-semibold text-red-700 dark:text-red-400 mb-3 md:mb-4 flex items-center gap-2">
                 <span className="text-xl md:text-2xl">✗</span>
-                Sans Lavcom Performances
+                {t("landing:comparison.withoutTitle")}
               </h3>
               <ul className="space-y-2 md:space-y-3">
                 <li className="flex items-start gap-2 md:gap-3 text-muted-foreground text-sm md:text-base">
                   <span className="text-red-500 mt-0.5">•</span>
-                  <span>Je vois seulement le CA global.</span>
+                  <span>{t("landing:comparison.without1")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3 text-muted-foreground text-sm md:text-base">
                   <span className="text-red-500 mt-0.5">•</span>
-                  <span>Je ne sais pas quelles machines sont rentables.</span>
+                  <span>{t("landing:comparison.without2")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3 text-muted-foreground text-sm md:text-base">
                   <span className="text-red-500 mt-0.5">•</span>
-                  <span>Je change mes prix au feeling.</span>
+                  <span>{t("landing:comparison.without3")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3 text-muted-foreground text-sm md:text-base">
                   <span className="text-red-500 mt-0.5">•</span>
-                  <span>Pas de rapport clair pour ma banque.</span>
+                  <span>{t("landing:comparison.without4")}</span>
                 </li>
               </ul>
             </Card>
@@ -598,24 +576,24 @@ const LandingPage = () => {
             <Card className="p-4 md:p-6 border-lavcom-green/30 bg-lavcom-green/5">
               <h3 className="text-base md:text-lg font-semibold text-lavcom-green-dark dark:text-lavcom-green mb-3 md:mb-4 flex items-center gap-2">
                 <span className="text-xl md:text-2xl">✓</span>
-                Avec Lavcom Performances
+                {t("landing:comparison.withTitle")}
               </h3>
               <ul className="space-y-2 md:space-y-3">
                 <li className="flex items-start gap-2 md:gap-3 text-foreground text-sm md:text-base">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span>Je connais les machines qui couvrent mes charges.</span>
+                  <span>{t("landing:comparison.with1")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3 text-foreground text-sm md:text-base">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span>Je vois les créneaux saturés ou sous-utilisés.</span>
+                  <span>{t("landing:comparison.with2")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3 text-foreground text-sm md:text-base">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span>Recommandations concrètes chaque mois.</span>
+                  <span>{t("landing:comparison.with3")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3 text-foreground text-sm md:text-base">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span>Rapport PDF pour ma banque.</span>
+                  <span>{t("landing:comparison.with4")}</span>
                 </li>
               </ul>
             </Card>
@@ -787,9 +765,31 @@ const LandingPage = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-            {testimonials.map((testimonial, index) => (
+            {[
+              {
+                name: t("landing:testimonials.t1Name"),
+                role: t("landing:testimonials.t1Role"),
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+                quote: t("landing:testimonials.t1Quote"),
+                rating: 5
+              },
+              {
+                name: t("landing:testimonials.t2Name"),
+                role: t("landing:testimonials.t2Role"),
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+                quote: t("landing:testimonials.t2Quote"),
+                rating: 5
+              },
+              {
+                name: t("landing:testimonials.t3Name"),
+                role: t("landing:testimonials.t3Role"),
+                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+                quote: t("landing:testimonials.t3Quote"),
+                rating: 5
+              }
+            ].map((testimonial, index) => (
               <Card 
-                key={testimonial.name}
+                key={index}
                 className="p-4 md:p-6 card-lavcom-hover animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
