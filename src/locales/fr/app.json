@@ -5,7 +5,8 @@
       "rotateRight": "Rotation +90°",
       "preview": "Aperçu",
       "flip": "Retourner",
-      "flipHorizontal": "Miroir horizontal"
+      "flipHorizontal": "Horizontal",
+      "flipVertical": "Vertical"
     }
   },
   "accessibility": {

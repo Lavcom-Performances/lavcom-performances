@@ -5,7 +5,8 @@
       "rotateRight": "Um +90° drehen",
       "preview": "Vorschau",
       "flip": "Spiegeln",
-      "flipHorizontal": "Horizontal spiegeln"
+      "flipHorizontal": "Horizontal",
+      "flipVertical": "Vertikal"
     }
   },
   "accessibility": {

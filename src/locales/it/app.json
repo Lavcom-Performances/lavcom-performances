@@ -5,7 +5,8 @@
       "rotateRight": "Ruota +90°",
       "preview": "Anteprima",
       "flip": "Capovolgi",
-      "flipHorizontal": "Specchio orizzontale"
+      "flipHorizontal": "Orizzontale",
+      "flipVertical": "Verticale"
     }
   },
   "accessibility": {

@@ -5,7 +5,8 @@
       "rotateRight": "Roteer +90°",
       "preview": "Voorbeeld",
       "flip": "Spiegelen",
-      "flipHorizontal": "Horizontaal spiegelen"
+      "flipHorizontal": "Horizontaal",
+      "flipVertical": "Verticaal"
     }
   },
   "accessibility": {
