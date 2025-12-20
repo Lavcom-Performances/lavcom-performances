@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DateRange } from 'react-day-picker';
+import { subDays } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,14 +31,15 @@ import {
   RotateCcw,
   CheckSquare,
   ExternalLink,
-  FileText
+  FileText,
+  Settings
 } from 'lucide-react';
 import { useSites } from '@/hooks/useSites';
 import { useMultipleSitesCosts } from '@/hooks/useSiteCosts';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { calculateProfitabilityMetrics, calculateFixedCostsTotal, LaundryCosts } from '@/types/costs';
+import { calculateProfitabilityMetrics, LaundryCosts } from '@/types/costs';
 
 interface SiteComparisonSectionProps {
   dateRange?: DateRange;
@@ -45,7 +47,7 @@ interface SiteComparisonSectionProps {
 
 type SortField = 'revenue' | 'profit' | 'occupation' | 'trend';
 
-const STORAGE_KEY = 'lavcom-comparison-sites';
+const getStorageKey = (userId?: string) => `lavcom-comparison-sites-${userId || 'anonymous'}`;
 
 const defaultCosts: LaundryCosts = {
   fixed_rent: 850,
@@ -66,9 +68,12 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
   const [sortField, setSortField] = useState<SortField>('revenue');
   const [selectedSiteIds, setSelectedSiteIds] = useState<string[]>([]);
 
+  const storageKey = getStorageKey(user?.id);
+
   // Load persisted selection from localStorage
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!user?.id) return;
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
@@ -79,24 +84,26 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
         // Invalid JSON, ignore
       }
     }
-  }, []);
+  }, [user?.id, storageKey]);
 
   // Persist selection
   useEffect(() => {
+    if (!user?.id) return;
     if (selectedSiteIds.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedSiteIds));
+      localStorage.setItem(storageKey, JSON.stringify(selectedSiteIds));
     }
-  }, [selectedSiteIds]);
+  }, [selectedSiteIds, user?.id, storageKey]);
 
   // Default to all sites if no selection
   useEffect(() => {
+    if (!user?.id) return;
     if (sites.length > 0 && selectedSiteIds.length === 0) {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(storageKey);
       if (!stored) {
         setSelectedSiteIds(sites.map(s => s.id));
       }
     }
-  }, [sites, selectedSiteIds.length]);
+  }, [sites, selectedSiteIds.length, user?.id, storageKey]);
 
   // Filter sites by search
   const filteredSites = useMemo(() => {
@@ -112,25 +119,33 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
   // Get costs for selected sites
   const { data: costsMap = {} } = useMultipleSitesCosts(selectedSiteIds);
 
-  // Fetch aggregated stats for all selected sites
-  const { data: siteStats = {} } = useQuery({
-    queryKey: ['site-comparison-stats', selectedSiteIds, dateRange?.from, dateRange?.to],
+  // Calculate period duration in days
+  const periodDays = useMemo(() => {
+    if (!dateRange?.from || !dateRange?.to) return 30;
+    return Math.max(1, Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)));
+  }, [dateRange]);
+
+  // Calculate previous period dates
+  const previousPeriod = useMemo(() => {
+    if (!dateRange?.from || !dateRange?.to) return null;
+    const from = subDays(dateRange.from, periodDays);
+    const to = subDays(dateRange.from, 1); // Day before current period starts
+    return { from, to };
+  }, [dateRange, periodDays]);
+
+  // Fetch aggregated stats for current period
+  const { data: currentStats = {} } = useQuery({
+    queryKey: ['site-comparison-current', selectedSiteIds, dateRange?.from, dateRange?.to],
     queryFn: async () => {
-      if (!user || selectedSiteIds.length === 0) return {};
+      if (!user || selectedSiteIds.length === 0 || !dateRange?.from || !dateRange?.to) return {};
       
-      let query = supabase
+      const { data, error } = await supabase
         .from('operations')
         .select('site_id, amount, operation_date')
-        .in('site_id', selectedSiteIds);
+        .in('site_id', selectedSiteIds)
+        .gte('operation_date', dateRange.from.toISOString().split('T')[0])
+        .lte('operation_date', dateRange.to.toISOString().split('T')[0]);
       
-      if (dateRange?.from) {
-        query = query.gte('operation_date', dateRange.from.toISOString().split('T')[0]);
-      }
-      if (dateRange?.to) {
-        query = query.lte('operation_date', dateRange.to.toISOString().split('T')[0]);
-      }
-      
-      const { data, error } = await query;
       if (error) throw error;
       
       // Aggregate by site
@@ -145,43 +160,91 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
       
       return stats;
     },
-    enabled: !!user && selectedSiteIds.length > 0,
+    enabled: !!user && selectedSiteIds.length > 0 && !!dateRange?.from && !!dateRange?.to,
   });
 
-  // Calculate comparison data
+  // Fetch aggregated stats for previous period (for trend calculation)
+  const { data: previousStats = {} } = useQuery({
+    queryKey: ['site-comparison-previous', selectedSiteIds, previousPeriod?.from, previousPeriod?.to],
+    queryFn: async () => {
+      if (!user || selectedSiteIds.length === 0 || !previousPeriod) return {};
+      
+      const { data, error } = await supabase
+        .from('operations')
+        .select('site_id, amount, operation_date')
+        .in('site_id', selectedSiteIds)
+        .gte('operation_date', previousPeriod.from.toISOString().split('T')[0])
+        .lte('operation_date', previousPeriod.to.toISOString().split('T')[0]);
+      
+      if (error) throw error;
+      
+      // Aggregate by site
+      const stats: Record<string, { revenue: number; transactions: number }> = {};
+      for (const op of (data || [])) {
+        if (!stats[op.site_id]) {
+          stats[op.site_id] = { revenue: 0, transactions: 0 };
+        }
+        stats[op.site_id].revenue += Number(op.amount) || 0;
+        stats[op.site_id].transactions += 1;
+      }
+      
+      return stats;
+    },
+    enabled: !!user && selectedSiteIds.length > 0 && !!previousPeriod,
+  });
+
+  // Calculate trend percentage
+  const calculateTrend = (current: number, previous: number): number | null => {
+    if (previous === 0 || isNaN(previous)) return null;
+    if (isNaN(current)) return null;
+    return ((current - previous) / previous) * 100;
+  };
+
+  // Calculate comparison data with trends
   const comparisonData = useMemo(() => {
-    const days = dateRange?.from && dateRange?.to
-      ? Math.max(1, Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)))
-      : 30;
-    
     return sites
       .filter(s => selectedSiteIds.includes(s.id))
       .map(site => {
-        const stats = siteStats[site.id] || { revenue: 0, transactions: 0 };
-        const costs = costsMap[site.id] || defaultCosts;
+        const current = currentStats[site.id] || { revenue: 0, transactions: 0 };
+        const previous = previousStats[site.id] || { revenue: 0, transactions: 0 };
+        const costs = costsMap[site.id];
         
-        const profitability = calculateProfitabilityMetrics(costs, stats.revenue, stats.transactions);
-        const profit = profitability.estimated_profit_month;
-        const occupation = stats.transactions / days; // transactions per day
+        const profitability = costs 
+          ? calculateProfitabilityMetrics(costs, current.revenue, current.transactions)
+          : null;
+        const profit = profitability?.estimated_profit_month ?? null;
+        const currentOccupation = current.transactions / periodDays;
+        const previousOccupation = previous.transactions / periodDays;
+        
+        // Calculate trends
+        const revenueTrend = calculateTrend(current.revenue, previous.revenue);
+        const transactionsTrend = calculateTrend(current.transactions, previous.transactions);
+        const occupationTrend = calculateTrend(currentOccupation, previousOccupation);
+        
+        // Use revenue trend as the main trend for sorting
+        const mainTrend = revenueTrend;
         
         return {
           id: site.id,
           name: site.name,
           city: site.city || '',
-          revenue: stats.revenue,
-          transactions: stats.transactions,
+          revenue: current.revenue,
+          transactions: current.transactions,
           profit,
-          occupation,
-          trend: 0, // Would need previous period data
-          hasCosts: !!costsMap[site.id],
+          occupation: currentOccupation,
+          revenueTrend,
+          transactionsTrend,
+          occupationTrend,
+          trend: mainTrend,
+          hasCosts: !!costs,
         };
       });
-  }, [sites, selectedSiteIds, siteStats, costsMap, dateRange]);
+  }, [sites, selectedSiteIds, currentStats, previousStats, costsMap, periodDays]);
 
   // Sort comparison data
   const sortedData = useMemo(() => {
     return [...comparisonData].sort((a, b) => {
-      let aVal: number, bVal: number;
+      let aVal: number | null, bVal: number | null;
       
       switch (sortField) {
         case 'revenue':
@@ -204,11 +267,15 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
           return 0;
       }
       
-      // N/A (0 or NaN) values go to bottom
-      if (isNaN(aVal) || aVal === 0) return 1;
-      if (isNaN(bVal) || bVal === 0) return -1;
+      // N/A (null, 0, or NaN) values go to bottom
+      const aIsNA = aVal === null || isNaN(aVal) || (sortField !== 'trend' && aVal === 0);
+      const bIsNA = bVal === null || isNaN(bVal) || (sortField !== 'trend' && bVal === 0);
       
-      return bVal - aVal; // Descending
+      if (aIsNA && bIsNA) return 0;
+      if (aIsNA) return 1;
+      if (bIsNA) return -1;
+      
+      return (bVal as number) - (aVal as number); // Descending
     });
   }, [comparisonData, sortField]);
 
@@ -219,7 +286,9 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
   const handleReset = () => {
     setSelectedSiteIds([]);
     setSearchTerm('');
-    localStorage.removeItem(STORAGE_KEY);
+    if (user?.id) {
+      localStorage.removeItem(storageKey);
+    }
   };
 
   const handleSiteToggle = (siteId: string) => {
@@ -231,7 +300,6 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
   };
 
   const handleDrillDown = (siteId: string, toOperations = false) => {
-    // Build date params
     const params = new URLSearchParams();
     if (dateRange?.from) {
       params.set('date_start', dateRange.from.toISOString().split('T')[0]);
@@ -245,12 +313,36 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
     navigate(`${path}?${params.toString()}`);
   };
 
+  const handleConfigureCosts = (siteId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/laundromat-settings?site=${siteId}`);
+  };
+
   const formatCurrency = (value: number) => {
     if (isNaN(value)) return 'N/A';
     return new Intl.NumberFormat('fr-FR', { 
       minimumFractionDigits: 0,
       maximumFractionDigits: 0 
     }).format(Math.round(value)) + ' €';
+  };
+
+  const formatTrend = (trend: number | null) => {
+    if (trend === null || isNaN(trend)) {
+      return <span className="text-muted-foreground">N/A</span>;
+    }
+    
+    const isPositive = trend > 0;
+    const Icon = isPositive ? TrendingUp : TrendingDown;
+    const colorClass = isPositive ? 'text-green-600' : 'text-red-600';
+    
+    return (
+      <div className="flex items-center justify-end gap-1">
+        <Icon className={`h-4 w-4 ${colorClass}`} />
+        <span className={colorClass}>
+          {isPositive ? '+' : ''}{trend.toFixed(1)}%
+        </span>
+      </div>
+    );
   };
 
   // Only show if more than 1 site
@@ -390,32 +482,27 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
                         {formatCurrency(site.revenue)}
                       </TableCell>
                       <TableCell className="text-right">
-                        {site.hasCosts ? (
+                        {site.hasCosts && site.profit !== null ? (
                           <span className={site.profit >= 0 ? 'text-green-600' : 'text-red-600'}>
                             {formatCurrency(site.profit)}
                           </span>
                         ) : (
-                          <span className="text-muted-foreground">N/A</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-muted-foreground hover:text-primary gap-1 h-auto py-0"
+                            onClick={(e) => handleConfigureCosts(site.id, e)}
+                          >
+                            <Settings className="h-3 w-3" />
+                            <span className="text-xs">Configurer</span>
+                          </Button>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
                         {site.occupation > 0 ? site.occupation.toFixed(1) : 'N/A'}
                       </TableCell>
                       <TableCell className="text-right">
-                        {site.trend !== 0 ? (
-                          <div className="flex items-center justify-end gap-1">
-                            {site.trend > 0 ? (
-                              <TrendingUp className="h-4 w-4 text-green-600" />
-                            ) : (
-                              <TrendingDown className="h-4 w-4 text-red-600" />
-                            )}
-                            <span className={site.trend > 0 ? 'text-green-600' : 'text-red-600'}>
-                              {Math.abs(site.trend).toFixed(1)}%
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">N/A</span>
-                        )}
+                        {formatTrend(site.trend)}
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
@@ -447,6 +534,11 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
                   ))}
                 </TableBody>
               </Table>
+            </div>
+
+            {/* Period info */}
+            <div className="mt-4 text-xs text-muted-foreground text-center">
+              Évolution calculée par rapport aux {periodDays} jours précédents
             </div>
           </CardContent>
         </Card>
