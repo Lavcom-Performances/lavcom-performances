@@ -1,30 +1,30 @@
 {
   "validation": {
-    "nameRequired": "Le nom est requis",
-    "nameTooLong": "Le nom est trop long",
-    "invalidEmail": "Email invalide",
-    "emailTooLong": "Email trop long",
-    "messageMinLength": "Le message doit contenir au moins 10 caractères",
-    "messageMaxLength": "Le message est trop long (max 1000 caractères)",
-    "invalidSiret": "SIRET invalide",
-    "siretMust14": "Le numéro SIRET doit contenir 14 chiffres",
-    "incompleteInfo": "Informations incomplètes",
-    "fillAllFields": "Veuillez remplir tous les champs obligatoires"
+    "nameRequired": "El nombre es obligatorio",
+    "nameTooLong": "El nombre es demasiado largo",
+    "invalidEmail": "Correo electrónico inválido",
+    "emailTooLong": "Correo electrónico demasiado largo",
+    "messageMinLength": "El mensaje debe tener al menos 10 caracteres",
+    "messageMaxLength": "El mensaje es demasiado largo (máx. 1000 caracteres)",
+    "invalidSiret": "SIRET inválido",
+    "siretMust14": "El número SIRET debe contener 14 dígitos",
+    "incompleteInfo": "Información incompleta",
+    "fillAllFields": "Por favor complete todos los campos obligatorios"
   },
   "network": {
-    "serviceUnavailable": "Service temporairement indisponible",
-    "tryAgain": "Veuillez réessayer",
-    "connectionError": "Erreur de connexion"
+    "serviceUnavailable": "Servicio temporalmente no disponible",
+    "tryAgain": "Por favor intente de nuevo",
+    "connectionError": "Error de conexión"
   },
   "siret": {
-    "lookupUnavailable": "Recherche SIRET indisponible pour le moment. Vous pouvez continuer en remplissant les champs manuellement.",
-    "retry": "Réessayer",
-    "helpText": "Le SIRET sert uniquement à pré-remplir. Vous pouvez le laisser vide.",
-    "prefilledBadge": "Pré-rempli via SIRET",
-    "invalidFormat": "Format SIRET invalide (14 chiffres attendus)"
+    "lookupUnavailable": "Búsqueda SIRET no disponible en este momento. Puede continuar completando los campos manualmente.",
+    "retry": "Reintentar",
+    "helpText": "SIRET solo se usa para prellenar. Puede dejarlo vacío.",
+    "prefilledBadge": "Prellenado via SIRET",
+    "invalidFormat": "Formato SIRET inválido (se esperan 14 dígitos)"
   },
   "generic": {
-    "somethingWentWrong": "Une erreur est survenue",
-    "pleaseTryAgain": "Veuillez réessayer plus tard"
+    "somethingWentWrong": "Algo salió mal",
+    "pleaseTryAgain": "Por favor intente más tarde"
   }
 }

@@ -1,68 +1,68 @@
 {
   "nav": {
-    "dashboard": "Tableau de bord",
-    "profitability": "Rentabilité",
-    "simulation": "Simulation",
-    "recommendations": "Recommandations",
-    "maintenance": "Maintenance",
-    "operations": "Opérations",
-    "importExport": "Import / Export",
-    "users": "Utilisateurs",
-    "settings": "Paramètres",
-    "charts": "Graphiques",
-    "analyses": "Analyses",
-    "administration": "Administration",
-    "changeLaundry": "Changer de laverie",
-    "backToHome": "Retour à l'accueil"
+    "dashboard": "Dashboard",
+    "profitability": "Redditività",
+    "simulation": "Simulazione",
+    "recommendations": "Raccomandazioni",
+    "maintenance": "Manutenzione",
+    "operations": "Operazioni",
+    "importExport": "Importa / Esporta",
+    "users": "Utenti",
+    "settings": "Impostazioni",
+    "charts": "Grafici",
+    "analyses": "Analisi",
+    "administration": "Amministrazione",
+    "changeLaundry": "Cambia lavanderia",
+    "backToHome": "Torna alla home"
   },
   "charts": {
-    "annualRevenue": "CA Annuel",
-    "monthlyRevenue": "CA par mois",
-    "dailyRevenue": "CA par jour",
-    "payments": "Paiements",
-    "machines": "Machines",
-    "occupancyRate": "Taux occupation",
-    "hourlyFreq": "Fréq. par heure",
-    "dailyFreq": "Fréq. par jour",
-    "halfHourlyFreq": "Fréq. 30 min",
-    "heatmap": "Affluence (Heatmap)",
-    "products": "Produits"
+    "annualRevenue": "Fatturato annuale",
+    "monthlyRevenue": "Fatturato mensile",
+    "dailyRevenue": "Fatturato giornaliero",
+    "payments": "Pagamenti",
+    "machines": "Macchine",
+    "occupancyRate": "Tasso occupazione",
+    "hourlyFreq": "Freq. oraria",
+    "dailyFreq": "Freq. giornaliera",
+    "halfHourlyFreq": "Freq. 30 min",
+    "heatmap": "Affluenza (Heatmap)",
+    "products": "Prodotti"
   },
   "login": {
     "exploitant": {
-      "title": "Connexion",
-      "subtitle": "Entrez vos identifiants pour accéder à votre espace",
-      "leftPanelSubtitle": "Analysez les performances de vos laveries en un coup d'œil"
+      "title": "Accedi",
+      "subtitle": "Inserisci le tue credenziali per accedere al tuo spazio",
+      "leftPanelSubtitle": "Analizza le prestazioni delle tue lavanderie a colpo d'occhio"
     },
     "simulator": {
-      "title": "Connexion Simulateur",
-      "subtitle": "Accédez à votre espace simulation",
-      "leftPanelSubtitle": "Simulez la rentabilité de votre future laverie"
+      "title": "Accesso simulatore",
+      "subtitle": "Accedi al tuo spazio di simulazione",
+      "leftPanelSubtitle": "Simula la redditività della tua futura lavanderia"
     },
     "form": {
       "email": "Email",
-      "emailPlaceholder": "votre@email.com",
-      "password": "Mot de passe",
+      "emailPlaceholder": "tua@email.com",
+      "password": "Password",
       "passwordPlaceholder": "••••••••",
-      "forgotPassword": "Mot de passe oublié ?",
-      "submit": "Se connecter",
-      "connecting": "Connexion..."
+      "forgotPassword": "Password dimenticata?",
+      "submit": "Accedi",
+      "connecting": "Connessione..."
     },
-    "notSubscribed": "Pas encore abonné ?",
-    "discoverOffers": "Découvrir nos offres",
-    "discoverSimulatorPacks": "Découvrir les packs simulateur",
-    "switchToExploitant": "Vous êtes exploitant ?",
-    "exploitantLogin": "Connexion exploitant",
-    "switchToSimulator": "Vous voulez ouvrir une laverie ?",
-    "simulatorLogin": "Connexion simulateur",
-    "welcomeExploitant": "Bienvenue sur Lavcom Performances",
-    "welcomeSimulator": "Bienvenue sur Lavcom Performances Création",
-    "loginSuccess": "Connexion réussie"
+    "notSubscribed": "Non sei ancora abbonato?",
+    "discoverOffers": "Scopri le nostre offerte",
+    "discoverSimulatorPacks": "Scopri i pack del simulatore",
+    "switchToExploitant": "Sei un operatore?",
+    "exploitantLogin": "Accesso operatore",
+    "switchToSimulator": "Vuoi aprire una lavanderia?",
+    "simulatorLogin": "Accesso simulatore",
+    "welcomeExploitant": "Benvenuto su Lavcom Performances",
+    "welcomeSimulator": "Benvenuto su Lavcom Performances Creazione",
+    "loginSuccess": "Accesso effettuato con successo"
   },
   "dropdown": {
-    "exploitant": "Exploitant",
-    "exploitantDesc": "Accès à mes laveries",
-    "futureExploitant": "Futur exploitant",
-    "futureExploitantDesc": "Accès au simulateur"
+    "exploitant": "Operatore",
+    "exploitantDesc": "Accesso alle mie lavanderie",
+    "futureExploitant": "Futuro operatore",
+    "futureExploitantDesc": "Accesso al simulatore"
   }
 }

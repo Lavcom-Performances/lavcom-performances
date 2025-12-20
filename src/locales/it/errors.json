@@ -1,30 +1,30 @@
 {
   "validation": {
-    "nameRequired": "Le nom est requis",
-    "nameTooLong": "Le nom est trop long",
-    "invalidEmail": "Email invalide",
-    "emailTooLong": "Email trop long",
-    "messageMinLength": "Le message doit contenir au moins 10 caractères",
-    "messageMaxLength": "Le message est trop long (max 1000 caractères)",
-    "invalidSiret": "SIRET invalide",
-    "siretMust14": "Le numéro SIRET doit contenir 14 chiffres",
-    "incompleteInfo": "Informations incomplètes",
-    "fillAllFields": "Veuillez remplir tous les champs obligatoires"
+    "nameRequired": "Il nome è obbligatorio",
+    "nameTooLong": "Il nome è troppo lungo",
+    "invalidEmail": "Email non valida",
+    "emailTooLong": "Email troppo lunga",
+    "messageMinLength": "Il messaggio deve contenere almeno 10 caratteri",
+    "messageMaxLength": "Il messaggio è troppo lungo (max 1000 caratteri)",
+    "invalidSiret": "SIRET non valido",
+    "siretMust14": "Il numero SIRET deve contenere 14 cifre",
+    "incompleteInfo": "Informazioni incomplete",
+    "fillAllFields": "Si prega di compilare tutti i campi obbligatori"
   },
   "network": {
-    "serviceUnavailable": "Service temporairement indisponible",
-    "tryAgain": "Veuillez réessayer",
-    "connectionError": "Erreur de connexion"
+    "serviceUnavailable": "Servizio temporaneamente non disponibile",
+    "tryAgain": "Si prega di riprovare",
+    "connectionError": "Errore di connessione"
   },
   "siret": {
-    "lookupUnavailable": "Recherche SIRET indisponible pour le moment. Vous pouvez continuer en remplissant les champs manuellement.",
-    "retry": "Réessayer",
-    "helpText": "Le SIRET sert uniquement à pré-remplir. Vous pouvez le laisser vide.",
-    "prefilledBadge": "Pré-rempli via SIRET",
-    "invalidFormat": "Format SIRET invalide (14 chiffres attendus)"
+    "lookupUnavailable": "Ricerca SIRET non disponibile al momento. Puoi continuare compilando i campi manualmente.",
+    "retry": "Riprova",
+    "helpText": "SIRET serve solo per precompilare. Puoi lasciarlo vuoto.",
+    "prefilledBadge": "Precompilato tramite SIRET",
+    "invalidFormat": "Formato SIRET non valido (14 cifre previste)"
   },
   "generic": {
-    "somethingWentWrong": "Une erreur est survenue",
-    "pleaseTryAgain": "Veuillez réessayer plus tard"
+    "somethingWentWrong": "Qualcosa è andato storto",
+    "pleaseTryAgain": "Si prega di riprovare più tardi"
   }
 }
