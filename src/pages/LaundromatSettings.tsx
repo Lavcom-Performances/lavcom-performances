@@ -1051,7 +1051,7 @@ export default function LaundromatSettings() {
             <CardHeader>
               <CardTitle>Indicateurs calculables</CardTitle>
               <CardDescription>
-                Ces KPIs seront disponibles dans le dashboard avec les données actuelles
+                Ces KPIs seront disponibles dans le tableau de bord avec les données actuelles
               </CardDescription>
             </CardHeader>
             <CardContent>

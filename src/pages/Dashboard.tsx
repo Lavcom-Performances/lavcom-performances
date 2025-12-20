@@ -185,7 +185,7 @@ export default function Dashboard() {
       <div className="flex flex-col gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
-            Dashboard
+            Tableau de bord
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
             Vue d'ensemble complète de vos performances
