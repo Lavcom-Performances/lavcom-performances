@@ -102,7 +102,103 @@
   },
   "faq": {
     "title": "Questions fréquentes",
-    "subtitle": "Tout ce que vous devez savoir sur Lavcom Performances"
+    "subtitle": "Tout ce que vous devez savoir sur Lavcom Performances",
+    "q1": "Comment Lavcom Performances se connecte-t-il à mes machines ?",
+    "a1": "Lavcom Performances s'intègre facilement avec la plupart des systèmes de paiement et de gestion de laverie. Notre équipe technique vous accompagne dans la configuration initiale qui prend généralement moins de 2 heures. Aucune modification matérielle n'est nécessaire.",
+    "q2": "Mes données sont-elles sécurisées ?",
+    "a2": "Absolument. Toutes vos données sont chiffrées et stockées sur des serveurs sécurisés en Europe. Nous sommes conformes au RGPD et ne partageons jamais vos informations avec des tiers. Vous restez propriétaire de vos données à 100%.",
+    "q3": "Puis-je gérer plusieurs laveries avec un seul compte ?",
+    "a3": "Oui ! Lavcom Performances est conçu pour gérer aussi bien une seule laverie qu'un réseau complet. Vous pouvez visualiser les performances de chaque établissement individuellement ou obtenir une vue consolidée de tout votre réseau.",
+    "q4": "Quelle est la durée de l'essai gratuit ?",
+    "a4": "Vous bénéficiez d'un essai gratuit de 14 jours avec accès à toutes les fonctionnalités. Aucune carte bancaire n'est requise pour commencer. À la fin de l'essai, vous choisissez l'offre qui vous convient.",
+    "q5": "Comment fonctionnent les alertes de maintenance ?",
+    "a5": "Notre système analyse en continu les données de vos machines pour détecter les anomalies avant qu'elles ne causent des pannes. Vous recevez des alertes par email ou SMS avec des recommandations d'action précises. Cela vous permet d'intervenir de manière préventive et de réduire significativement les temps d'arrêt.",
+    "q6": "Quel support est inclus dans l'abonnement ?",
+    "a6": "Tous nos abonnements incluent un support par email avec réponse sous 24h. Les offres Pro et Business bénéficient d'un support prioritaire par téléphone et d'un accompagnement personnalisé pour optimiser l'utilisation de la plateforme."
+  },
+  "howItWorks": {
+    "title": "Comment ça marche concrètement ?",
+    "step1Title": "Importez vos données",
+    "step1Desc": "Téléchargez vos fichiers d'encaissements depuis votre centrale de paiement et importez-les dans Lavcom Performances.",
+    "step2Title": "Visualisez vos résultats",
+    "step2Desc": "Vous voyez vos recettes par laverie, par machine, par créneau horaire, ainsi que vos périodes plus calmes.",
+    "step3Title": "Passez à l'action",
+    "step3Desc": "La plateforme vous suggère des pistes : où ajuster un prix, quels créneaux renforcer, quelles machines surveiller davantage."
+  },
+  "whyUse": {
+    "title": "Pourquoi utiliser Lavcom Performances ?",
+    "feature1Title": "Voir ce qui se passe vraiment dans vos laveries",
+    "feature1Desc": "Plus besoin de faire des tableaux à la main : vous voyez vos chiffres clés automatiquement.",
+    "feature2Title": "Gagner du temps sur le suivi",
+    "feature2Desc": "Vous passez moins de temps à chercher l'information, et plus de temps à décider.",
+    "feature3Title": "Améliorer votre chiffre d'affaires sans tout révolutionner",
+    "feature3Desc": "Quelques ajustements bien ciblés peuvent déjà faire une vraie différence sur vos résultats."
+  },
+  "guide": {
+    "title": "Aller plus loin avant d'ouvrir",
+    "subtitle": "Le guide pratique \"Avant d'ouvrir\"",
+    "description": "Un guide concret pour vous aider à préparer votre projet de laverie : choix du local, configuration, fournisseurs, erreurs à éviter. Le simulateur vous donne les chiffres, le guide vous aide à poser les bonnes décisions autour.",
+    "cta": "Découvrir le guide"
+  },
+  "trialBanner": {
+    "title": "Essayez Lavcom Performances gratuitement pendant 14 jours",
+    "subtitle": "Sans engagement, vous arrêtez quand vous voulez.",
+    "cta": "Créer mon compte gratuit"
+  },
+  "twoPaths": {
+    "title": "Deux façons de travailler avec Lavcom Performances",
+    "subtitle": "Que vous soyez déjà exploitant ou futur exploitant, nous avons une solution adaptée à vos besoins.",
+    "existing": "Je gère déjà une laverie",
+    "future": "Je souhaite ouvrir une laverie"
+  },
+  "comparison": {
+    "withoutTitle": "Sans Lavcom Performances",
+    "without1": "Je ne sais pas vraiment ce que me rapporte chaque machine.",
+    "without2": "J'ai du mal à comparer mes laveries entre elles.",
+    "without3": "Je découvre les problèmes quand il est trop tard.",
+    "withTitle": "Avec Lavcom Performances",
+    "with1": "Je connais les machines qui couvrent mes charges.",
+    "with2": "Je vois les créneaux saturés ou sous-utilisés.",
+    "with3": "Recommandations concrètes chaque mois.",
+    "with4": "Rapport PDF pour ma banque."
+  },
+  "contact": {
+    "title": "Une question ?",
+    "titleFull": "Une question ? Contactez-nous",
+    "subtitle": "Notre équipe est là pour vous aider à démarrer",
+    "subtitleFull": "Notre équipe vous répond sous 24h pour vous accompagner dans votre projet.",
+    "namePlaceholder": "Votre nom",
+    "nameLabel": "Nom complet",
+    "emailPlaceholder": "votre@email.com",
+    "emailLabel": "Email",
+    "messagePlaceholder": "Votre message...",
+    "messageLabel": "Message",
+    "messageHint": "Comment pouvons-nous vous aider ?",
+    "send": "Envoyer le message",
+    "sending": "Envoi en cours...",
+    "successTitle": "Message envoyé !",
+    "successDescription": "Nous vous répondrons dans les plus brefs délais.",
+    "errorTitle": "Erreur",
+    "errorDescription": "Une erreur est survenue. Veuillez réessayer.",
+    "emailAddress": "contact@lavcom.fr",
+    "hours": "Lun-Ven : 9h-18h",
+    "responseTime": "Nous répondons sous 24h ouvrées",
+    "hoursLabel": "Horaires",
+    "responseLabel": "Réponse rapide"
+  },
+  "footer": {
+    "description": "La plateforme qui vous aide à tirer le meilleur de vos laveries automatiques.",
+    "quickLinks": "Liens rapides",
+    "pricingOperators": "Tarifs exploitants",
+    "simulator": "Simulateur",
+    "simulatorPacks": "Packs simulateur",
+    "contactTitle": "Contact",
+    "address": "88 avenue de Grammont, 37000 Tours",
+    "legalNotice": "Lavcom Performances est une marque commerciale de Lavcom, elle-même marque commerciale de la société My'Po SARL – 88 avenue de Grammont, 37000 Tours",
+    "legalLinks": "Mentions légales",
+    "privacy": "Confidentialité",
+    "terms": "CGV",
+    "copyright": "© {{year}} Lavcom Performances. Tous droits réservés."
   },
   "cta": {
     "startNow": "Commencer maintenant",

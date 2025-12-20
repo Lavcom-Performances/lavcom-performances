@@ -102,7 +102,103 @@
   },
   "faq": {
     "title": "Frequently asked questions",
-    "subtitle": "Everything you need to know about Lavcom Performances"
+    "subtitle": "Everything you need to know about Lavcom Performances",
+    "q1": "How does Lavcom Performances connect to my machines?",
+    "a1": "Lavcom Performances integrates easily with most payment and laundry management systems. Our technical team will guide you through the initial setup, which typically takes less than 2 hours. No hardware modifications are required.",
+    "q2": "Is my data secure?",
+    "a2": "Absolutely. All your data is encrypted and stored on secure servers in Europe. We are GDPR compliant and never share your information with third parties. You remain 100% owner of your data.",
+    "q3": "Can I manage multiple laundromats with one account?",
+    "a3": "Yes! Lavcom Performances is designed to manage a single laundromat as well as a complete network. You can view the performance of each location individually or get a consolidated view of your entire network.",
+    "q4": "How long is the free trial?",
+    "a4": "You get a 14-day free trial with access to all features. No credit card is required to start. At the end of the trial, you choose the plan that suits you.",
+    "q5": "How do maintenance alerts work?",
+    "a5": "Our system continuously analyzes your machine data to detect anomalies before they cause breakdowns. You receive alerts by email or SMS with precise action recommendations. This allows you to intervene preventively and significantly reduce downtime.",
+    "q6": "What support is included in the subscription?",
+    "a6": "All our subscriptions include email support with a response within 24 hours. Pro and Business plans benefit from priority phone support and personalized guidance to optimize platform usage."
+  },
+  "howItWorks": {
+    "title": "How does it work?",
+    "step1Title": "Import your data",
+    "step1Desc": "Download your payment files from your payment terminal and import them into Lavcom Performances.",
+    "step2Title": "Visualize your results",
+    "step2Desc": "See your revenue by laundromat, by machine, by time slot, and your quieter periods.",
+    "step3Title": "Take action",
+    "step3Desc": "The platform suggests ideas: where to adjust a price, which time slots to reinforce, which machines to monitor more closely."
+  },
+  "whyUse": {
+    "title": "Why use Lavcom Performances?",
+    "feature1Title": "See what's really happening in your laundromats",
+    "feature1Desc": "No more manual spreadsheets: you see your key figures automatically.",
+    "feature2Title": "Save time on monitoring",
+    "feature2Desc": "You spend less time looking for information, and more time making decisions.",
+    "feature3Title": "Improve your revenue without revolutionizing everything",
+    "feature3Desc": "A few well-targeted adjustments can already make a real difference to your results."
+  },
+  "guide": {
+    "title": "Go further before opening",
+    "subtitle": "The practical guide \"Before opening\"",
+    "description": "A concrete guide to help you prepare your laundromat project: choosing the location, configuration, suppliers, mistakes to avoid. The simulator gives you the numbers, the guide helps you make the right decisions around them.",
+    "cta": "Discover the guide"
+  },
+  "trialBanner": {
+    "title": "Try Lavcom Performances free for 14 days",
+    "subtitle": "No commitment, you can stop anytime.",
+    "cta": "Create my free account"
+  },
+  "twoPaths": {
+    "title": "Two ways to work with Lavcom Performances",
+    "subtitle": "Whether you're already an operator or a future operator, we have a solution tailored to your needs.",
+    "existing": "I already manage a laundromat",
+    "future": "I want to open a laundromat"
+  },
+  "comparison": {
+    "withoutTitle": "Without Lavcom Performances",
+    "without1": "I don't really know what each machine brings in.",
+    "without2": "I have trouble comparing my laundromats to each other.",
+    "without3": "I discover problems when it's too late.",
+    "withTitle": "With Lavcom Performances",
+    "with1": "I know which machines cover my costs.",
+    "with2": "I see saturated or underused time slots.",
+    "with3": "Concrete recommendations every month.",
+    "with4": "PDF report for my bank."
+  },
+  "contact": {
+    "title": "Have a question?",
+    "titleFull": "Have a question? Contact us",
+    "subtitle": "Our team is here to help you get started",
+    "subtitleFull": "Our team responds within 24 hours to support you in your project.",
+    "namePlaceholder": "Your name",
+    "nameLabel": "Full name",
+    "emailPlaceholder": "your@email.com",
+    "emailLabel": "Email",
+    "messagePlaceholder": "Your message...",
+    "messageLabel": "Message",
+    "messageHint": "How can we help you?",
+    "send": "Send message",
+    "sending": "Sending...",
+    "successTitle": "Message sent!",
+    "successDescription": "We'll get back to you as soon as possible.",
+    "errorTitle": "Error",
+    "errorDescription": "Something went wrong. Please try again.",
+    "emailAddress": "contact@lavcom.fr",
+    "hours": "Mon-Fri: 9am-6pm",
+    "responseTime": "We respond within 24 business hours",
+    "hoursLabel": "Hours",
+    "responseLabel": "Fast response"
+  },
+  "footer": {
+    "description": "The platform that helps you get the most out of your self-service laundromats.",
+    "quickLinks": "Quick links",
+    "pricingOperators": "Operator pricing",
+    "simulator": "Simulator",
+    "simulatorPacks": "Simulator packs",
+    "contactTitle": "Contact",
+    "address": "88 avenue de Grammont, 37000 Tours",
+    "legalNotice": "Lavcom Performances is a trademark of Lavcom, itself a trademark of My'Po SARL – 88 avenue de Grammont, 37000 Tours",
+    "legalLinks": "Legal notice",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "copyright": "© {{year}} Lavcom Performances. All rights reserved."
   },
   "cta": {
     "startNow": "Start now",
