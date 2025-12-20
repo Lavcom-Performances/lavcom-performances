@@ -51,7 +51,11 @@
       "tooLarge": "L'image ne doit pas dépasser 2 Mo",
       "uploadError": "Erreur lors du téléchargement",
       "updateSuccess": "Photo mise à jour",
-      "updateSuccessDescription": "Votre photo de profil a été mise à jour"
+      "updateSuccessDescription": "Votre photo de profil a été mise à jour",
+      "delete": "Supprimer la photo",
+      "deleteSuccess": "Photo supprimée",
+      "deleteSuccessDescription": "Votre photo de profil a été supprimée",
+      "deleteError": "Erreur lors de la suppression"
     },
     "password": {
       "title": "Modifier le mot de passe",

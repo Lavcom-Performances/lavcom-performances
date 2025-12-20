@@ -51,7 +51,11 @@
       "tooLarge": "La imagen debe ser menor a 2 MB",
       "uploadError": "Error al subir",
       "updateSuccess": "Foto actualizada",
-      "updateSuccessDescription": "Su foto de perfil ha sido actualizada"
+      "updateSuccessDescription": "Su foto de perfil ha sido actualizada",
+      "delete": "Eliminar foto",
+      "deleteSuccess": "Foto eliminada",
+      "deleteSuccessDescription": "Su foto de perfil ha sido eliminada",
+      "deleteError": "Error al eliminar"
     },
     "password": {
       "title": "Cambiar contraseña",
