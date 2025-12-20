@@ -53,6 +53,8 @@
       "updateSuccess": "Photo mise à jour",
       "updateSuccessDescription": "Votre photo de profil a été mise à jour",
       "delete": "Supprimer la photo",
+      "deleteConfirmTitle": "Supprimer la photo de profil ?",
+      "deleteConfirmDescription": "Cette action est irréversible. Votre photo de profil sera définitivement supprimée.",
       "deleteSuccess": "Photo supprimée",
       "deleteSuccessDescription": "Votre photo de profil a été supprimée",
       "deleteError": "Erreur lors de la suppression"

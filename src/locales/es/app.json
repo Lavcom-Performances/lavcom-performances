@@ -53,6 +53,8 @@
       "updateSuccess": "Foto actualizada",
       "updateSuccessDescription": "Su foto de perfil ha sido actualizada",
       "delete": "Eliminar foto",
+      "deleteConfirmTitle": "¿Eliminar foto de perfil?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer. Su foto de perfil será eliminada permanentemente.",
       "deleteSuccess": "Foto eliminada",
       "deleteSuccessDescription": "Su foto de perfil ha sido eliminada",
       "deleteError": "Error al eliminar"
