@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, ZoomIn, RotateCw } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AvatarCropDialogProps {
@@ -192,6 +192,22 @@ export function AvatarCropDialog({
               />
               <span className="text-sm text-muted-foreground w-12 text-right">{rotate}°</span>
             </div>
+
+            {(scale !== 1 || rotate !== 0) && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setScale(1);
+                  setRotate(0);
+                }}
+                className="w-full"
+              >
+                <RotateCcw className="h-4 w-4 mr-2" />
+                {t("app:profile.avatar.reset")}
+              </Button>
+            )}
           </div>
         </div>
 
