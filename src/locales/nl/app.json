@@ -51,7 +51,11 @@
       "tooLarge": "Afbeelding moet kleiner zijn dan 2 MB",
       "uploadError": "Uploaden mislukt",
       "updateSuccess": "Foto bijgewerkt",
-      "updateSuccessDescription": "Uw profielfoto is bijgewerkt"
+      "updateSuccessDescription": "Uw profielfoto is bijgewerkt",
+      "delete": "Foto verwijderen",
+      "deleteSuccess": "Foto verwijderd",
+      "deleteSuccessDescription": "Uw profielfoto is verwijderd",
+      "deleteError": "Verwijderen mislukt"
     },
     "password": {
       "title": "Wachtwoord wijzigen",

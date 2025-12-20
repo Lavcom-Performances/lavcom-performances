@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Camera, Loader2, User } from "lucide-react";
+import { Camera, Loader2, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -11,7 +11,7 @@ interface AvatarUploadProps {
   currentAvatarUrl: string | null;
   firstName: string | null;
   lastName: string | null;
-  onAvatarUpdate: (url: string) => void;
+  onAvatarUpdate: (url: string | null) => void;
 }
 
 export function AvatarUpload({
@@ -24,6 +24,7 @@ export function AvatarUpload({
   const { t } = useTranslation(['app', 'common']);
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getInitials = () => {
@@ -108,6 +109,46 @@ export function AvatarUpload({
     }
   };
 
+  const handleDelete = async () => {
+    if (!currentAvatarUrl) return;
+
+    setIsDeleting(true);
+
+    try {
+      // Delete from storage - try common extensions
+      const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+      for (const ext of extensions) {
+        await supabase.storage
+          .from("avatars")
+          .remove([`${userId}/avatar.${ext}`]);
+      }
+
+      // Update profile to remove avatar_url
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: null })
+        .eq("id", userId);
+
+      if (updateError) throw updateError;
+
+      onAvatarUpdate(null);
+
+      toast({
+        title: t('app:profile.avatar.deleteSuccess'),
+        description: t('app:profile.avatar.deleteSuccessDescription'),
+      });
+    } catch (error: any) {
+      console.error("Avatar delete error:", error);
+      toast({
+        title: t('common:error'),
+        description: error.message || t('app:profile.avatar.deleteError'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="relative group">
@@ -124,7 +165,7 @@ export function AvatarUpload({
           size="icon"
           className="absolute bottom-0 right-0 h-8 w-8 rounded-full shadow-md"
           onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading}
+          disabled={isUploading || isDeleting}
           aria-label={t('app:profile.avatar.change')}
         >
           {isUploading ? (
@@ -144,9 +185,29 @@ export function AvatarUpload({
         />
       </div>
       
-      <p className="text-xs text-muted-foreground text-center">
-        {t('app:profile.avatar.hint')}
-      </p>
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-xs text-muted-foreground text-center">
+          {t('app:profile.avatar.hint')}
+        </p>
+        
+        {currentAvatarUrl && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleDelete}
+            disabled={isDeleting || isUploading}
+            className="text-destructive hover:text-destructive hover:bg-destructive/10 text-xs"
+          >
+            {isDeleting ? (
+              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+            ) : (
+              <Trash2 className="h-3 w-3 mr-1" />
+            )}
+            {t('app:profile.avatar.delete')}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

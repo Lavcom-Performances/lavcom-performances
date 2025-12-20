@@ -51,7 +51,11 @@
       "tooLarge": "Bild muss kleiner als 2 MB sein",
       "uploadError": "Hochladen fehlgeschlagen",
       "updateSuccess": "Foto aktualisiert",
-      "updateSuccessDescription": "Ihr Profilfoto wurde aktualisiert"
+      "updateSuccessDescription": "Ihr Profilfoto wurde aktualisiert",
+      "delete": "Foto löschen",
+      "deleteSuccess": "Foto gelöscht",
+      "deleteSuccessDescription": "Ihr Profilfoto wurde gelöscht",
+      "deleteError": "Löschen fehlgeschlagen"
     },
     "password": {
       "title": "Passwort ändern",

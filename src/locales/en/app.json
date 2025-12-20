@@ -51,7 +51,11 @@
       "tooLarge": "Image must be less than 2 MB",
       "uploadError": "Upload failed",
       "updateSuccess": "Photo updated",
-      "updateSuccessDescription": "Your profile photo has been updated"
+      "updateSuccessDescription": "Your profile photo has been updated",
+      "delete": "Delete photo",
+      "deleteSuccess": "Photo deleted",
+      "deleteSuccessDescription": "Your profile photo has been deleted",
+      "deleteError": "Failed to delete photo"
     },
     "password": {
       "title": "Change password",
