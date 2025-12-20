@@ -14,6 +14,7 @@
       "sharpen": "Sharpen",
       "sepia": "Sepia",
       "invert": "Invert",
+      "grayscale": "Grayscale",
       "presets": {
         "title": "Presets",
         "selectPlaceholder": "Load a preset...",

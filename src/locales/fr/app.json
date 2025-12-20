@@ -14,6 +14,7 @@
       "sharpen": "Netteté",
       "sepia": "Sépia",
       "invert": "Inverser",
+      "grayscale": "Gris",
       "presets": {
         "title": "Préréglages",
         "selectPlaceholder": "Charger un préréglage...",
