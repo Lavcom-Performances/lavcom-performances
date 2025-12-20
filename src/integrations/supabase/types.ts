@@ -151,6 +151,62 @@ export type Database = {
         }
         Relationships: []
       }
+      site_costs: {
+        Row: {
+          created_at: string
+          fixed_cleaning: number | null
+          fixed_insurance: number | null
+          fixed_lease: number | null
+          fixed_other: number | null
+          fixed_rent: number | null
+          fixed_subscriptions: number | null
+          id: string
+          site_id: string
+          updated_at: string
+          user_id: string
+          var_detergent_percent: number | null
+          var_energy_water_percent: number | null
+        }
+        Insert: {
+          created_at?: string
+          fixed_cleaning?: number | null
+          fixed_insurance?: number | null
+          fixed_lease?: number | null
+          fixed_other?: number | null
+          fixed_rent?: number | null
+          fixed_subscriptions?: number | null
+          id?: string
+          site_id: string
+          updated_at?: string
+          user_id: string
+          var_detergent_percent?: number | null
+          var_energy_water_percent?: number | null
+        }
+        Update: {
+          created_at?: string
+          fixed_cleaning?: number | null
+          fixed_insurance?: number | null
+          fixed_lease?: number | null
+          fixed_other?: number | null
+          fixed_rent?: number | null
+          fixed_subscriptions?: number | null
+          id?: string
+          site_id?: string
+          updated_at?: string
+          user_id?: string
+          var_detergent_percent?: number | null
+          var_energy_water_percent?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_costs_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: true
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sites: {
         Row: {
           address: string | null
