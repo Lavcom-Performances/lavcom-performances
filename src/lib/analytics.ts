@@ -53,6 +53,31 @@ export const trackEvent = ({ category, action, label, value, params }: TrackEven
   }
 };
 
+// Track page views
+export const trackPageView = (path: string, title?: string): void => {
+  // Log in development
+  if (import.meta.env.DEV) {
+    console.log('[Analytics] Page View:', { path, title });
+  }
+
+  // Send to Google Analytics / GTM if available
+  if (hasGtag()) {
+    (window as any).gtag('config', 'GTM-TQP6TGS3', {
+      page_path: path,
+      page_title: title || document.title,
+    });
+  }
+
+  // Also push to dataLayer for GTM
+  if (typeof window !== 'undefined' && (window as any).dataLayer) {
+    (window as any).dataLayer.push({
+      event: 'page_view',
+      page_path: path,
+      page_title: title || document.title,
+    });
+  }
+};
+
 // Predefined tracking functions for common events
 export const trackEbookClick = (location: string): void => {
   trackEvent({

@@ -7,6 +7,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { SimulationLayout } from "@/components/layout/SimulationLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ViewModeProvider } from "@/hooks/useViewMode";
+import { RouteTracker } from "@/components/analytics/RouteTracker";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -53,6 +54,7 @@ const App = () => (
         <Toaster />
         <Sonner />
       <BrowserRouter>
+        <RouteTracker />
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Index />} />
