@@ -21,6 +21,11 @@
         "delete": "Löschen",
         "saveSuccess": "Voreinstellung gespeichert",
         "deleteSuccess": "Voreinstellung gelöscht",
+        "export": "Exportieren",
+        "import": "Importieren",
+        "exportSuccess": "Voreinstellungen exportiert",
+        "importSuccess": "{{count}} Voreinstellung(en) importiert",
+        "importError": "Ungültige Datei",
         "defaults": {
           "default_bw": "Schwarz-Weiß",
           "default_vintage": "Vintage",

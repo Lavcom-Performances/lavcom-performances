@@ -21,6 +21,11 @@
         "delete": "Supprimer",
         "saveSuccess": "Préréglage sauvegardé",
         "deleteSuccess": "Préréglage supprimé",
+        "export": "Exporter",
+        "import": "Importer",
+        "exportSuccess": "Préréglages exportés",
+        "importSuccess": "{{count}} préréglage(s) importé(s)",
+        "importError": "Fichier invalide",
         "defaults": {
           "default_bw": "Noir et blanc",
           "default_vintage": "Vintage",

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2 } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -630,6 +630,72 @@ export function AvatarCropDialog({
                   title={t("app:profile.avatar.presets.save")}
                 >
                   <Save className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Export/Import presets */}
+              <div className="flex items-center gap-2 pt-2 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  disabled={presets.length === 0}
+                  onClick={() => {
+                    const dataStr = JSON.stringify(presets, null, 2);
+                    const blob = new Blob([dataStr], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "avatar-presets.json";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    toast.success(t("app:profile.avatar.presets.exportSuccess"));
+                  }}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {t("app:profile.avatar.presets.export")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => {
+                    const input = document.createElement("input");
+                    input.type = "file";
+                    input.accept = ".json";
+                    input.onchange = (e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        try {
+                          const imported = JSON.parse(event.target?.result as string) as FilterPreset[];
+                          if (!Array.isArray(imported)) throw new Error("Invalid format");
+                          // Validate and re-id imported presets
+                          const validPresets = imported
+                            .filter(p => p.name && typeof p.brightness === "number")
+                            .map(p => ({
+                              ...p,
+                              id: `imported_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+                              isDefault: false,
+                            }));
+                          const updatedPresets = [...presets, ...validPresets];
+                          setPresets(updatedPresets);
+                          savePresets(updatedPresets);
+                          toast.success(t("app:profile.avatar.presets.importSuccess", { count: validPresets.length }));
+                        } catch {
+                          toast.error(t("app:profile.avatar.presets.importError"));
+                        }
+                      };
+                      reader.readAsText(file);
+                    };
+                    input.click();
+                  }}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {t("app:profile.avatar.presets.import")}
                 </Button>
               </div>
             </div>

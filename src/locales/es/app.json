@@ -21,6 +21,11 @@
         "delete": "Eliminar",
         "saveSuccess": "Ajuste guardado",
         "deleteSuccess": "Ajuste eliminado",
+        "export": "Exportar",
+        "import": "Importar",
+        "exportSuccess": "Ajustes exportados",
+        "importSuccess": "{{count}} ajuste(s) importado(s)",
+        "importError": "Archivo inválido",
         "defaults": {
           "default_bw": "Blanco y negro",
           "default_vintage": "Vintage",

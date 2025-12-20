@@ -21,6 +21,11 @@
         "delete": "Verwijderen",
         "saveSuccess": "Voorinstelling opgeslagen",
         "deleteSuccess": "Voorinstelling verwijderd",
+        "export": "Exporteren",
+        "import": "Importeren",
+        "exportSuccess": "Voorinstellingen geëxporteerd",
+        "importSuccess": "{{count}} voorinstelling(en) geïmporteerd",
+        "importError": "Ongeldig bestand",
         "defaults": {
           "default_bw": "Zwart-wit",
           "default_vintage": "Vintage",
