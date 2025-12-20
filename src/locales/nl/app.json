@@ -129,6 +129,30 @@
     },
     "decorativeText": "Sluit u aan bij wasserette-exploitanten die hun prestaties optimaliseren"
   },
+  "forgotPassword": {
+    "title": "Wachtwoord vergeten",
+    "subtitle": "Voer uw e-mailadres in om een herstellink te ontvangen",
+    "submit": "Link versturen",
+    "sending": "Wordt verzonden...",
+    "successTitle": "E-mail verzonden!",
+    "successDescription": "Een herstellink is verzonden naar {{email}}. Controleer uw inbox.",
+    "backToLogin": "Terug naar inloggen",
+    "securityTitle": "Accountbeveiliging",
+    "securityDescription": "We sturen u een beveiligde link om uw wachtwoord te resetten. Deze link verloopt na 1 uur."
+  },
+  "resetPassword": {
+    "title": "Nieuw wachtwoord",
+    "subtitle": "Kies een nieuw veilig wachtwoord",
+    "newPassword": "Nieuw wachtwoord",
+    "submit": "Wachtwoord resetten",
+    "updating": "Bijwerken...",
+    "successTitle": "Wachtwoord bijgewerkt!",
+    "successDescription": "Uw wachtwoord is succesvol gereset. U kunt nu inloggen.",
+    "goToLogin": "Inloggen",
+    "invalidLink": "Ongeldige of verlopen link",
+    "invalidLinkDescription": "Deze herstellink is niet meer geldig. Vraag een nieuwe link aan.",
+    "requestNewLink": "Nieuwe link aanvragen"
+  },
   "pricing": {
     "badge": "Exploitant tarieven – Korting op basis van aantal wasserettes",
     "title": "Kies uw abonnement",

@@ -129,6 +129,30 @@
     },
     "decorativeText": "Join laundry operators who optimize their performance"
   },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "subtitle": "Enter your email to receive a reset link",
+    "submit": "Send reset link",
+    "sending": "Sending...",
+    "successTitle": "Email sent!",
+    "successDescription": "A reset link has been sent to {{email}}. Check your inbox.",
+    "backToLogin": "Back to login",
+    "securityTitle": "Account security",
+    "securityDescription": "We'll send you a secure link to reset your password. This link expires after 1 hour."
+  },
+  "resetPassword": {
+    "title": "New password",
+    "subtitle": "Choose a new secure password",
+    "newPassword": "New password",
+    "submit": "Reset password",
+    "updating": "Updating...",
+    "successTitle": "Password updated!",
+    "successDescription": "Your password has been successfully reset. You can now sign in.",
+    "goToLogin": "Sign in",
+    "invalidLink": "Invalid or expired link",
+    "invalidLinkDescription": "This reset link is no longer valid. Please request a new one.",
+    "requestNewLink": "Request new link"
+  },
   "pricing": {
     "badge": "Operator Pricing – Discounted rates based on number of laundries",
     "title": "Choose your subscription",
