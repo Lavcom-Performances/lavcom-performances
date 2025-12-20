@@ -10,7 +10,8 @@
       "brightness": "Luminosità",
       "contrast": "Contrasto",
       "saturation": "Saturazione",
-      "blur": "Sfocatura"
+      "blur": "Sfocatura",
+      "sharpen": "Nitidezza"
     }
   },
   "accessibility": {
