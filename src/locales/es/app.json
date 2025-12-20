@@ -15,11 +15,20 @@
       "presets": {
         "title": "Ajustes preestablecidos",
         "selectPlaceholder": "Cargar un ajuste...",
+        "customPlaceholder": "Mis ajustes personalizados...",
         "namePlaceholder": "Nombre del ajuste",
         "save": "Guardar",
         "delete": "Eliminar",
         "saveSuccess": "Ajuste guardado",
-        "deleteSuccess": "Ajuste eliminado"
+        "deleteSuccess": "Ajuste eliminado",
+        "defaults": {
+          "default_bw": "Blanco y negro",
+          "default_vintage": "Vintage",
+          "default_hd": "Alta definición",
+          "default_warm": "Cálido",
+          "default_soft": "Suave",
+          "default_dramatic": "Dramático"
+        }
       }
     }
   },
