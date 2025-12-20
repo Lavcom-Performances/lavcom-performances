@@ -3,7 +3,9 @@
     "avatar": {
       "rotateLeft": "Roteer -90°",
       "rotateRight": "Roteer +90°",
-      "preview": "Voorbeeld"
+      "preview": "Voorbeeld",
+      "flip": "Spiegelen",
+      "flipHorizontal": "Horizontaal spiegelen"
     }
   },
   "accessibility": {
