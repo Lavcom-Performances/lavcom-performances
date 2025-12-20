@@ -287,5 +287,57 @@
     },
     "alreadySubscribed": "Bereits abonniert?",
     "connectHere": "Hier anmelden"
+  },
+  "simulateur": {
+    "nav": {
+      "exploitantPricing": "Betreiber-Preise",
+      "exploitantLogin": "Betreiber-Login",
+      "simulatorLogin": "Simulator-Login"
+    },
+    "free": "Kostenlos",
+    "title": "Schätzen Sie den Umsatz Ihres zukünftigen Waschsalons",
+    "subtitle": "Eine kostenlose erste Schätzung in wenigen Klicks, um Ihr Projekt zu validieren.",
+    "form": {
+      "title": "Ihre Konfiguration",
+      "description": "Geben Sie die Grundinformationen Ihres Projekts ein",
+      "surface": "Fläche (m²)",
+      "nbWashers": "Anzahl Waschmaschinen",
+      "washerCapacity": "Durchschn. Waschmaschinenkapazität",
+      "avgPriceWash": "Durchschn. Waschpreis (€)",
+      "nbDryers": "Anzahl Trockner",
+      "dryerCapacity": "Durchschn. Trocknerkapazität",
+      "avgPriceDry": "Durchschn. Trocknungspreis (€)",
+      "hoursOpen": "Öffnungszeiten / Tag",
+      "capacityPlaceholder": "Kapazität",
+      "submit": "Schätzung berechnen"
+    },
+    "results": {
+      "title": "Schnellschätzung",
+      "basedOn": "Basierend auf {{hours}}h Öffnung, Waschzyklus {{washCycle}} min, Trocknung {{dryCycle}} min",
+      "scenarioOccupation": "{{name}} ({{rate}}% Auslastung)",
+      "monthlyRevenue": "Geschätzter Monatsumsatz",
+      "perMonth": "€/Monat",
+      "cyclesPerDay": "~{{wash}} Waschgänge + {{dry}} Trocknungen / Tag",
+      "maxCapacity": "Max. Kapazität: {{wash}} Waschgänge + {{dry}} Trocknungen / Tag",
+      "pessimistic": "Pessimistisch",
+      "central": "Zentral",
+      "optimistic": "Optimistisch"
+    },
+    "paywall": {
+      "title": "Vollständige Analyse freischalten",
+      "features": [
+        "Detaillierter Businessplan mit Kosten und Rentabilität",
+        "Break-Even-Analyse",
+        "PDF-Export für Ihre Bank",
+        "Unbegrenzte anpassbare Szenarien",
+        "Expertenbegleitung (Premium-Paket)"
+      ],
+      "cta": "Pläne ansehen",
+      "startingFrom": "Ab"
+    },
+    "note": {
+      "title": "💡 Hinweis:",
+      "content": "Diese Schätzung basiert auf Branchendurchschnitten. Der vollständige Simulator berücksichtigt Kosten, Standort und viele andere Faktoren."
+    }
   }
 }

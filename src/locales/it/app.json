@@ -287,5 +287,57 @@
     },
     "alreadySubscribed": "Già abbonato?",
     "connectHere": "Accedi qui"
+  },
+  "simulateur": {
+    "nav": {
+      "exploitantPricing": "Prezzi Operatori",
+      "exploitantLogin": "Accesso Operatore",
+      "simulatorLogin": "Accesso Simulatore"
+    },
+    "free": "Gratuito",
+    "title": "Stima il fatturato della tua futura lavanderia",
+    "subtitle": "Una prima stima gratuita in pochi clic per validare il tuo progetto.",
+    "form": {
+      "title": "La tua configurazione",
+      "description": "Inserisci le informazioni di base del tuo progetto",
+      "surface": "Superficie (m²)",
+      "nbWashers": "Numero di lavatrici",
+      "washerCapacity": "Capacità media lavatrice",
+      "avgPriceWash": "Prezzo medio lavaggio (€)",
+      "nbDryers": "Numero di asciugatrici",
+      "dryerCapacity": "Capacità media asciugatrice",
+      "avgPriceDry": "Prezzo medio asciugatura (€)",
+      "hoursOpen": "Ore di apertura / giorno",
+      "capacityPlaceholder": "Capacità",
+      "submit": "Calcola stima"
+    },
+    "results": {
+      "title": "Stima rapida",
+      "basedOn": "Basato su {{hours}}h di apertura, ciclo lavaggio {{washCycle}} min, asciugatura {{dryCycle}} min",
+      "scenarioOccupation": "{{name}} ({{rate}}% occupazione)",
+      "monthlyRevenue": "Fatturato mensile stimato",
+      "perMonth": "€/mese",
+      "cyclesPerDay": "~{{wash}} lavaggi + {{dry}} asciugature / giorno",
+      "maxCapacity": "Capacità max: {{wash}} lavaggi + {{dry}} asciugature / giorno",
+      "pessimistic": "Pessimista",
+      "central": "Centrale",
+      "optimistic": "Ottimista"
+    },
+    "paywall": {
+      "title": "Sblocca l'analisi completa",
+      "features": [
+        "Business plan dettagliato con costi e redditività",
+        "Analisi del punto di pareggio",
+        "Esportazione PDF per la tua banca",
+        "Scenari personalizzabili illimitati",
+        "Supporto esperto (pack premium)"
+      ],
+      "cta": "Vedi piani",
+      "startingFrom": "A partire da"
+    },
+    "note": {
+      "title": "💡 Nota:",
+      "content": "Questa stima si basa sulle medie del settore. Il simulatore completo tiene conto dei costi, della posizione e di molti altri fattori."
+    }
   }
 }

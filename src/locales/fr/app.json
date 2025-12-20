@@ -287,5 +287,57 @@
     },
     "alreadySubscribed": "Déjà abonné ?",
     "connectHere": "Connectez-vous ici"
+  },
+  "simulateur": {
+    "nav": {
+      "exploitantPricing": "Tarifs Exploitants",
+      "exploitantLogin": "Connexion Exploitant",
+      "simulatorLogin": "Connexion Simulateur"
+    },
+    "free": "Gratuit",
+    "title": "Estimez le chiffre d'affaires de votre future laverie",
+    "subtitle": "Une première estimation gratuite en quelques clics pour valider votre projet.",
+    "form": {
+      "title": "Votre configuration",
+      "description": "Renseignez les informations de base de votre projet",
+      "surface": "Surface (m²)",
+      "nbWashers": "Nombre de lave-linge",
+      "washerCapacity": "Capacité moyenne lave-linge",
+      "avgPriceWash": "Prix moyen lavage (€)",
+      "nbDryers": "Nombre de sèche-linge",
+      "dryerCapacity": "Capacité moyenne sèche-linge",
+      "avgPriceDry": "Prix moyen séchage (€)",
+      "hoursOpen": "Heures d'ouverture / jour",
+      "capacityPlaceholder": "Capacité",
+      "submit": "Calculer l'estimation"
+    },
+    "results": {
+      "title": "Estimation rapide",
+      "basedOn": "Basé sur {{hours}}h d'ouverture, cycle lavage {{washCycle}} min, séchage {{dryCycle}} min",
+      "scenarioOccupation": "{{name}} ({{rate}}% occupation)",
+      "monthlyRevenue": "CA mensuel estimé",
+      "perMonth": "€/mois",
+      "cyclesPerDay": "~{{wash}} lavages + {{dry}} séchages / jour",
+      "maxCapacity": "Capacité max : {{wash}} lavages + {{dry}} séchages / jour",
+      "pessimistic": "Pessimiste",
+      "central": "Central",
+      "optimistic": "Optimiste"
+    },
+    "paywall": {
+      "title": "Débloquez l'analyse complète",
+      "features": [
+        "Business plan détaillé avec charges et rentabilité",
+        "Analyse du seuil de rentabilité",
+        "Export PDF pour votre banque",
+        "Scénarios personnalisables à volonté",
+        "Accompagnement expert (pack premium)"
+      ],
+      "cta": "Voir les formules",
+      "startingFrom": "À partir de"
+    },
+    "note": {
+      "title": "💡 Note :",
+      "content": "Cette estimation est basée sur des moyennes du secteur. Le simulateur complet prend en compte les charges, l'emplacement et de nombreux autres facteurs."
+    }
   }
 }
