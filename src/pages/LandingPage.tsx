@@ -44,7 +44,8 @@ import {
   MapPin,
   Eye,
   Lightbulb,
-  BookOpen
+  BookOpen,
+  ExternalLink
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
@@ -454,6 +455,22 @@ const LandingPage = () => {
                     Découvrir les packs
                   </Button>
                 </Link>
+              </div>
+              
+              {/* Mention discrète du guide */}
+              <div className="mt-4 md:mt-6 pt-4 border-t border-lavcom-orange/20">
+                <a 
+                  href="https://lavcom.fr/nos-ebooks-2/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-lavcom-orange transition-colors group"
+                >
+                  <BookOpen className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  <span>
+                    <span className="font-medium text-foreground group-hover:text-lavcom-orange">Guide offert :</span> "Avant d'ouvrir" – validez votre projet avec notre check-list complète
+                  </span>
+                  <ExternalLink className="h-3 w-3 opacity-50 group-hover:opacity-100" />
+                </a>
               </div>
             </ScrollReveal>
           </div>
