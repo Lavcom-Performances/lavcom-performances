@@ -43,6 +43,16 @@
       "firstNameRequired": "El nombre es obligatorio",
       "lastNameRequired": "El apellido es obligatorio"
     },
+    "avatar": {
+      "change": "Cambiar foto",
+      "upload": "Subir foto",
+      "hint": "JPG, PNG o GIF. Máx. 2 MB.",
+      "invalidType": "Por favor seleccione una imagen",
+      "tooLarge": "La imagen debe ser menor a 2 MB",
+      "uploadError": "Error al subir",
+      "updateSuccess": "Foto actualizada",
+      "updateSuccessDescription": "Su foto de perfil ha sido actualizada"
+    },
     "password": {
       "title": "Cambiar contraseña",
       "description": "Elija una nueva contraseña segura para su cuenta",

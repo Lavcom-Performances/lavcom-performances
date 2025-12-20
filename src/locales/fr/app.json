@@ -43,6 +43,16 @@
       "firstNameRequired": "Le prénom est requis",
       "lastNameRequired": "Le nom est requis"
     },
+    "avatar": {
+      "change": "Changer la photo",
+      "upload": "Télécharger une photo",
+      "hint": "JPG, PNG ou GIF. 2 Mo max.",
+      "invalidType": "Veuillez sélectionner une image",
+      "tooLarge": "L'image ne doit pas dépasser 2 Mo",
+      "uploadError": "Erreur lors du téléchargement",
+      "updateSuccess": "Photo mise à jour",
+      "updateSuccessDescription": "Votre photo de profil a été mise à jour"
+    },
     "password": {
       "title": "Modifier le mot de passe",
       "description": "Choisissez un nouveau mot de passe sécurisé pour votre compte",

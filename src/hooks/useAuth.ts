@@ -10,6 +10,7 @@ interface Profile {
   company_name: string | null;
   siret: string | null;
   phone: string | null;
+  avatar_url: string | null;
 }
 
 export function useAuth() {

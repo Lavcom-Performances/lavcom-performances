@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Save, User, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
+import { Loader2, Save, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,12 +11,13 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { formatFirstName, formatLastName } from "@/lib/textUtils";
 import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/auth/PasswordStrengthIndicator";
+import { AvatarUpload } from "@/components/profile/AvatarUpload";
 
 export default function ProfilePage() {
   const { t } = useTranslation(['app', 'common']);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { profile, updateProfile, updatePassword, loading: authLoading } = useAuth();
+  const { user, profile, updateProfile, updatePassword, loading: authLoading } = useAuth();
   
   // Profile form state
   const [firstName, setFirstName] = useState("");
@@ -37,6 +38,9 @@ export default function ProfilePage() {
   
   const { strength: passwordStrength } = usePasswordStrength(newPassword);
 
+  // Avatar state
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
   // Sync form with profile data
   useEffect(() => {
     if (profile) {
@@ -45,6 +49,7 @@ export default function ProfilePage() {
       setCompanyName(profile.company_name || "");
       setPhone(profile.phone || "");
       setSiret(profile.siret || "");
+      setAvatarUrl(profile.avatar_url || null);
     }
   }, [profile]);
 
@@ -185,8 +190,7 @@ export default function ProfilePage() {
       {/* Profile Form */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5 text-primary" />
+          <CardTitle>
             {t('app:profile.personalInfo')}
           </CardTitle>
           <CardDescription>
@@ -194,6 +198,19 @@ export default function ProfilePage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Avatar Section */}
+          {user && (
+            <div className="flex justify-center pb-6 mb-6 border-b">
+              <AvatarUpload
+                userId={user.id}
+                currentAvatarUrl={avatarUrl}
+                firstName={firstName}
+                lastName={lastName}
+                onAvatarUpdate={(url) => setAvatarUrl(url)}
+              />
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-6" aria-label={t('app:profile.title')}>
             {/* Email (read-only) */}
             <div className="space-y-2">

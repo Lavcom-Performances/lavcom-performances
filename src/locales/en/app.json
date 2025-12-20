@@ -43,6 +43,16 @@
       "firstNameRequired": "First name is required",
       "lastNameRequired": "Last name is required"
     },
+    "avatar": {
+      "change": "Change photo",
+      "upload": "Upload photo",
+      "hint": "JPG, PNG or GIF. 2 MB max.",
+      "invalidType": "Please select an image",
+      "tooLarge": "Image must be less than 2 MB",
+      "uploadError": "Upload failed",
+      "updateSuccess": "Photo updated",
+      "updateSuccessDescription": "Your profile photo has been updated"
+    },
     "password": {
       "title": "Change password",
       "description": "Choose a new secure password for your account",
