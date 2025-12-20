@@ -50,6 +50,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
+import ebookAvantOuvrir from "@/assets/ebook-avant-ouvrir.jpg";
 import { t } from "@/lib/i18n";
 import { HeroValueSlider } from "@/components/landing/HeroValueSlider";
 
@@ -196,7 +197,7 @@ const LandingPage = () => {
             </DropdownMenu>
             <Link to="/signup">
               <Button className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white font-semibold">
-                14j gratuits
+                14 jours gratuits
                 <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             </Link>
@@ -212,7 +213,7 @@ const LandingPage = () => {
         <div className="text-center mb-4 md:mb-6 px-4">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium animate-fade-in">
             <Zap className="h-3 w-3 md:h-4 md:w-4" />
-            {t("landing").hero.badge}
+            Le tableau de bord performance des laveries automatiques
           </div>
         </div>
         
@@ -715,9 +716,11 @@ const LandingPage = () => {
           <Card className="p-6 md:p-10 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30">
             <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
               <div className="text-center md:text-left">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-lavcom-orange/20 flex items-center justify-center mx-auto md:mx-0 mb-4">
-                  <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-lavcom-orange" />
-                </div>
+                <img 
+                  src={ebookAvantOuvrir} 
+                  alt="Guide Avant d'ouvrir - Le guide du futur exploitant de laverie" 
+                  className="w-full max-w-[280px] mx-auto md:mx-0 rounded-lg shadow-lg"
+                />
               </div>
               <div>
                 <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2 md:mb-3">
@@ -729,13 +732,13 @@ const LandingPage = () => {
                 <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
                   Un guide concret pour vous aider à préparer votre projet de laverie : choix du local, configuration, fournisseurs, erreurs à éviter. Le simulateur vous donne les chiffres, le guide vous aide à poser les bonnes décisions autour.
                 </p>
-                <Link to="/subscribe-simulator">
+                <a href="https://lavcom.fr/nos-ebooks-2/" target="_blank" rel="noopener noreferrer">
                   <Button className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white w-full sm:w-auto">
                     <BookOpen className="mr-2 h-4 w-4" />
-                    Découvrir le guide "Avant d'ouvrir"
+                    Découvrir le guide
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
+                </a>
               </div>
             </div>
           </Card>
