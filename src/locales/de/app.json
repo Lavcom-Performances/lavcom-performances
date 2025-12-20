@@ -244,5 +244,48 @@
       "title": "Registrierung erfolgreich!",
       "description": "Ihr Abonnement wurde aktiviert. Willkommen bei Lavcom Analytics!"
     }
+  },
+  "subscribeSimulator": {
+    "badge": "Rentabilitätssimulator",
+    "title": "Wählen Sie Ihren Plan",
+    "subtitle": "Greifen Sie auf unser Simulationstool zu, um die Rentabilität Ihres Waschsalonprojekts zu bewerten.",
+    "backToSimulator": "Zurück zum Simulator",
+    "plans": {
+      "simulator": {
+        "title": "Simulator-Paket",
+        "description": "Zugang zum Simulationstool für 1 Monat",
+        "noCommitment": "Ohne Verpflichtung",
+        "cta": "Diesen Plan wählen",
+        "features": [
+          "Unbegrenzter Zugang zum Simulator für 1 Monat",
+          "Erstellung mehrerer Szenarien",
+          "PDF-Export der Ergebnisse",
+          "Echtzeit-Datenaktualisierung"
+        ]
+      },
+      "premium": {
+        "badge": "Empfohlen",
+        "title": "Premium-Paket",
+        "description": "Persönliche Begleitung + unbegrenzter Zugang",
+        "oneTimePayment": "Einmalige Zahlung",
+        "cta": "Premium-Paket wählen",
+        "features": [
+          "30-minütiges Gespräch mit einem Experten",
+          "Personalisierter PDF-Bericht für die Bank",
+          "Unbegrenzter Zugang zum Simulator für 1 Monat",
+          "Erstellung mehrerer Szenarien",
+          "PDF-Export der Ergebnisse"
+        ]
+      }
+    },
+    "whatYouGet": "Was Sie mit dem Simulator erhalten",
+    "features": {
+      "profitability": "Rentabilitätsschätzung",
+      "scenarios": "Individuelle Szenarien",
+      "reports": "Professionelle PDF-Berichte",
+      "unlimitedAccess": "Unbegrenzter Zugang 1 Monat"
+    },
+    "alreadySubscribed": "Bereits abonniert?",
+    "connectHere": "Hier anmelden"
   }
 }
