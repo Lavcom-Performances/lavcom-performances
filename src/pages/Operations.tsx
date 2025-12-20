@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { DateRange } from "react-day-picker";
-import { subDays, format, startOfDay, startOfMonth, startOfYear, isWithinInterval, getHours } from "date-fns";
+import { subDays, format, startOfDay, startOfMonth, startOfYear, getHours, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Search, Download, Filter, Upload } from "lucide-react";
+import { Search, Download, Upload, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -26,32 +26,18 @@ import { OperationsKPIRow } from "@/components/operations/OperationsKPIRow";
 import { HourlyBarChart } from "@/components/operations/HourlyBarChart";
 import { MachineCountList } from "@/components/operations/MachineCountList";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
+import { OperationsEmptyState } from "@/components/operations/OperationsEmptyState";
 import { generateOperationsPdf } from "@/utils/operationsPdfExport";
 import { useToast } from "@/hooks/use-toast";
 import { useViewMode } from "@/hooks/useViewMode";
+import { useOperations } from "@/hooks/useOperations";
+import { useSites } from "@/hooks/useSites";
 
-// Mock data for V1 - more complete dataset
-const mockOperations = [
-  { id: "1", date: new Date(), label: "Lave-linge 3", category: "LAVE_LINGE", paymentMode: "CB", amount: 4.00, insert: 0, rendu: 0, detail: "CB" },
-  { id: "2", date: new Date(), label: "Lave-linge 4", category: "LAVE_LINGE", paymentMode: "ESP", amount: 4.00, insert: 4.00, rendu: 0, detail: "TUBE" },
-  { id: "3", date: new Date(), label: "Lave-linge 5", category: "LAVE_LINGE", paymentMode: "ESP", amount: 4.00, insert: 10.00, rendu: 6.00, detail: "CAISSE" },
-  { id: "4", date: new Date(), label: "Lave-linge 6", category: "LAVE_LINGE", paymentMode: "CB", amount: 4.00, insert: 0, rendu: 0, detail: "CB" },
-  { id: "5", date: new Date(), label: "Sèche-linge 1", category: "SECHE_LINGE", paymentMode: "ESP", amount: 2.00, insert: 2.00, rendu: 0, detail: "TUBE" },
-  { id: "6", date: new Date(), label: "Sèche-linge 2", category: "SECHE_LINGE", paymentMode: "ESP", amount: 2.00, insert: 2.00, rendu: 0, detail: "TUBE" },
-  { id: "7", date: new Date(), label: "Lessive 7", category: "LESSIVE", paymentMode: "ESP", amount: 1.00, insert: 1.00, rendu: 0, detail: "CAISSE" },
-  { id: "8", date: subDays(new Date(), 1), label: "Lave-linge 5", category: "LAVE_LINGE", paymentMode: "ESP", amount: 4.00, insert: 4.00, rendu: 0, detail: "CAISSE" },
-  { id: "9", date: subDays(new Date(), 1), label: "Lave-linge 6", category: "LAVE_LINGE", paymentMode: "CB", amount: 4.00, insert: 0, rendu: 0, detail: "REJETÉ" },
-  { id: "10", date: subDays(new Date(), 2), label: "Sèche-linge 1", category: "SECHE_LINGE", paymentMode: "ESP", amount: 2.00, insert: 3.90, rendu: 1.00, detail: "CAISSE" },
-  { id: "11", date: subDays(new Date(), 2), label: "Lave-linge 4", category: "LAVE_LINGE", paymentMode: "ESP", amount: 8.00, insert: 8.00, rendu: 0, detail: "TUBE" },
-  { id: "12", date: subDays(new Date(), 3), label: "Sèche-linge 1", category: "SECHE_LINGE", paymentMode: "ESP", amount: 1.00, insert: 1.00, rendu: 0, detail: "CAISSE" },
-  { id: "13", date: subDays(new Date(), 3), label: "Lave-linge 3", category: "LAVE_LINGE", paymentMode: "CB", amount: 8.00, insert: 0, rendu: 0, detail: "CB" },
-  { id: "14", date: subDays(new Date(), 4), label: "Sèche-linge 2", category: "SECHE_LINGE", paymentMode: "ESP", amount: 1.00, insert: 2.00, rendu: 1.00, detail: "BILLET" },
-  { id: "15", date: subDays(new Date(), 5), label: "Sèche-linge 1", category: "SECHE_LINGE", paymentMode: "ESP", amount: 1.00, insert: 10.00, rendu: 9.00, detail: "CAISSE" },
-  { id: "16", date: subDays(new Date(), 6), label: "Lave-linge 6", category: "LAVE_LINGE", paymentMode: "ESP", amount: 4.00, insert: 7.80, rendu: 3.00, detail: "TUBE" },
-];
-
-const paymentModeBadge = (mode: string) => {
-  switch (mode) {
+const paymentModeBadge = (mode: string | null) => {
+  if (!mode) return <span className="text-muted-foreground">-</span>;
+  
+  const modeUpper = mode.toUpperCase();
+  switch (modeUpper) {
     case "CB":
       return <span className="badge-cb">CB</span>;
     case "ESP":
@@ -63,23 +49,13 @@ const paymentModeBadge = (mode: string) => {
   }
 };
 
-const categoryLabel = (category: string) => {
-  const labels: Record<string, string> = {
-    LAVE_LINGE: "Lave-linge",
-    SECHE_LINGE: "Sèche-linge",
-    LESSIVE: "Lessive",
-    RECHARGE_CB: "Recharge CB",
-    RECHARGE_ESP: "Recharge ESP",
-    AUTRE: "Autre",
-  };
-  return labels[category] || category;
-};
-
 export default function Operations() {
   const { isExpert } = useViewMode();
   const { toast } = useToast();
+  const { sites, getDefaultSite } = useSites();
+  
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 7),
+    from: subDays(new Date(), 30),
     to: new Date(),
   });
   const [searchQuery, setSearchQuery] = useState("");
@@ -88,19 +64,14 @@ export default function Operations() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  const filteredOperations = mockOperations.filter((op) => {
-    const matchesSearch = op.label.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || op.category === categoryFilter;
-    const matchesPayment = paymentFilter === "all" || op.paymentMode === paymentFilter;
-    
-    // Date filter
-    if (dateRange?.from && dateRange?.to) {
-      const opDate = startOfDay(op.date);
-      const isInRange = isWithinInterval(opDate, { start: startOfDay(dateRange.from), end: startOfDay(dateRange.to) });
-      return matchesSearch && matchesCategory && matchesPayment && isInRange;
-    }
-    
-    return matchesSearch && matchesCategory && matchesPayment;
+  const defaultSite = getDefaultSite();
+
+  const { operations, isLoading, isEmpty, refetch } = useOperations({
+    dateRange,
+    searchQuery,
+    category: categoryFilter,
+    paymentMode: paymentFilter,
+    siteId: defaultSite?.id,
   });
 
   // Calculate KPIs
@@ -109,22 +80,33 @@ export default function Operations() {
     const monthStart = startOfMonth(new Date());
     const yearStart = startOfYear(new Date());
 
-    const calcKPI = (ops: typeof mockOperations) => ({
-      total: ops.reduce((sum, op) => sum + op.amount, 0),
-      cb: ops.filter(op => op.paymentMode === "CB").reduce((sum, op) => sum + op.amount, 0),
-      esp: ops.filter(op => op.paymentMode === "ESP").reduce((sum, op) => sum + op.amount, 0),
+    const calcKPI = (ops: typeof operations) => ({
+      total: ops.reduce((sum, op) => sum + Number(op.amount), 0),
+      cb: ops.filter(op => op.payment_mode?.toUpperCase() === "CB").reduce((sum, op) => sum + Number(op.amount), 0),
+      esp: ops.filter(op => op.payment_mode?.toUpperCase() === "ESP").reduce((sum, op) => sum + Number(op.amount), 0),
     });
 
-    const todayOps = filteredOperations.filter(op => startOfDay(op.date).getTime() === today.getTime());
-    const monthOps = filteredOperations.filter(op => op.date >= monthStart);
-    const yearOps = filteredOperations.filter(op => op.date >= yearStart);
+    const todayOps = operations.filter(op => {
+      const opDate = startOfDay(parseISO(op.operation_date));
+      return opDate.getTime() === today.getTime();
+    });
+    
+    const monthOps = operations.filter(op => {
+      const opDate = parseISO(op.operation_date);
+      return opDate >= monthStart;
+    });
+    
+    const yearOps = operations.filter(op => {
+      const opDate = parseISO(op.operation_date);
+      return opDate >= yearStart;
+    });
 
     return {
       day: calcKPI(todayOps),
       month: calcKPI(monthOps),
       year: calcKPI(yearOps),
     };
-  }, [filteredOperations]);
+  }, [operations]);
 
   // Calculate hourly data for chart
   const hourlyData = useMemo(() => {
@@ -133,13 +115,16 @@ export default function Operations() {
       hours[i] = { cb: 0, esp: 0 };
     }
     
-    filteredOperations.forEach(op => {
-      const hour = getHours(op.date);
-      if (hour >= 6 && hour <= 22) {
-        if (op.paymentMode === "CB") {
-          hours[hour].cb += op.amount;
-        } else if (op.paymentMode === "ESP") {
-          hours[hour].esp += op.amount;
+    operations.forEach(op => {
+      if (op.operation_time) {
+        const hour = parseInt(op.operation_time.split(":")[0], 10);
+        if (hour >= 6 && hour <= 22) {
+          const amount = Number(op.amount);
+          if (op.payment_mode?.toUpperCase() === "CB") {
+            hours[hour].cb += amount;
+          } else if (op.payment_mode?.toUpperCase() === "ESP") {
+            hours[hour].esp += amount;
+          }
         }
       }
     });
@@ -149,19 +134,21 @@ export default function Operations() {
       cb: data.cb,
       esp: data.esp,
     }));
-  }, [filteredOperations]);
+  }, [operations]);
 
   // Calculate machine counts
   const machineCounts = useMemo(() => {
     const counts: { [key: string]: number } = {};
-    filteredOperations.forEach(op => {
-      counts[op.label] = (counts[op.label] || 0) + 1;
+    operations.forEach(op => {
+      if (op.machine) {
+        counts[op.machine] = (counts[op.machine] || 0) + 1;
+      }
     });
     
     return Object.entries(counts)
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count);
-  }, [filteredOperations]);
+  }, [operations]);
 
   const handleExportPdf = async () => {
     if (!dateRange?.from || !dateRange?.to) {
@@ -177,16 +164,29 @@ export default function Operations() {
     try {
       await new Promise(resolve => setTimeout(resolve, 300));
       
+      // Transform operations to the format expected by the PDF export
+      const pdfOperations = operations.map(op => ({
+        id: op.id,
+        date: parseISO(op.operation_date),
+        label: op.machine || "Inconnu",
+        category: "AUTRE",
+        paymentMode: op.payment_mode?.toUpperCase() || "ESP",
+        amount: Number(op.amount),
+        insert: 0,
+        rendu: 0,
+        detail: op.program || "",
+      }));
+
       generateOperationsPdf({
-        laundromatName: "Laverie Démo",
+        laundromatName: defaultSite?.name || "Ma Laverie",
         dateFrom: dateRange.from,
         dateTo: dateRange.to,
-        operations: filteredOperations,
+        operations: pdfOperations,
       });
 
       toast({
         title: "Export réussi",
-        description: `${filteredOperations.length} opérations exportées en PDF.`,
+        description: `${operations.length} opérations exportées en PDF.`,
       });
     } catch (error) {
       toast({
@@ -200,12 +200,52 @@ export default function Operations() {
   };
 
   const handleImportComplete = (count: number) => {
-    // In a real app, we would refresh the operations list here
-    // For now, we just close the dialog after a delay
+    // Refresh operations after import
+    refetch();
     setTimeout(() => {
       setIsImportDialogOpen(false);
     }, 2000);
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-lavcom-green mx-auto mb-4" />
+          <p className="text-muted-foreground">Chargement des opérations...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state
+  if (isEmpty) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+              Opérations
+            </h1>
+            <p className="text-muted-foreground">
+              Journal chronologique des transactions
+            </p>
+          </div>
+        </div>
+        
+        <div className="card-lavcom">
+          <OperationsEmptyState onImportClick={() => setIsImportDialogOpen(true)} />
+        </div>
+        
+        <CSVImportDialog 
+          open={isImportDialogOpen} 
+          onOpenChange={setIsImportDialogOpen}
+          onImportComplete={handleImportComplete}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
@@ -230,7 +270,7 @@ export default function Operations() {
           <Button 
             variant="outline"
             onClick={handleExportPdf}
-            disabled={isExporting || filteredOperations.length === 0}
+            disabled={isExporting || operations.length === 0}
           >
             <Download className="h-4 w-4 mr-2" />
             {isExporting ? "Export..." : "Exporter"}
@@ -255,7 +295,7 @@ export default function Operations() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Rechercher..."
+              placeholder="Rechercher une machine..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -270,8 +310,6 @@ export default function Operations() {
               <SelectItem value="LAVE_LINGE">Lave-linge</SelectItem>
               <SelectItem value="SECHE_LINGE">Sèche-linge</SelectItem>
               <SelectItem value="LESSIVE">Lessive</SelectItem>
-              <SelectItem value="RECHARGE_CB">Recharge CB</SelectItem>
-              <SelectItem value="RECHARGE_ESP">Recharge ESP</SelectItem>
             </SelectContent>
           </Select>
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
@@ -353,50 +391,45 @@ export default function Operations() {
             <TableRow className="bg-muted/50">
               <TableHead>Date</TableHead>
               <TableHead>Heure</TableHead>
-              <TableHead>Sélection</TableHead>
+              <TableHead>Machine</TableHead>
               <TableHead>Mode</TableHead>
-              <TableHead className="text-right">Insert</TableHead>
-              <TableHead className="text-right">Rendu</TableHead>
-              <TableHead className="text-right">Prix</TableHead>
-              <TableHead>Détail</TableHead>
+              <TableHead className="text-right">Montant</TableHead>
+              <TableHead>Programme</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredOperations.map((op) => (
+            {operations.slice(0, 100).map((op) => (
               <TableRow key={op.id} className="hover:bg-muted/30">
                 <TableCell className="font-medium">
-                  {format(op.date, "dd/MM/yyyy", { locale: fr })}
+                  {format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr })}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {format(op.date, "HH:mm:ss", { locale: fr })}
+                  {op.operation_time || "-"}
                 </TableCell>
-                <TableCell className="font-medium">{op.label}</TableCell>
-                <TableCell>{paymentModeBadge(op.paymentMode)}</TableCell>
-                <TableCell className="text-right">
-                  {op.insert > 0 ? `${op.insert.toFixed(2)} €` : "-"}
-                </TableCell>
-                <TableCell className="text-right">
-                  {op.rendu > 0 ? `${op.rendu.toFixed(2)} €` : "-"}
-                </TableCell>
+                <TableCell className="font-medium">{op.machine || "-"}</TableCell>
+                <TableCell>{paymentModeBadge(op.payment_mode)}</TableCell>
                 <TableCell className="text-right font-medium">
-                  {op.amount.toFixed(2)} €
+                  {Number(op.amount).toFixed(2)} €
                 </TableCell>
-                <TableCell className={cn(
-                  "text-sm",
-                  op.detail === "REJETÉ" ? "text-destructive font-medium" : "text-muted-foreground"
-                )}>
-                  {op.detail || "-"}
+                <TableCell className="text-muted-foreground text-sm">
+                  {op.program || "-"}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
         
-        {filteredOperations.length === 0 && (
+        {operations.length === 0 && (
           <div className="p-12 text-center text-muted-foreground">
-            <Filter className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>Aucune opération trouvée</p>
             <p className="text-sm">Essayez de modifier vos filtres</p>
+          </div>
+        )}
+        
+        {operations.length > 100 && (
+          <div className="p-4 text-center text-sm text-muted-foreground border-t">
+            Affichage limité aux 100 premières opérations. Affinez vos filtres pour voir plus de détails.
           </div>
         )}
       </div>
