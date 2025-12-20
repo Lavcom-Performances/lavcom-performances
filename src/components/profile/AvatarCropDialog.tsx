@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AvatarCropDialogProps {
@@ -53,6 +53,7 @@ export function AvatarCropDialog({
   const [scale, setScale] = useState(1);
   const [rotate, setRotate] = useState(0);
   const [flipH, setFlipH] = useState(false);
+  const [flipV, setFlipV] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -86,6 +87,7 @@ export function AvatarCropDialog({
     ctx.translate(centerX, centerY);
     ctx.rotate(rotateRads);
     if (flipH) ctx.scale(-1, 1);
+    if (flipV) ctx.scale(1, -1);
     ctx.translate(-centerX, -centerY);
 
     ctx.drawImage(
@@ -99,7 +101,7 @@ export function AvatarCropDialog({
       previewSize,
       previewSize
     );
-  }, [completedCrop, rotate, flipH]);
+  }, [completedCrop, rotate, flipH, flipV]);
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     setCrop(centerAspectCrop(width, height, 1));
@@ -139,6 +141,7 @@ export function AvatarCropDialog({
       ctx.translate(centerX, centerY);
       ctx.rotate(rotateRads);
       if (flipH) ctx.scale(-1, 1);
+      if (flipV) ctx.scale(1, -1);
       ctx.translate(-centerX, -centerY);
 
       ctx.drawImage(
@@ -175,6 +178,7 @@ export function AvatarCropDialog({
       setScale(1);
       setRotate(0);
       setFlipH(false);
+      setFlipV(false);
       setCrop(undefined);
       setCompletedCrop(undefined);
     }
@@ -206,7 +210,7 @@ export function AvatarCropDialog({
                   onLoad={onImageLoad}
                   className="max-h-[300px] max-w-full"
                 style={{
-                    transform: `scale(${scale}) rotate(${rotate}deg) scaleX(${flipH ? -1 : 1})`,
+                    transform: `scale(${scale}) rotate(${rotate}deg) scaleX(${flipH ? -1 : 1}) scaleY(${flipV ? -1 : 1})`,
                     transformOrigin: "center",
                   }}
                 />
@@ -278,19 +282,31 @@ export function AvatarCropDialog({
             <div className="flex items-center gap-3">
               <FlipHorizontal className="h-4 w-4 text-muted-foreground shrink-0" />
               <span className="text-sm text-muted-foreground w-16">{t("app:profile.avatar.flip")}</span>
-              <Button
-                type="button"
-                variant={flipH ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFlipH((prev) => !prev)}
-                className="flex-1"
-              >
-                <FlipHorizontal className="h-4 w-4 mr-2" />
-                {t("app:profile.avatar.flipHorizontal")}
-              </Button>
+              <div className="flex gap-2 flex-1">
+                <Button
+                  type="button"
+                  variant={flipH ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFlipH((prev) => !prev)}
+                  className="flex-1"
+                >
+                  <FlipHorizontal className="h-4 w-4 mr-2" />
+                  {t("app:profile.avatar.flipHorizontal")}
+                </Button>
+                <Button
+                  type="button"
+                  variant={flipV ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFlipV((prev) => !prev)}
+                  className="flex-1"
+                >
+                  <FlipVertical className="h-4 w-4 mr-2" />
+                  {t("app:profile.avatar.flipVertical")}
+                </Button>
+              </div>
             </div>
 
-            {(scale !== 1 || rotate !== 0 || flipH) && (
+            {(scale !== 1 || rotate !== 0 || flipH || flipV) && (
               <Button
                 type="button"
                 variant="ghost"
@@ -299,6 +315,7 @@ export function AvatarCropDialog({
                   setScale(1);
                   setRotate(0);
                   setFlipH(false);
+                  setFlipV(false);
                 }}
                 className="w-full"
               >
