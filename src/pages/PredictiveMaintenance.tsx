@@ -69,6 +69,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { trackPdfDownload } from "@/lib/analytics";
 
 // Types
 interface MaintenanceRecord {
@@ -561,6 +562,7 @@ export default function PredictiveMaintenance() {
     }
 
     doc.save(`rapport-maintenance-${new Date().toISOString().split("T")[0]}.pdf`);
+    trackPdfDownload('predictive_maintenance');
     toast({ title: "Succès", description: "Rapport PDF téléchargé" });
   };
 

@@ -27,7 +27,7 @@ import {
 import { generateSimulationReport } from "@/utils/simulationPdfExport";
 import { toast } from "@/hooks/use-toast";
 import ebookCover from "@/assets/ebook-avant-ouvrir.jpg";
-import { trackEbookClick } from "@/lib/analytics";
+import { trackEbookClick, trackPdfDownload } from "@/lib/analytics";
 
 interface StepResultsProps {
   project: SimulationProject;
@@ -67,6 +67,7 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
   const handleDownloadPdf = () => {
     try {
       generateSimulationReport(project, results);
+      trackPdfDownload('simulation');
       toast({
         title: "PDF généré",
         description: "Le rapport de simulation a été téléchargé.",
