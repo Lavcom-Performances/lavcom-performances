@@ -21,6 +21,11 @@
         "delete": "Delete",
         "saveSuccess": "Preset saved",
         "deleteSuccess": "Preset deleted",
+        "export": "Export",
+        "import": "Import",
+        "exportSuccess": "Presets exported",
+        "importSuccess": "{{count}} preset(s) imported",
+        "importError": "Invalid file",
         "defaults": {
           "default_bw": "Black & White",
           "default_vintage": "Vintage",
