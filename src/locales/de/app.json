@@ -53,6 +53,8 @@
       "updateSuccess": "Foto aktualisiert",
       "updateSuccessDescription": "Ihr Profilfoto wurde aktualisiert",
       "delete": "Foto löschen",
+      "deleteConfirmTitle": "Profilfoto löschen?",
+      "deleteConfirmDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Ihr Profilfoto wird dauerhaft gelöscht.",
       "deleteSuccess": "Foto gelöscht",
       "deleteSuccessDescription": "Ihr Profilfoto wurde gelöscht",
       "deleteError": "Löschen fehlgeschlagen"

@@ -53,6 +53,8 @@
       "updateSuccess": "Foto bijgewerkt",
       "updateSuccessDescription": "Uw profielfoto is bijgewerkt",
       "delete": "Foto verwijderen",
+      "deleteConfirmTitle": "Profielfoto verwijderen?",
+      "deleteConfirmDescription": "Deze actie kan niet ongedaan worden gemaakt. Uw profielfoto wordt permanent verwijderd.",
       "deleteSuccess": "Foto verwijderd",
       "deleteSuccessDescription": "Uw profielfoto is verwijderd",
       "deleteError": "Verwijderen mislukt"

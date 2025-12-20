@@ -53,6 +53,8 @@
       "updateSuccess": "Photo updated",
       "updateSuccessDescription": "Your profile photo has been updated",
       "delete": "Delete photo",
+      "deleteConfirmTitle": "Delete profile photo?",
+      "deleteConfirmDescription": "This action cannot be undone. Your profile photo will be permanently deleted.",
       "deleteSuccess": "Photo deleted",
       "deleteSuccessDescription": "Your profile photo has been deleted",
       "deleteError": "Failed to delete photo"
