@@ -262,7 +262,7 @@ const LandingPage = () => {
       {/* ========================================== */}
       <section className="py-8 md:py-12 px-4 md:px-6">
         <div className="container mx-auto max-w-3xl text-center">
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3 md:mb-4">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3 md:mb-4 animate-fade-in">
             Deux profils, deux solutions
           </h2>
           <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">

@@ -58,7 +58,7 @@ const chartsNavigation = [
 ];
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, permission: "READ_VIEWS" },
+  { name: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard, permission: "READ_VIEWS" },
   { name: "Rentabilité", href: "/profitability", icon: DollarSign, permission: "READ_VIEWS" },
   { name: "Simulation", href: "/simulation", icon: Calculator, permission: "READ_VIEWS" },
   { name: "Recommandations", href: "/recommendations", icon: Lightbulb, permission: "READ_VIEWS" },

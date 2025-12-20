@@ -10,7 +10,7 @@ interface TrialExpiredPaywallProps {
 
 export function TrialExpiredPaywall({ onContactSupport }: TrialExpiredPaywallProps) {
   const features = [
-    "Dashboard multi-laveries illimité",
+    "Tableau de bord multi-laveries illimité",
     "Export PDF de tous vos rapports",
     "Recommandations intelligentes IA",
     "Maintenance prédictive",
