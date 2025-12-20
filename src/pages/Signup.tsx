@@ -10,6 +10,7 @@ import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { z } from "zod";
 import { formatFirstName, formatLastName } from "@/lib/textUtils";
 import { useTranslation } from "react-i18next";
+import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/auth/PasswordStrengthIndicator";
 
 export default function Signup() {
   const { t } = useTranslation(['app', 'common']);
@@ -26,9 +27,16 @@ export default function Signup() {
   const { toast } = useToast();
   const { signUp } = useAuth();
 
+  const { strength: passwordStrength } = usePasswordStrength(password);
+
   const signupSchema = z.object({
     email: z.string().email(t('app:signup.validation.invalidEmail')),
-    password: z.string().min(8, t('app:signup.validation.passwordMin')),
+    password: z.string()
+      .min(8, t('app:signup.validation.passwordMin'))
+      .regex(/[A-Z]/, t('app:passwordStrength.criteria.hasUppercase'))
+      .regex(/[a-z]/, t('app:passwordStrength.criteria.hasLowercase'))
+      .regex(/[0-9]/, t('app:passwordStrength.criteria.hasNumber'))
+      .regex(/[!@#$%^&*(),.?":{}|<>]/, t('app:passwordStrength.criteria.hasSpecial')),
     firstName: z.string().min(1, t('app:signup.validation.firstNameRequired')),
     lastName: z.string().min(1, t('app:signup.validation.lastNameRequired')),
     companyName: z.string().optional(),
@@ -259,6 +267,7 @@ export default function Signup() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              <PasswordStrengthIndicator password={password} />
               {errors.password && (
                 <p className="text-xs text-destructive">{errors.password}</p>
               )}

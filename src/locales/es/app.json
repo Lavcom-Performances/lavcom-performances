@@ -339,5 +339,19 @@
       "title": "💡 Nota:",
       "content": "Esta estimación se basa en promedios del sector. El simulador completo tiene en cuenta los gastos, la ubicación y muchos otros factores."
     }
+  },
+  "passwordStrength": {
+    "label": "Seguridad de la contraseña",
+    "weak": "Débil",
+    "fair": "Regular",
+    "good": "Buena",
+    "strong": "Fuerte",
+    "criteria": {
+      "minLength": "8 caracteres mínimo",
+      "hasUppercase": "Una mayúscula",
+      "hasLowercase": "Una minúscula",
+      "hasNumber": "Un número",
+      "hasSpecial": "Un carácter especial"
+    }
   }
 }

@@ -339,5 +339,19 @@
       "title": "💡 Note:",
       "content": "This estimate is based on industry averages. The full simulator takes into account costs, location, and many other factors."
     }
+  },
+  "passwordStrength": {
+    "label": "Password strength",
+    "weak": "Weak",
+    "fair": "Fair",
+    "good": "Good",
+    "strong": "Strong",
+    "criteria": {
+      "minLength": "8 characters minimum",
+      "hasUppercase": "One uppercase letter",
+      "hasLowercase": "One lowercase letter",
+      "hasNumber": "One number",
+      "hasSpecial": "One special character"
+    }
   }
 }

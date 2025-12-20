@@ -339,5 +339,19 @@
       "title": "💡 Note :",
       "content": "Cette estimation est basée sur des moyennes du secteur. Le simulateur complet prend en compte les charges, l'emplacement et de nombreux autres facteurs."
     }
+  },
+  "passwordStrength": {
+    "label": "Force du mot de passe",
+    "weak": "Faible",
+    "fair": "Moyen",
+    "good": "Bon",
+    "strong": "Fort",
+    "criteria": {
+      "minLength": "8 caractères minimum",
+      "hasUppercase": "Une majuscule",
+      "hasLowercase": "Une minuscule",
+      "hasNumber": "Un chiffre",
+      "hasSpecial": "Un caractère spécial"
+    }
   }
 }
