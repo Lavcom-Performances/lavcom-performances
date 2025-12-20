@@ -42,6 +42,21 @@
     "validation": {
       "firstNameRequired": "Vorname ist erforderlich",
       "lastNameRequired": "Nachname ist erforderlich"
+    },
+    "password": {
+      "title": "Passwort ändern",
+      "description": "Wählen Sie ein neues sicheres Passwort für Ihr Konto",
+      "newPassword": "Neues Passwort",
+      "newPasswordPlaceholder": "Geben Sie Ihr neues Passwort ein",
+      "confirmPassword": "Passwort bestätigen",
+      "confirmPasswordPlaceholder": "Bestätigen Sie Ihr neues Passwort",
+      "update": "Passwort aktualisieren",
+      "updating": "Wird aktualisiert...",
+      "updateSuccess": "Passwort aktualisiert",
+      "updateSuccessDescription": "Ihr Passwort wurde erfolgreich aktualisiert",
+      "required": "Passwort ist erforderlich",
+      "tooWeak": "Passwort ist zu schwach",
+      "noMatch": "Passwörter stimmen nicht überein"
     }
   },
   "charts": {

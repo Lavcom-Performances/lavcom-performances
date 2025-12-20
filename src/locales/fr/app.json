@@ -42,6 +42,21 @@
     "validation": {
       "firstNameRequired": "Le prénom est requis",
       "lastNameRequired": "Le nom est requis"
+    },
+    "password": {
+      "title": "Modifier le mot de passe",
+      "description": "Choisissez un nouveau mot de passe sécurisé pour votre compte",
+      "newPassword": "Nouveau mot de passe",
+      "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "confirmPasswordPlaceholder": "Confirmez votre nouveau mot de passe",
+      "update": "Modifier le mot de passe",
+      "updating": "Modification...",
+      "updateSuccess": "Mot de passe modifié",
+      "updateSuccessDescription": "Votre mot de passe a été mis à jour avec succès",
+      "required": "Le mot de passe est requis",
+      "tooWeak": "Le mot de passe est trop faible",
+      "noMatch": "Les mots de passe ne correspondent pas"
     }
   },
   "charts": {

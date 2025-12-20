@@ -42,6 +42,21 @@
     "validation": {
       "firstNameRequired": "First name is required",
       "lastNameRequired": "Last name is required"
+    },
+    "password": {
+      "title": "Change password",
+      "description": "Choose a new secure password for your account",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Enter your new password",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Confirm your new password",
+      "update": "Update password",
+      "updating": "Updating...",
+      "updateSuccess": "Password updated",
+      "updateSuccessDescription": "Your password has been successfully updated",
+      "required": "Password is required",
+      "tooWeak": "Password is too weak",
+      "noMatch": "Passwords do not match"
     }
   },
   "charts": {
