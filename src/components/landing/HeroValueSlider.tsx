@@ -174,17 +174,17 @@ export const HeroValueSlider = () => {
         />
       ))}
 
-      {/* Layer 2: Gradient overlay - Mobile: stronger gradient on left half */}
+      {/* Layer 2: Gradient overlay - Mobile: stronger gradient on larger area */}
       <div 
         className="absolute inset-0 z-[2] dark:hidden"
         style={{
           background: `linear-gradient(
             to right,
             hsl(80, 25%, 92%) 0%,
-            hsl(80, 25%, 92%, 0.98) 20%,
-            hsl(80, 25%, 92%, 0.9) 35%,
-            hsl(80, 25%, 92%, 0.6) 45%,
-            transparent 55%
+            hsl(80, 25%, 92%, 0.98) 30%,
+            hsl(80, 25%, 92%, 0.9) 45%,
+            hsl(80, 25%, 92%, 0.6) 55%,
+            transparent 70%
           )`
         }}
       />
@@ -196,33 +196,33 @@ export const HeroValueSlider = () => {
           background: `linear-gradient(
             to right,
             hsl(80, 10%, 15%) 0%,
-            hsl(80, 10%, 15%, 0.98) 20%,
-            hsl(80, 10%, 15%, 0.9) 35%,
-            hsl(80, 10%, 15%, 0.6) 45%,
-            transparent 55%
+            hsl(80, 10%, 15%, 0.98) 30%,
+            hsl(80, 10%, 15%, 0.9) 45%,
+            hsl(80, 10%, 15%, 0.6) 55%,
+            transparent 70%
           )`
         }}
       />
 
-      {/* Layer 3: Blur effect on left side - narrower on mobile */}
+      {/* Layer 3: Blur effect on left side - wider on mobile for better readability */}
       <div 
-        className="absolute inset-y-0 left-0 w-[50%] md:w-[55%] z-[3]"
+        className="absolute inset-y-0 left-0 w-[65%] sm:w-[60%] md:w-[55%] z-[3]"
         style={{
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          maskImage: 'linear-gradient(to right, black 0%, black 30%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, black 0%, black 30%, transparent 100%)'
+          maskImage: 'linear-gradient(to right, black 0%, black 40%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, black 0%, black 40%, transparent 100%)'
         }}
       />
 
       {/* Layer 4: Text content with crossfade */}
       <div className="relative z-[4] h-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] flex items-center">
-        <div className="w-[55%] md:w-full max-w-7xl md:mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+        <div className="w-[70%] sm:w-[60%] md:w-full max-w-7xl md:mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
           <div className="max-w-full md:max-w-[520px] lg:max-w-[560px] relative md:ml-4 lg:ml-8">
             {/* Previous slide text (fading out) */}
             {previousSlide && (
               <div className="absolute inset-0 animate-fade-out pointer-events-none">
-                <h1 className="text-base md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.15] max-w-full md:max-w-[500px]">
+                <h1 className="text-lg sm:text-xl md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.2] md:leading-[1.15] max-w-full md:max-w-[500px]">
                   {previousSlide.title}
                 </h1>
                 <p className="hidden md:block text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed max-w-[460px]">
@@ -236,7 +236,7 @@ export const HeroValueSlider = () => {
               "transition-all duration-700 ease-out",
               isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
             )} style={{ transitionDelay: isTransitioning ? "0ms" : "100ms" }}>
-              <h1 className="text-base md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.15] max-w-full md:max-w-[500px]">
+              <h1 className="text-lg sm:text-xl md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.2] md:leading-[1.15] max-w-full md:max-w-[500px]">
                 {currentSlide.title}
               </h1>
             </div>
