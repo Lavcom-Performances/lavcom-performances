@@ -53,6 +53,7 @@ import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import ebookAvantOuvrir from "@/assets/ebook-avant-ouvrir.jpg";
 import { t } from "@/lib/i18n";
 import { HeroValueSlider } from "@/components/landing/HeroValueSlider";
+import { ScrollReveal } from "@/components/landing/ScrollReveal";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, t("validation").nameRequired).max(100, t("validation").nameTooLong),
@@ -263,12 +264,14 @@ const LandingPage = () => {
       {/* ========================================== */}
       <section className="py-8 md:py-12 px-4 md:px-6">
         <div className="container mx-auto max-w-3xl text-center">
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3 md:mb-4 animate-fade-in">
-            Deux profils, deux solutions
-          </h2>
-          <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
-            Que vous gériez déjà une laverie ou que vous prépariez votre projet, Lavcom Performances s'adapte à vos besoins.
-          </p>
+          <ScrollReveal>
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3 md:mb-4">
+              Deux profils, deux solutions
+            </h2>
+            <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
+              Que vous gériez déjà une laverie ou que vous prépariez votre projet, Lavcom Performances s'adapte à vos besoins.
+            </p>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -279,7 +282,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Contenu texte */}
-            <div className="text-left">
+            <ScrollReveal direction="left" className="text-left">
               <div className="inline-flex items-center gap-2 bg-lavcom-green/20 text-lavcom-green-dark dark:text-lavcom-green px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium mb-3 md:mb-4">
                 <Building2 className="h-3 w-3 md:h-4 md:w-4" />
                 Pour les exploitants de laveries
@@ -323,10 +326,10 @@ const LandingPage = () => {
                   </Button>
                 </Link>
               </div>
-            </div>
+            </ScrollReveal>
             
             {/* Visuel / Stats */}
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
+            <ScrollReveal direction="right" delay={0.2} className="grid grid-cols-2 gap-2 md:gap-4">
               {[
                 { value: "24/7", label: "Suivi temps réel", icon: Clock },
                 { value: "+25%", label: "CA moyen constaté", icon: TrendingUp },
@@ -347,7 +350,7 @@ const LandingPage = () => {
                   </div>
                 </Card>
               ))}
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -359,7 +362,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Visuel / Card simulateur */}
-            <div className="order-2 lg:order-1">
+            <ScrollReveal direction="left" className="order-2 lg:order-1">
               <Card className="p-4 md:p-8 bg-card/80 backdrop-blur border-lavcom-orange/30 shadow-xl">
                 <div className="text-center space-y-4 md:space-y-6">
                   <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-lavcom-orange/20 flex items-center justify-center mx-auto">
@@ -402,10 +405,10 @@ const LandingPage = () => {
                   </div>
                 </div>
               </Card>
-            </div>
+            </ScrollReveal>
             
             {/* Contenu texte */}
-            <div className="order-1 lg:order-2 text-left">
+            <ScrollReveal direction="right" delay={0.15} className="order-1 lg:order-2 text-left">
               <div className="inline-flex items-center gap-2 bg-lavcom-orange/20 text-lavcom-orange-dark dark:text-lavcom-orange px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium mb-3 md:mb-4">
                 <Rocket className="h-3 w-3 md:h-4 md:w-4" />
                 Pour les futurs exploitants
@@ -452,7 +455,7 @@ const LandingPage = () => {
                   </Button>
                 </Link>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -462,15 +465,15 @@ const LandingPage = () => {
       {/* ========================================== */}
       <section id="demo" className="py-12 md:py-20 px-4 md:px-6 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-left md:text-center mb-8 md:mb-12">
+          <ScrollReveal className="text-left md:text-center mb-8 md:mb-12">
             <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px] md:max-w-none md:mx-auto">
               À quoi ressemble un rapport Lavcom Performances ?
             </h2>
-          </div>
+          </ScrollReveal>
           
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Visuel PDF mockup */}
-            <div className="order-2 lg:order-1">
+            <ScrollReveal direction="left" delay={0.1} className="order-2 lg:order-1">
               <Card className="p-3 md:p-4 bg-card/80 backdrop-blur border-primary/20 shadow-xl overflow-hidden">
                 <img 
                   src={pdfMockupPreview} 
@@ -483,10 +486,10 @@ const LandingPage = () => {
                   </span>
                 </div>
               </Card>
-            </div>
+            </ScrollReveal>
             
             {/* Texte descriptif */}
-            <div className="order-1 lg:order-2 text-left">
+            <ScrollReveal direction="right" delay={0.2} className="order-1 lg:order-2 text-left">
               <p className="text-muted-foreground text-sm md:text-lg mb-4 md:mb-6">
                 Chaque mois, vous recevez un rapport d'analyse des performances de votre laverie :
               </p>
@@ -526,7 +529,7 @@ const LandingPage = () => {
                   <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               </a>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -664,11 +667,11 @@ const LandingPage = () => {
       {/* ========================================== */}
       <section id="features" className="py-12 md:py-20 px-4 md:px-6 bg-gradient-to-br from-primary/5 to-accent/5">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-left md:text-center mb-10 md:mb-16">
+          <ScrollReveal className="text-left md:text-center mb-10 md:mb-16">
             <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[400px] md:max-w-none">
               Pourquoi utiliser Lavcom Performances ?
             </h2>
-          </div>
+          </ScrollReveal>
           
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             {[
@@ -688,21 +691,21 @@ const LandingPage = () => {
                 description: "Quelques ajustements bien ciblés peuvent déjà faire une vraie différence sur vos résultats."
               }
             ].map((feature, index) => (
-              <Card 
-                key={feature.title}
-                className="p-4 md:p-6 card-lavcom-hover animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3 md:mb-4">
-                  <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                </div>
-                <h3 className="text-sm md:text-lg font-semibold text-foreground mb-2 md:mb-3 leading-tight">
-                  {feature.title}
-                </h3>
-                <p className="text-muted-foreground text-xs md:text-base leading-relaxed">
-                  {feature.description}
-                </p>
-              </Card>
+              <ScrollReveal key={feature.title} delay={index * 0.1}>
+                <Card 
+                  className="p-4 md:p-6 card-lavcom-hover h-full"
+                >
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3 md:mb-4">
+                    <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                  </div>
+                  <h3 className="text-sm md:text-lg font-semibold text-foreground mb-2 md:mb-3 leading-tight">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground text-xs md:text-base leading-relaxed">
+                    {feature.description}
+                  </p>
+                </Card>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -713,35 +716,37 @@ const LandingPage = () => {
       {/* ========================================== */}
       <section className="py-12 md:py-20 px-4 md:px-6">
         <div className="container mx-auto max-w-4xl">
-          <Card className="p-6 md:p-10 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30">
-            <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
-              <div className="text-center md:text-left">
-                <img 
-                  src={ebookAvantOuvrir} 
-                  alt="Guide Avant d'ouvrir - Le guide du futur exploitant de laverie" 
-                  className="w-full max-w-[280px] mx-auto md:mx-0 rounded-lg shadow-lg"
-                />
+          <ScrollReveal direction="scale">
+            <Card className="p-6 md:p-10 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30">
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
+                <div className="text-center md:text-left">
+                  <img 
+                    src={ebookAvantOuvrir} 
+                    alt="Guide Avant d'ouvrir - Le guide du futur exploitant de laverie" 
+                    className="w-full max-w-[280px] mx-auto md:mx-0 rounded-lg shadow-lg"
+                  />
+                </div>
+                <div>
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2 md:mb-3">
+                    Aller plus loin avant d'ouvrir
+                  </h2>
+                  <h3 className="text-base md:text-lg font-semibold text-lavcom-orange mb-3 md:mb-4">
+                    Le guide pratique "Avant d'ouvrir"
+                  </h3>
+                  <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
+                    Un guide concret pour vous aider à préparer votre projet de laverie : choix du local, configuration, fournisseurs, erreurs à éviter. Le simulateur vous donne les chiffres, le guide vous aide à poser les bonnes décisions autour.
+                  </p>
+                  <a href="https://lavcom.fr/nos-ebooks-2/" target="_blank" rel="noopener noreferrer">
+                    <Button className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white w-full sm:w-auto">
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      Découvrir le guide
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2 md:mb-3">
-                  Aller plus loin avant d'ouvrir
-                </h2>
-                <h3 className="text-base md:text-lg font-semibold text-lavcom-orange mb-3 md:mb-4">
-                  Le guide pratique "Avant d'ouvrir"
-                </h3>
-                <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
-                  Un guide concret pour vous aider à préparer votre projet de laverie : choix du local, configuration, fournisseurs, erreurs à éviter. Le simulateur vous donne les chiffres, le guide vous aide à poser les bonnes décisions autour.
-                </p>
-                <a href="https://lavcom.fr/nos-ebooks-2/" target="_blank" rel="noopener noreferrer">
-                  <Button className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white w-full sm:w-auto">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    Découvrir le guide
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </a>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </ScrollReveal>
         </div>
       </section>
 
