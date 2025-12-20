@@ -39,7 +39,9 @@ import {
   ExternalLink,
   FileText,
   Settings,
-  Info
+  Info,
+  FileDown,
+  FileSpreadsheet
 } from 'lucide-react';
 import { useSites } from '@/hooks/useSites';
 import { useMultipleSitesCosts } from '@/hooks/useSiteCosts';
@@ -47,6 +49,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { calculateProfitabilityMetrics, LaundryCosts } from '@/types/costs';
+import { exportComparisonPDF, exportComparisonExcel } from '@/utils/comparisonExport';
+import { toast } from 'sonner';
 
 interface SiteComparisonSectionProps {
   dateRange?: DateRange;
@@ -325,6 +329,42 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
     navigate(`/laundromat-settings?site=${siteId}`);
   };
 
+  const handleExportPDF = () => {
+    if (!dateRange?.from || !dateRange?.to || sortedData.length === 0) {
+      toast.error("Sélectionnez au moins une laverie pour exporter");
+      return;
+    }
+    try {
+      exportComparisonPDF({
+        sites: sortedData,
+        dateStart: dateRange.from,
+        dateEnd: dateRange.to,
+        periodDays,
+      });
+      toast.success("Export PDF téléchargé");
+    } catch (error) {
+      toast.error("Erreur lors de l'export PDF");
+    }
+  };
+
+  const handleExportExcel = () => {
+    if (!dateRange?.from || !dateRange?.to || sortedData.length === 0) {
+      toast.error("Sélectionnez au moins une laverie pour exporter");
+      return;
+    }
+    try {
+      exportComparisonExcel({
+        sites: sortedData,
+        dateStart: dateRange.from,
+        dateEnd: dateRange.to,
+        periodDays,
+      });
+      toast.success("Export Excel téléchargé");
+    } catch (error) {
+      toast.error("Erreur lors de l'export Excel");
+    }
+  };
+
   const formatCurrency = (value: number) => {
     if (isNaN(value)) return 'N/A';
     return new Intl.NumberFormat('fr-FR', { 
@@ -440,23 +480,47 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
             ))}
           </div>
 
-          {/* Counter */}
-          <div className="flex items-center justify-between text-sm">
+          {/* Counter and Actions */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm">
             <span className="text-muted-foreground">
               {selectedSiteIds.length} laverie{selectedSiteIds.length > 1 ? 's' : ''} sélectionnée{selectedSiteIds.length > 1 ? 's' : ''}
             </span>
-            <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
-              <SelectTrigger className="w-48">
-                <ArrowUpDown className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Trier par" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="revenue">CA (décroissant)</SelectItem>
-                <SelectItem value="profit">Résultat (décroissant)</SelectItem>
-                <SelectItem value="occupation">Occupation (décroissant)</SelectItem>
-                <SelectItem value="trend">Évolution (décroissant)</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-wrap items-center gap-2">
+              <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
+                <SelectTrigger className="w-48">
+                  <ArrowUpDown className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Trier par" />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  <SelectItem value="revenue">CA (décroissant)</SelectItem>
+                  <SelectItem value="profit">Résultat (décroissant)</SelectItem>
+                  <SelectItem value="occupation">Occupation (décroissant)</SelectItem>
+                  <SelectItem value="trend">Évolution (décroissant)</SelectItem>
+                </SelectContent>
+              </Select>
+              {selectedSiteIds.length > 0 && (
+                <>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleExportPDF}
+                    className="gap-2"
+                  >
+                    <FileDown className="h-4 w-4" />
+                    PDF
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleExportExcel}
+                    className="gap-2"
+                  >
+                    <FileSpreadsheet className="h-4 w-4" />
+                    Excel
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
