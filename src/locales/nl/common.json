@@ -34,5 +34,17 @@
   "pricing": "Prijzen",
   "features": "Functies",
   "testimonials": "Getuigenissen",
-  "faq": "FAQ"
+  "faq": "FAQ",
+  "footer": {
+    "description": "De complete oplossing om uw wasserettes te beheren en te optimaliseren.",
+    "navigation": "Navigatie",
+    "legal": "Juridische informatie",
+    "legalNotice": "Juridische kennisgeving",
+    "privacyPolicy": "Privacybeleid",
+    "termsOfService": "Algemene voorwaarden",
+    "contact": "Contact",
+    "copyright": "© {{year}} Lavcom. Alle rechten voorbehouden.",
+    "simulator": "Simulator",
+    "operatorsPricing": "Prijzen voor operators"
+  }
 }

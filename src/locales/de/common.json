@@ -34,5 +34,17 @@
   "pricing": "Preise",
   "features": "Funktionen",
   "testimonials": "Kundenstimmen",
-  "faq": "FAQ"
+  "faq": "FAQ",
+  "footer": {
+    "description": "Die komplette Lösung zur Verwaltung und Optimierung Ihrer Waschsalons.",
+    "navigation": "Navigation",
+    "legal": "Rechtliche Informationen",
+    "legalNotice": "Impressum",
+    "privacyPolicy": "Datenschutzerklärung",
+    "termsOfService": "AGB",
+    "contact": "Kontakt",
+    "copyright": "© {{year}} Lavcom. Alle Rechte vorbehalten.",
+    "simulator": "Simulator",
+    "operatorsPricing": "Preise für Betreiber"
+  }
 }

@@ -34,5 +34,17 @@
   "pricing": "Pricing",
   "features": "Features",
   "testimonials": "Testimonials",
-  "faq": "FAQ"
+  "faq": "FAQ",
+  "footer": {
+    "description": "The complete solution to manage and optimize your laundromats.",
+    "navigation": "Navigation",
+    "legal": "Legal Information",
+    "legalNotice": "Legal Notice",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "contact": "Contact",
+    "copyright": "© {{year}} Lavcom. All rights reserved.",
+    "simulator": "Simulator",
+    "operatorsPricing": "Operator Pricing"
+  }
 }
