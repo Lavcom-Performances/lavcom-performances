@@ -125,9 +125,10 @@ export default function Signup() {
       {/* Back to home button */}
       <Link 
         to="/" 
-        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border"
+        aria-label={t('common:home')}
+        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
-        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" />
+        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden="true" />
         <span className="hidden sm:inline">{t('common:home')}</span>
       </Link>
 
@@ -192,7 +193,7 @@ export default function Signup() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" aria-label={t('app:signup.title')}>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">{t('app:signup.form.firstName')} *</Label>
@@ -203,10 +204,14 @@ export default function Signup() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
-                  className={errors.firstName ? "border-destructive" : ""}
+                  aria-required="true"
+                  aria-invalid={!!errors.firstName}
+                  aria-describedby={errors.firstName ? "firstName-error" : undefined}
+                  autoComplete="given-name"
+                  className={`focus:ring-2 focus:ring-primary focus:ring-offset-1 ${errors.firstName ? "border-destructive" : ""}`}
                 />
                 {errors.firstName && (
-                  <p className="text-xs text-destructive">{errors.firstName}</p>
+                  <p id="firstName-error" className="text-xs text-destructive" role="alert">{errors.firstName}</p>
                 )}
               </div>
               
@@ -219,10 +224,14 @@ export default function Signup() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
-                  className={errors.lastName ? "border-destructive" : ""}
+                  aria-required="true"
+                  aria-invalid={!!errors.lastName}
+                  aria-describedby={errors.lastName ? "lastName-error" : undefined}
+                  autoComplete="family-name"
+                  className={`focus:ring-2 focus:ring-primary focus:ring-offset-1 ${errors.lastName ? "border-destructive" : ""}`}
                 />
                 {errors.lastName && (
-                  <p className="text-xs text-destructive">{errors.lastName}</p>
+                  <p id="lastName-error" className="text-xs text-destructive" role="alert">{errors.lastName}</p>
                 )}
               </div>
             </div>
@@ -236,10 +245,14 @@ export default function Signup() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className={errors.email ? "border-destructive" : ""}
+                aria-required="true"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "email-error" : undefined}
+                autoComplete="email"
+                className={`focus:ring-2 focus:ring-primary focus:ring-offset-1 ${errors.email ? "border-destructive" : ""}`}
               />
               {errors.email && (
-                <p className="text-xs text-destructive">{errors.email}</p>
+                <p id="email-error" className="text-xs text-destructive" role="alert">{errors.email}</p>
               )}
             </div>
 
@@ -251,6 +264,8 @@ export default function Signup() {
                 placeholder={t('app:signup.form.companyPlaceholder')}
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
+                autoComplete="organization"
+                className="focus:ring-2 focus:ring-primary focus:ring-offset-1"
               />
             </div>
 
@@ -264,19 +279,26 @@ export default function Signup() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className={`pr-10 ${errors.password ? "border-destructive" : ""}`}
+                  aria-required="true"
+                  aria-invalid={!!errors.password}
+                  aria-describedby="password-strength password-error"
+                  autoComplete="new-password"
+                  className={`pr-10 focus:ring-2 focus:ring-primary focus:ring-offset-1 ${errors.password ? "border-destructive" : ""}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? t('app:accessibility.hidePassword') : t('app:accessibility.showPassword')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                 </button>
               </div>
-              <PasswordStrengthIndicator password={password} />
+              <div id="password-strength">
+                <PasswordStrengthIndicator password={password} />
+              </div>
               {errors.password && (
-                <p className="text-xs text-destructive">{errors.password}</p>
+                <p id="password-error" className="text-xs text-destructive" role="alert">{errors.password}</p>
               )}
             </div>
 
@@ -290,18 +312,23 @@ export default function Signup() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className={`pr-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
+                  aria-required="true"
+                  aria-invalid={!!errors.confirmPassword}
+                  aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+                  autoComplete="new-password"
+                  className={`pr-10 focus:ring-2 focus:ring-primary focus:ring-offset-1 ${errors.confirmPassword ? "border-destructive" : ""}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showConfirmPassword ? t('app:accessibility.hidePassword') : t('app:accessibility.showPassword')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded"
                 >
-                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-xs text-destructive">{errors.confirmPassword}</p>
+                <p id="confirmPassword-error" className="text-xs text-destructive" role="alert">{errors.confirmPassword}</p>
               )}
             </div>
 

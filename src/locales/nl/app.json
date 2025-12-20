@@ -1,4 +1,8 @@
 {
+  "accessibility": {
+    "showPassword": "Wachtwoord tonen",
+    "hidePassword": "Wachtwoord verbergen"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "profitability": "Winstgevendheid",

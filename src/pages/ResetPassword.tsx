@@ -125,9 +125,10 @@ export default function ResetPassword() {
       {/* Back to home button */}
       <Link 
         to="/" 
-        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border"
+        aria-label={t('common:home')}
+        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
-        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" />
+        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden="true" />
         <span className="hidden sm:inline">{t('common:home')}</span>
       </Link>
 
@@ -192,7 +193,7 @@ export default function ResetPassword() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4" aria-label={t('app:resetPassword.title')}>
                 <div className="space-y-2">
                   <Label htmlFor="password">{t('app:resetPassword.newPassword')}</Label>
                   <div className="relative">
@@ -203,19 +204,26 @@ export default function ResetPassword() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className={`pr-10 ${errors.password ? "border-destructive" : ""}`}
+                      aria-required="true"
+                      aria-invalid={!!errors.password}
+                      aria-describedby="password-strength password-error"
+                      autoComplete="new-password"
+                      className={`pr-10 focus:ring-2 focus:ring-primary focus:ring-offset-1 ${errors.password ? "border-destructive" : ""}`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={showPassword ? t('app:accessibility.hidePassword') : t('app:accessibility.showPassword')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded"
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                     </button>
                   </div>
-                  <PasswordStrengthIndicator password={password} />
+                  <div id="password-strength">
+                    <PasswordStrengthIndicator password={password} />
+                  </div>
                   {errors.password && (
-                    <p className="text-xs text-destructive">{errors.password}</p>
+                    <p id="password-error" className="text-xs text-destructive" role="alert">{errors.password}</p>
                   )}
                 </div>
 
@@ -229,18 +237,23 @@ export default function ResetPassword() {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
-                      className={`pr-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
+                      aria-required="true"
+                      aria-invalid={!!errors.confirmPassword}
+                      aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+                      autoComplete="new-password"
+                      className={`pr-10 focus:ring-2 focus:ring-primary focus:ring-offset-1 ${errors.confirmPassword ? "border-destructive" : ""}`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={showConfirmPassword ? t('app:accessibility.hidePassword') : t('app:accessibility.showPassword')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded"
                     >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <p className="text-xs text-destructive">{errors.confirmPassword}</p>
+                    <p id="confirmPassword-error" className="text-xs text-destructive" role="alert">{errors.confirmPassword}</p>
                   )}
                 </div>
 

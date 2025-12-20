@@ -93,9 +93,10 @@ export default function Login() {
       {/* Back to home button */}
       <Link 
         to="/" 
-        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border"
+        aria-label={t('common:home')}
+        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
-        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" />
+        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden="true" />
         <span className="hidden sm:inline">{t('common:home')}</span>
       </Link>
 
@@ -180,7 +181,7 @@ export default function Login() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" aria-label={t(`app:login.${currentMode}.title`)}>
             <div className="space-y-2">
               <Label htmlFor="email">{t('app:login.form.email')}</Label>
               <Input
@@ -190,7 +191,9 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="h-11"
+                aria-required="true"
+                autoComplete="email"
+                className="h-11 focus:ring-2 focus:ring-primary focus:ring-offset-1"
               />
             </div>
 
@@ -204,14 +207,17 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="h-11 pr-10"
+                  aria-required="true"
+                  autoComplete="current-password"
+                  className="h-11 pr-10 focus:ring-2 focus:ring-primary focus:ring-offset-1"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? t('app:accessibility.hidePassword') : t('app:accessibility.showPassword')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                 </button>
               </div>
             </div>
