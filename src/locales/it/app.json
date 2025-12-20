@@ -27,6 +27,9 @@
         "exportSuccess": "Preset esportati",
         "importSuccess": "{{count}} preset importato/i",
         "importError": "File non valido",
+        "deleteAll": "Elimina tutti i miei preset",
+        "deleteAllConfirm": "Sei sicuro di voler eliminare tutti i tuoi preset personalizzati?",
+        "deleteAllSuccess": "Tutti i preset sono stati eliminati",
         "defaults": {
           "default_bw": "Bianco e nero",
           "default_vintage": "Vintage",

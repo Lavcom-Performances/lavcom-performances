@@ -721,6 +721,27 @@ export function AvatarCropDialog({
                   {t("app:profile.avatar.presets.import")}
                 </Button>
               </div>
+
+              {/* Delete all custom presets */}
+              {presets.length > 0 && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    if (window.confirm(t("app:profile.avatar.presets.deleteAllConfirm"))) {
+                      setPresets([]);
+                      savePresets([]);
+                      setSelectedPresetId("");
+                      toast.success(t("app:profile.avatar.presets.deleteAllSuccess"));
+                    }
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t("app:profile.avatar.presets.deleteAll")}
+                </Button>
+              )}
             </div>
           </div>
         </div>
