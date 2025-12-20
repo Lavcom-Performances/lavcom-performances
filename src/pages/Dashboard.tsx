@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { subDays, parseISO } from "date-fns";
 import { 
@@ -13,8 +13,10 @@ import {
   WashingMachine,
   Loader2,
   Settings,
+  ArrowLeft,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
+import { toast } from "sonner";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
 import { DailyRevenueChart } from "@/components/dashboard/DailyRevenueChart";
@@ -52,6 +54,7 @@ const defaultCosts: LaundryCosts = {
 
 export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { isExpert } = useViewMode();
   const { sites, getDefaultSite } = useSites();
   
@@ -60,12 +63,35 @@ export default function Dashboard() {
   const urlDateStart = searchParams.get('date_start');
   const urlDateEnd = searchParams.get('date_end');
   
-  const selectedSite = useMemo(() => {
+  // Track if we came from a drill-down (site param in URL)
+  const isFromDrillDown = !!urlSiteId;
+  
+  // Validate site and handle fallback
+  const { selectedSite, siteWasInvalid } = useMemo(() => {
     if (urlSiteId) {
-      return sites.find(s => s.id === urlSiteId) || getDefaultSite();
+      const foundSite = sites.find(s => s.id === urlSiteId);
+      if (foundSite) {
+        return { selectedSite: foundSite, siteWasInvalid: false };
+      }
+      // Site not found - fallback to default
+      return { selectedSite: getDefaultSite(), siteWasInvalid: true };
     }
-    return getDefaultSite();
+    return { selectedSite: getDefaultSite(), siteWasInvalid: false };
   }, [urlSiteId, sites, getDefaultSite]);
+  
+  // Show toast for invalid site (only once)
+  useEffect(() => {
+    if (siteWasInvalid && sites.length > 0) {
+      toast.warning("Site non trouvé : affichage de votre laverie par défaut.");
+    }
+  }, [siteWasInvalid, sites.length]);
+  
+  // Show toast for valid drill-down (only on Dashboard)
+  useEffect(() => {
+    if (isFromDrillDown && selectedSite && !siteWasInvalid && sites.length > 0) {
+      toast.success(`Laverie "${selectedSite.name}" sélectionnée`);
+    }
+  }, [isFromDrillDown, selectedSite?.id, siteWasInvalid, sites.length]);
   
   // Initialize date range from URL or defaults
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
@@ -82,6 +108,19 @@ export default function Dashboard() {
   });
   
   const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
+
+  // Handle return to multi-site view
+  const handleReturnToMultiSites = () => {
+    const params = new URLSearchParams();
+    if (dateRange?.from) {
+      params.set('date_start', dateRange.from.toISOString().split('T')[0]);
+    }
+    if (dateRange?.to) {
+      params.set('date_end', dateRange.to.toISOString().split('T')[0]);
+    }
+    params.set('tab', 'comparatifs');
+    navigate(`/dashboard?${params.toString()}`);
+  };
 
   // Sync date range changes to URL
   const handleDateChange = (range: DateRange | undefined) => {
@@ -162,19 +201,37 @@ export default function Dashboard() {
     ? stats.totalTransactions / (1 + stats.transactionsTrend / 100)
     : stats.totalTransactions;
 
+  // Get tab from URL for default tab
+  const urlTab = searchParams.get('tab');
+  const defaultTab = urlTab === 'comparatifs' ? 'comparatifs' : 'analyses';
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
-              Tableau de bord
-            </h1>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              Vue d'ensemble complète de vos performances
-              {selectedSite && <span className="ml-1">• {selectedSite.name}</span>}
-            </p>
+        <div className="flex items-start justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            {/* Back to multi-sites button */}
+            {isFromDrillDown && !siteWasInvalid && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleReturnToMultiSites}
+                className="gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Vue multi-sites</span>
+              </Button>
+            )}
+            <div>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
+                Tableau de bord
+              </h1>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Vue d'ensemble complète de vos performances
+                {selectedSite && <span className="ml-1">• {selectedSite.name}</span>}
+              </p>
+            </div>
           </div>
           <Button 
             variant="outline" 
@@ -198,7 +255,7 @@ export default function Dashboard() {
         siteId={selectedSite?.id}
       />
 
-      <Tabs defaultValue="overview" className="space-y-6">
+      <Tabs defaultValue={defaultTab === 'comparatifs' ? 'comparison' : 'overview'} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="financial">Financier</TabsTrigger>

@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   Building2, 
@@ -114,10 +114,24 @@ export default function LaundromatSettings() {
   // Get sites
   const { sites, getDefaultSite } = useSites();
   
-  // Determine which site to use: URL param > default site
-  const selectedSite = siteIdFromUrl 
-    ? sites.find(s => s.id === siteIdFromUrl) || getDefaultSite()
-    : getDefaultSite();
+  // Validate site and handle fallback
+  const { selectedSite, siteWasInvalid } = useMemo(() => {
+    if (siteIdFromUrl) {
+      const foundSite = sites.find(s => s.id === siteIdFromUrl);
+      if (foundSite) {
+        return { selectedSite: foundSite, siteWasInvalid: false };
+      }
+      return { selectedSite: getDefaultSite(), siteWasInvalid: true };
+    }
+    return { selectedSite: getDefaultSite(), siteWasInvalid: false };
+  }, [siteIdFromUrl, sites, getDefaultSite]);
+  
+  // Show toast for invalid site
+  useEffect(() => {
+    if (siteWasInvalid && sites.length > 0) {
+      toast.warning("Site non trouvé : affichage de votre laverie par défaut.");
+    }
+  }, [siteWasInvalid, sites.length]);
   
   // Handle site change from selector
   const handleSiteChange = (siteId: string) => {

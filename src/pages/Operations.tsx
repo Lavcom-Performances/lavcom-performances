@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO } from "date-fns";
@@ -62,12 +62,31 @@ export default function Operations() {
   const urlDateStart = searchParams.get('date_start');
   const urlDateEnd = searchParams.get('date_end');
   
-  const selectedSite = useMemo(() => {
+  // Track if we came from a drill-down
+  const isFromDrillDown = !!urlSiteId;
+  
+  // Validate site and handle fallback
+  const { selectedSite, siteWasInvalid } = useMemo(() => {
     if (urlSiteId) {
-      return sites.find(s => s.id === urlSiteId) || getDefaultSite();
+      const foundSite = sites.find(s => s.id === urlSiteId);
+      if (foundSite) {
+        return { selectedSite: foundSite, siteWasInvalid: false };
+      }
+      return { selectedSite: getDefaultSite(), siteWasInvalid: true };
     }
-    return getDefaultSite();
+    return { selectedSite: getDefaultSite(), siteWasInvalid: false };
   }, [urlSiteId, sites, getDefaultSite]);
+  
+  // Show toast for invalid site (only once)
+  useEffect(() => {
+    if (siteWasInvalid && sites.length > 0) {
+      toast({
+        title: "Site non trouvé",
+        description: "Affichage de votre laverie par défaut.",
+        variant: "default",
+      });
+    }
+  }, [siteWasInvalid, sites.length, toast]);
   
   // Initialize date range from URL or defaults
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
@@ -261,7 +280,7 @@ export default function Operations() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-              Opérations
+              Opérations{selectedSite ? ` — ${selectedSite.name}` : ''}
             </h1>
             <p className="text-muted-foreground">
               Journal chronologique des transactions
@@ -288,7 +307,7 @@ export default function Operations() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-            Opérations
+            Opérations{selectedSite ? ` — ${selectedSite.name}` : ''}
           </h1>
           <p className="text-muted-foreground">
             Journal chronologique des transactions
