@@ -1,0 +1,112 @@
+{
+  "hero": {
+    "badge": "The performance dashboard for laundromats",
+    "optimizeLaundries": "I want to optimize my laundries",
+    "openLaundry": "I want to open a laundry"
+  },
+  "twoProfiles": {
+    "title": "Two profiles, two solutions",
+    "subtitle": "Whether you already manage a laundry or are preparing your project, Lavcom Performances adapts to your needs."
+  },
+  "exploitants": {
+    "badge": "For laundry operators",
+    "title": "For operators who want to get the most out of their laundries",
+    "benefit1": "See at a glance what each laundry really brings in.",
+    "benefit2": "Spot machines that perform well and those that could do better.",
+    "benefit3": "Get simple action ideas: adjust a price, add a dryer, review opening hours.",
+    "keepControl": "You stay in control. Lavcom Performances just helps you see clearer and decide faster.",
+    "tryFree": "Try 14 days free",
+    "signIn": "Sign in",
+    "stats": {
+      "realtime": "Real-time tracking",
+      "avgRevenue": "Average revenue increase",
+      "timeSaved": "Saved / week",
+      "reducedBreakdowns": "Breakdown reduction"
+    }
+  },
+  "futursExploitants": {
+    "badge": "Want to open a laundry?",
+    "title": "For those who want to open a laundry and start well",
+    "benefit1": "Estimate how much your project can earn based on location, machines, prices.",
+    "benefit2": "Test multiple configurations: with or without dryers, by area, etc.",
+    "benefit3": "Identify your break-even point before getting started.",
+    "noGuessing": "No more guessing. You simulate, you see, you decide.",
+    "testSimulator": "Try the free simulator",
+    "seePacks": "See packs",
+    "simulator": "Simulator",
+    "profitability": "profitability",
+    "profitabilityThreshold": "Break-even",
+    "unlimitedScenarios": "Unlimited scenarios",
+    "pdfReport": "PDF report",
+    "expertCall": "Expert call"
+  },
+  "ebook": {
+    "badge": "Free resource",
+    "title": "Before opening: 10 questions to ask yourself",
+    "description": "Choosing the right location, estimating costs, understanding regulations… Download our free ebook to avoid common mistakes.",
+    "cta": "Download PDF ebook",
+    "pages": "pages"
+  },
+  "features": {
+    "title": "Everything you need",
+    "subtitle": "Powerful tools to analyze and optimize every aspect of your laundry",
+    "dashboards": {
+      "title": "Real-time dashboards",
+      "description": "Visualize your performance with clear KPIs and interactive charts."
+    },
+    "predictive": {
+      "title": "Predictive analytics",
+      "description": "Anticipate trends and optimize your revenue with AI."
+    },
+    "alerts": {
+      "title": "Smart alerts",
+      "description": "Get notified instantly of anomalies and opportunities."
+    },
+    "revenue": {
+      "title": "Revenue tracking",
+      "description": "Analyze your revenue by period, machine, and payment method."
+    },
+    "maintenance": {
+      "title": "Predictive maintenance",
+      "description": "Reduce breakdowns with maintenance recommendations."
+    },
+    "optimization": {
+      "title": "Operational optimization",
+      "description": "Identify off-peak hours and maximize occupancy rate."
+    }
+  },
+  "benefits": {
+    "title": "Concrete results for your business",
+    "subtitle": "Our customers see significant improvements within the first months of use.",
+    "item1": "Increase your revenue by up to 25%",
+    "item2": "Reduce machine downtime by 40%",
+    "item3": "Save 10h/week on administrative tasks",
+    "item4": "Access your data from anywhere"
+  },
+  "testimonials": {
+    "title": "What our customers say",
+    "subtitle": "Laundry managers like you share their experience"
+  },
+  "contact": {
+    "title": "Have a question?",
+    "subtitle": "Our team is here to help you get started",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "your@email.com",
+    "messagePlaceholder": "Your message...",
+    "send": "Send message",
+    "sending": "Sending...",
+    "successTitle": "Message sent!",
+    "successDescription": "We'll get back to you as soon as possible.",
+    "errorTitle": "Error",
+    "errorDescription": "Something went wrong. Please try again."
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you need to know about Lavcom Performances"
+  },
+  "cta": {
+    "startNow": "Start now",
+    "watchDemo": "Watch demo",
+    "discoverOffers": "Discover our offers"
+  }
+}
