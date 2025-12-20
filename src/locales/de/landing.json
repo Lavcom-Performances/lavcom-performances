@@ -1,112 +1,209 @@
 {
   "hero": {
-    "badge": "Le tableau de bord performance des laveries automatiques",
-    "optimizeLaundries": "Je veux optimiser mes laveries",
-    "openLaundry": "Je veux ouvrir une laverie"
+    "badge": "Das Performance-Dashboard für Waschsalons",
+    "optimizeLaundries": "Ich möchte meine Waschsalons optimieren",
+    "openLaundry": "Ich möchte einen Waschsalon eröffnen"
   },
   "twoProfiles": {
-    "title": "Deux profils, deux solutions",
-    "subtitle": "Que vous gériez déjà une laverie ou que vous prépariez votre projet, Lavcom Performances s'adapte à vos besoins."
+    "title": "Zwei Profile, zwei Lösungen",
+    "subtitle": "Ob Sie bereits einen Waschsalon betreiben oder Ihr Projekt vorbereiten, Lavcom Performances passt sich Ihren Bedürfnissen an."
   },
   "exploitants": {
-    "badge": "Pour les exploitants de laveries",
-    "title": "Pour les exploitants qui veulent tirer le meilleur de leurs laveries",
-    "benefit1": "Voir en un coup d'œil ce que chaque laverie rapporte vraiment.",
-    "benefit2": "Repérer les machines qui marchent fort et celles qui pourraient mieux tourner.",
-    "benefit3": "Recevoir des idées simples d'actions : ajuster un prix, ajouter un séchoir, revoir un horaire d'ouverture.",
-    "keepControl": "Vous gardez le contrôle. Lavcom Performances vous aide juste à voir plus clair et à décider plus vite.",
-    "tryFree": "Essayer 14 jours gratuits",
-    "signIn": "Se connecter",
+    "badge": "Für Waschsalon-Betreiber",
+    "title": "Für Betreiber, die das Beste aus ihren Waschsalons herausholen wollen",
+    "benefit1": "Auf einen Blick sehen, was jeder Waschsalon wirklich einbringt.",
+    "benefit2": "Maschinen identifizieren, die gut laufen, und solche, die verbessert werden könnten.",
+    "benefit3": "Einfache Handlungsideen erhalten: einen Preis anpassen, einen Trockner hinzufügen, Öffnungszeiten überprüfen.",
+    "keepControl": "Sie behalten die Kontrolle. Lavcom Performances hilft Ihnen nur, klarer zu sehen und schneller zu entscheiden.",
+    "tryFree": "14 Tage kostenlos testen",
+    "signIn": "Anmelden",
     "stats": {
-      "realtime": "Suivi temps réel",
-      "avgRevenue": "CA moyen constaté",
-      "timeSaved": "Gagnées / semaine",
-      "reducedBreakdowns": "Réduction pannes"
+      "realtime": "Echtzeit-Tracking",
+      "avgRevenue": "Durchschnittliche Umsatzsteigerung",
+      "timeSaved": "Gespart / Woche",
+      "reducedBreakdowns": "Reduzierung von Ausfällen"
     }
   },
   "futursExploitants": {
-    "badge": "Vous souhaitez ouvrir une laverie ?",
-    "title": "Pour ceux qui veulent ouvrir une laverie et bien démarrer",
-    "benefit1": "Estimez combien votre projet peut rapporter selon le local, les machines, les tarifs.",
-    "benefit2": "Testez plusieurs configurations : avec ou sans séchoirs, selon la zone, etc.",
-    "benefit3": "Identifiez votre seuil de rentabilité avant de vous lancer.",
-    "noGuessing": "Plus besoin de deviner. Vous simulez, vous voyez, vous décidez.",
-    "testSimulator": "Tester le simulateur gratuit",
-    "seePacks": "Voir les packs",
-    "simulator": "Simulateur",
-    "profitability": "de rentabilité",
-    "profitabilityThreshold": "Seuil rentabilité",
-    "unlimitedScenarios": "Scénarios illimités",
-    "pdfReport": "Rapport PDF",
-    "expertCall": "Visio expert"
+    "badge": "Möchten Sie einen Waschsalon eröffnen?",
+    "title": "Für alle, die einen Waschsalon eröffnen und gut starten wollen",
+    "benefit1": "Schätzen Sie, wie viel Ihr Projekt je nach Standort, Maschinen und Preisen einbringen kann.",
+    "benefit2": "Testen Sie verschiedene Konfigurationen: mit oder ohne Trockner, je nach Zone, usw.",
+    "benefit3": "Identifizieren Sie Ihren Break-even-Punkt, bevor Sie loslegen.",
+    "noGuessing": "Kein Raten mehr. Sie simulieren, sehen und entscheiden.",
+    "testSimulator": "Kostenlosen Simulator testen",
+    "seePacks": "Pakete ansehen",
+    "simulator": "Simulator",
+    "profitability": "Rentabilität",
+    "profitabilityThreshold": "Break-even-Punkt",
+    "unlimitedScenarios": "Unbegrenzte Szenarien",
+    "pdfReport": "PDF-Bericht",
+    "expertCall": "Expertenanruf"
   },
   "ebook": {
-    "badge": "Ressource gratuite",
-    "title": "Avant d'ouvrir : 10 questions à se poser",
-    "description": "Choisir le bon local, estimer les charges, comprendre la réglementation… Téléchargez notre ebook gratuit pour éviter les erreurs classiques.",
-    "cta": "Télécharger l'ebook PDF",
-    "pages": "pages"
+    "badge": "Kostenlose Ressource",
+    "title": "Vor der Eröffnung: 10 Fragen, die Sie sich stellen sollten",
+    "description": "Den richtigen Standort wählen, Kosten schätzen, Vorschriften verstehen… Laden Sie unser kostenloses E-Book herunter, um häufige Fehler zu vermeiden.",
+    "cta": "PDF E-Book herunterladen",
+    "pages": "Seiten"
   },
   "features": {
-    "title": "Tout ce dont vous avez besoin",
-    "subtitle": "Des outils puissants pour analyser et optimiser chaque aspect de votre laverie",
+    "title": "Alles, was Sie brauchen",
+    "subtitle": "Leistungsstarke Tools zur Analyse und Optimierung jedes Aspekts Ihres Waschsalons",
     "dashboards": {
-      "title": "Tableaux de bord en temps réel",
-      "description": "Visualisez vos performances avec des KPIs clairs et des graphiques interactifs."
+      "title": "Echtzeit-Dashboards",
+      "description": "Visualisieren Sie Ihre Leistung mit klaren KPIs und interaktiven Diagrammen."
     },
     "predictive": {
-      "title": "Analyses prédictives",
-      "description": "Anticipez les tendances et optimisez votre chiffre d'affaires grâce à l'IA."
+      "title": "Prädiktive Analysen",
+      "description": "Antizipieren Sie Trends und optimieren Sie Ihren Umsatz mit KI."
     },
     "alerts": {
-      "title": "Alertes intelligentes",
-      "description": "Soyez notifié instantanément des anomalies et des opportunités."
+      "title": "Intelligente Warnungen",
+      "description": "Erhalten Sie sofortige Benachrichtigungen über Anomalien und Chancen."
     },
     "revenue": {
-      "title": "Suivi des revenus",
-      "description": "Analysez vos revenus par période, machine et mode de paiement."
+      "title": "Umsatzverfolgung",
+      "description": "Analysieren Sie Ihre Einnahmen nach Zeitraum, Maschine und Zahlungsmethode."
     },
     "maintenance": {
-      "title": "Maintenance prédictive",
-      "description": "Réduisez les pannes grâce aux recommandations de maintenance."
+      "title": "Prädiktive Wartung",
+      "description": "Reduzieren Sie Ausfälle dank Wartungsempfehlungen."
     },
     "optimization": {
-      "title": "Optimisation opérationnelle",
-      "description": "Identifiez les heures creuses et maximisez le taux d'occupation."
+      "title": "Betriebsoptimierung",
+      "description": "Identifizieren Sie Nebenzeiten und maximieren Sie die Auslastungsrate."
     }
   },
   "benefits": {
-    "title": "Des résultats concrets pour votre activité",
-    "subtitle": "Nos clients constatent des améliorations significatives dès les premiers mois d'utilisation.",
-    "item1": "Augmentez votre chiffre d'affaires jusqu'à 25%",
-    "item2": "Réduisez les temps d'arrêt machine de 40%",
-    "item3": "Gagnez 10h/semaine sur la gestion administrative",
-    "item4": "Accédez à vos données depuis n'importe où"
+    "title": "Konkrete Ergebnisse für Ihr Geschäft",
+    "subtitle": "Unsere Kunden sehen bereits in den ersten Monaten der Nutzung signifikante Verbesserungen.",
+    "item1": "Steigern Sie Ihren Umsatz um bis zu 25%",
+    "item2": "Reduzieren Sie Maschinenausfallzeiten um 40%",
+    "item3": "Sparen Sie 10h/Woche bei Verwaltungsaufgaben",
+    "item4": "Greifen Sie von überall auf Ihre Daten zu"
   },
   "testimonials": {
-    "title": "Ce que disent nos clients",
-    "subtitle": "Des gérants de laverie comme vous partagent leur expérience"
+    "title": "Was unsere Kunden sagen",
+    "subtitle": "Waschsalon-Manager wie Sie teilen ihre Erfahrungen",
+    "t1Name": "Marie Dupont",
+    "t1Role": "Managerin, Laverie Express Lyon",
+    "t1Quote": "Dank Lavcom Performances konnte ich meine Nebenzeiten identifizieren und meine Preise anpassen. Mein Umsatz stieg in 6 Monaten um 30%!",
+    "t2Name": "Pierre Martin",
+    "t2Role": "Inhaber, Clean & Fresh Paris",
+    "t2Quote": "Die Wartungswarnungen haben mir geholfen, 3 größere Ausfälle in diesem Quartal zu vermeiden. Die Investition hat sich in wenigen Wochen amortisiert.",
+    "t3Name": "Sophie Bernard",
+    "t3Role": "Direktorin, LavPlus Netzwerk",
+    "t3Quote": "Mit 12 Waschsalons konnte ich nicht mehr alles manuell verwalten. Lavcom gibt mir einen sofortigen Überblick über mein gesamtes Netzwerk."
+  },
+  "comparison": {
+    "title": "Ohne Lavcom Performances / Mit Lavcom Performances",
+    "withoutTitle": "Ohne Lavcom Performances",
+    "without1": "Ich sehe nur den Gesamtumsatz.",
+    "without2": "Ich weiß nicht, welche Maschinen rentabel sind.",
+    "without3": "Ich ändere meine Preise nach Gefühl.",
+    "without4": "Kein klarer Bericht für meine Bank.",
+    "withTitle": "Mit Lavcom Performances",
+    "with1": "Ich weiß, welche Maschinen meine Kosten decken.",
+    "with2": "Ich sehe ausgelastete oder unterausgelastete Zeitfenster.",
+    "with3": "Konkrete Empfehlungen jeden Monat.",
+    "with4": "PDF-Bericht für meine Bank."
+  },
+  "pdfExample": {
+    "cta": "Beispiel ansehen (PDF)"
   },
   "contact": {
-    "title": "Une question ?",
-    "subtitle": "Notre équipe est là pour vous aider à démarrer",
-    "namePlaceholder": "Votre nom",
-    "emailPlaceholder": "votre@email.com",
-    "messagePlaceholder": "Votre message...",
-    "send": "Envoyer le message",
-    "sending": "Envoi en cours...",
-    "successTitle": "Message envoyé !",
-    "successDescription": "Nous vous répondrons dans les plus brefs délais.",
-    "errorTitle": "Erreur",
-    "errorDescription": "Une erreur est survenue. Veuillez réessayer."
+    "title": "Haben Sie eine Frage?",
+    "titleFull": "Haben Sie eine Frage? Kontaktieren Sie uns",
+    "subtitle": "Unser Team ist hier, um Ihnen beim Start zu helfen",
+    "subtitleFull": "Unser Team antwortet innerhalb von 24 Stunden, um Sie bei Ihrem Projekt zu unterstützen.",
+    "namePlaceholder": "Ihr Name",
+    "nameLabel": "Vollständiger Name",
+    "emailPlaceholder": "ihre@email.com",
+    "emailLabel": "E-Mail",
+    "messagePlaceholder": "Ihre Nachricht...",
+    "messageLabel": "Nachricht",
+    "messageHint": "Wie können wir Ihnen helfen?",
+    "send": "Nachricht senden",
+    "sending": "Wird gesendet...",
+    "successTitle": "Nachricht gesendet!",
+    "successDescription": "Wir werden uns so schnell wie möglich bei Ihnen melden.",
+    "errorTitle": "Fehler",
+    "errorDescription": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+    "emailAddress": "contact@lavcom.fr",
+    "hours": "Mo-Fr: 9-18 Uhr",
+    "responseTime": "Wir antworten innerhalb von 24 Geschäftsstunden",
+    "hoursLabel": "Öffnungszeiten",
+    "responseLabel": "Schnelle Antwort"
   },
   "faq": {
-    "title": "Questions fréquentes",
-    "subtitle": "Tout ce que vous devez savoir sur Lavcom Performances"
+    "title": "Häufig gestellte Fragen",
+    "subtitle": "Alles, was Sie über Lavcom Performances wissen müssen",
+    "q1": "Wie verbindet sich Lavcom Performances mit meinen Maschinen?",
+    "a1": "Lavcom Performances lässt sich einfach in die meisten Zahlungs- und Waschsalon-Managementsysteme integrieren. Unser technisches Team führt Sie durch die Ersteinrichtung, die in der Regel weniger als 2 Stunden dauert. Keine Hardware-Änderungen erforderlich.",
+    "q2": "Sind meine Daten sicher?",
+    "a2": "Absolut. Alle Ihre Daten sind verschlüsselt und werden auf sicheren Servern in Europa gespeichert. Wir sind DSGVO-konform und teilen Ihre Informationen niemals mit Dritten. Sie bleiben zu 100% Eigentümer Ihrer Daten.",
+    "q3": "Kann ich mehrere Waschsalons mit einem Konto verwalten?",
+    "a3": "Ja! Lavcom Performances ist darauf ausgelegt, sowohl einen einzelnen Waschsalon als auch ein komplettes Netzwerk zu verwalten. Sie können die Leistung jedes Standorts einzeln anzeigen oder eine konsolidierte Ansicht Ihres gesamten Netzwerks erhalten.",
+    "q4": "Wie lange dauert die kostenlose Testphase?",
+    "a4": "Sie erhalten eine 14-tägige kostenlose Testversion mit Zugang zu allen Funktionen. Keine Kreditkarte erforderlich, um zu starten. Am Ende der Testphase wählen Sie den Plan, der zu Ihnen passt.",
+    "q5": "Wie funktionieren die Wartungswarnungen?",
+    "a5": "Unser System analysiert kontinuierlich Ihre Maschinendaten, um Anomalien zu erkennen, bevor sie Ausfälle verursachen. Sie erhalten Warnungen per E-Mail oder SMS mit präzisen Handlungsempfehlungen. So können Sie präventiv eingreifen und Ausfallzeiten erheblich reduzieren.",
+    "q6": "Welcher Support ist im Abonnement enthalten?",
+    "a6": "Alle unsere Abonnements beinhalten E-Mail-Support mit Antwort innerhalb von 24 Stunden. Pro- und Business-Pläne profitieren von prioritärem Telefonsupport und persönlicher Beratung zur Optimierung der Plattformnutzung."
+  },
+  "howItWorks": {
+    "title": "Wie funktioniert es?",
+    "step1Title": "Importieren Sie Ihre Daten",
+    "step1Desc": "Laden Sie Ihre Zahlungsdateien von Ihrem Terminal herunter und importieren Sie sie in Lavcom Performances.",
+    "step2Title": "Visualisieren Sie Ihre Ergebnisse",
+    "step2Desc": "Sehen Sie Ihre Einnahmen nach Waschsalon, nach Maschine, nach Zeitfenster und Ihre ruhigeren Perioden.",
+    "step3Title": "Handeln Sie",
+    "step3Desc": "Die Plattform schlägt Ideen vor: wo ein Preis angepasst werden sollte, welche Zeitfenster verstärkt werden sollten, welche Maschinen genauer überwacht werden sollten."
+  },
+  "whyUse": {
+    "title": "Warum Lavcom Performances nutzen?",
+    "feature1Title": "Sehen Sie, was wirklich in Ihren Waschsalons passiert",
+    "feature1Desc": "Keine manuellen Tabellenkalkulationen mehr: Sie sehen Ihre Kennzahlen automatisch.",
+    "feature2Title": "Sparen Sie Zeit beim Monitoring",
+    "feature2Desc": "Sie verbringen weniger Zeit mit der Suche nach Informationen und mehr Zeit mit Entscheidungen.",
+    "feature3Title": "Verbessern Sie Ihren Umsatz ohne alles zu revolutionieren",
+    "feature3Desc": "Einige gezielte Anpassungen können bereits einen echten Unterschied bei Ihren Ergebnissen machen."
+  },
+  "guide": {
+    "title": "Vor der Eröffnung weiter gehen",
+    "subtitle": "Der praktische Leitfaden \"Vor der Eröffnung\"",
+    "description": "Ein konkreter Leitfaden, um Ihr Waschsalon-Projekt vorzubereiten: Standortwahl, Konfiguration, Lieferanten, Fehler, die vermieden werden sollten. Der Simulator gibt Ihnen die Zahlen, der Leitfaden hilft Ihnen, die richtigen Entscheidungen zu treffen.",
+    "cta": "Leitfaden entdecken"
+  },
+  "trialBanner": {
+    "title": "Testen Sie Lavcom Performances 14 Tage kostenlos",
+    "subtitle": "Ohne Verpflichtung, Sie können jederzeit aufhören.",
+    "cta": "Kostenloses Konto erstellen"
+  },
+  "twoPaths": {
+    "title": "Zwei Wege mit Lavcom Performances zu arbeiten",
+    "subtitle": "Ob Sie bereits Betreiber oder zukünftiger Betreiber sind, wir haben eine Lösung, die zu Ihren Bedürfnissen passt.",
+    "existing": "Ich betreibe bereits einen Waschsalon",
+    "future": "Ich möchte einen Waschsalon eröffnen"
+  },
+  "footer": {
+    "description": "Die Plattform, die Ihnen hilft, das Beste aus Ihren SB-Waschsalons herauszuholen.",
+    "quickLinks": "Schnelllinks",
+    "pricingOperators": "Preise für Betreiber",
+    "simulator": "Simulator",
+    "simulatorPacks": "Simulator-Pakete",
+    "contactTitle": "Kontakt",
+    "address": "88 avenue de Grammont, 37000 Tours",
+    "legalNotice": "Lavcom Performances ist eine Handelsmarke von Lavcom, selbst eine Handelsmarke von My'Po SARL – 88 avenue de Grammont, 37000 Tours",
+    "legalLinks": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "AGB",
+    "copyright": "© {{year}} Lavcom Performances. Alle Rechte vorbehalten."
   },
   "cta": {
-    "startNow": "Commencer maintenant",
-    "watchDemo": "Voir la démo",
-    "discoverOffers": "Découvrir nos offres"
+    "startNow": "Jetzt starten",
+    "watchDemo": "Demo ansehen",
+    "discoverOffers": "Angebote entdecken"
   }
 }

@@ -1,112 +1,209 @@
 {
   "hero": {
-    "badge": "Le tableau de bord performance des laveries automatiques",
-    "optimizeLaundries": "Je veux optimiser mes laveries",
-    "openLaundry": "Je veux ouvrir une laverie"
+    "badge": "La dashboard delle performance per lavanderie automatiche",
+    "optimizeLaundries": "Voglio ottimizzare le mie lavanderie",
+    "openLaundry": "Voglio aprire una lavanderia"
   },
   "twoProfiles": {
-    "title": "Deux profils, deux solutions",
-    "subtitle": "Que vous gériez déjà une laverie ou que vous prépariez votre projet, Lavcom Performances s'adapte à vos besoins."
+    "title": "Due profili, due soluzioni",
+    "subtitle": "Che tu gestisca già una lavanderia o stia preparando il tuo progetto, Lavcom Performances si adatta alle tue esigenze."
   },
   "exploitants": {
-    "badge": "Pour les exploitants de laveries",
-    "title": "Pour les exploitants qui veulent tirer le meilleur de leurs laveries",
-    "benefit1": "Voir en un coup d'œil ce que chaque laverie rapporte vraiment.",
-    "benefit2": "Repérer les machines qui marchent fort et celles qui pourraient mieux tourner.",
-    "benefit3": "Recevoir des idées simples d'actions : ajuster un prix, ajouter un séchoir, revoir un horaire d'ouverture.",
-    "keepControl": "Vous gardez le contrôle. Lavcom Performances vous aide juste à voir plus clair et à décider plus vite.",
-    "tryFree": "Essayer 14 jours gratuits",
-    "signIn": "Se connecter",
+    "badge": "Per gli operatori di lavanderie",
+    "title": "Per gli operatori che vogliono ottenere il massimo dalle loro lavanderie",
+    "benefit1": "Vedere a colpo d'occhio quanto rende realmente ogni lavanderia.",
+    "benefit2": "Identificare le macchine che funzionano bene e quelle che potrebbero migliorare.",
+    "benefit3": "Ricevere idee semplici di azioni: modificare un prezzo, aggiungere un'asciugatrice, rivedere gli orari.",
+    "keepControl": "Mantieni il controllo. Lavcom Performances ti aiuta solo a vedere più chiaramente e decidere più velocemente.",
+    "tryFree": "Prova 14 giorni gratis",
+    "signIn": "Accedi",
     "stats": {
-      "realtime": "Suivi temps réel",
-      "avgRevenue": "CA moyen constaté",
-      "timeSaved": "Gagnées / semaine",
-      "reducedBreakdowns": "Réduction pannes"
+      "realtime": "Monitoraggio in tempo reale",
+      "avgRevenue": "Aumento medio del fatturato",
+      "timeSaved": "Risparmiate / settimana",
+      "reducedBreakdowns": "Riduzione guasti"
     }
   },
   "futursExploitants": {
-    "badge": "Vous souhaitez ouvrir une laverie ?",
-    "title": "Pour ceux qui veulent ouvrir une laverie et bien démarrer",
-    "benefit1": "Estimez combien votre projet peut rapporter selon le local, les machines, les tarifs.",
-    "benefit2": "Testez plusieurs configurations : avec ou sans séchoirs, selon la zone, etc.",
-    "benefit3": "Identifiez votre seuil de rentabilité avant de vous lancer.",
-    "noGuessing": "Plus besoin de deviner. Vous simulez, vous voyez, vous décidez.",
-    "testSimulator": "Tester le simulateur gratuit",
-    "seePacks": "Voir les packs",
-    "simulator": "Simulateur",
-    "profitability": "de rentabilité",
-    "profitabilityThreshold": "Seuil rentabilité",
-    "unlimitedScenarios": "Scénarios illimités",
-    "pdfReport": "Rapport PDF",
-    "expertCall": "Visio expert"
+    "badge": "Vuoi aprire una lavanderia?",
+    "title": "Per chi vuole aprire una lavanderia e partire bene",
+    "benefit1": "Stima quanto può rendere il tuo progetto in base al locale, alle macchine e ai prezzi.",
+    "benefit2": "Testa diverse configurazioni: con o senza asciugatrici, a seconda della zona, ecc.",
+    "benefit3": "Identifica il tuo punto di pareggio prima di iniziare.",
+    "noGuessing": "Niente più supposizioni. Simuli, vedi, decidi.",
+    "testSimulator": "Prova il simulatore gratis",
+    "seePacks": "Vedi pacchetti",
+    "simulator": "Simulatore",
+    "profitability": "di redditività",
+    "profitabilityThreshold": "Punto di pareggio",
+    "unlimitedScenarios": "Scenari illimitati",
+    "pdfReport": "Report PDF",
+    "expertCall": "Chiamata con esperto"
   },
   "ebook": {
-    "badge": "Ressource gratuite",
-    "title": "Avant d'ouvrir : 10 questions à se poser",
-    "description": "Choisir le bon local, estimer les charges, comprendre la réglementation… Téléchargez notre ebook gratuit pour éviter les erreurs classiques.",
-    "cta": "Télécharger l'ebook PDF",
-    "pages": "pages"
+    "badge": "Risorsa gratuita",
+    "title": "Prima di aprire: 10 domande da porsi",
+    "description": "Scegliere il locale giusto, stimare i costi, capire le normative… Scarica il nostro ebook gratuito per evitare gli errori comuni.",
+    "cta": "Scarica l'ebook PDF",
+    "pages": "pagine"
   },
   "features": {
-    "title": "Tout ce dont vous avez besoin",
-    "subtitle": "Des outils puissants pour analyser et optimiser chaque aspect de votre laverie",
+    "title": "Tutto ciò di cui hai bisogno",
+    "subtitle": "Strumenti potenti per analizzare e ottimizzare ogni aspetto della tua lavanderia",
     "dashboards": {
-      "title": "Tableaux de bord en temps réel",
-      "description": "Visualisez vos performances avec des KPIs clairs et des graphiques interactifs."
+      "title": "Dashboard in tempo reale",
+      "description": "Visualizza le tue performance con KPI chiari e grafici interattivi."
     },
     "predictive": {
-      "title": "Analyses prédictives",
-      "description": "Anticipez les tendances et optimisez votre chiffre d'affaires grâce à l'IA."
+      "title": "Analisi predittiva",
+      "description": "Anticipa le tendenze e ottimizza il tuo fatturato con l'IA."
     },
     "alerts": {
-      "title": "Alertes intelligentes",
-      "description": "Soyez notifié instantanément des anomalies et des opportunités."
+      "title": "Avvisi intelligenti",
+      "description": "Ricevi notifiche istantanee su anomalie e opportunità."
     },
     "revenue": {
-      "title": "Suivi des revenus",
-      "description": "Analysez vos revenus par période, machine et mode de paiement."
+      "title": "Monitoraggio ricavi",
+      "description": "Analizza i tuoi ricavi per periodo, macchina e metodo di pagamento."
     },
     "maintenance": {
-      "title": "Maintenance prédictive",
-      "description": "Réduisez les pannes grâce aux recommandations de maintenance."
+      "title": "Manutenzione predittiva",
+      "description": "Riduci i guasti grazie alle raccomandazioni di manutenzione."
     },
     "optimization": {
-      "title": "Optimisation opérationnelle",
-      "description": "Identifiez les heures creuses et maximisez le taux d'occupation."
+      "title": "Ottimizzazione operativa",
+      "description": "Identifica le ore di minor affluenza e massimizza il tasso di occupazione."
     }
   },
   "benefits": {
-    "title": "Des résultats concrets pour votre activité",
-    "subtitle": "Nos clients constatent des améliorations significatives dès les premiers mois d'utilisation.",
-    "item1": "Augmentez votre chiffre d'affaires jusqu'à 25%",
-    "item2": "Réduisez les temps d'arrêt machine de 40%",
-    "item3": "Gagnez 10h/semaine sur la gestion administrative",
-    "item4": "Accédez à vos données depuis n'importe où"
+    "title": "Risultati concreti per la tua attività",
+    "subtitle": "I nostri clienti vedono miglioramenti significativi nei primi mesi di utilizzo.",
+    "item1": "Aumenta il tuo fatturato fino al 25%",
+    "item2": "Riduci i tempi di inattività delle macchine del 40%",
+    "item3": "Risparmia 10h/settimana sulle attività amministrative",
+    "item4": "Accedi ai tuoi dati da qualsiasi luogo"
   },
   "testimonials": {
-    "title": "Ce que disent nos clients",
-    "subtitle": "Des gérants de laverie comme vous partagent leur expérience"
+    "title": "Cosa dicono i nostri clienti",
+    "subtitle": "Gestori di lavanderie come te condividono la loro esperienza",
+    "t1Name": "Marie Dupont",
+    "t1Role": "Manager, Laverie Express Lyon",
+    "t1Quote": "Grazie a Lavcom Performances, ho potuto identificare le mie ore di minor affluenza e modificare i miei prezzi. Il mio fatturato è aumentato del 30% in 6 mesi!",
+    "t2Name": "Pierre Martin",
+    "t2Role": "Proprietario, Clean & Fresh Paris",
+    "t2Quote": "Gli avvisi di manutenzione mi hanno permesso di evitare 3 guasti importanti questo trimestre. L'investimento si è ripagato in poche settimane.",
+    "t3Name": "Sophie Bernard",
+    "t3Role": "Direttrice, Rete LavPlus",
+    "t3Quote": "Con 12 lavanderie, non potevo più gestire tutto manualmente. Lavcom mi dà una visione istantanea di tutta la mia rete."
+  },
+  "comparison": {
+    "title": "Senza Lavcom Performances / Con Lavcom Performances",
+    "withoutTitle": "Senza Lavcom Performances",
+    "without1": "Vedo solo il fatturato globale.",
+    "without2": "Non so quali macchine sono redditizie.",
+    "without3": "Cambio i miei prezzi a intuito.",
+    "without4": "Nessun report chiaro per la mia banca.",
+    "withTitle": "Con Lavcom Performances",
+    "with1": "So quali macchine coprono i miei costi.",
+    "with2": "Vedo le fasce orarie sature o sottoutilizzate.",
+    "with3": "Raccomandazioni concrete ogni mese.",
+    "with4": "Report PDF per la mia banca."
+  },
+  "pdfExample": {
+    "cta": "Vedi un esempio (PDF)"
   },
   "contact": {
-    "title": "Une question ?",
-    "subtitle": "Notre équipe est là pour vous aider à démarrer",
-    "namePlaceholder": "Votre nom",
-    "emailPlaceholder": "votre@email.com",
-    "messagePlaceholder": "Votre message...",
-    "send": "Envoyer le message",
-    "sending": "Envoi en cours...",
-    "successTitle": "Message envoyé !",
-    "successDescription": "Nous vous répondrons dans les plus brefs délais.",
-    "errorTitle": "Erreur",
-    "errorDescription": "Une erreur est survenue. Veuillez réessayer."
+    "title": "Hai una domanda?",
+    "titleFull": "Hai una domanda? Contattaci",
+    "subtitle": "Il nostro team è qui per aiutarti a iniziare",
+    "subtitleFull": "Il nostro team risponde entro 24 ore per supportarti nel tuo progetto.",
+    "namePlaceholder": "Il tuo nome",
+    "nameLabel": "Nome completo",
+    "emailPlaceholder": "tua@email.com",
+    "emailLabel": "Email",
+    "messagePlaceholder": "Il tuo messaggio...",
+    "messageLabel": "Messaggio",
+    "messageHint": "Come possiamo aiutarti?",
+    "send": "Invia messaggio",
+    "sending": "Invio in corso...",
+    "successTitle": "Messaggio inviato!",
+    "successDescription": "Ti risponderemo il prima possibile.",
+    "errorTitle": "Errore",
+    "errorDescription": "Qualcosa è andato storto. Per favore riprova.",
+    "emailAddress": "contact@lavcom.fr",
+    "hours": "Lun-Ven: 9h-18h",
+    "responseTime": "Rispondiamo entro 24 ore lavorative",
+    "hoursLabel": "Orari",
+    "responseLabel": "Risposta rapida"
   },
   "faq": {
-    "title": "Questions fréquentes",
-    "subtitle": "Tout ce que vous devez savoir sur Lavcom Performances"
+    "title": "Domande frequenti",
+    "subtitle": "Tutto ciò che devi sapere su Lavcom Performances",
+    "q1": "Come si connette Lavcom Performances alle mie macchine?",
+    "a1": "Lavcom Performances si integra facilmente con la maggior parte dei sistemi di pagamento e gestione lavanderie. Il nostro team tecnico ti guiderà nella configurazione iniziale, che richiede generalmente meno di 2 ore. Non sono necessarie modifiche hardware.",
+    "q2": "I miei dati sono al sicuro?",
+    "a2": "Assolutamente. Tutti i tuoi dati sono crittografati e archiviati su server sicuri in Europa. Siamo conformi al GDPR e non condividiamo mai le tue informazioni con terze parti. Rimani proprietario al 100% dei tuoi dati.",
+    "q3": "Posso gestire più lavanderie con un solo account?",
+    "a3": "Sì! Lavcom Performances è progettato per gestire sia una singola lavanderia che una rete completa. Puoi visualizzare le performance di ogni sede individualmente o ottenere una vista consolidata di tutta la tua rete.",
+    "q4": "Quanto dura la prova gratuita?",
+    "a4": "Hai una prova gratuita di 14 giorni con accesso a tutte le funzionalità. Non è richiesta carta di credito per iniziare. Alla fine della prova, scegli il piano che ti conviene.",
+    "q5": "Come funzionano gli avvisi di manutenzione?",
+    "a5": "Il nostro sistema analizza continuamente i dati delle tue macchine per rilevare anomalie prima che causino guasti. Ricevi avvisi via email o SMS con raccomandazioni d'azione precise. Questo ti permette di intervenire preventivamente e ridurre significativamente i tempi di inattività.",
+    "q6": "Quale supporto è incluso nell'abbonamento?",
+    "a6": "Tutti i nostri abbonamenti includono supporto via email con risposta entro 24 ore. I piani Pro e Business beneficiano di supporto telefonico prioritario e guida personalizzata per ottimizzare l'uso della piattaforma."
+  },
+  "howItWorks": {
+    "title": "Come funziona?",
+    "step1Title": "Importa i tuoi dati",
+    "step1Desc": "Scarica i tuoi file di pagamento dal tuo terminale e importali in Lavcom Performances.",
+    "step2Title": "Visualizza i tuoi risultati",
+    "step2Desc": "Vedi i tuoi ricavi per lavanderia, per macchina, per fascia oraria e i tuoi periodi più tranquilli.",
+    "step3Title": "Agisci",
+    "step3Desc": "La piattaforma suggerisce idee: dove modificare un prezzo, quali fasce orarie rafforzare, quali macchine monitorare di più."
+  },
+  "whyUse": {
+    "title": "Perché usare Lavcom Performances?",
+    "feature1Title": "Vedi cosa succede davvero nelle tue lavanderie",
+    "feature1Desc": "Niente più fogli di calcolo manuali: vedi le tue cifre chiave automaticamente.",
+    "feature2Title": "Risparmia tempo sul monitoraggio",
+    "feature2Desc": "Passi meno tempo a cercare informazioni e più tempo a prendere decisioni.",
+    "feature3Title": "Migliora il tuo fatturato senza rivoluzionare tutto",
+    "feature3Desc": "Pochi aggiustamenti mirati possono già fare una vera differenza sui tuoi risultati."
+  },
+  "guide": {
+    "title": "Andare oltre prima di aprire",
+    "subtitle": "La guida pratica \"Prima di aprire\"",
+    "description": "Una guida concreta per aiutarti a preparare il tuo progetto di lavanderia: scelta del locale, configurazione, fornitori, errori da evitare. Il simulatore ti dà i numeri, la guida ti aiuta a prendere le decisioni giuste.",
+    "cta": "Scopri la guida"
+  },
+  "trialBanner": {
+    "title": "Prova Lavcom Performances gratis per 14 giorni",
+    "subtitle": "Senza impegno, puoi smettere quando vuoi.",
+    "cta": "Crea il mio account gratis"
+  },
+  "twoPaths": {
+    "title": "Due modi per lavorare con Lavcom Performances",
+    "subtitle": "Che tu sia già un operatore o un futuro operatore, abbiamo una soluzione adatta alle tue esigenze.",
+    "existing": "Gestisco già una lavanderia",
+    "future": "Voglio aprire una lavanderia"
+  },
+  "footer": {
+    "description": "La piattaforma che ti aiuta a ottenere il massimo dalle tue lavanderie automatiche.",
+    "quickLinks": "Link rapidi",
+    "pricingOperators": "Prezzi operatori",
+    "simulator": "Simulatore",
+    "simulatorPacks": "Pacchetti simulatore",
+    "contactTitle": "Contatto",
+    "address": "88 avenue de Grammont, 37000 Tours",
+    "legalNotice": "Lavcom Performances è un marchio commerciale di Lavcom, a sua volta marchio commerciale di My'Po SARL – 88 avenue de Grammont, 37000 Tours",
+    "legalLinks": "Note legali",
+    "privacy": "Privacy",
+    "terms": "Termini",
+    "copyright": "© {{year}} Lavcom Performances. Tutti i diritti riservati."
   },
   "cta": {
-    "startNow": "Commencer maintenant",
-    "watchDemo": "Voir la démo",
-    "discoverOffers": "Découvrir nos offres"
+    "startNow": "Inizia ora",
+    "watchDemo": "Guarda demo",
+    "discoverOffers": "Scopri le offerte"
   }
 }

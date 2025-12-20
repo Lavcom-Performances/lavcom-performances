@@ -1,112 +1,209 @@
 {
   "hero": {
-    "badge": "Le tableau de bord performance des laveries automatiques",
-    "optimizeLaundries": "Je veux optimiser mes laveries",
-    "openLaundry": "Je veux ouvrir une laverie"
+    "badge": "Het prestatie-dashboard voor wasserettes",
+    "optimizeLaundries": "Ik wil mijn wasserettes optimaliseren",
+    "openLaundry": "Ik wil een wasserette openen"
   },
   "twoProfiles": {
-    "title": "Deux profils, deux solutions",
-    "subtitle": "Que vous gériez déjà une laverie ou que vous prépariez votre projet, Lavcom Performances s'adapte à vos besoins."
+    "title": "Twee profielen, twee oplossingen",
+    "subtitle": "Of u nu al een wasserette beheert of uw project voorbereidt, Lavcom Performances past zich aan uw behoeften aan."
   },
   "exploitants": {
-    "badge": "Pour les exploitants de laveries",
-    "title": "Pour les exploitants qui veulent tirer le meilleur de leurs laveries",
-    "benefit1": "Voir en un coup d'œil ce que chaque laverie rapporte vraiment.",
-    "benefit2": "Repérer les machines qui marchent fort et celles qui pourraient mieux tourner.",
-    "benefit3": "Recevoir des idées simples d'actions : ajuster un prix, ajouter un séchoir, revoir un horaire d'ouverture.",
-    "keepControl": "Vous gardez le contrôle. Lavcom Performances vous aide juste à voir plus clair et à décider plus vite.",
-    "tryFree": "Essayer 14 jours gratuits",
-    "signIn": "Se connecter",
+    "badge": "Voor wasserette-exploitanten",
+    "title": "Voor exploitanten die het maximale uit hun wasserettes willen halen",
+    "benefit1": "In één oogopslag zien wat elke wasserette werkelijk opbrengt.",
+    "benefit2": "Machines identificeren die goed draaien en die beter zouden kunnen presteren.",
+    "benefit3": "Eenvoudige actie-ideeën ontvangen: een prijs aanpassen, een droger toevoegen, openingstijden herzien.",
+    "keepControl": "U behoudt de controle. Lavcom Performances helpt u alleen om duidelijker te zien en sneller te beslissen.",
+    "tryFree": "14 dagen gratis proberen",
+    "signIn": "Inloggen",
     "stats": {
-      "realtime": "Suivi temps réel",
-      "avgRevenue": "CA moyen constaté",
-      "timeSaved": "Gagnées / semaine",
-      "reducedBreakdowns": "Réduction pannes"
+      "realtime": "Real-time tracking",
+      "avgRevenue": "Gemiddelde omzetstijging",
+      "timeSaved": "Bespaard / week",
+      "reducedBreakdowns": "Reductie storingen"
     }
   },
   "futursExploitants": {
-    "badge": "Vous souhaitez ouvrir une laverie ?",
-    "title": "Pour ceux qui veulent ouvrir une laverie et bien démarrer",
-    "benefit1": "Estimez combien votre projet peut rapporter selon le local, les machines, les tarifs.",
-    "benefit2": "Testez plusieurs configurations : avec ou sans séchoirs, selon la zone, etc.",
-    "benefit3": "Identifiez votre seuil de rentabilité avant de vous lancer.",
-    "noGuessing": "Plus besoin de deviner. Vous simulez, vous voyez, vous décidez.",
-    "testSimulator": "Tester le simulateur gratuit",
-    "seePacks": "Voir les packs",
-    "simulator": "Simulateur",
-    "profitability": "de rentabilité",
-    "profitabilityThreshold": "Seuil rentabilité",
-    "unlimitedScenarios": "Scénarios illimités",
-    "pdfReport": "Rapport PDF",
-    "expertCall": "Visio expert"
+    "badge": "Wilt u een wasserette openen?",
+    "title": "Voor wie een wasserette wil openen en goed wil starten",
+    "benefit1": "Schat in hoeveel uw project kan opbrengen op basis van locatie, machines en prijzen.",
+    "benefit2": "Test verschillende configuraties: met of zonder drogers, afhankelijk van de zone, enz.",
+    "benefit3": "Identificeer uw break-even punt voordat u begint.",
+    "noGuessing": "Niet meer gissen. U simuleert, ziet en beslist.",
+    "testSimulator": "Gratis simulator testen",
+    "seePacks": "Pakketten bekijken",
+    "simulator": "Simulator",
+    "profitability": "winstgevendheid",
+    "profitabilityThreshold": "Break-even punt",
+    "unlimitedScenarios": "Onbeperkte scenario's",
+    "pdfReport": "PDF-rapport",
+    "expertCall": "Expertgesprek"
   },
   "ebook": {
-    "badge": "Ressource gratuite",
-    "title": "Avant d'ouvrir : 10 questions à se poser",
-    "description": "Choisir le bon local, estimer les charges, comprendre la réglementation… Téléchargez notre ebook gratuit pour éviter les erreurs classiques.",
-    "cta": "Télécharger l'ebook PDF",
-    "pages": "pages"
+    "badge": "Gratis bron",
+    "title": "Vóór opening: 10 vragen om uzelf te stellen",
+    "description": "De juiste locatie kiezen, kosten inschatten, regelgeving begrijpen… Download ons gratis e-book om veelvoorkomende fouten te vermijden.",
+    "cta": "PDF e-book downloaden",
+    "pages": "pagina's"
   },
   "features": {
-    "title": "Tout ce dont vous avez besoin",
-    "subtitle": "Des outils puissants pour analyser et optimiser chaque aspect de votre laverie",
+    "title": "Alles wat u nodig heeft",
+    "subtitle": "Krachtige tools om elk aspect van uw wasserette te analyseren en optimaliseren",
     "dashboards": {
-      "title": "Tableaux de bord en temps réel",
-      "description": "Visualisez vos performances avec des KPIs clairs et des graphiques interactifs."
+      "title": "Real-time dashboards",
+      "description": "Visualiseer uw prestaties met duidelijke KPI's en interactieve grafieken."
     },
     "predictive": {
-      "title": "Analyses prédictives",
-      "description": "Anticipez les tendances et optimisez votre chiffre d'affaires grâce à l'IA."
+      "title": "Voorspellende analyses",
+      "description": "Anticipeer op trends en optimaliseer uw omzet met AI."
     },
     "alerts": {
-      "title": "Alertes intelligentes",
-      "description": "Soyez notifié instantanément des anomalies et des opportunités."
+      "title": "Slimme waarschuwingen",
+      "description": "Ontvang direct meldingen over afwijkingen en kansen."
     },
     "revenue": {
-      "title": "Suivi des revenus",
-      "description": "Analysez vos revenus par période, machine et mode de paiement."
+      "title": "Omzettracking",
+      "description": "Analyseer uw inkomsten per periode, machine en betaalmethode."
     },
     "maintenance": {
-      "title": "Maintenance prédictive",
-      "description": "Réduisez les pannes grâce aux recommandations de maintenance."
+      "title": "Voorspellend onderhoud",
+      "description": "Verminder storingen dankzij onderhoudsaanbevelingen."
     },
     "optimization": {
-      "title": "Optimisation opérationnelle",
-      "description": "Identifiez les heures creuses et maximisez le taux d'occupation."
+      "title": "Operationele optimalisatie",
+      "description": "Identificeer daluren en maximaliseer de bezettingsgraad."
     }
   },
   "benefits": {
-    "title": "Des résultats concrets pour votre activité",
-    "subtitle": "Nos clients constatent des améliorations significatives dès les premiers mois d'utilisation.",
-    "item1": "Augmentez votre chiffre d'affaires jusqu'à 25%",
-    "item2": "Réduisez les temps d'arrêt machine de 40%",
-    "item3": "Gagnez 10h/semaine sur la gestion administrative",
-    "item4": "Accédez à vos données depuis n'importe où"
+    "title": "Concrete resultaten voor uw bedrijf",
+    "subtitle": "Onze klanten zien al in de eerste maanden van gebruik significante verbeteringen.",
+    "item1": "Verhoog uw omzet met tot 25%",
+    "item2": "Verminder machine-uitvaltijd met 40%",
+    "item3": "Bespaar 10u/week op administratieve taken",
+    "item4": "Toegang tot uw gegevens vanaf elke locatie"
   },
   "testimonials": {
-    "title": "Ce que disent nos clients",
-    "subtitle": "Des gérants de laverie comme vous partagent leur expérience"
+    "title": "Wat onze klanten zeggen",
+    "subtitle": "Wasserette-managers zoals u delen hun ervaring",
+    "t1Name": "Marie Dupont",
+    "t1Role": "Manager, Laverie Express Lyon",
+    "t1Quote": "Dankzij Lavcom Performances kon ik mijn daluren identificeren en mijn prijzen aanpassen. Mijn omzet steeg met 30% in 6 maanden!",
+    "t2Name": "Pierre Martin",
+    "t2Role": "Eigenaar, Clean & Fresh Paris",
+    "t2Quote": "De onderhoudswaarschuwingen hielpen me om 3 grote storingen dit kwartaal te voorkomen. De investering was binnen enkele weken terugverdiend.",
+    "t3Name": "Sophie Bernard",
+    "t3Role": "Directeur, LavPlus Netwerk",
+    "t3Quote": "Met 12 wasserettes kon ik niet meer alles handmatig beheren. Lavcom geeft me direct overzicht over mijn hele netwerk."
+  },
+  "comparison": {
+    "title": "Zonder Lavcom Performances / Met Lavcom Performances",
+    "withoutTitle": "Zonder Lavcom Performances",
+    "without1": "Ik zie alleen de totale omzet.",
+    "without2": "Ik weet niet welke machines winstgevend zijn.",
+    "without3": "Ik verander mijn prijzen op gevoel.",
+    "without4": "Geen duidelijk rapport voor mijn bank.",
+    "withTitle": "Met Lavcom Performances",
+    "with1": "Ik weet welke machines mijn kosten dekken.",
+    "with2": "Ik zie bezette of onderbenutte tijdsloten.",
+    "with3": "Concrete aanbevelingen elke maand.",
+    "with4": "PDF-rapport voor mijn bank."
+  },
+  "pdfExample": {
+    "cta": "Voorbeeld bekijken (PDF)"
   },
   "contact": {
-    "title": "Une question ?",
-    "subtitle": "Notre équipe est là pour vous aider à démarrer",
-    "namePlaceholder": "Votre nom",
-    "emailPlaceholder": "votre@email.com",
-    "messagePlaceholder": "Votre message...",
-    "send": "Envoyer le message",
-    "sending": "Envoi en cours...",
-    "successTitle": "Message envoyé !",
-    "successDescription": "Nous vous répondrons dans les plus brefs délais.",
-    "errorTitle": "Erreur",
-    "errorDescription": "Une erreur est survenue. Veuillez réessayer."
+    "title": "Heeft u een vraag?",
+    "titleFull": "Heeft u een vraag? Neem contact op",
+    "subtitle": "Ons team staat klaar om u te helpen starten",
+    "subtitleFull": "Ons team reageert binnen 24 uur om u te ondersteunen bij uw project.",
+    "namePlaceholder": "Uw naam",
+    "nameLabel": "Volledige naam",
+    "emailPlaceholder": "uw@email.com",
+    "emailLabel": "E-mail",
+    "messagePlaceholder": "Uw bericht...",
+    "messageLabel": "Bericht",
+    "messageHint": "Hoe kunnen we u helpen?",
+    "send": "Bericht versturen",
+    "sending": "Versturen...",
+    "successTitle": "Bericht verzonden!",
+    "successDescription": "We nemen zo snel mogelijk contact met u op.",
+    "errorTitle": "Fout",
+    "errorDescription": "Er ging iets mis. Probeer het opnieuw.",
+    "emailAddress": "contact@lavcom.fr",
+    "hours": "Ma-Vr: 9u-18u",
+    "responseTime": "We reageren binnen 24 werkuren",
+    "hoursLabel": "Openingstijden",
+    "responseLabel": "Snelle reactie"
   },
   "faq": {
-    "title": "Questions fréquentes",
-    "subtitle": "Tout ce que vous devez savoir sur Lavcom Performances"
+    "title": "Veelgestelde vragen",
+    "subtitle": "Alles wat u moet weten over Lavcom Performances",
+    "q1": "Hoe maakt Lavcom Performances verbinding met mijn machines?",
+    "a1": "Lavcom Performances integreert eenvoudig met de meeste betalings- en wasserettebeheer­systemen. Ons technisch team begeleidt u bij de initiële configuratie, die doorgaans minder dan 2 uur duurt. Geen hardware-aanpassingen nodig.",
+    "q2": "Zijn mijn gegevens veilig?",
+    "a2": "Absoluut. Al uw gegevens zijn versleuteld en opgeslagen op beveiligde servers in Europa. We zijn AVG-conform en delen uw informatie nooit met derden. U blijft 100% eigenaar van uw gegevens.",
+    "q3": "Kan ik meerdere wasserettes beheren met één account?",
+    "a3": "Ja! Lavcom Performances is ontworpen om zowel één wasserette als een compleet netwerk te beheren. U kunt de prestaties van elke locatie afzonderlijk bekijken of een geconsolideerd overzicht van uw hele netwerk krijgen.",
+    "q4": "Hoe lang duurt de gratis proefperiode?",
+    "a4": "U krijgt een gratis proefperiode van 14 dagen met toegang tot alle functies. Geen creditcard nodig om te starten. Aan het einde van de proef kiest u het plan dat bij u past.",
+    "q5": "Hoe werken de onderhoudswaarschuwingen?",
+    "a5": "Ons systeem analyseert continu uw machinegegevens om afwijkingen te detecteren voordat ze storingen veroorzaken. U ontvangt waarschuwingen per e-mail of SMS met precieze actie-aanbevelingen. Dit stelt u in staat om preventief in te grijpen en uitvaltijd aanzienlijk te verminderen.",
+    "q6": "Welke ondersteuning is inbegrepen bij het abonnement?",
+    "a6": "Al onze abonnementen omvatten e-mailondersteuning met reactie binnen 24 uur. Pro- en Business-plannen profiteren van prioritaire telefonische ondersteuning en persoonlijke begeleiding om het platformgebruik te optimaliseren."
+  },
+  "howItWorks": {
+    "title": "Hoe werkt het?",
+    "step1Title": "Importeer uw gegevens",
+    "step1Desc": "Download uw betalingsbestanden van uw terminal en importeer ze in Lavcom Performances.",
+    "step2Title": "Visualiseer uw resultaten",
+    "step2Desc": "Bekijk uw inkomsten per wasserette, per machine, per tijdslot en uw rustigere periodes.",
+    "step3Title": "Onderneem actie",
+    "step3Desc": "Het platform suggereert ideeën: waar een prijs aan te passen, welke tijdsloten te versterken, welke machines nauwer te monitoren."
+  },
+  "whyUse": {
+    "title": "Waarom Lavcom Performances gebruiken?",
+    "feature1Title": "Zie wat er echt gebeurt in uw wasserettes",
+    "feature1Desc": "Geen handmatige spreadsheets meer: u ziet uw kerncijfers automatisch.",
+    "feature2Title": "Bespaar tijd op monitoring",
+    "feature2Desc": "U besteedt minder tijd aan het zoeken naar informatie en meer tijd aan het nemen van beslissingen.",
+    "feature3Title": "Verbeter uw omzet zonder alles te revolutioneren",
+    "feature3Desc": "Een paar gerichte aanpassingen kunnen al een echt verschil maken in uw resultaten."
+  },
+  "guide": {
+    "title": "Verder gaan vóór opening",
+    "subtitle": "De praktische gids \"Vóór opening\"",
+    "description": "Een concrete gids om uw wasseretteproject voor te bereiden: locatiekeuze, configuratie, leveranciers, fouten om te vermijden. De simulator geeft u de cijfers, de gids helpt u de juiste beslissingen te nemen.",
+    "cta": "Gids ontdekken"
+  },
+  "trialBanner": {
+    "title": "Probeer Lavcom Performances 14 dagen gratis",
+    "subtitle": "Zonder verplichtingen, u kunt op elk moment stoppen.",
+    "cta": "Gratis account aanmaken"
+  },
+  "twoPaths": {
+    "title": "Twee manieren om met Lavcom Performances te werken",
+    "subtitle": "Of u nu al exploitant bent of toekomstig exploitant, wij hebben een oplossing die past bij uw behoeften.",
+    "existing": "Ik beheer al een wasserette",
+    "future": "Ik wil een wasserette openen"
+  },
+  "footer": {
+    "description": "Het platform dat u helpt het maximale uit uw zelfbedieningswasserettes te halen.",
+    "quickLinks": "Snelle links",
+    "pricingOperators": "Prijzen exploitanten",
+    "simulator": "Simulator",
+    "simulatorPacks": "Simulator pakketten",
+    "contactTitle": "Contact",
+    "address": "88 avenue de Grammont, 37000 Tours",
+    "legalNotice": "Lavcom Performances is een handelsmerk van Lavcom, zelf een handelsmerk van My'Po SARL – 88 avenue de Grammont, 37000 Tours",
+    "legalLinks": "Juridische kennisgeving",
+    "privacy": "Privacy",
+    "terms": "Voorwaarden",
+    "copyright": "© {{year}} Lavcom Performances. Alle rechten voorbehouden."
   },
   "cta": {
-    "startNow": "Commencer maintenant",
-    "watchDemo": "Voir la démo",
-    "discoverOffers": "Découvrir nos offres"
+    "startNow": "Nu starten",
+    "watchDemo": "Demo bekijken",
+    "discoverOffers": "Aanbiedingen ontdekken"
   }
 }
