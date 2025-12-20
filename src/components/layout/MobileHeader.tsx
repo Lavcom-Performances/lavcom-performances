@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AppSidebar } from "./AppSidebar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { LanguageSelector } from "@/components/ui/language-selector";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,7 @@ export function MobileHeader({
         {/* View Mode Toggle - compact on mobile */}
         <ViewModeToggle variant="compact" className="mr-1" />
         
+        <LanguageSelector variant="compact" />
         <ThemeToggle collapsed className="text-foreground" />
         
         <Sheet open={open} onOpenChange={setOpen}>
