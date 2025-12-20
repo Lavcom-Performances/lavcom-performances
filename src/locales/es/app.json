@@ -27,6 +27,9 @@
         "exportSuccess": "Ajustes exportados",
         "importSuccess": "{{count}} ajuste(s) importado(s)",
         "importError": "Archivo inválido",
+        "deleteAll": "Eliminar todos mis ajustes",
+        "deleteAllConfirm": "¿Está seguro de que desea eliminar todos sus ajustes personalizados?",
+        "deleteAllSuccess": "Todos los ajustes han sido eliminados",
         "defaults": {
           "default_bw": "Blanco y negro",
           "default_vintage": "Vintage",

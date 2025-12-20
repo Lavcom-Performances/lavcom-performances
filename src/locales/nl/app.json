@@ -27,6 +27,9 @@
         "exportSuccess": "Voorinstellingen geëxporteerd",
         "importSuccess": "{{count}} voorinstelling(en) geïmporteerd",
         "importError": "Ongeldig bestand",
+        "deleteAll": "Verwijder al mijn voorinstellingen",
+        "deleteAllConfirm": "Weet u zeker dat u al uw aangepaste voorinstellingen wilt verwijderen?",
+        "deleteAllSuccess": "Alle voorinstellingen zijn verwijderd",
         "defaults": {
           "default_bw": "Zwart-wit",
           "default_vintage": "Vintage",

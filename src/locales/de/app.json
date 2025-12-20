@@ -27,6 +27,9 @@
         "exportSuccess": "Voreinstellungen exportiert",
         "importSuccess": "{{count}} Voreinstellung(en) importiert",
         "importError": "Ungültige Datei",
+        "deleteAll": "Alle meine Voreinstellungen löschen",
+        "deleteAllConfirm": "Möchten Sie wirklich alle Ihre benutzerdefinierten Voreinstellungen löschen?",
+        "deleteAllSuccess": "Alle Voreinstellungen wurden gelöscht",
         "defaults": {
           "default_bw": "Schwarz-Weiß",
           "default_vintage": "Vintage",
