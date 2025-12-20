@@ -6,7 +6,9 @@
       "preview": "Voorbeeld",
       "flip": "Spiegelen",
       "flipHorizontal": "Horizontaal",
-      "flipVertical": "Verticaal"
+      "flipVertical": "Verticaal",
+      "brightness": "Helderheid",
+      "contrast": "Contrast"
     }
   },
   "accessibility": {
