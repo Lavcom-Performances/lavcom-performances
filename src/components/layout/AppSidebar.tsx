@@ -29,6 +29,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { CompanyLogoUpload } from "./CompanyLogoUpload";
 import { TrialBanner } from "@/components/trial/TrialBanner";
@@ -118,32 +124,39 @@ export function AppSidebar({
     >
       {/* Logo */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border">
-        {collapsed ? (
-          <a 
-            href="/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center cursor-pointer hover:opacity-80 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-sidebar mx-auto"
-            title="Retour à la page d'accueil"
-          >
-            <span className="text-primary-foreground font-bold text-sm">LP</span>
-          </a>
-        ) : (
-          <a 
-            href="/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 hover:opacity-80 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-sidebar rounded-lg"
-            title="Retour à la page d'accueil"
-          >
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-transform duration-200 hover:scale-105">
-              <span className="text-primary-foreground font-bold text-sm">LP</span>
-            </div>
-            <span className="font-display font-semibold text-sidebar-foreground">
-              Lavcom
-            </span>
-          </a>
-        )}
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {collapsed ? (
+                <a 
+                  href="/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center cursor-pointer hover:opacity-80 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-sidebar mx-auto"
+                >
+                  <span className="text-primary-foreground font-bold text-sm">LP</span>
+                </a>
+              ) : (
+                <a 
+                  href="/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 hover:opacity-80 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-sidebar rounded-lg"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-transform duration-200 hover:scale-105">
+                    <span className="text-primary-foreground font-bold text-sm">LP</span>
+                  </div>
+                  <span className="font-display font-semibold text-sidebar-foreground">
+                    Lavcom
+                  </span>
+                </a>
+              )}
+            </TooltipTrigger>
+            <TooltipContent side="right" className="hidden md:block">
+              <p>Retour à la page d'accueil</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         {!collapsed && (
           <Button
             variant="ghost"
