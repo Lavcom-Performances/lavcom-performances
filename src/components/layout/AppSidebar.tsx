@@ -37,6 +37,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { LanguageSelector } from "@/components/ui/language-selector";
 import { CompanyLogoUpload } from "./CompanyLogoUpload";
 import { TrialBanner } from "@/components/trial/TrialBanner";
 import { useAuth } from "@/hooks/useAuth";
@@ -331,6 +332,7 @@ export function AppSidebar({
       {/* User Section */}
       <div className="p-3 border-t border-sidebar-border space-y-1">
         <ThemeToggle collapsed={collapsed} className="sidebar-item" />
+        <LanguageSelector variant="sidebar" collapsed={collapsed} />
         <NavLink
           to="/"
           className="sidebar-item text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors duration-200"

@@ -56,6 +56,7 @@ import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import ebookAvantOuvrir from "@/assets/ebook-avant-ouvrir.jpg";
 import { HeroValueSlider } from "@/components/landing/HeroValueSlider";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
+import { LanguageSelector } from "@/components/ui/language-selector";
 
 const testimonials = [
   {
@@ -171,7 +172,9 @@ const LandingPage = () => {
               {t("common:faq")}
             </a>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageSelector variant="compact" className="hidden sm:flex" />
+            <LanguageSelector variant="compact" className="sm:hidden" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="btn-bounce">
