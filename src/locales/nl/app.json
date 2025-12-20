@@ -287,5 +287,57 @@
     },
     "alreadySubscribed": "Al geabonneerd?",
     "connectHere": "Log hier in"
+  },
+  "simulateur": {
+    "nav": {
+      "exploitantPricing": "Exploitant Prijzen",
+      "exploitantLogin": "Exploitant Login",
+      "simulatorLogin": "Simulator Login"
+    },
+    "free": "Gratis",
+    "title": "Schat de omzet van uw toekomstige wasserette",
+    "subtitle": "Een gratis eerste schatting in slechts een paar klikken om uw project te valideren.",
+    "form": {
+      "title": "Uw configuratie",
+      "description": "Voer de basisinformatie van uw project in",
+      "surface": "Oppervlakte (m²)",
+      "nbWashers": "Aantal wasmachines",
+      "washerCapacity": "Gemiddelde wasmachinecapaciteit",
+      "avgPriceWash": "Gemiddelde wasprijs (€)",
+      "nbDryers": "Aantal drogers",
+      "dryerCapacity": "Gemiddelde drogercapaciteit",
+      "avgPriceDry": "Gemiddelde droogprijs (€)",
+      "hoursOpen": "Openingsuren / dag",
+      "capacityPlaceholder": "Capaciteit",
+      "submit": "Schatting berekenen"
+    },
+    "results": {
+      "title": "Snelle schatting",
+      "basedOn": "Gebaseerd op {{hours}}u opening, wascyclus {{washCycle}} min, drogen {{dryCycle}} min",
+      "scenarioOccupation": "{{name}} ({{rate}}% bezetting)",
+      "monthlyRevenue": "Geschatte maandelijkse omzet",
+      "perMonth": "€/maand",
+      "cyclesPerDay": "~{{wash}} wasbeurten + {{dry}} droogbeurten / dag",
+      "maxCapacity": "Max. capaciteit: {{wash}} wasbeurten + {{dry}} droogbeurten / dag",
+      "pessimistic": "Pessimistisch",
+      "central": "Centraal",
+      "optimistic": "Optimistisch"
+    },
+    "paywall": {
+      "title": "Ontgrendel de volledige analyse",
+      "features": [
+        "Gedetailleerd businessplan met kosten en winstgevendheid",
+        "Break-even analyse",
+        "PDF-export voor uw bank",
+        "Onbeperkte aanpasbare scenario's",
+        "Expertbegeleiding (premium pakket)"
+      ],
+      "cta": "Bekijk plannen",
+      "startingFrom": "Vanaf"
+    },
+    "note": {
+      "title": "💡 Opmerking:",
+      "content": "Deze schatting is gebaseerd op sectorgemiddelden. De volledige simulator houdt rekening met kosten, locatie en vele andere factoren."
+    }
   }
 }

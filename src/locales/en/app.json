@@ -287,5 +287,57 @@
     },
     "alreadySubscribed": "Already subscribed?",
     "connectHere": "Sign in here"
+  },
+  "simulateur": {
+    "nav": {
+      "exploitantPricing": "Operator Pricing",
+      "exploitantLogin": "Operator Login",
+      "simulatorLogin": "Simulator Login"
+    },
+    "free": "Free",
+    "title": "Estimate the revenue of your future laundromat",
+    "subtitle": "A free first estimate in just a few clicks to validate your project.",
+    "form": {
+      "title": "Your configuration",
+      "description": "Enter the basic information of your project",
+      "surface": "Surface area (m²)",
+      "nbWashers": "Number of washers",
+      "washerCapacity": "Average washer capacity",
+      "avgPriceWash": "Average wash price (€)",
+      "nbDryers": "Number of dryers",
+      "dryerCapacity": "Average dryer capacity",
+      "avgPriceDry": "Average dry price (€)",
+      "hoursOpen": "Opening hours / day",
+      "capacityPlaceholder": "Capacity",
+      "submit": "Calculate estimate"
+    },
+    "results": {
+      "title": "Quick estimate",
+      "basedOn": "Based on {{hours}}h opening, wash cycle {{washCycle}} min, dry {{dryCycle}} min",
+      "scenarioOccupation": "{{name}} ({{rate}}% occupancy)",
+      "monthlyRevenue": "Estimated monthly revenue",
+      "perMonth": "€/month",
+      "cyclesPerDay": "~{{wash}} washes + {{dry}} dries / day",
+      "maxCapacity": "Max capacity: {{wash}} washes + {{dry}} dries / day",
+      "pessimistic": "Pessimistic",
+      "central": "Central",
+      "optimistic": "Optimistic"
+    },
+    "paywall": {
+      "title": "Unlock the full analysis",
+      "features": [
+        "Detailed business plan with costs and profitability",
+        "Break-even analysis",
+        "PDF export for your bank",
+        "Unlimited customizable scenarios",
+        "Expert support (premium pack)"
+      ],
+      "cta": "View plans",
+      "startingFrom": "Starting from"
+    },
+    "note": {
+      "title": "💡 Note:",
+      "content": "This estimate is based on industry averages. The full simulator takes into account costs, location, and many other factors."
+    }
   }
 }

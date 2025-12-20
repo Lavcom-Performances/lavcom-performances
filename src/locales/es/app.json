@@ -287,5 +287,57 @@
     },
     "alreadySubscribed": "¿Ya suscrito?",
     "connectHere": "Conéctate aquí"
+  },
+  "simulateur": {
+    "nav": {
+      "exploitantPricing": "Precios Operadores",
+      "exploitantLogin": "Acceso Operador",
+      "simulatorLogin": "Acceso Simulador"
+    },
+    "free": "Gratis",
+    "title": "Estima la facturación de tu futura lavandería",
+    "subtitle": "Una primera estimación gratuita en pocos clics para validar tu proyecto.",
+    "form": {
+      "title": "Tu configuración",
+      "description": "Introduce la información básica de tu proyecto",
+      "surface": "Superficie (m²)",
+      "nbWashers": "Número de lavadoras",
+      "washerCapacity": "Capacidad media lavadora",
+      "avgPriceWash": "Precio medio lavado (€)",
+      "nbDryers": "Número de secadoras",
+      "dryerCapacity": "Capacidad media secadora",
+      "avgPriceDry": "Precio medio secado (€)",
+      "hoursOpen": "Horas de apertura / día",
+      "capacityPlaceholder": "Capacidad",
+      "submit": "Calcular estimación"
+    },
+    "results": {
+      "title": "Estimación rápida",
+      "basedOn": "Basado en {{hours}}h de apertura, ciclo lavado {{washCycle}} min, secado {{dryCycle}} min",
+      "scenarioOccupation": "{{name}} ({{rate}}% ocupación)",
+      "monthlyRevenue": "Facturación mensual estimada",
+      "perMonth": "€/mes",
+      "cyclesPerDay": "~{{wash}} lavados + {{dry}} secados / día",
+      "maxCapacity": "Capacidad máx: {{wash}} lavados + {{dry}} secados / día",
+      "pessimistic": "Pesimista",
+      "central": "Central",
+      "optimistic": "Optimista"
+    },
+    "paywall": {
+      "title": "Desbloquea el análisis completo",
+      "features": [
+        "Plan de negocio detallado con gastos y rentabilidad",
+        "Análisis del punto de equilibrio",
+        "Exportación PDF para tu banco",
+        "Escenarios personalizables ilimitados",
+        "Acompañamiento experto (pack premium)"
+      ],
+      "cta": "Ver planes",
+      "startingFrom": "Desde"
+    },
+    "note": {
+      "title": "💡 Nota:",
+      "content": "Esta estimación se basa en promedios del sector. El simulador completo tiene en cuenta los gastos, la ubicación y muchos otros factores."
+    }
   }
 }
