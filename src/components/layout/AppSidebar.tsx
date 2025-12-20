@@ -51,35 +51,6 @@ interface AppSidebarProps {
   currentLaundromat?: string;
 }
 
-const chartsNavigation = [
-  { name: "CA Annuel", href: "/charts/annual", icon: TrendingUp },
-  { name: "CA par mois", href: "/charts/monthly", icon: BarChart3 },
-  { name: "CA par jour", href: "/charts/daily", icon: LineChart },
-  { name: "Paiements", href: "/charts/payments", icon: PieChart },
-  { name: "Machines", href: "/charts/machines", icon: Activity },
-  { name: "Taux occupation", href: "/charts/occupancy", icon: Activity },
-  { name: "Fréq. par heure", href: "/charts/hourly", icon: Clock },
-  { name: "Fréq. par jour", href: "/charts/daily-freq", icon: Calendar },
-  { name: "Fréq. 30 min", href: "/charts/half-hourly", icon: Timer },
-  { name: "Affluence (Heatmap)", href: "/charts/heatmap", icon: Grid3X3 },
-  { name: "Produits", href: "/charts/products", icon: Package },
-];
-
-const navigation = [
-  { name: "Tableau de bord", href: "/dashboard", icon: LayoutDashboard, permission: "READ_VIEWS" },
-  { name: "Rentabilité", href: "/profitability", icon: DollarSign, permission: "READ_VIEWS" },
-  { name: "Simulation", href: "/simulation", icon: Calculator, permission: "READ_VIEWS" },
-  { name: "Recommandations", href: "/recommendations", icon: Lightbulb, permission: "READ_VIEWS" },
-  { name: "Maintenance", href: "/maintenance", icon: Wrench, permission: "READ_VIEWS" },
-  { name: "Opérations", href: "/operations", icon: Receipt, permission: "READ_VIEWS" },
-  { name: "Import / Export", href: "/import-export", icon: ArrowDownUp, permission: "IMPORT_DATA" },
-];
-
-const adminNavigation = [
-  { name: "Utilisateurs", href: "/admin/users", icon: Users, permission: "MANAGE_USERS" },
-  { name: "Paramètres", href: "/admin/settings", icon: Settings, permission: "MANAGE_OPTIONS" },
-];
-
 export function AppSidebar({ 
   collapsed = false, 
   onToggle,
@@ -94,6 +65,35 @@ export function AppSidebar({
   
   const { signOut } = useAuth();
   const { daysRemaining, trialStatus, planType } = useSubscription();
+
+  const chartsNavigation = [
+    { name: t('app:charts.annualRevenue'), href: "/charts/annual", icon: TrendingUp },
+    { name: t('app:charts.monthlyRevenue'), href: "/charts/monthly", icon: BarChart3 },
+    { name: t('app:charts.dailyRevenue'), href: "/charts/daily", icon: LineChart },
+    { name: t('app:charts.payments'), href: "/charts/payments", icon: PieChart },
+    { name: t('app:charts.machines'), href: "/charts/machines", icon: Activity },
+    { name: t('app:charts.occupancyRate'), href: "/charts/occupancy", icon: Activity },
+    { name: t('app:charts.hourlyFreq'), href: "/charts/hourly", icon: Clock },
+    { name: t('app:charts.dailyFreq'), href: "/charts/daily-freq", icon: Calendar },
+    { name: t('app:charts.halfHourlyFreq'), href: "/charts/half-hourly", icon: Timer },
+    { name: t('app:charts.heatmap'), href: "/charts/heatmap", icon: Grid3X3 },
+    { name: t('app:charts.products'), href: "/charts/products", icon: Package },
+  ];
+
+  const navigation = [
+    { name: t('app:nav.dashboard'), href: "/dashboard", icon: LayoutDashboard, permission: "READ_VIEWS" },
+    { name: t('app:nav.profitability'), href: "/profitability", icon: DollarSign, permission: "READ_VIEWS" },
+    { name: t('app:nav.simulation'), href: "/simulation", icon: Calculator, permission: "READ_VIEWS" },
+    { name: t('app:nav.recommendations'), href: "/recommendations", icon: Lightbulb, permission: "READ_VIEWS" },
+    { name: t('app:nav.maintenance'), href: "/maintenance", icon: Wrench, permission: "READ_VIEWS" },
+    { name: t('app:nav.operations'), href: "/operations", icon: Receipt, permission: "READ_VIEWS" },
+    { name: t('app:nav.importExport'), href: "/import-export", icon: ArrowDownUp, permission: "IMPORT_DATA" },
+  ];
+
+  const adminNavigation = [
+    { name: t('app:nav.users'), href: "/admin/users", icon: Users, permission: "MANAGE_USERS" },
+    { name: t('app:nav.settings'), href: "/admin/settings", icon: Settings, permission: "MANAGE_OPTIONS" },
+  ];
 
   const handleLogout = async () => {
     await signOut();
@@ -156,7 +156,7 @@ export function AppSidebar({
               )}
             </TooltipTrigger>
             <TooltipContent side="right" className="hidden md:block">
-              <p>Retour à la page d'accueil</p>
+              <p>{t('app:nav.backToHome')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -216,7 +216,7 @@ export function AppSidebar({
             to="/select-laundromat"
             className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors"
           >
-            <span>← Changer de laverie</span>
+            <span>← {t('app:nav.changeLaundry')}</span>
           </NavLink>
         </div>
       )}
@@ -229,7 +229,7 @@ export function AppSidebar({
           
           return (
             <NavLink
-              key={item.name}
+              key={item.href}
               to={item.href}
               className={cn(
                 "sidebar-item",
@@ -246,7 +246,7 @@ export function AppSidebar({
         {!collapsed && (
           <div className="pt-4 pb-2">
             <span className="px-3 text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
-              Graphiques
+              {t('app:nav.charts')}
             </span>
           </div>
         )}
@@ -256,7 +256,7 @@ export function AppSidebar({
             const isActive = location.pathname === item.href;
             return (
               <NavLink
-                key={item.name}
+                key={item.href}
                 to={item.href}
                 className={cn(
                   "sidebar-item",
@@ -272,7 +272,7 @@ export function AppSidebar({
             <CollapsibleTrigger className="sidebar-item w-full justify-between">
               <div className="flex items-center gap-3">
                 <BarChart3 className="h-5 w-5 shrink-0" />
-                <span>Analyses</span>
+                <span>{t('app:nav.analyses')}</span>
               </div>
               <ChevronLeft className={cn("h-4 w-4 transition-transform", chartsOpen && "-rotate-90")} />
             </CollapsibleTrigger>
@@ -281,7 +281,7 @@ export function AppSidebar({
                 const isActive = location.pathname === item.href;
                 return (
                   <NavLink
-                    key={item.name}
+                    key={item.href}
                     to={item.href}
                     className={cn(
                       "sidebar-item text-sm",
@@ -303,7 +303,7 @@ export function AppSidebar({
             {!collapsed && (
               <div className="pt-4 pb-2">
                 <span className="px-3 text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
-                  Administration
+                  {t('app:nav.administration')}
                 </span>
               </div>
             )}
@@ -313,7 +313,7 @@ export function AppSidebar({
               
               return (
                 <NavLink
-                  key={item.name}
+                  key={item.href}
                   to={item.href}
                   className={cn(
                     "sidebar-item",
@@ -338,14 +338,14 @@ export function AppSidebar({
           className="sidebar-item text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors duration-200"
         >
           <LayoutDashboard className="h-5 w-5 shrink-0" />
-          {!collapsed && <span>Accueil</span>}
+          {!collapsed && <span>{t('common:home')}</span>}
         </NavLink>
         <button
           onClick={handleLogout}
           className="sidebar-item w-full text-sidebar-foreground/60 hover:text-destructive transition-colors duration-200"
         >
           <LogOut className="h-5 w-5 shrink-0" />
-          {!collapsed && <span>Déconnexion</span>}
+          {!collapsed && <span>{t('common:logout')}</span>}
         </button>
       </div>
     </aside>
