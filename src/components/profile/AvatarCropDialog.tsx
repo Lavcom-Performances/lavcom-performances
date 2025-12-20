@@ -10,8 +10,42 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+
+const PRESETS_STORAGE_KEY = "avatar-filter-presets";
+
+interface FilterPreset {
+  id: string;
+  name: string;
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  blur: number;
+  sharpen: number;
+}
+
+function loadPresets(): FilterPreset[] {
+  try {
+    const stored = localStorage.getItem(PRESETS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePresets(presets: FilterPreset[]) {
+  localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(presets));
+}
 
 // Apply sharpening using unsharp mask technique
 function applySharpen(ctx: CanvasRenderingContext2D, width: number, height: number, amount: number) {
@@ -90,6 +124,12 @@ export function AvatarCropDialog({
   const [saturation, setSaturation] = useState(100);
   const [blur, setBlur] = useState(0);
   const [sharpen, setSharpen] = useState(0);
+  
+  // Presets state
+  const [presets, setPresets] = useState<FilterPreset[]>(loadPresets);
+  const [newPresetName, setNewPresetName] = useState("");
+  const [selectedPresetId, setSelectedPresetId] = useState<string>("");
+  
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -459,6 +499,7 @@ export function AvatarCropDialog({
                   setSaturation(100);
                   setBlur(0);
                   setSharpen(0);
+                  setSelectedPresetId("");
                 }}
                 className="w-full"
               >
@@ -466,6 +507,98 @@ export function AvatarCropDialog({
                 {t("app:profile.avatar.reset")}
               </Button>
             )}
+
+            {/* Presets section */}
+            <div className="border-t pt-3 mt-2 space-y-3">
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground">{t("app:profile.avatar.presets.title")}</span>
+              
+              {/* Load preset */}
+              {presets.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <Select
+                    value={selectedPresetId}
+                    onValueChange={(id) => {
+                      const preset = presets.find(p => p.id === id);
+                      if (preset) {
+                        setBrightness(preset.brightness);
+                        setContrast(preset.contrast);
+                        setSaturation(preset.saturation);
+                        setBlur(preset.blur);
+                        setSharpen(preset.sharpen);
+                        setSelectedPresetId(id);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder={t("app:profile.avatar.presets.selectPlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {presets.map((preset) => (
+                        <SelectItem key={preset.id} value={preset.id}>
+                          {preset.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedPresetId && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="h-9 w-9 shrink-0"
+                      onClick={() => {
+                        const updatedPresets = presets.filter(p => p.id !== selectedPresetId);
+                        setPresets(updatedPresets);
+                        savePresets(updatedPresets);
+                        setSelectedPresetId("");
+                        toast.success(t("app:profile.avatar.presets.deleteSuccess"));
+                      }}
+                      title={t("app:profile.avatar.presets.delete")}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              )}
+
+              {/* Save new preset */}
+              <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  placeholder={t("app:profile.avatar.presets.namePlaceholder")}
+                  value={newPresetName}
+                  onChange={(e) => setNewPresetName(e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 shrink-0"
+                  disabled={!newPresetName.trim()}
+                  onClick={() => {
+                    const newPreset: FilterPreset = {
+                      id: Date.now().toString(),
+                      name: newPresetName.trim(),
+                      brightness,
+                      contrast,
+                      saturation,
+                      blur,
+                      sharpen,
+                    };
+                    const updatedPresets = [...presets, newPreset];
+                    setPresets(updatedPresets);
+                    savePresets(updatedPresets);
+                    setNewPresetName("");
+                    setSelectedPresetId(newPreset.id);
+                    toast.success(t("app:profile.avatar.presets.saveSuccess"));
+                  }}
+                  title={t("app:profile.avatar.presets.save")}
+                >
+                  <Save className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 

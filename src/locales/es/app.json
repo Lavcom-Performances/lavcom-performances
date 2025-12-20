@@ -11,7 +11,16 @@
       "contrast": "Contraste",
       "saturation": "Saturación",
       "blur": "Desenfoque",
-      "sharpen": "Nitidez"
+      "sharpen": "Nitidez",
+      "presets": {
+        "title": "Ajustes preestablecidos",
+        "selectPlaceholder": "Cargar un ajuste...",
+        "namePlaceholder": "Nombre del ajuste",
+        "save": "Guardar",
+        "delete": "Eliminar",
+        "saveSuccess": "Ajuste guardado",
+        "deleteSuccess": "Ajuste eliminado"
+      }
     }
   },
   "accessibility": {
