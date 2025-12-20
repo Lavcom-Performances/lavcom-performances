@@ -9,6 +9,7 @@ export interface Site {
   city?: string;
   postal_code?: string;
   is_default: boolean;
+  is_demo?: boolean;
 }
 
 export function useSites() {
@@ -38,6 +39,7 @@ export function useSites() {
         .from("sites")
         .select("*")
         .eq("user_id", user.id)
+        .eq("is_demo", false) // Exclude demo sites by default
         .order("is_default", { ascending: false })
         .order("name");
 
