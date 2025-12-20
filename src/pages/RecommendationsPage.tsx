@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { generateRecommendationsReport, getRecommendationsData } from "@/utils/recommendationsPdfExport";
 import { generateMarketingRecommendations, getMockAnalyticsData } from "@/utils/marketingRecommendations";
+import { trackPdfDownload } from "@/lib/analytics";
 import type { Recommendation } from "@/types/recommendations";
 
 // Map recommendation IDs to specific icons
@@ -167,6 +168,7 @@ export default function RecommendationsPage() {
       await new Promise(resolve => setTimeout(resolve, 500));
       const data = getRecommendationsData();
       generateRecommendationsReport(data);
+      trackPdfDownload('recommendations');
       toast({
         title: "PDF généré avec succès",
         description: "Le rapport a été téléchargé.",

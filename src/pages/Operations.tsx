@@ -30,6 +30,7 @@ import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
 import { ImportHistoryDialog } from "@/components/operations/ImportHistoryDialog";
 import { OperationsEmptyState } from "@/components/operations/OperationsEmptyState";
 import { generateOperationsPdf } from "@/utils/operationsPdfExport";
+import { trackPdfDownload } from "@/lib/analytics";
 import { useToast } from "@/hooks/use-toast";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useOperations } from "@/hooks/useOperations";
@@ -238,6 +239,7 @@ export default function Operations() {
         operations: pdfOperations,
       });
 
+      trackPdfDownload('operations');
       toast({
         title: "Export réussi",
         description: `${operations.length} opérations exportées en PDF.`,

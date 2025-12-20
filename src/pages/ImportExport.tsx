@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateMonthlyReport, getMockMonthlyData } from "@/utils/pdfExport";
+import { trackPdfDownload } from "@/lib/analytics";
 import { toast } from "@/hooks/use-toast";
 
 const MONTHS = [
@@ -26,6 +27,7 @@ export default function ImportExport() {
       
       const data = getMockMonthlyData(selectedMonth, selectedYear);
       generateMonthlyReport(data);
+      trackPdfDownload('monthly_report');
       
       toast({
         title: "PDF généré avec succès",

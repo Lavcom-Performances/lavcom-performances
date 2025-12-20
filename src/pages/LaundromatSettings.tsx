@@ -44,6 +44,7 @@ import {
 } from "@/types/costs";
 import { toast } from "sonner";
 import { generateProfitabilityReport } from "@/utils/profitabilityPdfExport";
+import { trackPdfDownload } from "@/lib/analytics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -320,6 +321,7 @@ export default function LaundromatSettings() {
         siteTotalCyclesMonth: siteTotalCyclesMonth,
         monthlyRevenueObjective: objectives.monthlyRevenue,
       });
+      trackPdfDownload(`profitability_${variant}`);
       toast.success(`Rapport ${variant === 'express' ? 'Express' : variant === 'bank' ? 'Banque' : 'Complet'} téléchargé`);
       setReportDialogOpen(false);
     } catch (error) {
