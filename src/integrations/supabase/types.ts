@@ -229,6 +229,47 @@ export type Database = {
         }
         Relationships: []
       }
+      user_goals: {
+        Row: {
+          annual_revenue_goal: number | null
+          created_at: string
+          id: string
+          monthly_revenue_goal: number | null
+          monthly_transactions_goal: number | null
+          site_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          annual_revenue_goal?: number | null
+          created_at?: string
+          id?: string
+          monthly_revenue_goal?: number | null
+          monthly_transactions_goal?: number | null
+          site_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          annual_revenue_goal?: number | null
+          created_at?: string
+          id?: string
+          monthly_revenue_goal?: number | null
+          monthly_transactions_goal?: number | null
+          site_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_goals_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
