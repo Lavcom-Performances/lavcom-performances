@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { SIMULATOR_PLANS } from "@/config/pricingConfig";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
+import { Footer } from "@/components/layout/Footer";
 import { translations } from "@/lib/i18n";
 
 const t = translations.subscribeSimulator;
@@ -196,6 +197,8 @@ export default function SubscribeSimulator() {
           </p>
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 }

@@ -21,6 +21,7 @@ import Operations from "./pages/Operations";
 import ImportExport from "./pages/ImportExport";
 import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
+import MentionsLegales from "./pages/MentionsLegales";
 import LaundromatSettings from "./pages/LaundromatSettings";
 import CompanySettings from "./pages/CompanySettings";
 
@@ -66,6 +67,7 @@ const App = () => (
           <Route path="/subscribe-simulator" element={<SubscribeSimulator />} />
           <Route path="/select-laundromat" element={<SelectLaundromat />} />
           <Route path="/company-settings" element={<CompanySettings />} />
+          <Route path="/mentions-legales" element={<MentionsLegales />} />
           
           {/* Simulation routes with dedicated layout (no sidebar) */}
           <Route element={<SimulationLayout />}>

@@ -1159,9 +1159,9 @@ const LandingPage = () => {
               
               {/* Liens légaux */}
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <a href="#" className="hover:text-foreground transition-colors">Mentions légales</a>
-                <a href="#" className="hover:text-foreground transition-colors">Confidentialité</a>
-                <a href="#" className="hover:text-foreground transition-colors">CGV</a>
+                <Link to="/mentions-legales" className="hover:text-foreground transition-colors">Mentions légales</Link>
+                <Link to="/mentions-legales#confidentialite" className="hover:text-foreground transition-colors">Confidentialité</Link>
+                <Link to="/mentions-legales#cgv" className="hover:text-foreground transition-colors">CGV</Link>
               </div>
             </div>
             

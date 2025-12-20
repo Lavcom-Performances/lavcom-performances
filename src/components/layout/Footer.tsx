@@ -1,0 +1,126 @@
+import { Link } from "react-router-dom";
+import { Mail, Phone, MapPin } from "lucide-react";
+import lavcomLogo from "@/assets/lavcom-performances-logo.png";
+
+export function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className="bg-muted/30 border-t border-border">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Logo & Description */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <Link to="/" className="inline-block mb-4">
+              <img 
+                src={lavcomLogo} 
+                alt="Lavcom Performances" 
+                className="h-10 w-auto"
+              />
+            </Link>
+            <p className="text-sm text-muted-foreground mb-4">
+              La solution complète pour piloter et optimiser vos laveries automatiques.
+            </p>
+          </div>
+
+          {/* Navigation */}
+          <div>
+            <h4 className="font-semibold text-foreground mb-4">Navigation</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Accueil
+                </Link>
+              </li>
+              <li>
+                <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Tarifs Exploitants
+                </Link>
+              </li>
+              <li>
+                <Link to="/simulateur" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Simulateur
+                </Link>
+              </li>
+              <li>
+                <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Connexion
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="font-semibold text-foreground mb-4">Informations légales</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/mentions-legales" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Mentions légales
+                </Link>
+              </li>
+              <li>
+                <Link to="/mentions-legales#confidentialite" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Politique de confidentialité
+                </Link>
+              </li>
+              <li>
+                <Link to="/mentions-legales#cgv" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  CGV
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="font-semibold text-foreground mb-4">Contact</h4>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                <a 
+                  href="mailto:contact@lavcom.fr" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  contact@lavcom.fr
+                </a>
+              </li>
+              <li className="flex items-start gap-2">
+                <Phone className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                <a 
+                  href="tel:+33123456789" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  01 23 45 67 89
+                </a>
+              </li>
+              <li className="flex items-start gap-2">
+                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                <span className="text-sm text-muted-foreground">
+                  Paris, France
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-muted-foreground text-center sm:text-left">
+            © {currentYear} Lavcom. Tous droits réservés.
+          </p>
+          <div className="flex items-center gap-4">
+            <a 
+              href="https://lavcom.fr" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              lavcom.fr
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
