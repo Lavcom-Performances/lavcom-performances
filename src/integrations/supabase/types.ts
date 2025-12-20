@@ -214,6 +214,7 @@ export type Database = {
           created_at: string
           id: string
           is_default: boolean | null
+          is_demo: boolean
           name: string
           postal_code: string | null
           updated_at: string
@@ -225,6 +226,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_default?: boolean | null
+          is_demo?: boolean
           name: string
           postal_code?: string | null
           updated_at?: string
@@ -236,6 +238,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_default?: boolean | null
+          is_demo?: boolean
           name?: string
           postal_code?: string | null
           updated_at?: string
