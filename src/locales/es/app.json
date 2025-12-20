@@ -57,7 +57,10 @@
       "deleteConfirmDescription": "Esta acción no se puede deshacer. Su foto de perfil será eliminada permanentemente.",
       "deleteSuccess": "Foto eliminada",
       "deleteSuccessDescription": "Su foto de perfil ha sido eliminada",
-      "deleteError": "Error al eliminar"
+      "deleteError": "Error al eliminar",
+      "cropTitle": "Recortar foto",
+      "cropConfirm": "Aplicar",
+      "cropping": "Procesando..."
     },
     "password": {
       "title": "Cambiar contraseña",

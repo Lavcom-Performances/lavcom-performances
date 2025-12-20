@@ -16,6 +16,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
+import { AvatarCropDialog } from "./AvatarCropDialog";
 
 interface AvatarUploadProps {
   userId: string;
@@ -36,6 +37,8 @@ export function AvatarUpload({
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getInitials = () => {
@@ -58,8 +61,8 @@ export function AvatarUpload({
       return;
     }
 
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
+    // Validate file size (max 5MB for original before crop)
+    if (file.size > 5 * 1024 * 1024) {
       toast({
         title: t('common:error'),
         description: t('app:profile.avatar.tooLarge'),
@@ -68,17 +71,32 @@ export function AvatarUpload({
       return;
     }
 
+    // Create object URL for cropping
+    const imageUrl = URL.createObjectURL(file);
+    setSelectedImageSrc(imageUrl);
+    setCropDialogOpen(true);
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    setCropDialogOpen(false);
+    setSelectedImageSrc(null);
     setIsUploading(true);
 
     try {
-      // Create unique filename
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${userId}/avatar.${fileExt}`;
+      const fileName = `${userId}/avatar.jpg`;
 
       // Upload to storage
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, croppedBlob, { 
+          upsert: true,
+          contentType: "image/jpeg"
+        });
 
       if (uploadError) throw uploadError;
 
@@ -112,12 +130,17 @@ export function AvatarUpload({
         variant: "destructive",
       });
     } finally {
-      setIsUploading(false);
-      // Reset input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      setIsUploading(true);
     }
+  };
+
+  const handleCropDialogClose = (open: boolean) => {
+    setCropDialogOpen(open);
+    if (!open && selectedImageSrc) {
+      URL.revokeObjectURL(selectedImageSrc);
+      setSelectedImageSrc(null);
+    }
+    setIsUploading(false);
   };
 
   const handleDelete = async () => {
@@ -239,6 +262,15 @@ export function AvatarUpload({
           </AlertDialog>
         )}
       </div>
+
+      {selectedImageSrc && (
+        <AvatarCropDialog
+          open={cropDialogOpen}
+          onOpenChange={handleCropDialogClose}
+          imageSrc={selectedImageSrc}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }

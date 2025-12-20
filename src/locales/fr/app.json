@@ -57,7 +57,10 @@
       "deleteConfirmDescription": "Cette action est irréversible. Votre photo de profil sera définitivement supprimée.",
       "deleteSuccess": "Photo supprimée",
       "deleteSuccessDescription": "Votre photo de profil a été supprimée",
-      "deleteError": "Erreur lors de la suppression"
+      "deleteError": "Erreur lors de la suppression",
+      "cropTitle": "Recadrer votre photo",
+      "cropConfirm": "Appliquer",
+      "cropping": "Traitement..."
     },
     "password": {
       "title": "Modifier le mot de passe",
