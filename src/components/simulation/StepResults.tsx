@@ -27,6 +27,7 @@ import {
 import { generateSimulationReport } from "@/utils/simulationPdfExport";
 import { toast } from "@/hooks/use-toast";
 import ebookCover from "@/assets/ebook-avant-ouvrir.jpg";
+import { trackEbookClick } from "@/lib/analytics";
 
 interface StepResultsProps {
   project: SimulationProject;
@@ -393,7 +394,10 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <Button 
                   className="gap-2 group/btn"
-                  onClick={() => window.open('https://lavcom.fr/nos-ebooks-2/', '_blank')}
+                  onClick={() => {
+                    trackEbookClick('simulation_results');
+                    window.open('https://lavcom.fr/nos-ebooks-2/', '_blank');
+                  }}
                 >
                   Découvrir le guide
                   <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
