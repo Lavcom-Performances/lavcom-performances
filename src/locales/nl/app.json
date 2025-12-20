@@ -47,6 +47,7 @@
       "change": "Foto wijzigen",
       "upload": "Foto uploaden",
       "hint": "JPG, PNG of GIF. Max 2 MB.",
+      "dragHint": "Of sleep een afbeelding hierheen",
       "invalidType": "Selecteer een afbeelding",
       "tooLarge": "Afbeelding moet kleiner zijn dan 2 MB",
       "uploadError": "Uploaden mislukt",
