@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DateRange } from 'react-day-picker';
 import { subDays } from 'date-fns';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -524,6 +525,66 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
           </div>
         </CardContent>
       </Card>
+
+      {/* Revenue Comparison Chart */}
+      {selectedSiteIds.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Comparaison du CA par laverie</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart 
+                  data={sortedData.map(site => ({
+                    name: site.name.length > 15 ? site.name.substring(0, 15) + '...' : site.name,
+                    fullName: site.name,
+                    revenue: site.revenue,
+                    trend: site.trend,
+                  }))}
+                  margin={{ top: 10, right: 30, left: 20, bottom: 40 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 12 }}
+                    angle={-25}
+                    textAnchor="end"
+                    height={60}
+                    className="fill-muted-foreground"
+                  />
+                  <YAxis 
+                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k€`}
+                    className="fill-muted-foreground"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <RechartsTooltip 
+                    formatter={(value: number) => [
+                      new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value) + ' €',
+                      'CA'
+                    ]}
+                    labelFormatter={(label, payload) => payload?.[0]?.payload?.fullName || label}
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--background))', 
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                  />
+                  <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+                    {sortedData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={index === 0 ? 'hsl(var(--lavcom-green))' : 'hsl(var(--primary))'}
+                        opacity={index === 0 ? 1 : 0.7}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Comparison Table */}
       {selectedSiteIds.length > 0 && (
