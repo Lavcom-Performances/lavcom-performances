@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Search, CheckCircle2, Home } from "lucide-react";
+import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Search, CheckCircle2, Home, Files } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -13,12 +13,13 @@ import { LaundryEmptyState } from "@/components/laundromat/LaundryEmptyState";
 import { useSites } from "@/hooks/useSites";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-
+import { MultiCSVImportWizard } from "@/components/operations/multi-csv/MultiCSVImportWizard";
 export default function SelectLaundromat() {
   const navigate = useNavigate();
   const { sites, isLoading, createSite, fetchSites } = useSites();
   const { createDemoSite, isCreatingDemo } = useDemoMode();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMultiImportOpen, setIsMultiImportOpen] = useState(false);
   const [isLoadingSiret, setIsLoadingSiret] = useState(false);
   const [siretError, setSiretError] = useState<string | null>(null);
   const [siretSuccess, setSiretSuccess] = useState(false);
@@ -221,15 +222,25 @@ export default function SelectLaundromat() {
             <LaundryEmptyState 
               onAddLaundry={openAddDialog} 
               onViewDemo={createDemoSite}
+              onMultiImport={() => setIsMultiImportOpen(true)}
               isDemoLoading={isCreatingDemo}
             />
           ) : (
             <>
               {/* Actions */}
-              <div className="flex justify-center">
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <Button onClick={openAddDialog} className="gap-2" size="lg">
                   <Plus className="h-4 w-4" />
                   Ajouter une laverie
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsMultiImportOpen(true)} 
+                  className="gap-2" 
+                  size="lg"
+                >
+                  <Files className="h-4 w-4" />
+                  Importer plusieurs CSV
                 </Button>
               </div>
 
@@ -266,10 +277,6 @@ export default function SelectLaundromat() {
                   </button>
                 ))}
               </div>
-
-              <p className="text-center text-sm text-muted-foreground px-2 py-4 rounded-xl bg-muted/30 border border-border/50">
-                💡 L'import de fichiers CSV se fait depuis le menu <strong>Opérations</strong> après avoir sélectionné une laverie.
-              </p>
             </>
           )}
         </div>
@@ -404,6 +411,12 @@ export default function SelectLaundromat() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Multi CSV Import Wizard */}
+      <MultiCSVImportWizard 
+        open={isMultiImportOpen} 
+        onOpenChange={setIsMultiImportOpen} 
+      />
     </div>
   );
 }
