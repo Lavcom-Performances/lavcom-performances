@@ -85,7 +85,8 @@
     "confirmEmail": "Por favor confirme su correo electrónico",
     "freeTrial": "Prueba gratuita 14 días",
     "or": "o",
-    "decorativeText": "La solución de gestión para operadores de lavanderías"
+    "decorativeText": "La solución de gestión para operadores de lavanderías",
+    "continueWithGoogle": "Continuar con Google"
   },
   "signup": {
     "title": "Crear su cuenta",
@@ -131,7 +132,8 @@
       "feature4": "Recomendaciones inteligentes",
       "feature5": "Sin compromiso, sin tarjeta"
     },
-    "decorativeText": "Únase a los operadores de lavanderías que optimizan su rendimiento"
+    "decorativeText": "Únase a los operadores de lavanderías que optimizan su rendimiento",
+    "continueWithGoogle": "Continuar con Google"
   },
   "forgotPassword": {
     "title": "Contraseña olvidada",

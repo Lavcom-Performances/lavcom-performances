@@ -85,7 +85,8 @@
     "confirmEmail": "Please confirm your email",
     "freeTrial": "14-day free trial",
     "or": "or",
-    "decorativeText": "The management solution for laundry operators"
+    "decorativeText": "The management solution for laundry operators",
+    "continueWithGoogle": "Continue with Google"
   },
   "signup": {
     "title": "Create your account",
@@ -131,7 +132,8 @@
       "feature4": "Smart recommendations",
       "feature5": "No commitment, no credit card"
     },
-    "decorativeText": "Join laundry operators who optimize their performance"
+    "decorativeText": "Join laundry operators who optimize their performance",
+    "continueWithGoogle": "Continue with Google"
   },
   "forgotPassword": {
     "title": "Forgot password",

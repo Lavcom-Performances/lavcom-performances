@@ -85,7 +85,8 @@
     "confirmEmail": "Bitte bestätigen Sie Ihre E-Mail",
     "freeTrial": "14 Tage kostenlos testen",
     "or": "oder",
-    "decorativeText": "Die Management-Lösung für Waschsalon-Betreiber"
+    "decorativeText": "Die Management-Lösung für Waschsalon-Betreiber",
+    "continueWithGoogle": "Mit Google fortfahren"
   },
   "signup": {
     "title": "Konto erstellen",
@@ -131,7 +132,8 @@
       "feature4": "Intelligente Empfehlungen",
       "feature5": "Ohne Bindung, ohne Kreditkarte"
     },
-    "decorativeText": "Schließen Sie sich den Waschsalon-Betreibern an, die ihre Leistung optimieren"
+    "decorativeText": "Schließen Sie sich den Waschsalon-Betreibern an, die ihre Leistung optimieren",
+    "continueWithGoogle": "Mit Google fortfahren"
   },
   "forgotPassword": {
     "title": "Passwort vergessen",
