@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight, Building2, User, CreditCard, Check, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,13 +30,8 @@ interface ContactInfo {
   fonction: string;
 }
 
-const steps = [
-  { id: 1, name: "Entreprise", icon: Building2 },
-  { id: 2, name: "Contact", icon: User },
-  { id: 3, name: "Paiement", icon: CreditCard },
-];
-
 export default function Subscribe() {
+  const { t } = useTranslation(['app', 'common']);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const planFromUrl = searchParams.get("plan") || "monthly";
@@ -63,10 +59,16 @@ export default function Subscribe() {
     fonction: "",
   });
 
+  const steps = [
+    { id: 1, name: t('app:subscribe.steps.company'), icon: Building2 },
+    { id: 2, name: t('app:subscribe.steps.contact'), icon: User },
+    { id: 3, name: t('app:subscribe.steps.payment'), icon: CreditCard },
+  ];
+
   const pricing = getLaundromatPricing(laundryCount);
   const currentPricing = selectedPlan === "annual" 
-    ? { total: pricing.annualTotal, period: "an", perLav: pricing.annualPricePerLav }
-    : { total: pricing.monthlyTotal, period: "mois", perLav: pricing.monthlyPricePerLav };
+    ? { total: pricing.annualTotal, period: t('app:subscribe.payment.perYear'), perLav: pricing.annualPricePerLav }
+    : { total: pricing.monthlyTotal, period: t('app:subscribe.payment.perMonth'), perLav: pricing.monthlyPricePerLav };
 
   const incrementCount = () => setLaundryCount(prev => Math.min(prev + 1, 100));
   const decrementCount = () => setLaundryCount(prev => Math.max(prev - 1, 1));
@@ -83,16 +85,16 @@ export default function Subscribe() {
   const validateStep1 = () => {
     if (!companyInfo.raisonSociale || !companyInfo.siret || !companyInfo.adresse || !companyInfo.codePostal || !companyInfo.ville) {
       toast({
-        title: "Informations incomplètes",
-        description: "Veuillez remplir tous les champs obligatoires.",
+        title: t('app:subscribe.validation.incompleteTitle'),
+        description: t('app:subscribe.validation.incompleteDesc'),
         variant: "destructive",
       });
       return false;
     }
     if (companyInfo.siret.replace(/\s/g, "").length !== 14) {
       toast({
-        title: "SIRET invalide",
-        description: "Le numéro SIRET doit contenir 14 chiffres.",
+        title: t('app:subscribe.validation.invalidSiretTitle'),
+        description: t('app:subscribe.validation.invalidSiretDesc'),
         variant: "destructive",
       });
       return false;
@@ -103,8 +105,8 @@ export default function Subscribe() {
   const validateStep2 = () => {
     if (!contactInfo.nom || !contactInfo.prenom || !contactInfo.email || !contactInfo.telephone) {
       toast({
-        title: "Informations incomplètes",
-        description: "Veuillez remplir tous les champs obligatoires.",
+        title: t('app:subscribe.validation.incompleteTitle'),
+        description: t('app:subscribe.validation.incompleteDesc'),
         variant: "destructive",
       });
       return false;
@@ -112,8 +114,8 @@ export default function Subscribe() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(contactInfo.email)) {
       toast({
-        title: "Email invalide",
-        description: "Veuillez entrer une adresse email valide.",
+        title: t('app:subscribe.validation.invalidEmailTitle'),
+        description: t('app:subscribe.validation.invalidEmailDesc'),
         variant: "destructive",
       });
       return false;
@@ -143,8 +145,8 @@ export default function Subscribe() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
     
     toast({
-      title: "Inscription réussie !",
-      description: "Votre abonnement a été activé. Bienvenue sur Lavcom Analytics !",
+      title: t('app:subscribe.success.title'),
+      description: t('app:subscribe.success.description'),
     });
     
     navigate("/select-laundromat");
@@ -166,7 +168,7 @@ export default function Subscribe() {
           <Link to="/pricing">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Retour aux tarifs
+              {t('app:subscribe.backToPricing')}
             </Button>
           </Link>
         </div>
@@ -203,39 +205,39 @@ export default function Subscribe() {
               <CardHeader>
                 <CardTitle className="font-display text-xl sm:text-2xl flex items-center gap-2">
                   <Building2 className="h-6 w-6 text-primary" />
-                  Informations de l'entreprise
+                  {t('app:subscribe.company.title')}
                 </CardTitle>
                 <CardDescription>
-                  Ces informations seront utilisées pour la facturation.
+                  {t('app:subscribe.company.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="raisonSociale">Raison sociale *</Label>
+                  <Label htmlFor="raisonSociale">{t('app:subscribe.company.companyName')} *</Label>
                   <Input
                     id="raisonSociale"
-                    placeholder="Ma Société SAS"
+                    placeholder={t('app:subscribe.company.companyNamePlaceholder')}
                     value={companyInfo.raisonSociale}
                     onChange={(e) => setCompanyInfo({ ...companyInfo, raisonSociale: e.target.value })}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="siret">Numéro SIRET *</Label>
+                  <Label htmlFor="siret">{t('app:subscribe.company.siret')} *</Label>
                   <Input
                     id="siret"
-                    placeholder="123 456 789 00012"
+                    placeholder={t('app:subscribe.company.siretPlaceholder')}
                     value={companyInfo.siret}
                     onChange={(e) => setCompanyInfo({ ...companyInfo, siret: formatSiret(e.target.value) })}
                   />
-                  <p className="text-xs text-muted-foreground">14 chiffres</p>
+                  <p className="text-xs text-muted-foreground">{t('app:subscribe.company.siretHint')}</p>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="adresse">Adresse *</Label>
+                  <Label htmlFor="adresse">{t('app:subscribe.company.address')} *</Label>
                   <Input
                     id="adresse"
-                    placeholder="123 rue de la Laverie"
+                    placeholder={t('app:subscribe.company.addressPlaceholder')}
                     value={companyInfo.adresse}
                     onChange={(e) => setCompanyInfo({ ...companyInfo, adresse: e.target.value })}
                   />
@@ -243,19 +245,19 @@ export default function Subscribe() {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="codePostal">Code postal *</Label>
+                    <Label htmlFor="codePostal">{t('app:subscribe.company.postalCode')} *</Label>
                     <Input
                       id="codePostal"
-                      placeholder="75001"
+                      placeholder={t('app:subscribe.company.postalCodePlaceholder')}
                       value={companyInfo.codePostal}
                       onChange={(e) => setCompanyInfo({ ...companyInfo, codePostal: e.target.value.replace(/\D/g, "").slice(0, 5) })}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="ville">Ville *</Label>
+                    <Label htmlFor="ville">{t('app:subscribe.company.city')} *</Label>
                     <Input
                       id="ville"
-                      placeholder="Paris"
+                      placeholder={t('app:subscribe.company.cityPlaceholder')}
                       value={companyInfo.ville}
                       onChange={(e) => setCompanyInfo({ ...companyInfo, ville: e.target.value })}
                     />
@@ -271,15 +273,15 @@ export default function Subscribe() {
               <CardHeader>
                 <CardTitle className="font-display text-xl sm:text-2xl flex items-center gap-2">
                   <User className="h-6 w-6 text-primary" />
-                  Coordonnées du souscripteur
+                  {t('app:subscribe.contact.title')}
                 </CardTitle>
                 <CardDescription>
-                  La personne responsable de l'abonnement.
+                  {t('app:subscribe.contact.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Civilité *</Label>
+                  <Label>{t('app:subscribe.contact.civility')} *</Label>
                   <RadioGroup
                     value={contactInfo.civilite}
                     onValueChange={(value) => setContactInfo({ ...contactInfo, civilite: value })}
@@ -287,30 +289,30 @@ export default function Subscribe() {
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="M" id="m" />
-                      <Label htmlFor="m" className="font-normal">M.</Label>
+                      <Label htmlFor="m" className="font-normal">{t('app:subscribe.contact.mr')}</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Mme" id="mme" />
-                      <Label htmlFor="mme" className="font-normal">Mme</Label>
+                      <Label htmlFor="mme" className="font-normal">{t('app:subscribe.contact.mrs')}</Label>
                     </div>
                   </RadioGroup>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="prenom">Prénom *</Label>
+                    <Label htmlFor="prenom">{t('app:subscribe.contact.firstName')} *</Label>
                     <Input
                       id="prenom"
-                      placeholder="Jean"
+                      placeholder={t('app:subscribe.contact.firstNamePlaceholder')}
                       value={contactInfo.prenom}
                       onChange={(e) => setContactInfo({ ...contactInfo, prenom: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="nom">Nom *</Label>
+                    <Label htmlFor="nom">{t('app:subscribe.contact.lastName')} *</Label>
                     <Input
                       id="nom"
-                      placeholder="Dupont"
+                      placeholder={t('app:subscribe.contact.lastNamePlaceholder')}
                       value={contactInfo.nom}
                       onChange={(e) => setContactInfo({ ...contactInfo, nom: e.target.value })}
                     />
@@ -318,32 +320,32 @@ export default function Subscribe() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="fonction">Fonction</Label>
+                  <Label htmlFor="fonction">{t('app:subscribe.contact.function')}</Label>
                   <Input
                     id="fonction"
-                    placeholder="Gérant"
+                    placeholder={t('app:subscribe.contact.functionPlaceholder')}
                     value={contactInfo.fonction}
                     onChange={(e) => setContactInfo({ ...contactInfo, fonction: e.target.value })}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="email">{t('app:subscribe.contact.email')} *</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="jean.dupont@masociete.fr"
+                    placeholder={t('app:subscribe.contact.emailPlaceholder')}
                     value={contactInfo.email}
                     onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="telephone">Téléphone *</Label>
+                  <Label htmlFor="telephone">{t('app:subscribe.contact.phone')} *</Label>
                   <Input
                     id="telephone"
                     type="tel"
-                    placeholder="06 12 34 56 78"
+                    placeholder={t('app:subscribe.contact.phonePlaceholder')}
                     value={contactInfo.telephone}
                     onChange={(e) => setContactInfo({ ...contactInfo, telephone: e.target.value })}
                   />
@@ -358,16 +360,16 @@ export default function Subscribe() {
               <CardHeader>
                 <CardTitle className="font-display text-xl sm:text-2xl flex items-center gap-2">
                   <CreditCard className="h-6 w-6 text-primary" />
-                  Récapitulatif et paiement
+                  {t('app:subscribe.payment.title')}
                 </CardTitle>
                 <CardDescription>
-                  Vérifiez vos informations avant de procéder au paiement.
+                  {t('app:subscribe.payment.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Laundry count */}
                 <div className="space-y-3">
-                  <Label>Nombre de laveries</Label>
+                  <Label>{t('app:subscribe.payment.laundryCount')}</Label>
                   <div className="flex items-center gap-4 p-4 border rounded-lg">
                     <Button 
                       variant="outline" 
@@ -403,7 +405,7 @@ export default function Subscribe() {
 
                 {/* Plan selection */}
                 <div className="space-y-3">
-                  <Label>Formule choisie</Label>
+                  <Label>{t('app:subscribe.payment.chosenPlan')}</Label>
                   <RadioGroup
                     value={selectedPlan}
                     onValueChange={setSelectedPlan}
@@ -418,11 +420,11 @@ export default function Subscribe() {
                       <div className="flex items-center gap-3">
                         <RadioGroupItem value="monthly" id="monthly-plan" />
                         <div>
-                          <p className="font-medium">Mensuel</p>
-                          <p className="text-sm text-muted-foreground">Sans engagement</p>
+                          <p className="font-medium">{t('app:subscribe.payment.monthly')}</p>
+                          <p className="text-sm text-muted-foreground">{t('app:subscribe.payment.noCommitment')}</p>
                         </div>
                       </div>
-                      <p className="font-bold text-lg">{pricing.monthlyTotal}€/mois</p>
+                      <p className="font-bold text-lg">{pricing.monthlyTotal}€/{t('app:subscribe.payment.perMonth')}</p>
                     </label>
                     
                     <label 
@@ -434,46 +436,46 @@ export default function Subscribe() {
                       <div className="flex items-center gap-3">
                         <RadioGroupItem value="annual" id="annual-plan" />
                         <div>
-                          <p className="font-medium">Annuel</p>
-                          <p className="text-sm text-primary">2 mois offerts</p>
+                          <p className="font-medium">{t('app:subscribe.payment.annual')}</p>
+                          <p className="text-sm text-primary">{t('app:subscribe.payment.monthsFree')}</p>
                         </div>
                       </div>
-                      <p className="font-bold text-lg">{pricing.annualTotal}€/an</p>
+                      <p className="font-bold text-lg">{pricing.annualTotal}€/{t('app:subscribe.payment.perYear')}</p>
                     </label>
                   </RadioGroup>
                 </div>
 
                 {/* Summary */}
                 <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                  <h4 className="font-semibold">Récapitulatif</h4>
+                  <h4 className="font-semibold">{t('app:subscribe.payment.summary')}</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Entreprise</span>
+                      <span className="text-muted-foreground">{t('app:subscribe.payment.companyLabel')}</span>
                       <span className="font-medium">{companyInfo.raisonSociale}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Contact</span>
+                      <span className="text-muted-foreground">{t('app:subscribe.payment.contactLabel')}</span>
                       <span className="font-medium">{contactInfo.prenom} {contactInfo.nom}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Nombre de laveries</span>
+                      <span className="text-muted-foreground">{t('app:subscribe.payment.laundryCountLabel')}</span>
                       <span className="font-medium">{laundryCount}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Prix par laverie</span>
+                      <span className="text-muted-foreground">{t('app:subscribe.payment.pricePerLaundry')}</span>
                       <span className="font-medium">{currentPricing.perLav}€/{currentPricing.period}</span>
                     </div>
                   </div>
                   <div className="border-t pt-3 mt-3">
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold">Total</span>
+                      <span className="font-semibold">{t('app:subscribe.payment.total')}</span>
                       <span className="text-2xl font-bold text-primary">
                         {currentPricing.total}€/{currentPricing.period}
                       </span>
                     </div>
                     {selectedPlan === "annual" && (
                       <p className="text-sm text-primary text-right">
-                        Économie de {pricing.annualSaving}€/an
+                        {t('app:subscribe.payment.savings', { amount: pricing.annualSaving })}
                       </p>
                     )}
                   </div>
@@ -490,12 +492,12 @@ export default function Subscribe() {
               disabled={currentStep === 1}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Précédent
+              {t('app:subscribe.navigation.previous')}
             </Button>
             
             {currentStep < 3 ? (
               <Button onClick={handleNext}>
-                Suivant
+                {t('app:subscribe.navigation.next')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
@@ -503,7 +505,7 @@ export default function Subscribe() {
                 onClick={handleSubmit}
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Traitement..." : "Procéder au paiement"}
+                {isSubmitting ? t('app:subscribe.navigation.processing') : t('app:subscribe.navigation.proceedPayment')}
                 <CreditCard className="ml-2 h-4 w-4" />
               </Button>
             )}

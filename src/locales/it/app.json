@@ -164,8 +164,85 @@
   },
   "dropdown": {
     "exploitant": "Operatore",
-    "exploitantDesc": "Accesso alle mie lavanderie",
+    "exploitantDesc": "Possiedi già lavanderie",
     "futureExploitant": "Futuro operatore",
-    "futureExploitantDesc": "Accesso al simulatore"
+    "futureExploitantDesc": "Stai pensando di iniziare"
+  },
+  "subscribe": {
+    "steps": {
+      "company": "Azienda",
+      "contact": "Contatto",
+      "payment": "Pagamento"
+    },
+    "backToPricing": "Torna ai prezzi",
+    "company": {
+      "title": "Informazioni aziendali",
+      "description": "Queste informazioni saranno utilizzate per la fatturazione.",
+      "companyName": "Ragione sociale",
+      "companyNamePlaceholder": "La Mia Azienda Srl",
+      "siret": "Partita IVA",
+      "siretPlaceholder": "IT12345678901",
+      "siretHint": "14 cifre",
+      "address": "Indirizzo",
+      "addressPlaceholder": "Via Lavanderia 123",
+      "postalCode": "CAP",
+      "postalCodePlaceholder": "00100",
+      "city": "Città",
+      "cityPlaceholder": "Roma"
+    },
+    "contact": {
+      "title": "Dati del sottoscrittore",
+      "description": "La persona responsabile dell'abbonamento.",
+      "civility": "Titolo",
+      "mr": "Sig.",
+      "mrs": "Sig.ra",
+      "firstName": "Nome",
+      "firstNamePlaceholder": "Mario",
+      "lastName": "Cognome",
+      "lastNamePlaceholder": "Rossi",
+      "function": "Ruolo",
+      "functionPlaceholder": "Direttore",
+      "email": "Email",
+      "emailPlaceholder": "mario.rossi@miaazienda.it",
+      "phone": "Telefono",
+      "phonePlaceholder": "+39 333 123 4567"
+    },
+    "payment": {
+      "title": "Riepilogo e pagamento",
+      "description": "Verifica le tue informazioni prima di procedere al pagamento.",
+      "laundryCount": "Numero di lavanderie",
+      "chosenPlan": "Piano scelto",
+      "monthly": "Mensile",
+      "noCommitment": "Senza impegno",
+      "annual": "Annuale",
+      "monthsFree": "2 mesi gratis",
+      "perMonth": "mese",
+      "perYear": "anno",
+      "summary": "Riepilogo",
+      "companyLabel": "Azienda",
+      "contactLabel": "Contatto",
+      "laundryCountLabel": "Numero di lavanderie",
+      "pricePerLaundry": "Prezzo per lavanderia",
+      "total": "Totale",
+      "savings": "Risparmio di {{amount}}€/anno"
+    },
+    "navigation": {
+      "previous": "Precedente",
+      "next": "Successivo",
+      "processing": "Elaborazione...",
+      "proceedPayment": "Procedi al pagamento"
+    },
+    "validation": {
+      "incompleteTitle": "Informazioni incomplete",
+      "incompleteDesc": "Si prega di compilare tutti i campi obbligatori.",
+      "invalidSiretTitle": "Partita IVA non valida",
+      "invalidSiretDesc": "La partita IVA deve contenere 14 cifre.",
+      "invalidEmailTitle": "Email non valida",
+      "invalidEmailDesc": "Si prega di inserire un indirizzo email valido."
+    },
+    "success": {
+      "title": "Registrazione completata!",
+      "description": "Il tuo abbonamento è stato attivato. Benvenuto su Lavcom Analytics!"
+    }
   }
 }

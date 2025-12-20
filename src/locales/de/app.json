@@ -164,8 +164,85 @@
   },
   "dropdown": {
     "exploitant": "Betreiber",
-    "exploitantDesc": "Zugang zu meinen Waschsalons",
+    "exploitantDesc": "Sie besitzen bereits Waschsalons",
     "futureExploitant": "Zukünftiger Betreiber",
-    "futureExploitantDesc": "Zugang zum Simulator"
+    "futureExploitantDesc": "Sie erwägen den Einstieg"
+  },
+  "subscribe": {
+    "steps": {
+      "company": "Unternehmen",
+      "contact": "Kontakt",
+      "payment": "Zahlung"
+    },
+    "backToPricing": "Zurück zu den Preisen",
+    "company": {
+      "title": "Unternehmensinformationen",
+      "description": "Diese Informationen werden für die Rechnungsstellung verwendet.",
+      "companyName": "Firmenname",
+      "companyNamePlaceholder": "Meine Firma GmbH",
+      "siret": "Handelsregisternummer",
+      "siretPlaceholder": "HRB 123456",
+      "siretHint": "14 Ziffern",
+      "address": "Adresse",
+      "addressPlaceholder": "Wäschereistraße 123",
+      "postalCode": "Postleitzahl",
+      "postalCodePlaceholder": "10115",
+      "city": "Stadt",
+      "cityPlaceholder": "Berlin"
+    },
+    "contact": {
+      "title": "Abonnentendaten",
+      "description": "Die für das Abonnement verantwortliche Person.",
+      "civility": "Anrede",
+      "mr": "Herr",
+      "mrs": "Frau",
+      "firstName": "Vorname",
+      "firstNamePlaceholder": "Max",
+      "lastName": "Nachname",
+      "lastNamePlaceholder": "Müller",
+      "function": "Position",
+      "functionPlaceholder": "Geschäftsführer",
+      "email": "E-Mail",
+      "emailPlaceholder": "max.mueller@meinefirma.de",
+      "phone": "Telefon",
+      "phonePlaceholder": "+49 170 123 4567"
+    },
+    "payment": {
+      "title": "Zusammenfassung und Zahlung",
+      "description": "Überprüfen Sie Ihre Angaben vor der Zahlung.",
+      "laundryCount": "Anzahl der Waschsalons",
+      "chosenPlan": "Gewählter Plan",
+      "monthly": "Monatlich",
+      "noCommitment": "Ohne Bindung",
+      "annual": "Jährlich",
+      "monthsFree": "2 Monate kostenlos",
+      "perMonth": "Monat",
+      "perYear": "Jahr",
+      "summary": "Zusammenfassung",
+      "companyLabel": "Unternehmen",
+      "contactLabel": "Kontakt",
+      "laundryCountLabel": "Anzahl der Waschsalons",
+      "pricePerLaundry": "Preis pro Waschsalon",
+      "total": "Gesamt",
+      "savings": "Ersparnis von {{amount}}€/Jahr"
+    },
+    "navigation": {
+      "previous": "Zurück",
+      "next": "Weiter",
+      "processing": "Verarbeitung...",
+      "proceedPayment": "Zur Zahlung"
+    },
+    "validation": {
+      "incompleteTitle": "Unvollständige Angaben",
+      "incompleteDesc": "Bitte füllen Sie alle Pflichtfelder aus.",
+      "invalidSiretTitle": "Ungültige Handelsregisternummer",
+      "invalidSiretDesc": "Die Handelsregisternummer muss 14 Ziffern enthalten.",
+      "invalidEmailTitle": "Ungültige E-Mail",
+      "invalidEmailDesc": "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+    },
+    "success": {
+      "title": "Registrierung erfolgreich!",
+      "description": "Ihr Abonnement wurde aktiviert. Willkommen bei Lavcom Analytics!"
+    }
   }
 }

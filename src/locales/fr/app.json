@@ -164,8 +164,85 @@
   },
   "dropdown": {
     "exploitant": "Exploitant",
-    "exploitantDesc": "Accès à mes laveries",
+    "exploitantDesc": "Vous possédez déjà des laveries",
     "futureExploitant": "Futur exploitant",
-    "futureExploitantDesc": "Accès au simulateur"
+    "futureExploitantDesc": "Vous envisagez de vous lancer"
+  },
+  "subscribe": {
+    "steps": {
+      "company": "Entreprise",
+      "contact": "Contact",
+      "payment": "Paiement"
+    },
+    "backToPricing": "Retour aux tarifs",
+    "company": {
+      "title": "Informations de l'entreprise",
+      "description": "Ces informations seront utilisées pour la facturation.",
+      "companyName": "Raison sociale",
+      "companyNamePlaceholder": "Ma Société SAS",
+      "siret": "Numéro SIRET",
+      "siretPlaceholder": "123 456 789 00012",
+      "siretHint": "14 chiffres",
+      "address": "Adresse",
+      "addressPlaceholder": "123 rue de la Laverie",
+      "postalCode": "Code postal",
+      "postalCodePlaceholder": "75001",
+      "city": "Ville",
+      "cityPlaceholder": "Paris"
+    },
+    "contact": {
+      "title": "Coordonnées du souscripteur",
+      "description": "La personne responsable de l'abonnement.",
+      "civility": "Civilité",
+      "mr": "M.",
+      "mrs": "Mme",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Jean",
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Dupont",
+      "function": "Fonction",
+      "functionPlaceholder": "Gérant",
+      "email": "Email",
+      "emailPlaceholder": "jean.dupont@masociete.fr",
+      "phone": "Téléphone",
+      "phonePlaceholder": "06 12 34 56 78"
+    },
+    "payment": {
+      "title": "Récapitulatif et paiement",
+      "description": "Vérifiez vos informations avant de procéder au paiement.",
+      "laundryCount": "Nombre de laveries",
+      "chosenPlan": "Formule choisie",
+      "monthly": "Mensuel",
+      "noCommitment": "Sans engagement",
+      "annual": "Annuel",
+      "monthsFree": "2 mois offerts",
+      "perMonth": "mois",
+      "perYear": "an",
+      "summary": "Récapitulatif",
+      "companyLabel": "Entreprise",
+      "contactLabel": "Contact",
+      "laundryCountLabel": "Nombre de laveries",
+      "pricePerLaundry": "Prix par laverie",
+      "total": "Total",
+      "savings": "Économie de {{amount}}€/an"
+    },
+    "navigation": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "processing": "Traitement...",
+      "proceedPayment": "Procéder au paiement"
+    },
+    "validation": {
+      "incompleteTitle": "Informations incomplètes",
+      "incompleteDesc": "Veuillez remplir tous les champs obligatoires.",
+      "invalidSiretTitle": "SIRET invalide",
+      "invalidSiretDesc": "Le numéro SIRET doit contenir 14 chiffres.",
+      "invalidEmailTitle": "Email invalide",
+      "invalidEmailDesc": "Veuillez entrer une adresse email valide."
+    },
+    "success": {
+      "title": "Inscription réussie !",
+      "description": "Votre abonnement a été activé. Bienvenue sur Lavcom Analytics !"
+    }
   }
 }
