@@ -85,7 +85,32 @@
   },
   "testimonials": {
     "title": "What our customers say",
-    "subtitle": "Laundry managers like you share their experience"
+    "subtitle": "Laundry managers like you share their experience",
+    "t1Name": "Marie Dupont",
+    "t1Role": "Manager, Laverie Express Lyon",
+    "t1Quote": "Thanks to Lavcom Performances, I was able to identify my off-peak hours and adjust my prices. My revenue increased by 30% in 6 months!",
+    "t2Name": "Pierre Martin",
+    "t2Role": "Owner, Clean & Fresh Paris",
+    "t2Quote": "Maintenance alerts allowed me to avoid 3 major breakdowns this quarter. The investment paid off in a few weeks.",
+    "t3Name": "Sophie Bernard",
+    "t3Role": "Director, LavPlus Network",
+    "t3Quote": "With 12 laundromats, I could no longer manage everything manually. Lavcom gives me an instant overview of my entire network."
+  },
+  "comparison": {
+    "title": "Without Lavcom Performances / With Lavcom Performances",
+    "withoutTitle": "Without Lavcom Performances",
+    "without1": "I only see the overall revenue.",
+    "without2": "I don't know which machines are profitable.",
+    "without3": "I change my prices by feeling.",
+    "without4": "No clear report for my bank.",
+    "withTitle": "With Lavcom Performances",
+    "with1": "I know which machines cover my costs.",
+    "with2": "I see saturated or underused time slots.",
+    "with3": "Concrete recommendations every month.",
+    "with4": "PDF report for my bank."
+  },
+  "pdfExample": {
+    "cta": "See an example (PDF)"
   },
   "contact": {
     "title": "Have a question?",

@@ -85,7 +85,32 @@
   },
   "testimonials": {
     "title": "Ce que disent nos clients",
-    "subtitle": "Des gérants de laverie comme vous partagent leur expérience"
+    "subtitle": "Des gérants de laverie comme vous partagent leur expérience",
+    "t1Name": "Marie Dupont",
+    "t1Role": "Gérante, Laverie Express Lyon",
+    "t1Quote": "Grâce à Lavcom Performances, j'ai pu identifier mes heures creuses et ajuster mes tarifs. Mon CA a augmenté de 30% en 6 mois !",
+    "t2Name": "Pierre Martin",
+    "t2Role": "Propriétaire, Clean & Fresh Paris",
+    "t2Quote": "Les alertes de maintenance m'ont permis d'éviter 3 pannes majeures ce trimestre. L'investissement est rentabilisé en quelques semaines.",
+    "t3Name": "Sophie Bernard",
+    "t3Role": "Directrice, Réseau LavPlus",
+    "t3Quote": "Avec 12 laveries, je ne pouvais plus tout gérer manuellement. Lavcom me donne une vue d'ensemble instantanée de tout mon réseau."
+  },
+  "comparison": {
+    "title": "Sans Lavcom Performances / Avec Lavcom Performances",
+    "withoutTitle": "Sans Lavcom Performances",
+    "without1": "Je vois seulement le CA global.",
+    "without2": "Je ne sais pas quelles machines sont rentables.",
+    "without3": "Je change mes prix au feeling.",
+    "without4": "Pas de rapport clair pour ma banque.",
+    "withTitle": "Avec Lavcom Performances",
+    "with1": "Je connais les machines qui couvrent mes charges.",
+    "with2": "Je vois les créneaux saturés ou sous-utilisés.",
+    "with3": "Recommandations concrètes chaque mois.",
+    "with4": "Rapport PDF pour ma banque."
+  },
+  "pdfExample": {
+    "cta": "Voir un exemple (PDF)"
   },
   "contact": {
     "title": "Une question ?",
