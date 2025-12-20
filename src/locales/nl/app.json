@@ -60,7 +60,9 @@
       "deleteError": "Verwijderen mislukt",
       "cropTitle": "Foto bijsnijden",
       "cropConfirm": "Toepassen",
-      "cropping": "Verwerken..."
+      "cropping": "Verwerken...",
+      "zoom": "Zoom",
+      "rotate": "Draaien"
     },
     "password": {
       "title": "Wachtwoord wijzigen",

@@ -9,7 +9,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Loader2, ZoomIn, RotateCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AvatarCropDialogProps {
@@ -49,6 +50,8 @@ export function AvatarCropDialog({
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [scale, setScale] = useState(1);
+  const [rotate, setRotate] = useState(0);
   const imgRef = useRef<HTMLImageElement>(null);
 
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -82,6 +85,15 @@ export function AvatarCropDialog({
       ctx.scale(pixelRatio, pixelRatio);
       ctx.imageSmoothingQuality = "high";
 
+      // Apply rotation
+      const rotateRads = (rotate * Math.PI) / 180;
+      const centerX = outputSize / 2;
+      const centerY = outputSize / 2;
+
+      ctx.translate(centerX, centerY);
+      ctx.rotate(rotateRads);
+      ctx.translate(-centerX, -centerY);
+
       ctx.drawImage(
         image,
         completedCrop.x * scaleX,
@@ -110,37 +122,84 @@ export function AvatarCropDialog({
     }
   };
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      // Reset values when closing
+      setScale(1);
+      setRotate(0);
+      setCrop(undefined);
+      setCompletedCrop(undefined);
+    }
+    onOpenChange(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("app:profile.avatar.cropTitle")}</DialogTitle>
         </DialogHeader>
 
-        <div className="flex justify-center py-4">
-          <ReactCrop
-            crop={crop}
-            onChange={(_, percentCrop) => setCrop(percentCrop)}
-            onComplete={(c) => setCompletedCrop(c)}
-            aspect={1}
-            circularCrop
-            className="max-h-[400px]"
-          >
-            <img
-              ref={imgRef}
-              src={imageSrc}
-              alt="Crop preview"
-              onLoad={onImageLoad}
-              className="max-h-[400px] max-w-full"
-            />
-          </ReactCrop>
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-center py-2">
+            <ReactCrop
+              crop={crop}
+              onChange={(_, percentCrop) => setCrop(percentCrop)}
+              onComplete={(c) => setCompletedCrop(c)}
+              aspect={1}
+              circularCrop
+              className="max-h-[300px]"
+            >
+              <img
+                ref={imgRef}
+                src={imageSrc}
+                alt="Crop preview"
+                onLoad={onImageLoad}
+                className="max-h-[300px] max-w-full"
+                style={{
+                  transform: `scale(${scale}) rotate(${rotate}deg)`,
+                  transformOrigin: "center",
+                }}
+              />
+            </ReactCrop>
+          </div>
+
+          <div className="space-y-4 px-2">
+            <div className="flex items-center gap-3">
+              <ZoomIn className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-sm text-muted-foreground w-16">{t("app:profile.avatar.zoom")}</span>
+              <Slider
+                value={[scale]}
+                onValueChange={(values) => setScale(values[0])}
+                min={0.5}
+                max={2}
+                step={0.1}
+                className="flex-1"
+              />
+              <span className="text-sm text-muted-foreground w-12 text-right">{Math.round(scale * 100)}%</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <RotateCw className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-sm text-muted-foreground w-16">{t("app:profile.avatar.rotate")}</span>
+              <Slider
+                value={[rotate]}
+                onValueChange={(values) => setRotate(values[0])}
+                min={-180}
+                max={180}
+                step={1}
+                className="flex-1"
+              />
+              <span className="text-sm text-muted-foreground w-12 text-right">{rotate}°</span>
+            </div>
+          </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
           <Button
             type="button"
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={() => handleOpenChange(false)}
             disabled={isProcessing}
           >
             {t("common:cancel")}

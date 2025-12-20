@@ -60,7 +60,9 @@
       "deleteError": "Eliminazione fallita",
       "cropTitle": "Ritaglia la foto",
       "cropConfirm": "Applica",
-      "cropping": "Elaborazione..."
+      "cropping": "Elaborazione...",
+      "zoom": "Zoom",
+      "rotate": "Ruota"
     },
     "password": {
       "title": "Cambia password",

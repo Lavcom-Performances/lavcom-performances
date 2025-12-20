@@ -60,7 +60,9 @@
       "deleteError": "Failed to delete photo",
       "cropTitle": "Crop your photo",
       "cropConfirm": "Apply",
-      "cropping": "Processing..."
+      "cropping": "Processing...",
+      "zoom": "Zoom",
+      "rotate": "Rotate"
     },
     "password": {
       "title": "Change password",

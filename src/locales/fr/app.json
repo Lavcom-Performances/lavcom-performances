@@ -60,7 +60,9 @@
       "deleteError": "Erreur lors de la suppression",
       "cropTitle": "Recadrer votre photo",
       "cropConfirm": "Appliquer",
-      "cropping": "Traitement..."
+      "cropping": "Traitement...",
+      "zoom": "Zoom",
+      "rotate": "Rotation"
     },
     "password": {
       "title": "Modifier le mot de passe",
