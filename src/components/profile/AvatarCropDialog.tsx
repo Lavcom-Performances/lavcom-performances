@@ -187,29 +187,30 @@ export function AvatarCropDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("app:profile.avatar.cropTitle")}</DialogTitle>
+          <DialogTitle className="text-base sm:text-lg">{t("app:profile.avatar.cropTitle")}</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4">
-          <div className="flex gap-4">
-            <div className="flex-1 flex justify-center py-2">
+        <div className="flex flex-col gap-3 sm:gap-4">
+          {/* Image and preview - stack on mobile, side by side on desktop */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center">
+            <div className="flex-1 flex justify-center py-2 w-full">
               <ReactCrop
                 crop={crop}
                 onChange={(_, percentCrop) => setCrop(percentCrop)}
                 onComplete={(c) => setCompletedCrop(c)}
                 aspect={1}
                 circularCrop
-                className="max-h-[300px]"
+                className="max-h-[200px] sm:max-h-[300px]"
               >
                 <img
                   ref={imgRef}
                   src={imageSrc}
                   alt="Crop preview"
                   onLoad={onImageLoad}
-                  className="max-h-[300px] max-w-full"
-                style={{
+                  className="max-h-[200px] sm:max-h-[300px] max-w-full"
+                  style={{
                     transform: `scale(${scale}) rotate(${rotate}deg) scaleX(${flipH ? -1 : 1}) scaleY(${flipV ? -1 : 1})`,
                     transformOrigin: "center",
                   }}
@@ -218,20 +219,23 @@ export function AvatarCropDialog({
             </div>
             
             {completedCrop && (
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-row sm:flex-col items-center gap-2">
                 <span className="text-xs text-muted-foreground">{t("app:profile.avatar.preview")}</span>
                 <canvas
                   ref={previewCanvasRef}
                   className="rounded-full border-2 border-primary/20"
-                  style={{ width: 80, height: 80 }}
+                  style={{ width: 60, height: 60 }}
                 />
               </div>
             )}
           </div>
-          <div className="space-y-4 px-2">
-            <div className="flex items-center gap-3">
+
+          {/* Controls section */}
+          <div className="space-y-3 sm:space-y-4 px-1 sm:px-2">
+            {/* Zoom control */}
+            <div className="flex items-center gap-2 sm:gap-3">
               <ZoomIn className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-sm text-muted-foreground w-16">{t("app:profile.avatar.zoom")}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.zoom")}</span>
               <Slider
                 value={[scale]}
                 onValueChange={(values) => setScale(values[0])}
@@ -240,18 +244,19 @@ export function AvatarCropDialog({
                 step={0.1}
                 className="flex-1"
               />
-              <span className="text-sm text-muted-foreground w-12 text-right">{Math.round(scale * 100)}%</span>
+              <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{Math.round(scale * 100)}%</span>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Rotation control - simplified on mobile */}
+            <div className="flex items-center gap-2 sm:gap-3">
               <RotateCw className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-sm text-muted-foreground w-16">{t("app:profile.avatar.rotate")}</span>
-              <div className="flex items-center gap-2">
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.rotate")}</span>
+              <div className="flex items-center gap-1 sm:gap-2 flex-1">
                 <Button
                   type="button"
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-8 w-8 shrink-0"
                   onClick={() => setRotate((prev) => Math.max(-180, prev - 90))}
                   title={t("app:profile.avatar.rotateLeft")}
                 >
@@ -263,49 +268,51 @@ export function AvatarCropDialog({
                   min={-180}
                   max={180}
                   step={1}
-                  className="flex-1 min-w-[100px]"
+                  className="flex-1 min-w-[60px] sm:min-w-[100px]"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-8 w-8 shrink-0"
                   onClick={() => setRotate((prev) => Math.min(180, prev + 90))}
                   title={t("app:profile.avatar.rotateRight")}
                 >
                   <RotateCw className="h-4 w-4" />
                 </Button>
               </div>
-              <span className="text-sm text-muted-foreground w-12 text-right">{rotate}°</span>
+              <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{rotate}°</span>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Flip controls - icon-only on mobile */}
+            <div className="flex items-center gap-2 sm:gap-3">
               <FlipHorizontal className="h-4 w-4 text-muted-foreground shrink-0" />
-              <span className="text-sm text-muted-foreground w-16">{t("app:profile.avatar.flip")}</span>
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.flip")}</span>
               <div className="flex gap-2 flex-1">
                 <Button
                   type="button"
                   variant={flipH ? "default" : "outline"}
                   size="sm"
                   onClick={() => setFlipH((prev) => !prev)}
-                  className="flex-1"
+                  className="flex-1 px-2 sm:px-3"
                 >
-                  <FlipHorizontal className="h-4 w-4 mr-2" />
-                  {t("app:profile.avatar.flipHorizontal")}
+                  <FlipHorizontal className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("app:profile.avatar.flipHorizontal")}</span>
                 </Button>
                 <Button
                   type="button"
                   variant={flipV ? "default" : "outline"}
                   size="sm"
                   onClick={() => setFlipV((prev) => !prev)}
-                  className="flex-1"
+                  className="flex-1 px-2 sm:px-3"
                 >
-                  <FlipVertical className="h-4 w-4 mr-2" />
-                  {t("app:profile.avatar.flipVertical")}
+                  <FlipVertical className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("app:profile.avatar.flipVertical")}</span>
                 </Button>
               </div>
             </div>
 
+            {/* Reset button */}
             {(scale !== 1 || rotate !== 0 || flipH || flipV) && (
               <Button
                 type="button"
@@ -326,12 +333,13 @@ export function AvatarCropDialog({
           </div>
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter className="flex-col-reverse sm:flex-row gap-2 sm:gap-0 mt-2">
           <Button
             type="button"
             variant="outline"
             onClick={() => handleOpenChange(false)}
             disabled={isProcessing}
+            className="w-full sm:w-auto"
           >
             {t("common:cancel")}
           </Button>
@@ -339,6 +347,7 @@ export function AvatarCropDialog({
             type="button"
             onClick={handleCropComplete}
             disabled={isProcessing || !completedCrop}
+            className="w-full sm:w-auto"
           >
             {isProcessing ? (
               <>
