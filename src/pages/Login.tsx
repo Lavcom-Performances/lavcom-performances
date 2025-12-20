@@ -7,12 +7,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
-import { translations } from "@/lib/i18n";
-
-const t = translations.login;
-const tCommon = translations.common;
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
+  const { t } = useTranslation(['app', 'common']);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -51,13 +49,13 @@ export default function Login() {
     if (error) {
       let errorMessage = error.message;
       if (error.message.includes("Invalid login credentials")) {
-        errorMessage = "Email ou mot de passe incorrect";
+        errorMessage = t('app:login.invalidCredentials');
       } else if (error.message.includes("Email not confirmed")) {
-        errorMessage = "Veuillez confirmer votre email";
+        errorMessage = t('app:login.confirmEmail');
       }
       
       toast({
-        title: "Erreur de connexion",
+        title: t('app:login.errorTitle'),
         description: errorMessage,
         variant: "destructive",
       });
@@ -65,8 +63,8 @@ export default function Login() {
     }
     
     toast({
-      title: t.loginSuccess,
-      description: isSimulatorMode ? t.welcomeSimulator : t.welcomeExploitant,
+      title: t('app:login.loginSuccess'),
+      description: isSimulatorMode ? t('app:login.welcomeSimulator') : t('app:login.welcomeExploitant'),
     });
     
     // Redirect based on mode
@@ -79,7 +77,7 @@ export default function Login() {
     }
   };
 
-  const currentMode = isSimulatorMode ? t.simulator : t.exploitant;
+  const currentMode = isSimulatorMode ? 'simulator' : 'exploitant';
 
   // Don't render if already authenticated and loading
   if (loading) {
@@ -98,7 +96,7 @@ export default function Login() {
         className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border"
       >
         <Home className="h-3.5 w-3.5 md:h-4 md:w-4" />
-        <span className="hidden sm:inline">{tCommon.home}</span>
+        <span className="hidden sm:inline">{t('common:home')}</span>
       </Link>
 
       {/* Left side - Branding */}
@@ -114,7 +112,7 @@ export default function Login() {
           </div>
           
           <p className="text-muted-foreground text-base mb-8">
-            {currentMode.leftPanelSubtitle}
+            {t(`app:login.${currentMode}.leftPanelSubtitle`)}
           </p>
           
           {/* Stats card */}
@@ -123,31 +121,31 @@ export default function Login() {
               {isSimulatorMode ? (
                 <>
                   <div className="space-y-1">
-                    <p className="text-xl font-display font-bold text-foreground">{t.simulator.stats.quickEstimate}</p>
-                    <p className="text-xs text-muted-foreground">{t.simulator.stats.quickEstimateLabel}</p>
+                    <p className="text-xl font-display font-bold text-foreground">{t('app:login.simulator.stats.quickEstimate')}</p>
+                    <p className="text-xs text-muted-foreground">{t('app:login.simulator.stats.quickEstimateLabel')}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xl font-display font-bold text-foreground">{t.simulator.stats.bankReport}</p>
-                    <p className="text-xs text-muted-foreground">{t.simulator.stats.bankReportLabel}</p>
+                    <p className="text-xl font-display font-bold text-foreground">{t('app:login.simulator.stats.bankReport')}</p>
+                    <p className="text-xs text-muted-foreground">{t('app:login.simulator.stats.bankReportLabel')}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xl font-display font-bold text-foreground">{t.simulator.stats.unlimitedScenarios}</p>
-                    <p className="text-xs text-muted-foreground">{t.simulator.stats.unlimitedScenariosLabel}</p>
+                    <p className="text-xl font-display font-bold text-foreground">{t('app:login.simulator.stats.unlimitedScenarios')}</p>
+                    <p className="text-xs text-muted-foreground">{t('app:login.simulator.stats.unlimitedScenariosLabel')}</p>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="space-y-1">
-                    <p className="text-xl font-display font-bold text-primary">{t.exploitant.stats.realtime}</p>
-                    <p className="text-xs text-muted-foreground">{t.exploitant.stats.realtimeLabel}</p>
+                    <p className="text-xl font-display font-bold text-primary">{t('app:login.exploitant.stats.realtime')}</p>
+                    <p className="text-xs text-muted-foreground">{t('app:login.exploitant.stats.realtimeLabel')}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xl font-display font-bold text-primary">{t.exploitant.stats.timeSaved}</p>
-                    <p className="text-xs text-muted-foreground">{t.exploitant.stats.timeSavedLabel}</p>
+                    <p className="text-xl font-display font-bold text-primary">{t('app:login.exploitant.stats.timeSaved')}</p>
+                    <p className="text-xs text-muted-foreground">{t('app:login.exploitant.stats.timeSavedLabel')}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xl font-display font-bold text-primary">{t.exploitant.stats.secureData}</p>
-                    <p className="text-xs text-muted-foreground">{t.exploitant.stats.secureDataLabel}</p>
+                    <p className="text-xl font-display font-bold text-primary">{t('app:login.exploitant.stats.secureData')}</p>
+                    <p className="text-xs text-muted-foreground">{t('app:login.exploitant.stats.secureDataLabel')}</p>
                   </div>
                 </>
               )}
@@ -156,7 +154,7 @@ export default function Login() {
           
           {/* Decorative text */}
           <p className="mt-8 text-sm text-muted-foreground">
-            La solution de pilotage pour les gérants de laveries
+            {t('app:login.decorativeText')}
           </p>
         </div>
       </div>
@@ -175,20 +173,20 @@ export default function Login() {
 
           <div className="space-y-1.5 md:space-y-2">
             <h2 className="text-xl md:text-2xl font-display font-semibold text-foreground">
-              {currentMode.title}
+              {t(`app:login.${currentMode}.title`)}
             </h2>
             <p className="text-sm md:text-base text-muted-foreground">
-              {currentMode.subtitle}
+              {t(`app:login.${currentMode}.subtitle`)}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">{t.form.email}</Label>
+              <Label htmlFor="email">{t('app:login.form.email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder={t.form.emailPlaceholder}
+                placeholder={t('app:login.form.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -197,12 +195,12 @@ export default function Login() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">{t.form.password}</Label>
+              <Label htmlFor="password">{t('app:login.form.password')}</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder={t.form.passwordPlaceholder}
+                  placeholder={t('app:login.form.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -223,7 +221,7 @@ export default function Login() {
                 type="button"
                 className="text-sm text-primary hover:underline"
               >
-                {t.form.forgotPassword}
+                {t('app:login.form.forgotPassword')}
               </button>
             </div>
 
@@ -237,10 +235,10 @@ export default function Login() {
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {t.form.connecting}
+                  {t('app:login.form.connecting')}
                 </>
               ) : (
-                t.form.submit
+                t('app:login.form.submit')
               )}
             </Button>
           </form>
@@ -251,24 +249,24 @@ export default function Login() {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">ou</span>
+              <span className="bg-background px-2 text-muted-foreground">{t('app:login.or')}</span>
             </div>
           </div>
 
           <Link to="/signup" className="block">
             <Button variant="outline" size="lg" className="w-full group">
               <Sparkles className="h-4 w-4 mr-2 text-primary group-hover:text-primary" />
-              Essai gratuit 14 jours
+              {t('app:login.freeTrial')}
             </Button>
           </Link>
 
           <p className="text-center text-sm text-muted-foreground">
-            {t.notSubscribed}{" "}
+            {t('app:login.notSubscribed')}{" "}
             <Link 
               to={isSimulatorMode ? "/subscribe-simulator" : "/pricing"} 
               className="text-primary hover:underline font-medium"
             >
-              {isSimulatorMode ? t.discoverSimulatorPacks : t.discoverOffers}
+              {isSimulatorMode ? t('app:login.discoverSimulatorPacks') : t('app:login.discoverOffers')}
             </Link>
           </p>
 
@@ -277,16 +275,16 @@ export default function Login() {
             <p className="text-center text-sm text-muted-foreground">
               {isSimulatorMode ? (
                 <>
-                  {t.switchToExploitant}{" "}
+                  {t('app:login.switchToExploitant')}{" "}
                   <Link to="/login?mode=exploitant" className="text-primary hover:underline">
-                    {t.exploitantLogin}
+                    {t('app:login.exploitantLogin')}
                   </Link>
                 </>
               ) : (
                 <>
-                  {t.switchToSimulator}{" "}
+                  {t('app:login.switchToSimulator')}{" "}
                   <Link to="/login?mode=simulateur" className="text-primary hover:underline">
-                    {t.simulatorLogin}
+                    {t('app:login.simulatorLogin')}
                   </Link>
                 </>
               )}
@@ -294,9 +292,9 @@ export default function Login() {
           </div>
 
           <p className="text-center text-sm text-muted-foreground">
-            {tCommon.needHelp}{" "}
+            {t('common:needHelp')}{" "}
             <a href="#" className="text-primary hover:underline">
-              {tCommon.contactSupport}
+              {t('common:contactSupport')}
             </a>
           </p>
         </div>

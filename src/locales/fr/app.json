@@ -13,7 +13,9 @@
     "analyses": "Analyses",
     "administration": "Administration",
     "changeLaundry": "Changer de laverie",
-    "backToHome": "Retour à l'accueil"
+    "backToHome": "Retour à l'accueil",
+    "features": "Fonctionnalités",
+    "simulationOpening": "Simulation ouverture"
   },
   "charts": {
     "annualRevenue": "CA Annuel",
@@ -32,12 +34,28 @@
     "exploitant": {
       "title": "Connexion",
       "subtitle": "Entrez vos identifiants pour accéder à votre espace",
-      "leftPanelSubtitle": "Analysez les performances de vos laveries en un coup d'œil"
+      "leftPanelSubtitle": "Analysez les performances de vos laveries en un coup d'œil",
+      "stats": {
+        "realtime": "24/7",
+        "realtimeLabel": "Suivi temps réel",
+        "timeSaved": "+30%",
+        "timeSavedLabel": "Gain de temps",
+        "secureData": "100%",
+        "secureDataLabel": "Données sécurisées"
+      }
     },
     "simulator": {
       "title": "Connexion Simulateur",
       "subtitle": "Accédez à votre espace simulation",
-      "leftPanelSubtitle": "Simulez la rentabilité de votre future laverie"
+      "leftPanelSubtitle": "Simulez la rentabilité de votre future laverie",
+      "stats": {
+        "quickEstimate": "5 min",
+        "quickEstimateLabel": "Estimation rapide",
+        "bankReport": "PDF",
+        "bankReportLabel": "Rapport banque",
+        "unlimitedScenarios": "∞",
+        "unlimitedScenariosLabel": "Scénarios illimités"
+      }
     },
     "form": {
       "email": "Email",
@@ -57,7 +75,92 @@
     "simulatorLogin": "Connexion simulateur",
     "welcomeExploitant": "Bienvenue sur Lavcom Performances",
     "welcomeSimulator": "Bienvenue sur Lavcom Performances Création",
-    "loginSuccess": "Connexion réussie"
+    "loginSuccess": "Connexion réussie",
+    "errorTitle": "Erreur de connexion",
+    "invalidCredentials": "Email ou mot de passe incorrect",
+    "confirmEmail": "Veuillez confirmer votre email",
+    "freeTrial": "Essai gratuit 14 jours",
+    "or": "ou",
+    "decorativeText": "La solution de pilotage pour les gérants de laveries"
+  },
+  "signup": {
+    "title": "Créer votre compte",
+    "subtitle": "Commencez votre essai gratuit de 14 jours",
+    "form": {
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Jean",
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Dupont",
+      "email": "Email professionnel",
+      "emailPlaceholder": "jean.dupont@laverie.fr",
+      "companyName": "Nom de l'entreprise (optionnel)",
+      "companyPlaceholder": "Ma Laverie SARL",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Minimum 8 caractères",
+      "submit": "Démarrer mon essai gratuit",
+      "creating": "Création en cours..."
+    },
+    "validation": {
+      "invalidEmail": "Adresse email invalide",
+      "passwordMin": "Le mot de passe doit contenir au moins 8 caractères",
+      "firstNameRequired": "Le prénom est requis",
+      "lastNameRequired": "Le nom est requis"
+    },
+    "existingAccount": "Compte existant",
+    "alreadyRegistered": "Un compte existe déjà avec cet email. Connectez-vous.",
+    "accountCreated": "Compte créé !",
+    "trialStarted": "Votre essai gratuit de 14 jours commence maintenant.",
+    "terms": "En créant un compte, vous acceptez nos",
+    "termsOfUse": "conditions d'utilisation",
+    "and": "et notre",
+    "privacyPolicy": "politique de confidentialité",
+    "alreadyHaveAccount": "Déjà un compte ?",
+    "signIn": "Connectez-vous",
+    "trialFeatures": {
+      "title": "14 jours d'essai gratuit",
+      "feature1": "Accès complet à toutes les fonctionnalités",
+      "feature2": "Dashboard multi-laveries",
+      "feature3": "Export PDF des rapports",
+      "feature4": "Recommandations intelligentes",
+      "feature5": "Sans engagement, sans CB"
+    },
+    "decorativeText": "Rejoignez les gérants de laveries qui optimisent leurs performances"
+  },
+  "pricing": {
+    "badge": "Tarifs Exploitants – Prix dégressif selon le nombre de laveries",
+    "title": "Choisissez votre abonnement",
+    "subtitle": "Plus vous avez de laveries, plus le prix par laverie diminue.",
+    "laundryCount": "Nombre de laveries",
+    "plans": {
+      "monthly": {
+        "title": "Mensuel",
+        "description": "Flexibilité maximale, sans engagement",
+        "perLaundry": "par laverie",
+        "cta": "Choisir l'abonnement mensuel"
+      },
+      "annual": {
+        "title": "Annuel",
+        "badge": "Le plus populaire",
+        "description": "2 mois offerts par rapport au mensuel",
+        "perLaundry": "par laverie",
+        "saving": "Économie de",
+        "cta": "Choisir l'abonnement annuel"
+      }
+    },
+    "features": [
+      "Accès à toutes les analyses",
+      "Tableau de bord complet",
+      "Export PDF des rapports",
+      "Module Recommandations Lavcom Performances"
+    ],
+    "tiers": {
+      "title": "Tarifs dégressifs en fonction du nombre de laveries",
+      "tier1": "1 à 2 laveries",
+      "tier2": "3 à 5 laveries",
+      "tier3": "6 laveries et +",
+      "perMonthPerLaundry": "€/mois par laverie",
+      "note": "Le montant affiché s'adapte automatiquement lorsque vous modifiez le nombre de laveries. L'abonnement annuel vous offre 2 mois gratuits."
+    }
   },
   "dropdown": {
     "exploitant": "Exploitant",
