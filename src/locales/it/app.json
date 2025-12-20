@@ -244,5 +244,48 @@
       "title": "Registrazione completata!",
       "description": "Il tuo abbonamento è stato attivato. Benvenuto su Lavcom Analytics!"
     }
+  },
+  "subscribeSimulator": {
+    "badge": "Simulatore di redditività",
+    "title": "Scegli il tuo piano",
+    "subtitle": "Accedi al nostro strumento di simulazione per valutare la redditività del tuo progetto di lavanderia.",
+    "backToSimulator": "Torna al simulatore",
+    "plans": {
+      "simulator": {
+        "title": "Pack Simulatore",
+        "description": "Accesso allo strumento di simulazione per 1 mese",
+        "noCommitment": "Senza impegno",
+        "cta": "Scegli questo piano",
+        "features": [
+          "Accesso illimitato al simulatore per 1 mese",
+          "Creazione di scenari multipli",
+          "Esportazione PDF dei risultati",
+          "Aggiornamento dati in tempo reale"
+        ]
+      },
+      "premium": {
+        "badge": "Consigliato",
+        "title": "Pack Premium",
+        "description": "Accompagnamento personalizzato + accesso illimitato",
+        "oneTimePayment": "Pagamento unico",
+        "cta": "Scegli pack premium",
+        "features": [
+          "Chiamata di 30 min con un esperto",
+          "Report PDF personalizzato per la banca",
+          "Accesso illimitato al simulatore per 1 mese",
+          "Creazione di scenari multipli",
+          "Esportazione PDF dei risultati"
+        ]
+      }
+    },
+    "whatYouGet": "Cosa ottieni con il simulatore",
+    "features": {
+      "profitability": "Stima della redditività",
+      "scenarios": "Scenari personalizzati",
+      "reports": "Report PDF professionali",
+      "unlimitedAccess": "Accesso illimitato 1 mese"
+    },
+    "alreadySubscribed": "Già abbonato?",
+    "connectHere": "Accedi qui"
   }
 }

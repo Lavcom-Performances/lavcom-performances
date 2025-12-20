@@ -244,5 +244,48 @@
       "title": "Registration successful!",
       "description": "Your subscription has been activated. Welcome to Lavcom Analytics!"
     }
+  },
+  "subscribeSimulator": {
+    "badge": "Profitability Simulator",
+    "title": "Choose your plan",
+    "subtitle": "Access our simulation tool to evaluate the profitability of your laundromat project.",
+    "backToSimulator": "Back to simulator",
+    "plans": {
+      "simulator": {
+        "title": "Simulator Pack",
+        "description": "Access to the simulation tool for 1 month",
+        "noCommitment": "No commitment",
+        "cta": "Choose this plan",
+        "features": [
+          "Unlimited access to the simulator for 1 month",
+          "Create multiple scenarios",
+          "PDF export of results",
+          "Real-time data updates"
+        ]
+      },
+      "premium": {
+        "badge": "Recommended",
+        "title": "Premium Pack",
+        "description": "Personalized support + unlimited access",
+        "oneTimePayment": "One-time payment",
+        "cta": "Choose premium pack",
+        "features": [
+          "30-minute call with an expert",
+          "Custom PDF report for the bank",
+          "Unlimited access to the simulator for 1 month",
+          "Create multiple scenarios",
+          "PDF export of results"
+        ]
+      }
+    },
+    "whatYouGet": "What you get with the simulator",
+    "features": {
+      "profitability": "Profitability estimate",
+      "scenarios": "Custom scenarios",
+      "reports": "Professional PDF reports",
+      "unlimitedAccess": "Unlimited access 1 month"
+    },
+    "alreadySubscribed": "Already subscribed?",
+    "connectHere": "Sign in here"
   }
 }

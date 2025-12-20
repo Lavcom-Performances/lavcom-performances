@@ -244,5 +244,48 @@
       "title": "Registratie geslaagd!",
       "description": "Uw abonnement is geactiveerd. Welkom bij Lavcom Analytics!"
     }
+  },
+  "subscribeSimulator": {
+    "badge": "Winstgevendheidssimulator",
+    "title": "Kies uw plan",
+    "subtitle": "Krijg toegang tot onze simulatietool om de winstgevendheid van uw wasseretteproject te evalueren.",
+    "backToSimulator": "Terug naar simulator",
+    "plans": {
+      "simulator": {
+        "title": "Simulator Pakket",
+        "description": "Toegang tot de simulatietool voor 1 maand",
+        "noCommitment": "Zonder verplichting",
+        "cta": "Kies dit plan",
+        "features": [
+          "Onbeperkte toegang tot de simulator voor 1 maand",
+          "Meerdere scenario's maken",
+          "PDF-export van resultaten",
+          "Realtime data-updates"
+        ]
+      },
+      "premium": {
+        "badge": "Aanbevolen",
+        "title": "Premium Pakket",
+        "description": "Persoonlijke begeleiding + onbeperkte toegang",
+        "oneTimePayment": "Eenmalige betaling",
+        "cta": "Premium pakket kiezen",
+        "features": [
+          "30 minuten gesprek met een expert",
+          "Gepersonaliseerd PDF-rapport voor de bank",
+          "Onbeperkte toegang tot de simulator voor 1 maand",
+          "Meerdere scenario's maken",
+          "PDF-export van resultaten"
+        ]
+      }
+    },
+    "whatYouGet": "Wat u krijgt met de simulator",
+    "features": {
+      "profitability": "Winstgevendheidsschatting",
+      "scenarios": "Aangepaste scenario's",
+      "reports": "Professionele PDF-rapporten",
+      "unlimitedAccess": "Onbeperkte toegang 1 maand"
+    },
+    "alreadySubscribed": "Al geabonneerd?",
+    "connectHere": "Log hier in"
   }
 }
