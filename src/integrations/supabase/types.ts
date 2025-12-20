@@ -14,6 +14,107 @@ export type Database = {
   }
   public: {
     Tables: {
+      import_batches: {
+        Row: {
+          created_at: string
+          filename: string
+          id: string
+          ignored_rows: number
+          imported_rows: number
+          site_id: string
+          total_rows: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filename: string
+          id?: string
+          ignored_rows?: number
+          imported_rows?: number
+          site_id: string
+          total_rows?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filename?: string
+          id?: string
+          ignored_rows?: number
+          imported_rows?: number
+          site_id?: string
+          total_rows?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_batches_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      operations: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          import_batch_id: string | null
+          machine: string | null
+          operation_date: string
+          operation_time: string | null
+          payment_mode: string | null
+          program: string | null
+          raw_data: Json | null
+          site_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          import_batch_id?: string | null
+          machine?: string | null
+          operation_date: string
+          operation_time?: string | null
+          payment_mode?: string | null
+          program?: string | null
+          raw_data?: Json | null
+          site_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          import_batch_id?: string | null
+          machine?: string | null
+          operation_date?: string
+          operation_time?: string | null
+          payment_mode?: string | null
+          program?: string | null
+          raw_data?: Json | null
+          site_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operations_import_batch_id_fkey"
+            columns: ["import_batch_id"]
+            isOneToOne: false
+            referencedRelation: "import_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operations_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           company_name: string | null
@@ -47,6 +148,42 @@ export type Database = {
           phone?: string | null
           siret?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sites: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          id: string
+          is_default: boolean | null
+          name: string
+          postal_code: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          postal_code?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          postal_code?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

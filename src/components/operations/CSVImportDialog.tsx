@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Upload, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import {
   Dialog,
@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useSites } from "@/hooks/useSites";
+import { useOperationsImport } from "@/hooks/useOperationsImport";
 
 import { CSVDropZone } from "./csv-import/CSVDropZone";
 import { CSVPreviewTable } from "./csv-import/CSVPreviewTable";
@@ -19,7 +21,6 @@ import {
   CSVColumn,
   ColumnMapping,
   ParsedRow,
-  ImportSummary,
   ImportResult,
 } from "./csv-import/types";
 import {
@@ -28,11 +29,6 @@ import {
   parseRows,
   calculateSummary,
 } from "./csv-import/csvParser";
-
-// Mock sites for V1
-const MOCK_SITES = [
-  { id: "1", name: "Laverie Principale" },
-];
 
 type ImportStep = "upload" | "preview" | "result";
 
@@ -44,6 +40,8 @@ interface CSVImportDialogProps {
 
 export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImportDialogProps) {
   const { toast } = useToast();
+  const { sites, isLoading: sitesLoading, createSite, getDefaultSite } = useSites();
+  const { importOperations, isImporting } = useOperationsImport();
   
   // Step management
   const [currentStep, setCurrentStep] = useState<ImportStep>("upload");
@@ -51,9 +49,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
   // File state
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(
-    MOCK_SITES.length === 1 ? MOCK_SITES[0].id : null
-  );
+  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
   
   // CSV parsing state
   const [columns, setColumns] = useState<CSVColumn[]>([]);
@@ -68,8 +64,17 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
   });
   
   // Import state
-  const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
+
+  // Set default site when sites load
+  useEffect(() => {
+    if (!selectedSiteId && sites.length > 0) {
+      const defaultSite = getDefaultSite();
+      if (defaultSite) {
+        setSelectedSiteId(defaultSite.id);
+      }
+    }
+  }, [sites, selectedSiteId, getDefaultSite]);
 
   // Computed values
   const parsedRows = useMemo(() => {
@@ -83,7 +88,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
     return calculateSummary(parsedRows);
   }, [parsedRows]);
 
-  const canProceedToPreview = selectedFile !== null && (MOCK_SITES.length === 1 || selectedSiteId !== null);
+  const canProceedToPreview = selectedFile !== null && selectedSiteId !== null;
   const canImport = mapping.date !== null && mapping.amount !== null && summary.validRows > 0;
 
   // Event handlers
@@ -134,6 +139,11 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
     });
   }, []);
 
+  const handleCreateSite = useCallback(async (name: string) => {
+    const newSite = await createSite({ name });
+    return newSite;
+  }, [createSite]);
+
   const handleProceedToPreview = useCallback(async () => {
     if (!selectedFile) return;
 
@@ -175,7 +185,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
   }, []);
 
   const handleImport = useCallback(async () => {
-    if (!canImport) {
+    if (!canImport || !selectedSiteId || !selectedFile) {
       if (mapping.date === null) {
         toast({
           title: "Colonne date manquante",
@@ -195,38 +205,30 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
       return;
     }
 
-    setIsImporting(true);
-
-    // TODO: Implement actual import to database
-    // For V1, we simulate the import process
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const result: ImportResult = {
-      success: true,
-      imported: summary.validRows,
-      ignored: summary.invalidRows,
-      errors: summary.invalidRows > 0 
-        ? [`${summary.invalidRows} lignes ignorées (données incomplètes)`]
-        : [],
-    };
+    const result = await importOperations(selectedSiteId, selectedFile.name, parsedRows);
 
     setImportResult(result);
     setCurrentStep("result");
-    setIsImporting(false);
 
-    toast({
-      title: "Import terminé",
-      description: `${result.imported} opérations importées.`,
-    });
-
-    onImportComplete?.(result.imported);
-  }, [canImport, mapping, summary, toast, onImportComplete]);
+    if (result.success) {
+      toast({
+        title: "Import terminé",
+        description: `${result.imported} opérations importées.`,
+      });
+      onImportComplete?.(result.imported);
+    } else {
+      toast({
+        title: "Erreur lors de l'import",
+        description: result.errors[0] || "Une erreur est survenue.",
+        variant: "destructive",
+      });
+    }
+  }, [canImport, selectedSiteId, selectedFile, mapping, parsedRows, importOperations, toast, onImportComplete]);
 
   const handleClose = useCallback(() => {
     // Reset all state
     setCurrentStep("upload");
     setSelectedFile(null);
-    setSelectedSiteId(MOCK_SITES.length === 1 ? MOCK_SITES[0].id : null);
     setColumns([]);
     setRows([]);
     setMapping({
@@ -238,7 +240,6 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
       paymentMode: null,
     });
     setImportResult(null);
-    setIsImporting(false);
     onOpenChange(false);
   }, [onOpenChange]);
 
@@ -290,9 +291,11 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
           {currentStep === "upload" && (
             <>
               <SiteSelector
-                sites={MOCK_SITES}
+                sites={sites}
                 selectedSiteId={selectedSiteId}
                 onSiteChange={setSelectedSiteId}
+                onCreateSite={handleCreateSite}
+                isLoading={sitesLoading}
               />
               
               <CSVDropZone
