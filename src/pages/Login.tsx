@@ -102,52 +102,62 @@ export default function Login() {
       </Link>
 
       {/* Left side - Branding */}
-      <div 
-        className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 lg:p-12" 
-        style={{ backgroundColor: isSimulatorMode ? '#b45309' : '#383838' }}
-      >
-        <div className="max-w-lg text-center animate-fade-in">
-          <img 
-            src={lavcomLogo} 
-            alt="Lavcom Performances" 
-            className="w-full max-w-md mx-auto mb-6 lg:mb-8"
-          />
-          <p className="text-white text-base lg:text-lg">
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 lg:p-12 bg-gradient-to-br from-muted/30 via-background to-primary/5 border-r border-border">
+        <div className="max-w-md text-center animate-fade-in">
+          {/* Logo */}
+          <div className="mb-10">
+            <img 
+              src={lavcomLogo} 
+              alt="Lavcom Performances" 
+              className="w-full max-w-xs mx-auto"
+            />
+          </div>
+          
+          <p className="text-muted-foreground text-base mb-8">
             {currentMode.leftPanelSubtitle}
           </p>
-          <div className="mt-8 lg:mt-12 grid grid-cols-3 gap-4 lg:gap-6 text-center">
-            {isSimulatorMode ? (
-              <>
-                <div className="space-y-1.5 lg:space-y-2">
-                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.simulator.stats.quickEstimate}</p>
-                  <p className="text-xs lg:text-sm text-white/70">{t.simulator.stats.quickEstimateLabel}</p>
-                </div>
-                <div className="space-y-1.5 lg:space-y-2">
-                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.simulator.stats.bankReport}</p>
-                  <p className="text-xs lg:text-sm text-white/70">{t.simulator.stats.bankReportLabel}</p>
-                </div>
-                <div className="space-y-1.5 lg:space-y-2">
-                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.simulator.stats.unlimitedScenarios}</p>
-                  <p className="text-xs lg:text-sm text-white/70">{t.simulator.stats.unlimitedScenariosLabel}</p>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="space-y-1.5 lg:space-y-2">
-                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.exploitant.stats.realtime}</p>
-                  <p className="text-xs lg:text-sm text-white/70">{t.exploitant.stats.realtimeLabel}</p>
-                </div>
-                <div className="space-y-1.5 lg:space-y-2">
-                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.exploitant.stats.timeSaved}</p>
-                  <p className="text-xs lg:text-sm text-white/70">{t.exploitant.stats.timeSavedLabel}</p>
-                </div>
-                <div className="space-y-1.5 lg:space-y-2">
-                  <p className="text-2xl lg:text-3xl font-display font-bold text-white">{t.exploitant.stats.secureData}</p>
-                  <p className="text-xs lg:text-sm text-white/70">{t.exploitant.stats.secureDataLabel}</p>
-                </div>
-              </>
-            )}
+          
+          {/* Stats card */}
+          <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              {isSimulatorMode ? (
+                <>
+                  <div className="space-y-1">
+                    <p className="text-xl font-display font-bold text-foreground">{t.simulator.stats.quickEstimate}</p>
+                    <p className="text-xs text-muted-foreground">{t.simulator.stats.quickEstimateLabel}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xl font-display font-bold text-foreground">{t.simulator.stats.bankReport}</p>
+                    <p className="text-xs text-muted-foreground">{t.simulator.stats.bankReportLabel}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xl font-display font-bold text-foreground">{t.simulator.stats.unlimitedScenarios}</p>
+                    <p className="text-xs text-muted-foreground">{t.simulator.stats.unlimitedScenariosLabel}</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <p className="text-xl font-display font-bold text-primary">{t.exploitant.stats.realtime}</p>
+                    <p className="text-xs text-muted-foreground">{t.exploitant.stats.realtimeLabel}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xl font-display font-bold text-primary">{t.exploitant.stats.timeSaved}</p>
+                    <p className="text-xs text-muted-foreground">{t.exploitant.stats.timeSavedLabel}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xl font-display font-bold text-primary">{t.exploitant.stats.secureData}</p>
+                    <p className="text-xs text-muted-foreground">{t.exploitant.stats.secureDataLabel}</p>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
+          
+          {/* Decorative text */}
+          <p className="mt-8 text-sm text-muted-foreground">
+            La solution de pilotage pour les gérants de laveries
+          </p>
         </div>
       </div>
 
