@@ -15,6 +15,7 @@
       "sepia": "Seppia",
       "invert": "Inverti",
       "grayscale": "Scala di grigi",
+      "hueRotate": "Tonalità",
       "presets": {
         "title": "Preset",
         "selectPlaceholder": "Carica un preset...",
@@ -40,7 +41,8 @@
           "default_soft": "Morbido",
           "default_dramatic": "Drammatico",
           "default_sepia": "Seppia",
-          "default_negative": "Negativo"
+          "default_negative": "Negativo",
+          "default_psychedelic": "Psichedelico"
         }
       }
     }

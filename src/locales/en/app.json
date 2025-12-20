@@ -15,6 +15,7 @@
       "sepia": "Sepia",
       "invert": "Invert",
       "grayscale": "Grayscale",
+      "hueRotate": "Hue",
       "presets": {
         "title": "Presets",
         "selectPlaceholder": "Load a preset...",
@@ -40,7 +41,8 @@
           "default_soft": "Soft",
           "default_dramatic": "Dramatic",
           "default_sepia": "Sepia",
-          "default_negative": "Negative"
+          "default_negative": "Negative",
+          "default_psychedelic": "Psychedelic"
         }
       }
     }
