@@ -10,13 +10,10 @@ import {
   LAUNDROMAT_PRICING 
 } from "@/config/pricingConfig";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
-import { translations } from "@/lib/i18n";
-
-const t = translations.pricing;
-const tNav = translations.nav;
-const tCommon = translations.common;
+import { useTranslation } from "react-i18next";
 
 export default function Pricing() {
+  const { t } = useTranslation(['app', 'common']);
   const navigate = useNavigate();
   const [laundryCount, setLaundryCount] = useState(1);
 
@@ -29,6 +26,8 @@ export default function Pricing() {
   const incrementCount = () => setLaundryCount(prev => Math.min(prev + 1, 20));
   const decrementCount = () => setLaundryCount(prev => Math.max(prev - 1, 1));
 
+  const features = t('app:pricing.features', { returnObjects: true }) as string[];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       {/* Header */}
@@ -39,13 +38,13 @@ export default function Pricing() {
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              {tNav.features}
+              {t('app:nav.features')}
             </Link>
             <Link to="/simulateur" className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors">
-              {tNav.simulationOpening}
+              {t('app:nav.simulationOpening')}
             </Link>
             <Link to="/login?mode=exploitant">
-              <Button variant="ghost">{tCommon.login}</Button>
+              <Button variant="ghost">{t('common:login')}</Button>
             </Link>
           </nav>
         </div>
@@ -56,13 +55,13 @@ export default function Pricing() {
         {/* Hero section */}
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 lg:mb-16">
           <Badge variant="secondary" className="mb-3 md:mb-4 text-xs md:text-sm">
-            {t.badge}
+            {t('app:pricing.badge')}
           </Badge>
           <h1 className="font-display text-2xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-3 md:mb-4 leading-tight">
-            {t.title}
+            {t('app:pricing.title')}
           </h1>
           <p className="text-muted-foreground text-sm sm:text-lg lg:text-xl px-2">
-            {t.subtitle}
+            {t('app:pricing.subtitle')}
           </p>
         </div>
 
@@ -71,7 +70,7 @@ export default function Pricing() {
           <Card className="border-primary/20">
             <CardContent className="pt-4 md:pt-6">
               <div className="text-center mb-3 md:mb-4">
-                <p className="text-xs md:text-sm text-muted-foreground mb-2">{t.laundryCount}</p>
+                <p className="text-xs md:text-sm text-muted-foreground mb-2">{t('app:pricing.laundryCount')}</p>
                 <div className="flex items-center justify-center gap-3 md:gap-4">
                   <Button 
                     variant="outline" 
@@ -112,31 +111,31 @@ export default function Pricing() {
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
               <Badge className="bg-primary text-primary-foreground shadow-md gap-1 text-xs">
                 <Sparkles className="h-3 w-3" />
-                {t.plans.annual.badge}
+                {t('app:pricing.plans.annual.badge')}
               </Badge>
             </div>
             
             <CardHeader className="text-center pb-2 pt-6">
-              <CardTitle className="font-display text-xl md:text-2xl">{t.plans.annual.title}</CardTitle>
-              <CardDescription className="text-sm md:text-base">{t.plans.annual.description}</CardDescription>
+              <CardTitle className="font-display text-xl md:text-2xl">{t('app:pricing.plans.annual.title')}</CardTitle>
+              <CardDescription className="text-sm md:text-base">{t('app:pricing.plans.annual.description')}</CardDescription>
             </CardHeader>
             
             <CardContent className="flex-1 text-center">
               <div className="mb-4 md:mb-6">
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-3xl md:text-5xl font-bold text-foreground">{pricing.annualTotal}€</span>
-                  <span className="text-muted-foreground text-sm">{tCommon.perYear}</span>
+                  <span className="text-muted-foreground text-sm">{t('common:perYear')}</span>
                 </div>
                 <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                  soit {pricing.annualPricePerLav}€{tCommon.perYear} {t.plans.annual.perLaundry}
+                  soit {pricing.annualPricePerLav}€{t('common:perYear')} {t('app:pricing.plans.annual.perLaundry')}
                 </p>
                 <p className="text-xs md:text-sm text-primary font-semibold mt-2">
-                  {t.plans.annual.saving} {pricing.annualSaving}€{tCommon.perYear}
+                  {t('app:pricing.plans.annual.saving')} {pricing.annualSaving}€{t('common:perYear')}
                 </p>
               </div>
               
               <ul className="space-y-2 md:space-y-3 text-left">
-                {t.features.map((feature, index) => (
+                {features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-2 md:gap-3">
                     <Check className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
                     <span className="text-foreground text-sm md:text-base">{feature}</span>
@@ -150,7 +149,7 @@ export default function Pricing() {
                 className="w-full h-10 md:h-12 text-sm md:text-base font-medium"
                 onClick={() => handleSelectPlan("annual")}
               >
-                {t.plans.annual.cta}
+                {t('app:pricing.plans.annual.cta')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>
@@ -159,23 +158,23 @@ export default function Pricing() {
           {/* Monthly */}
           <Card className="relative flex flex-col transition-all duration-300 hover:shadow-xl border-border hover:border-primary/50 order-last md:order-first">
             <CardHeader className="text-center pb-2">
-              <CardTitle className="font-display text-xl md:text-2xl">{t.plans.monthly.title}</CardTitle>
-              <CardDescription className="text-sm md:text-base">{t.plans.monthly.description}</CardDescription>
+              <CardTitle className="font-display text-xl md:text-2xl">{t('app:pricing.plans.monthly.title')}</CardTitle>
+              <CardDescription className="text-sm md:text-base">{t('app:pricing.plans.monthly.description')}</CardDescription>
             </CardHeader>
             
             <CardContent className="flex-1 text-center">
               <div className="mb-4 md:mb-6">
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-3xl md:text-5xl font-bold text-foreground">{pricing.monthlyTotal}€</span>
-                  <span className="text-muted-foreground text-sm">{tCommon.perMonth}</span>
+                  <span className="text-muted-foreground text-sm">{t('common:perMonth')}</span>
                 </div>
                 <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                  soit {pricing.monthlyPricePerLav}€{tCommon.perMonth} {t.plans.monthly.perLaundry}
+                  soit {pricing.monthlyPricePerLav}€{t('common:perMonth')} {t('app:pricing.plans.monthly.perLaundry')}
                 </p>
               </div>
               
               <ul className="space-y-2 md:space-y-3 text-left">
-                {t.features.map((feature, index) => (
+                {features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-2 md:gap-3">
                     <Check className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
                     <span className="text-foreground text-sm md:text-base">{feature}</span>
@@ -190,7 +189,7 @@ export default function Pricing() {
                 variant="outline"
                 onClick={() => handleSelectPlan("monthly")}
               >
-                {t.plans.monthly.cta}
+                {t('app:pricing.plans.monthly.cta')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>
@@ -201,25 +200,25 @@ export default function Pricing() {
         <div className="max-w-2xl mx-auto mt-10 md:mt-16">
           <Card className="bg-muted/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base md:text-lg font-semibold">{t.tiers.title}</CardTitle>
+              <CardTitle className="text-base md:text-lg font-semibold">{t('app:pricing.tiers.title')}</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-muted-foreground text-sm">
                 <li className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                  <span className="sm:w-32 font-medium text-foreground">{t.tiers.tier1}</span>
-                  <span>{LAUNDROMAT_PRICING.monthly.tier1.pricePerLaundromat} {t.tiers.perMonthPerLaundry}</span>
+                  <span className="sm:w-32 font-medium text-foreground">{t('app:pricing.tiers.tier1')}</span>
+                  <span>{LAUNDROMAT_PRICING.monthly.tier1.pricePerLaundromat} {t('app:pricing.tiers.perMonthPerLaundry')}</span>
                 </li>
                 <li className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                  <span className="sm:w-32 font-medium text-foreground">{t.tiers.tier2}</span>
-                  <span>{LAUNDROMAT_PRICING.monthly.tier2.pricePerLaundromat} {t.tiers.perMonthPerLaundry}</span>
+                  <span className="sm:w-32 font-medium text-foreground">{t('app:pricing.tiers.tier2')}</span>
+                  <span>{LAUNDROMAT_PRICING.monthly.tier2.pricePerLaundromat} {t('app:pricing.tiers.perMonthPerLaundry')}</span>
                 </li>
                 <li className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                  <span className="sm:w-32 font-medium text-foreground">{t.tiers.tier3}</span>
-                  <span>{LAUNDROMAT_PRICING.monthly.tier3.pricePerLaundromat} {t.tiers.perMonthPerLaundry}</span>
+                  <span className="sm:w-32 font-medium text-foreground">{t('app:pricing.tiers.tier3')}</span>
+                  <span>{LAUNDROMAT_PRICING.monthly.tier3.pricePerLaundromat} {t('app:pricing.tiers.perMonthPerLaundry')}</span>
                 </li>
               </ul>
               <p className="text-xs md:text-sm text-muted-foreground mt-4 pt-4 border-t">
-                {t.tiers.note}
+                {t('app:pricing.tiers.note')}
               </p>
             </CardContent>
           </Card>
@@ -227,15 +226,15 @@ export default function Pricing() {
 
         {/* Trust badges */}
         <div className="mt-10 md:mt-16 text-center">
-          <p className="text-muted-foreground text-sm mb-4 md:mb-6">{tCommon.securePayment}</p>
+          <p className="text-muted-foreground text-sm mb-4 md:mb-6">{t('common:securePayment')}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 opacity-60">
             <div className="flex items-center gap-2">
               <Building2 className="h-4 w-4 md:h-5 md:w-5" />
-              <span className="text-xs md:text-sm">{tCommon.professionalBilling}</span>
+              <span className="text-xs md:text-sm">{t('common:professionalBilling')}</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="h-4 w-4 md:h-5 md:w-5" />
-              <span className="text-xs md:text-sm">{tCommon.cancelAnytime}</span>
+              <span className="text-xs md:text-sm">{t('common:cancelAnytime')}</span>
             </div>
           </div>
         </div>

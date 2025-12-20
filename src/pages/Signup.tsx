@@ -9,16 +9,10 @@ import { useAuth } from "@/hooks/useAuth";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { z } from "zod";
 import { formatFirstName, formatLastName } from "@/lib/textUtils";
-
-const signupSchema = z.object({
-  email: z.string().email("Adresse email invalide"),
-  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
-  firstName: z.string().min(1, "Le prénom est requis"),
-  lastName: z.string().min(1, "Le nom est requis"),
-  companyName: z.string().optional(),
-});
+import { useTranslation } from "react-i18next";
 
 export default function Signup() {
+  const { t } = useTranslation(['app', 'common']);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -31,6 +25,14 @@ export default function Signup() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signUp } = useAuth();
+
+  const signupSchema = z.object({
+    email: z.string().email(t('app:signup.validation.invalidEmail')),
+    password: z.string().min(8, t('app:signup.validation.passwordMin')),
+    firstName: z.string().min(1, t('app:signup.validation.firstNameRequired')),
+    lastName: z.string().min(1, t('app:signup.validation.lastNameRequired')),
+    companyName: z.string().optional(),
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,13 +75,13 @@ export default function Signup() {
     if (error) {
       if (error.message.includes("already registered")) {
         toast({
-          title: "Compte existant",
-          description: "Un compte existe déjà avec cet email. Connectez-vous.",
+          title: t('app:signup.existingAccount'),
+          description: t('app:signup.alreadyRegistered'),
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Erreur",
+          title: t('common:error'),
           description: error.message,
           variant: "destructive",
         });
@@ -88,19 +90,19 @@ export default function Signup() {
     }
     
     toast({
-      title: "Compte créé !",
-      description: "Votre essai gratuit de 14 jours commence maintenant.",
+      title: t('app:signup.accountCreated'),
+      description: t('app:signup.trialStarted'),
     });
     
     navigate("/dashboard");
   };
 
   const trialFeatures = [
-    "Accès complet à toutes les fonctionnalités",
-    "Dashboard multi-laveries",
-    "Export PDF des rapports",
-    "Recommandations intelligentes",
-    "Sans engagement, sans CB",
+    t('app:signup.trialFeatures.feature1'),
+    t('app:signup.trialFeatures.feature2'),
+    t('app:signup.trialFeatures.feature3'),
+    t('app:signup.trialFeatures.feature4'),
+    t('app:signup.trialFeatures.feature5'),
   ];
 
   return (
@@ -111,7 +113,7 @@ export default function Signup() {
         className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border"
       >
         <Home className="h-3.5 w-3.5 md:h-4 md:w-4" />
-        <span className="hidden sm:inline">Accueil</span>
+        <span className="hidden sm:inline">{t('common:home')}</span>
       </Link>
 
       {/* Left side - Branding */}
@@ -133,7 +135,7 @@ export default function Signup() {
                 <Gift className="h-5 w-5 text-primary" />
               </div>
               <h3 className="text-lg font-display font-semibold text-foreground">
-                14 jours d'essai gratuit
+                {t('app:signup.trialFeatures.title')}
               </h3>
             </div>
             
@@ -149,7 +151,7 @@ export default function Signup() {
           
           {/* Decorative element */}
           <p className="mt-8 text-sm text-muted-foreground">
-            Rejoignez les gérants de laveries qui optimisent leurs performances
+            {t('app:signup.decorativeText')}
           </p>
         </div>
       </div>
@@ -168,21 +170,21 @@ export default function Signup() {
 
           <div className="space-y-1.5 md:space-y-2">
             <h2 className="text-xl md:text-2xl font-display font-semibold text-foreground">
-              Créer votre compte
+              {t('app:signup.title')}
             </h2>
             <p className="text-sm md:text-base text-muted-foreground">
-              Commencez votre essai gratuit de 14 jours
+              {t('app:signup.subtitle')}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">Prénom *</Label>
+                <Label htmlFor="firstName">{t('app:signup.form.firstName')} *</Label>
                 <Input
                   id="firstName"
                   type="text"
-                  placeholder="Jean"
+                  placeholder={t('app:signup.form.firstNamePlaceholder')}
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
@@ -194,11 +196,11 @@ export default function Signup() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="lastName">Nom *</Label>
+                <Label htmlFor="lastName">{t('app:signup.form.lastName')} *</Label>
                 <Input
                   id="lastName"
                   type="text"
-                  placeholder="Dupont"
+                  placeholder={t('app:signup.form.lastNamePlaceholder')}
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
@@ -211,11 +213,11 @@ export default function Signup() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email professionnel *</Label>
+              <Label htmlFor="email">{t('app:signup.form.email')} *</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="jean.dupont@laverie.fr"
+                placeholder={t('app:signup.form.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -227,23 +229,23 @@ export default function Signup() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="companyName">Nom de l'entreprise (optionnel)</Label>
+              <Label htmlFor="companyName">{t('app:signup.form.companyName')}</Label>
               <Input
                 id="companyName"
                 type="text"
-                placeholder="Ma Laverie SARL"
+                placeholder={t('app:signup.form.companyPlaceholder')}
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe *</Label>
+              <Label htmlFor="password">{t('app:signup.form.password')} *</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Minimum 8 caractères"
+                  placeholder={t('app:signup.form.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -272,28 +274,28 @@ export default function Signup() {
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Création en cours...
+                  {t('app:signup.form.creating')}
                 </>
               ) : (
-                "Démarrer mon essai gratuit"
+                t('app:signup.form.submit')
               )}
             </Button>
             
             <p className="text-xs text-center text-muted-foreground">
-              En créant un compte, vous acceptez nos{" "}
-              <a href="#" className="text-primary hover:underline">conditions d'utilisation</a>
-              {" "}et notre{" "}
-              <a href="#" className="text-primary hover:underline">politique de confidentialité</a>.
+              {t('app:signup.terms')}{" "}
+              <a href="#" className="text-primary hover:underline">{t('app:signup.termsOfUse')}</a>
+              {" "}{t('app:signup.and')}{" "}
+              <a href="#" className="text-primary hover:underline">{t('app:signup.privacyPolicy')}</a>.
             </p>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            Déjà un compte ?{" "}
+            {t('app:signup.alreadyHaveAccount')}{" "}
             <Link 
               to="/login" 
               className="text-primary hover:underline font-medium"
             >
-              Connectez-vous
+              {t('app:signup.signIn')}
             </Link>
           </p>
         </div>

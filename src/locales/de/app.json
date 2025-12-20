@@ -13,7 +13,9 @@
     "analyses": "Analysen",
     "administration": "Verwaltung",
     "changeLaundry": "Waschsalon wechseln",
-    "backToHome": "Zurück zur Startseite"
+    "backToHome": "Zurück zur Startseite",
+    "features": "Funktionen",
+    "simulationOpening": "Eröffnungssimulation"
   },
   "charts": {
     "annualRevenue": "Jahresumsatz",
@@ -32,12 +34,28 @@
     "exploitant": {
       "title": "Anmelden",
       "subtitle": "Geben Sie Ihre Zugangsdaten ein, um auf Ihren Bereich zuzugreifen",
-      "leftPanelSubtitle": "Analysieren Sie die Leistung Ihrer Waschsalons auf einen Blick"
+      "leftPanelSubtitle": "Analysieren Sie die Leistung Ihrer Waschsalons auf einen Blick",
+      "stats": {
+        "realtime": "24/7",
+        "realtimeLabel": "Echtzeit-Überwachung",
+        "timeSaved": "+30%",
+        "timeSavedLabel": "Zeitersparnis",
+        "secureData": "100%",
+        "secureDataLabel": "Sichere Daten"
+      }
     },
     "simulator": {
       "title": "Simulator-Anmeldung",
       "subtitle": "Zugang zu Ihrem Simulationsbereich",
-      "leftPanelSubtitle": "Simulieren Sie die Rentabilität Ihres zukünftigen Waschsalons"
+      "leftPanelSubtitle": "Simulieren Sie die Rentabilität Ihres zukünftigen Waschsalons",
+      "stats": {
+        "quickEstimate": "5 min",
+        "quickEstimateLabel": "Schnelle Schätzung",
+        "bankReport": "PDF",
+        "bankReportLabel": "Bankbericht",
+        "unlimitedScenarios": "∞",
+        "unlimitedScenariosLabel": "Unbegrenzte Szenarien"
+      }
     },
     "form": {
       "email": "E-Mail",
@@ -57,7 +75,92 @@
     "simulatorLogin": "Simulator-Anmeldung",
     "welcomeExploitant": "Willkommen bei Lavcom Performances",
     "welcomeSimulator": "Willkommen bei Lavcom Performances Gründung",
-    "loginSuccess": "Anmeldung erfolgreich"
+    "loginSuccess": "Anmeldung erfolgreich",
+    "errorTitle": "Anmeldefehler",
+    "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "confirmEmail": "Bitte bestätigen Sie Ihre E-Mail",
+    "freeTrial": "14 Tage kostenlos testen",
+    "or": "oder",
+    "decorativeText": "Die Management-Lösung für Waschsalon-Betreiber"
+  },
+  "signup": {
+    "title": "Konto erstellen",
+    "subtitle": "Starten Sie Ihre 14-tägige kostenlose Testversion",
+    "form": {
+      "firstName": "Vorname",
+      "firstNamePlaceholder": "Max",
+      "lastName": "Nachname",
+      "lastNamePlaceholder": "Mustermann",
+      "email": "Geschäftliche E-Mail",
+      "emailPlaceholder": "max.mustermann@waschsalon.de",
+      "companyName": "Firmenname (optional)",
+      "companyPlaceholder": "Mein Waschsalon GmbH",
+      "password": "Passwort",
+      "passwordPlaceholder": "Mindestens 8 Zeichen",
+      "submit": "Kostenlose Testversion starten",
+      "creating": "Wird erstellt..."
+    },
+    "validation": {
+      "invalidEmail": "Ungültige E-Mail-Adresse",
+      "passwordMin": "Das Passwort muss mindestens 8 Zeichen haben",
+      "firstNameRequired": "Vorname ist erforderlich",
+      "lastNameRequired": "Nachname ist erforderlich"
+    },
+    "existingAccount": "Bestehendes Konto",
+    "alreadyRegistered": "Ein Konto mit dieser E-Mail existiert bereits. Bitte melden Sie sich an.",
+    "accountCreated": "Konto erstellt!",
+    "trialStarted": "Ihre 14-tägige kostenlose Testversion beginnt jetzt.",
+    "terms": "Mit der Erstellung eines Kontos akzeptieren Sie unsere",
+    "termsOfUse": "Nutzungsbedingungen",
+    "and": "und unsere",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "alreadyHaveAccount": "Bereits ein Konto?",
+    "signIn": "Anmelden",
+    "trialFeatures": {
+      "title": "14 Tage kostenlos testen",
+      "feature1": "Voller Zugang zu allen Funktionen",
+      "feature2": "Multi-Waschsalon Dashboard",
+      "feature3": "PDF-Berichtsexport",
+      "feature4": "Intelligente Empfehlungen",
+      "feature5": "Ohne Bindung, ohne Kreditkarte"
+    },
+    "decorativeText": "Schließen Sie sich den Waschsalon-Betreibern an, die ihre Leistung optimieren"
+  },
+  "pricing": {
+    "badge": "Betreiber-Tarife – Mengenrabatt nach Anzahl der Waschsalons",
+    "title": "Wählen Sie Ihr Abonnement",
+    "subtitle": "Je mehr Waschsalons Sie haben, desto niedriger ist der Preis pro Waschsalon.",
+    "laundryCount": "Anzahl der Waschsalons",
+    "plans": {
+      "monthly": {
+        "title": "Monatlich",
+        "description": "Maximale Flexibilität, ohne Bindung",
+        "perLaundry": "pro Waschsalon",
+        "cta": "Monatsabonnement wählen"
+      },
+      "annual": {
+        "title": "Jährlich",
+        "badge": "Am beliebtesten",
+        "description": "2 Monate gratis im Vergleich zum Monatsabo",
+        "perLaundry": "pro Waschsalon",
+        "saving": "Ersparnis von",
+        "cta": "Jahresabonnement wählen"
+      }
+    },
+    "features": [
+      "Zugang zu allen Analysen",
+      "Vollständiges Dashboard",
+      "PDF-Berichtsexport",
+      "Lavcom Performances Empfehlungsmodul"
+    ],
+    "tiers": {
+      "title": "Mengenrabatt nach Anzahl der Waschsalons",
+      "tier1": "1 bis 2 Waschsalons",
+      "tier2": "3 bis 5 Waschsalons",
+      "tier3": "6 Waschsalons und mehr",
+      "perMonthPerLaundry": "€/Monat pro Waschsalon",
+      "note": "Der angezeigte Betrag passt sich automatisch an, wenn Sie die Anzahl der Waschsalons ändern. Das Jahresabonnement bietet Ihnen 2 Gratismonate."
+    }
   },
   "dropdown": {
     "exploitant": "Betreiber",

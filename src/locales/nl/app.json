@@ -13,7 +13,9 @@
     "analyses": "Analyses",
     "administration": "Beheer",
     "changeLaundry": "Wasserette wisselen",
-    "backToHome": "Terug naar home"
+    "backToHome": "Terug naar home",
+    "features": "Functies",
+    "simulationOpening": "Openingssimulatie"
   },
   "charts": {
     "annualRevenue": "Jaaromzet",
@@ -32,12 +34,28 @@
     "exploitant": {
       "title": "Inloggen",
       "subtitle": "Voer uw gegevens in om toegang te krijgen tot uw ruimte",
-      "leftPanelSubtitle": "Analyseer de prestaties van uw wasserettes in één oogopslag"
+      "leftPanelSubtitle": "Analyseer de prestaties van uw wasserettes in één oogopslag",
+      "stats": {
+        "realtime": "24/7",
+        "realtimeLabel": "Realtime monitoring",
+        "timeSaved": "+30%",
+        "timeSavedLabel": "Tijdwinst",
+        "secureData": "100%",
+        "secureDataLabel": "Veilige gegevens"
+      }
     },
     "simulator": {
       "title": "Simulator inloggen",
       "subtitle": "Toegang tot uw simulatieruimte",
-      "leftPanelSubtitle": "Simuleer de winstgevendheid van uw toekomstige wasserette"
+      "leftPanelSubtitle": "Simuleer de winstgevendheid van uw toekomstige wasserette",
+      "stats": {
+        "quickEstimate": "5 min",
+        "quickEstimateLabel": "Snelle schatting",
+        "bankReport": "PDF",
+        "bankReportLabel": "Bankrapport",
+        "unlimitedScenarios": "∞",
+        "unlimitedScenariosLabel": "Onbeperkte scenario's"
+      }
     },
     "form": {
       "email": "E-mail",
@@ -57,7 +75,92 @@
     "simulatorLogin": "Simulator inloggen",
     "welcomeExploitant": "Welkom bij Lavcom Performances",
     "welcomeSimulator": "Welkom bij Lavcom Performances Oprichting",
-    "loginSuccess": "Succesvol ingelogd"
+    "loginSuccess": "Succesvol ingelogd",
+    "errorTitle": "Inlogfout",
+    "invalidCredentials": "Ongeldige e-mail of wachtwoord",
+    "confirmEmail": "Bevestig uw e-mailadres",
+    "freeTrial": "14 dagen gratis proberen",
+    "or": "of",
+    "decorativeText": "De beheeroplossing voor wasserette-exploitanten"
+  },
+  "signup": {
+    "title": "Account aanmaken",
+    "subtitle": "Start uw 14-daagse gratis proefperiode",
+    "form": {
+      "firstName": "Voornaam",
+      "firstNamePlaceholder": "Jan",
+      "lastName": "Achternaam",
+      "lastNamePlaceholder": "Jansen",
+      "email": "Zakelijke e-mail",
+      "emailPlaceholder": "jan.jansen@wasserette.nl",
+      "companyName": "Bedrijfsnaam (optioneel)",
+      "companyPlaceholder": "Mijn Wasserette BV",
+      "password": "Wachtwoord",
+      "passwordPlaceholder": "Minimaal 8 tekens",
+      "submit": "Start mijn gratis proefperiode",
+      "creating": "Aanmaken..."
+    },
+    "validation": {
+      "invalidEmail": "Ongeldig e-mailadres",
+      "passwordMin": "Wachtwoord moet minimaal 8 tekens bevatten",
+      "firstNameRequired": "Voornaam is verplicht",
+      "lastNameRequired": "Achternaam is verplicht"
+    },
+    "existingAccount": "Bestaand account",
+    "alreadyRegistered": "Er bestaat al een account met dit e-mailadres. Log in.",
+    "accountCreated": "Account aangemaakt!",
+    "trialStarted": "Uw 14-daagse gratis proefperiode begint nu.",
+    "terms": "Door een account aan te maken, gaat u akkoord met onze",
+    "termsOfUse": "gebruiksvoorwaarden",
+    "and": "en ons",
+    "privacyPolicy": "privacybeleid",
+    "alreadyHaveAccount": "Heeft u al een account?",
+    "signIn": "Log in",
+    "trialFeatures": {
+      "title": "14 dagen gratis proberen",
+      "feature1": "Volledige toegang tot alle functies",
+      "feature2": "Multi-wasserette dashboard",
+      "feature3": "PDF-rapport export",
+      "feature4": "Slimme aanbevelingen",
+      "feature5": "Zonder verplichtingen, zonder creditcard"
+    },
+    "decorativeText": "Sluit u aan bij wasserette-exploitanten die hun prestaties optimaliseren"
+  },
+  "pricing": {
+    "badge": "Exploitant tarieven – Korting op basis van aantal wasserettes",
+    "title": "Kies uw abonnement",
+    "subtitle": "Hoe meer wasserettes u heeft, hoe lager de prijs per wasserette.",
+    "laundryCount": "Aantal wasserettes",
+    "plans": {
+      "monthly": {
+        "title": "Maandelijks",
+        "description": "Maximale flexibiliteit, zonder verplichtingen",
+        "perLaundry": "per wasserette",
+        "cta": "Maandabonnement kiezen"
+      },
+      "annual": {
+        "title": "Jaarlijks",
+        "badge": "Meest populair",
+        "description": "2 maanden gratis vergeleken met maandelijks",
+        "perLaundry": "per wasserette",
+        "saving": "Besparing van",
+        "cta": "Jaarabonnement kiezen"
+      }
+    },
+    "features": [
+      "Toegang tot alle analyses",
+      "Volledig dashboard",
+      "PDF-rapport export",
+      "Lavcom Performances Aanbevelingenmodule"
+    ],
+    "tiers": {
+      "title": "Korting op basis van aantal wasserettes",
+      "tier1": "1 tot 2 wasserettes",
+      "tier2": "3 tot 5 wasserettes",
+      "tier3": "6 wasserettes en meer",
+      "perMonthPerLaundry": "€/maand per wasserette",
+      "note": "Het weergegeven bedrag past zich automatisch aan wanneer u het aantal wasserettes wijzigt. Het jaarabonnement geeft u 2 gratis maanden."
+    }
   },
   "dropdown": {
     "exploitant": "Exploitant",

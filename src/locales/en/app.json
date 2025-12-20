@@ -13,7 +13,9 @@
     "analyses": "Analyses",
     "administration": "Administration",
     "changeLaundry": "Change laundry",
-    "backToHome": "Back to home"
+    "backToHome": "Back to home",
+    "features": "Features",
+    "simulationOpening": "Opening simulation"
   },
   "charts": {
     "annualRevenue": "Annual Revenue",
@@ -32,12 +34,28 @@
     "exploitant": {
       "title": "Login",
       "subtitle": "Enter your credentials to access your space",
-      "leftPanelSubtitle": "Analyze your laundries' performance at a glance"
+      "leftPanelSubtitle": "Analyze your laundries' performance at a glance",
+      "stats": {
+        "realtime": "24/7",
+        "realtimeLabel": "Real-time tracking",
+        "timeSaved": "+30%",
+        "timeSavedLabel": "Time saved",
+        "secureData": "100%",
+        "secureDataLabel": "Secure data"
+      }
     },
     "simulator": {
       "title": "Simulator Login",
       "subtitle": "Access your simulation space",
-      "leftPanelSubtitle": "Simulate the profitability of your future laundry"
+      "leftPanelSubtitle": "Simulate the profitability of your future laundry",
+      "stats": {
+        "quickEstimate": "5 min",
+        "quickEstimateLabel": "Quick estimate",
+        "bankReport": "PDF",
+        "bankReportLabel": "Bank report",
+        "unlimitedScenarios": "∞",
+        "unlimitedScenariosLabel": "Unlimited scenarios"
+      }
     },
     "form": {
       "email": "Email",
@@ -57,7 +75,92 @@
     "simulatorLogin": "Simulator login",
     "welcomeExploitant": "Welcome to Lavcom Performances",
     "welcomeSimulator": "Welcome to Lavcom Performances Creation",
-    "loginSuccess": "Login successful"
+    "loginSuccess": "Login successful",
+    "errorTitle": "Login error",
+    "invalidCredentials": "Invalid email or password",
+    "confirmEmail": "Please confirm your email",
+    "freeTrial": "14-day free trial",
+    "or": "or",
+    "decorativeText": "The management solution for laundry operators"
+  },
+  "signup": {
+    "title": "Create your account",
+    "subtitle": "Start your 14-day free trial",
+    "form": {
+      "firstName": "First name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Doe",
+      "email": "Professional email",
+      "emailPlaceholder": "john.doe@laundry.com",
+      "companyName": "Company name (optional)",
+      "companyPlaceholder": "My Laundry LLC",
+      "password": "Password",
+      "passwordPlaceholder": "Minimum 8 characters",
+      "submit": "Start my free trial",
+      "creating": "Creating..."
+    },
+    "validation": {
+      "invalidEmail": "Invalid email address",
+      "passwordMin": "Password must be at least 8 characters",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required"
+    },
+    "existingAccount": "Existing account",
+    "alreadyRegistered": "An account already exists with this email. Please sign in.",
+    "accountCreated": "Account created!",
+    "trialStarted": "Your 14-day free trial starts now.",
+    "terms": "By creating an account, you agree to our",
+    "termsOfUse": "terms of use",
+    "and": "and our",
+    "privacyPolicy": "privacy policy",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "trialFeatures": {
+      "title": "14-day free trial",
+      "feature1": "Full access to all features",
+      "feature2": "Multi-laundry dashboard",
+      "feature3": "PDF report export",
+      "feature4": "Smart recommendations",
+      "feature5": "No commitment, no credit card"
+    },
+    "decorativeText": "Join laundry operators who optimize their performance"
+  },
+  "pricing": {
+    "badge": "Operator Pricing – Discounted rates based on number of laundries",
+    "title": "Choose your subscription",
+    "subtitle": "The more laundries you have, the lower the price per laundry.",
+    "laundryCount": "Number of laundries",
+    "plans": {
+      "monthly": {
+        "title": "Monthly",
+        "description": "Maximum flexibility, no commitment",
+        "perLaundry": "per laundry",
+        "cta": "Choose monthly subscription"
+      },
+      "annual": {
+        "title": "Annual",
+        "badge": "Most popular",
+        "description": "2 months free compared to monthly",
+        "perLaundry": "per laundry",
+        "saving": "Save",
+        "cta": "Choose annual subscription"
+      }
+    },
+    "features": [
+      "Access to all analytics",
+      "Complete dashboard",
+      "PDF report export",
+      "Lavcom Performances Recommendations Module"
+    ],
+    "tiers": {
+      "title": "Discounted rates based on number of laundries",
+      "tier1": "1 to 2 laundries",
+      "tier2": "3 to 5 laundries",
+      "tier3": "6+ laundries",
+      "perMonthPerLaundry": "€/month per laundry",
+      "note": "The displayed amount adjusts automatically when you change the number of laundries. Annual subscription gives you 2 free months."
+    }
   },
   "dropdown": {
     "exploitant": "Operator",

@@ -13,7 +13,9 @@
     "analyses": "Análisis",
     "administration": "Administración",
     "changeLaundry": "Cambiar lavandería",
-    "backToHome": "Volver al inicio"
+    "backToHome": "Volver al inicio",
+    "features": "Características",
+    "simulationOpening": "Simulación apertura"
   },
   "charts": {
     "annualRevenue": "Ingresos anuales",
@@ -32,12 +34,28 @@
     "exploitant": {
       "title": "Iniciar sesión",
       "subtitle": "Ingrese sus credenciales para acceder a su espacio",
-      "leftPanelSubtitle": "Analice el rendimiento de sus lavanderías de un vistazo"
+      "leftPanelSubtitle": "Analice el rendimiento de sus lavanderías de un vistazo",
+      "stats": {
+        "realtime": "24/7",
+        "realtimeLabel": "Seguimiento en tiempo real",
+        "timeSaved": "+30%",
+        "timeSavedLabel": "Tiempo ahorrado",
+        "secureData": "100%",
+        "secureDataLabel": "Datos seguros"
+      }
     },
     "simulator": {
       "title": "Acceso simulador",
       "subtitle": "Acceda a su espacio de simulación",
-      "leftPanelSubtitle": "Simule la rentabilidad de su futura lavandería"
+      "leftPanelSubtitle": "Simule la rentabilidad de su futura lavandería",
+      "stats": {
+        "quickEstimate": "5 min",
+        "quickEstimateLabel": "Estimación rápida",
+        "bankReport": "PDF",
+        "bankReportLabel": "Informe bancario",
+        "unlimitedScenarios": "∞",
+        "unlimitedScenariosLabel": "Escenarios ilimitados"
+      }
     },
     "form": {
       "email": "Correo electrónico",
@@ -57,7 +75,92 @@
     "simulatorLogin": "Acceso simulador",
     "welcomeExploitant": "Bienvenido a Lavcom Performances",
     "welcomeSimulator": "Bienvenido a Lavcom Performances Creación",
-    "loginSuccess": "Inicio de sesión exitoso"
+    "loginSuccess": "Inicio de sesión exitoso",
+    "errorTitle": "Error de inicio de sesión",
+    "invalidCredentials": "Correo electrónico o contraseña incorrectos",
+    "confirmEmail": "Por favor confirme su correo electrónico",
+    "freeTrial": "Prueba gratuita 14 días",
+    "or": "o",
+    "decorativeText": "La solución de gestión para operadores de lavanderías"
+  },
+  "signup": {
+    "title": "Crear su cuenta",
+    "subtitle": "Comience su prueba gratuita de 14 días",
+    "form": {
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "Juan",
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "García",
+      "email": "Correo profesional",
+      "emailPlaceholder": "juan.garcia@lavanderia.es",
+      "companyName": "Nombre de la empresa (opcional)",
+      "companyPlaceholder": "Mi Lavandería SL",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Mínimo 8 caracteres",
+      "submit": "Iniciar mi prueba gratuita",
+      "creating": "Creando..."
+    },
+    "validation": {
+      "invalidEmail": "Dirección de correo inválida",
+      "passwordMin": "La contraseña debe tener al menos 8 caracteres",
+      "firstNameRequired": "El nombre es obligatorio",
+      "lastNameRequired": "El apellido es obligatorio"
+    },
+    "existingAccount": "Cuenta existente",
+    "alreadyRegistered": "Ya existe una cuenta con este correo. Inicie sesión.",
+    "accountCreated": "¡Cuenta creada!",
+    "trialStarted": "Su prueba gratuita de 14 días comienza ahora.",
+    "terms": "Al crear una cuenta, acepta nuestras",
+    "termsOfUse": "condiciones de uso",
+    "and": "y nuestra",
+    "privacyPolicy": "política de privacidad",
+    "alreadyHaveAccount": "¿Ya tiene una cuenta?",
+    "signIn": "Inicie sesión",
+    "trialFeatures": {
+      "title": "14 días de prueba gratuita",
+      "feature1": "Acceso completo a todas las funcionalidades",
+      "feature2": "Panel multi-lavanderías",
+      "feature3": "Exportación PDF de informes",
+      "feature4": "Recomendaciones inteligentes",
+      "feature5": "Sin compromiso, sin tarjeta"
+    },
+    "decorativeText": "Únase a los operadores de lavanderías que optimizan su rendimiento"
+  },
+  "pricing": {
+    "badge": "Tarifas Operadores – Precio decreciente según número de lavanderías",
+    "title": "Elija su suscripción",
+    "subtitle": "Cuantas más lavanderías tenga, menor será el precio por lavandería.",
+    "laundryCount": "Número de lavanderías",
+    "plans": {
+      "monthly": {
+        "title": "Mensual",
+        "description": "Máxima flexibilidad, sin compromiso",
+        "perLaundry": "por lavandería",
+        "cta": "Elegir suscripción mensual"
+      },
+      "annual": {
+        "title": "Anual",
+        "badge": "Más popular",
+        "description": "2 meses gratis respecto al mensual",
+        "perLaundry": "por lavandería",
+        "saving": "Ahorro de",
+        "cta": "Elegir suscripción anual"
+      }
+    },
+    "features": [
+      "Acceso a todos los análisis",
+      "Panel de control completo",
+      "Exportación PDF de informes",
+      "Módulo Recomendaciones Lavcom Performances"
+    ],
+    "tiers": {
+      "title": "Tarifas decrecientes según el número de lavanderías",
+      "tier1": "1 a 2 lavanderías",
+      "tier2": "3 a 5 lavanderías",
+      "tier3": "6 lavanderías y +",
+      "perMonthPerLaundry": "€/mes por lavandería",
+      "note": "El importe mostrado se ajusta automáticamente al modificar el número de lavanderías. La suscripción anual le ofrece 2 meses gratis."
+    }
   },
   "dropdown": {
     "exploitant": "Operador",
