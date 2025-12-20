@@ -630,7 +630,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="text-left md:text-center mb-10 md:mb-16">
             <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[400px] md:max-w-none">
-              Comment ça marche concrètement ?
+              {t("landing:howItWorks.title")}
             </h2>
           </div>
           
@@ -638,18 +638,18 @@ const LandingPage = () => {
             {[
               {
                 step: "1",
-                title: "Importez vos données",
-                description: "Téléchargez vos fichiers d'encaissements depuis votre centrale de paiement et importez-les dans Lavcom Performances."
+                title: t("landing:howItWorks.step1Title"),
+                description: t("landing:howItWorks.step1Desc")
               },
               {
                 step: "2",
-                title: "Visualisez vos résultats",
-                description: "Vous voyez vos recettes par laverie, par machine, par créneau horaire, ainsi que vos périodes plus calmes."
+                title: t("landing:howItWorks.step2Title"),
+                description: t("landing:howItWorks.step2Desc")
               },
               {
                 step: "3",
-                title: "Passez à l'action",
-                description: "La plateforme vous suggère des pistes : où ajuster un prix, quels créneaux renforcer, quelles machines surveiller davantage."
+                title: t("landing:howItWorks.step3Title"),
+                description: t("landing:howItWorks.step3Desc")
               }
             ].map((item, index) => (
               <div 
@@ -678,7 +678,7 @@ const LandingPage = () => {
           <div className="text-left md:text-center mt-8 md:mt-12">
             <Link to="/signup">
               <Button size="default" className="btn-bounce text-sm md:text-base w-full sm:w-auto">
-                Commencer maintenant
+                {t("landing:cta.startNow")}
                 <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </Link>
@@ -693,7 +693,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <ScrollReveal className="text-left md:text-center mb-10 md:mb-16">
             <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[400px] md:max-w-none">
-              Pourquoi utiliser Lavcom Performances ?
+              {t("landing:whyUse.title")}
             </h2>
           </ScrollReveal>
           
@@ -701,21 +701,21 @@ const LandingPage = () => {
             {[
               {
                 icon: Eye,
-                title: "Voir ce qui se passe vraiment dans vos laveries",
-                description: "Plus besoin de faire des tableaux à la main : vous voyez vos chiffres clés automatiquement."
+                title: t("landing:whyUse.feature1Title"),
+                description: t("landing:whyUse.feature1Desc")
               },
               {
                 icon: Clock,
-                title: "Gagner du temps sur le suivi",
-                description: "Vous passez moins de temps à chercher l'information, et plus de temps à décider."
+                title: t("landing:whyUse.feature2Title"),
+                description: t("landing:whyUse.feature2Desc")
               },
               {
                 icon: TrendingUp,
-                title: "Améliorer votre chiffre d'affaires sans tout révolutionner",
-                description: "Quelques ajustements bien ciblés peuvent déjà faire une vraie différence sur vos résultats."
+                title: t("landing:whyUse.feature3Title"),
+                description: t("landing:whyUse.feature3Desc")
               }
             ].map((feature, index) => (
-              <ScrollReveal key={feature.title} delay={index * 0.1}>
+              <ScrollReveal key={index} delay={index * 0.1}>
                 <Card 
                   className="p-4 md:p-6 card-lavcom-hover h-full"
                 >
@@ -752,18 +752,18 @@ const LandingPage = () => {
                 </div>
                 <div>
                   <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-2 md:mb-3">
-                    Aller plus loin avant d'ouvrir
+                    {t("landing:guide.title")}
                   </h2>
                   <h3 className="text-base md:text-lg font-semibold text-lavcom-orange mb-3 md:mb-4">
-                    Le guide pratique "Avant d'ouvrir"
+                    {t("landing:guide.subtitle")}
                   </h3>
                   <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
-                    Un guide concret pour vous aider à préparer votre projet de laverie : choix du local, configuration, fournisseurs, erreurs à éviter. Le simulateur vous donne les chiffres, le guide vous aide à poser les bonnes décisions autour.
+                    {t("landing:guide.description")}
                   </p>
                   <a href="https://lavcom.fr/nos-ebooks-2/" target="_blank" rel="noopener noreferrer">
                     <Button className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white w-full sm:w-auto">
                       <BookOpen className="mr-2 h-4 w-4" />
-                      Découvrir le guide
+                      {t("landing:guide.cta")}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </a>
@@ -836,65 +836,55 @@ const LandingPage = () => {
           <Accordion type="single" collapsible className="space-y-4">
             <AccordionItem value="item-1" className="bg-card rounded-xl border border-border/50 px-6">
               <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
-                Comment Lavcom Performances se connecte-t-il à mes machines ?
+                {t("landing:faq.q1")}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Lavcom Performances s'intègre facilement avec la plupart des systèmes de paiement et de gestion de laverie. 
-                Notre équipe technique vous accompagne dans la configuration initiale qui prend généralement moins de 2 heures.
-                Aucune modification matérielle n'est nécessaire.
+                {t("landing:faq.a1")}
               </AccordionContent>
             </AccordionItem>
             
             <AccordionItem value="item-2" className="bg-card rounded-xl border border-border/50 px-6">
               <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
-                Mes données sont-elles sécurisées ?
+                {t("landing:faq.q2")}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Absolument. Toutes vos données sont chiffrées et stockées sur des serveurs sécurisés en Europe. 
-                Nous sommes conformes au RGPD et ne partageons jamais vos informations avec des tiers. 
-                Vous restez propriétaire de vos données à 100%.
+                {t("landing:faq.a2")}
               </AccordionContent>
             </AccordionItem>
             
             <AccordionItem value="item-3" className="bg-card rounded-xl border border-border/50 px-6">
               <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
-                Puis-je gérer plusieurs laveries avec un seul compte ?
+                {t("landing:faq.q3")}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Oui ! Lavcom Performances est conçu pour gérer aussi bien une seule laverie qu'un réseau complet. 
-                Vous pouvez visualiser les performances de chaque établissement individuellement ou obtenir une vue consolidée de tout votre réseau.
+                {t("landing:faq.a3")}
               </AccordionContent>
             </AccordionItem>
             
             <AccordionItem value="item-4" className="bg-card rounded-xl border border-border/50 px-6">
               <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
-                Quelle est la durée de l'essai gratuit ?
+                {t("landing:faq.q4")}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Vous bénéficiez d'un essai gratuit de 14 jours avec accès à toutes les fonctionnalités. 
-                Aucune carte bancaire n'est requise pour commencer. À la fin de l'essai, vous choisissez l'offre qui vous convient.
+                {t("landing:faq.a4")}
               </AccordionContent>
             </AccordionItem>
             
             <AccordionItem value="item-5" className="bg-card rounded-xl border border-border/50 px-6">
               <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
-                Comment fonctionnent les alertes de maintenance ?
+                {t("landing:faq.q5")}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Notre système analyse en continu les données de vos machines pour détecter les anomalies avant qu'elles ne causent des pannes. 
-                Vous recevez des alertes par email ou SMS avec des recommandations d'action précises. 
-                Cela vous permet d'intervenir de manière préventive et de réduire significativement les temps d'arrêt.
+                {t("landing:faq.a5")}
               </AccordionContent>
             </AccordionItem>
             
             <AccordionItem value="item-6" className="bg-card rounded-xl border border-border/50 px-6">
               <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline">
-                Quel support est inclus dans l'abonnement ?
+                {t("landing:faq.q6")}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Tous nos abonnements incluent un support par email avec réponse sous 24h. 
-                Les offres Pro et Business bénéficient d'un support prioritaire par téléphone et d'un accompagnement personnalisé 
-                pour optimiser l'utilisation de la plateforme.
+                {t("landing:faq.a6")}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -907,10 +897,10 @@ const LandingPage = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Une question ? Contactez-nous
+                {t("landing:contact.titleFull")}
               </h2>
               <p className="text-muted-foreground text-lg mb-8">
-                Notre équipe vous répond sous 24h pour vous accompagner dans votre projet.
+                {t("landing:contact.subtitleFull")}
               </p>
               
               <div className="space-y-6">
@@ -919,8 +909,8 @@ const LandingPage = () => {
                     <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                    <p className="text-muted-foreground">contact@lavcom.fr</p>
+                    <h3 className="font-semibold text-foreground mb-1">{t("landing:contact.emailLabel")}</h3>
+                    <p className="text-muted-foreground">{t("landing:contact.emailAddress")}</p>
                   </div>
                 </div>
                 
@@ -929,8 +919,8 @@ const LandingPage = () => {
                     <Clock className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Horaires</h3>
-                    <p className="text-muted-foreground">Lun-Ven : 9h-18h</p>
+                    <h3 className="font-semibold text-foreground mb-1">{t("landing:contact.hoursLabel")}</h3>
+                    <p className="text-muted-foreground">{t("landing:contact.hours")}</p>
                   </div>
                 </div>
                 
@@ -939,8 +929,8 @@ const LandingPage = () => {
                     <MessageSquare className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Réponse rapide</h3>
-                    <p className="text-muted-foreground">Nous répondons sous 24h ouvrées</p>
+                    <h3 className="font-semibold text-foreground mb-1">{t("landing:contact.responseLabel")}</h3>
+                    <p className="text-muted-foreground">{t("landing:contact.responseTime")}</p>
                   </div>
                 </div>
               </div>
@@ -950,13 +940,13 @@ const LandingPage = () => {
               <form onSubmit={handleContactSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="contact-name" className="text-foreground font-medium">
-                    Nom complet
+                    {t("landing:contact.nameLabel")}
                   </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
                       id="contact-name"
-                      placeholder="Jean Dupont"
+                      placeholder={t("landing:contact.namePlaceholder")}
                       value={contactForm.name}
                       onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
                       className="pl-10"
@@ -970,14 +960,14 @@ const LandingPage = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="contact-email" className="text-foreground font-medium">
-                    Email
+                    {t("landing:contact.emailLabel")}
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
                       id="contact-email"
                       type="email"
-                      placeholder="jean.dupont@email.com"
+                      placeholder={t("landing:contact.emailPlaceholder")}
                       value={contactForm.email}
                       onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
                       className="pl-10"
@@ -991,11 +981,11 @@ const LandingPage = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="contact-message" className="text-foreground font-medium">
-                    Message
+                    {t("landing:contact.messageLabel")}
                   </Label>
                   <Textarea
                     id="contact-message"
-                    placeholder="Comment pouvons-nous vous aider ?"
+                    placeholder={t("landing:contact.messageHint")}
                     value={contactForm.message}
                     onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
                     rows={4}
@@ -1040,14 +1030,14 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-4xl">
           <Card className="p-6 md:p-10 text-center bg-gradient-to-br from-lavcom-green/20 to-lavcom-green/10 border-lavcom-green/30">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3">
-              Essayez Lavcom Performances gratuitement pendant 14 jours
+              {t("landing:trialBanner.title")}
             </h2>
             <p className="text-muted-foreground text-base md:text-lg mb-6">
-              Sans engagement, vous arrêtez quand vous voulez.
+              {t("landing:trialBanner.subtitle")}
             </p>
             <Link to="/signup">
               <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-lg px-8">
-                Créer mon compte gratuit
+                {t("landing:trialBanner.cta")}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -1062,22 +1052,22 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-4xl">
           <Card className="p-8 md:p-12 text-center bg-gradient-to-br from-sidebar-background to-muted border-0">
             <h2 className="text-3xl md:text-4xl font-bold text-card-foreground mb-4">
-              Deux façons de travailler avec Lavcom Performances
+              {t("landing:twoPaths.title")}
             </h2>
             <p className="text-card-foreground/70 text-lg mb-8 max-w-xl mx-auto">
-              Que vous soyez déjà exploitant ou futur exploitant, nous avons une solution adaptée à vos besoins.
+              {t("landing:twoPaths.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/pricing">
                 <Button size="lg" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-lg px-8">
                   <Building2 className="mr-2 h-5 w-5" />
-                  Je gère déjà une laverie
+                  {t("landing:twoPaths.existing")}
                 </Button>
               </Link>
               <Link to="/simulateur">
                 <Button size="lg" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-lg px-8">
                   <Rocket className="mr-2 h-5 w-5" />
-                  Je souhaite ouvrir une laverie
+                  {t("landing:twoPaths.future")}
                 </Button>
               </Link>
             </div>
@@ -1098,37 +1088,37 @@ const LandingPage = () => {
                 <img src={lavcomLogo} alt="Lavcom Performances" className="h-8 w-auto" />
               </Link>
               <p className="text-sm text-muted-foreground">
-                La plateforme qui vous aide à tirer le meilleur de vos laveries automatiques.
+                {t("landing:footer.description")}
               </p>
             </div>
             
             {/* Liens rapides */}
             <div>
-              <h4 className="font-semibold text-foreground mb-4">Liens rapides</h4>
+              <h4 className="font-semibold text-foreground mb-4">{t("landing:footer.quickLinks")}</h4>
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Tarifs exploitants
+                    {t("landing:footer.pricingOperators")}
                   </Link>
                 </li>
                 <li>
                   <Link to="/simulateur" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Simulateur
+                    {t("landing:footer.simulator")}
                   </Link>
                 </li>
                 <li>
                   <Link to="/subscribe-simulator" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Packs simulateur
+                    {t("landing:footer.simulatorPacks")}
                   </Link>
                 </li>
                 <li>
                   <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                    FAQ
+                    {t("common:faq")}
                   </a>
                 </li>
                 <li>
                   <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Contact
+                    {t("common:contact")}
                   </a>
                 </li>
               </ul>
@@ -1136,19 +1126,19 @@ const LandingPage = () => {
             
             {/* Contact */}
             <div>
-              <h4 className="font-semibold text-foreground mb-4">Contact</h4>
+              <h4 className="font-semibold text-foreground mb-4">{t("landing:footer.contactTitle")}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  contact@lavcom.fr
+                  {t("landing:contact.emailAddress")}
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  88 avenue de Grammont, 37000 Tours
+                  {t("landing:footer.address")}
                 </li>
                 <li className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
-                  Lun-Ven : 9h-18h
+                  {t("landing:contact.hours")}
                 </li>
               </ul>
             </div>
@@ -1159,19 +1149,19 @@ const LandingPage = () => {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               {/* Mention légale société */}
               <p className="text-xs text-muted-foreground text-center md:text-left">
-                Lavcom Performances est une marque commerciale de Lavcom, elle-même marque commerciale de la société My'Po SARL – 88 avenue de Grammont, 37000 Tours
+                {t("landing:footer.legalNotice")}
               </p>
               
               {/* Liens légaux */}
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <Link to="/mentions-legales" className="hover:text-foreground transition-colors">Mentions légales</Link>
-                <Link to="/mentions-legales#confidentialite" className="hover:text-foreground transition-colors">Confidentialité</Link>
-                <Link to="/mentions-legales#cgv" className="hover:text-foreground transition-colors">CGV</Link>
+                <Link to="/mentions-legales" className="hover:text-foreground transition-colors">{t("landing:footer.legalLinks")}</Link>
+                <Link to="/mentions-legales#confidentialite" className="hover:text-foreground transition-colors">{t("landing:footer.privacy")}</Link>
+                <Link to="/mentions-legales#cgv" className="hover:text-foreground transition-colors">{t("landing:footer.terms")}</Link>
               </div>
             </div>
             
             <p className="text-xs text-muted-foreground text-center mt-4">
-              © {new Date().getFullYear()} Lavcom Performances. Tous droits réservés.
+              {t("landing:footer.copyright", { year: new Date().getFullYear() })}
             </p>
           </div>
         </div>
