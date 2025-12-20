@@ -8,7 +8,8 @@
       "flipHorizontal": "Horizontal",
       "flipVertical": "Vertical",
       "brightness": "Brillo",
-      "contrast": "Contraste"
+      "contrast": "Contraste",
+      "saturation": "Saturación"
     }
   },
   "accessibility": {
