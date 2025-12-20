@@ -9,7 +9,8 @@
       "flipVertical": "Vertikal",
       "brightness": "Helligkeit",
       "contrast": "Kontrast",
-      "saturation": "Sättigung"
+      "saturation": "Sättigung",
+      "blur": "Unschärfe"
     }
   },
   "accessibility": {

@@ -9,7 +9,8 @@
       "flipVertical": "Vertical",
       "brightness": "Brightness",
       "contrast": "Contrast",
-      "saturation": "Saturation"
+      "saturation": "Saturation",
+      "blur": "Blur"
     }
   },
   "accessibility": {
