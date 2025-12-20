@@ -3,8 +3,10 @@ import { Outlet } from "react-router-dom";
 import { AppSidebar } from "./AppSidebar";
 import { MobileHeader } from "./MobileHeader";
 import { TrialBanner } from "@/components/trial/TrialBanner";
+import { DemoBanner } from "@/components/demo/DemoBanner";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useCurrentSite } from "@/hooks/useCurrentSite";
 
 interface AppLayoutProps {
   userRole?: string;
@@ -17,15 +19,20 @@ export function AppLayout({
 }: AppLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { daysRemaining, trialStatus, planType } = useSubscription();
+  const { isDemo, siteName } = useCurrentSite();
 
   const showTrialWarning = planType === 'trial' && (trialStatus === 'warning' || trialStatus === 'critical');
+  const displayName = siteName || currentLaundromat;
 
   return (
     <div className="flex flex-col h-screen w-full bg-background">
+      {/* Demo Banner - visible on all pages when demo site is selected */}
+      {isDemo && <DemoBanner />}
+
       {/* Mobile Header */}
       <MobileHeader 
         userRole={userRole}
-        currentLaundromat={currentLaundromat}
+        currentLaundromat={displayName}
       />
       
       <div className="flex flex-1 overflow-hidden">
@@ -35,7 +42,7 @@ export function AppLayout({
             collapsed={sidebarCollapsed}
             onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
             userRole={userRole}
-            currentLaundromat={currentLaundromat}
+            currentLaundromat={displayName}
           />
         </div>
         

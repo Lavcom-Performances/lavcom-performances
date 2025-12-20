@@ -1,12 +1,18 @@
-import { Upload, Plus, Play, Building2 } from "lucide-react";
+import { Upload, Plus, Play, Building2, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 interface LaundryEmptyStateProps {
   onAddLaundry: () => void;
+  onViewDemo: () => void;
+  isDemoLoading?: boolean;
 }
 
-export function LaundryEmptyState({ onAddLaundry }: LaundryEmptyStateProps) {
+export function LaundryEmptyState({ 
+  onAddLaundry, 
+  onViewDemo, 
+  isDemoLoading = false 
+}: LaundryEmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4 text-center">
       {/* Icon */}
@@ -49,16 +55,23 @@ export function LaundryEmptyState({ onAddLaundry }: LaundryEmptyStateProps) {
         </Button>
       </div>
 
-      {/* Demo link - discrete (TAEX-089 placeholder) */}
+      {/* Demo link */}
       <button
-        className="mt-6 text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 group"
-        onClick={() => {
-          // TODO: TAEX-089 - Implement demo mode
-          console.log("Demo mode - TAEX-089");
-        }}
+        className="mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+        onClick={onViewDemo}
+        disabled={isDemoLoading}
       >
-        <Play className="h-3 w-3 group-hover:text-primary transition-colors" />
-        Voir un exemple (2 min)
+        {isDemoLoading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            <span>Création des données d'exemple...</span>
+          </>
+        ) : (
+          <>
+            <Play className="h-4 w-4 group-hover:text-primary transition-colors" />
+            <span>Voir un exemple (2 min)</span>
+          </>
+        )}
       </button>
 
       {/* Help text */}

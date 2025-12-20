@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Search, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
@@ -11,10 +11,12 @@ import { AddressAutocomplete } from "@/components/laundromat/AddressAutocomplete
 import { CityAutocomplete } from "@/components/simulation/CityAutocomplete";
 import { LaundryEmptyState } from "@/components/laundromat/LaundryEmptyState";
 import { useSites } from "@/hooks/useSites";
+import { useDemoMode } from "@/hooks/useDemoMode";
 
 export default function SelectLaundromat() {
   const navigate = useNavigate();
   const { sites, isLoading, createSite, fetchSites } = useSites();
+  const { createDemoSite, isCreatingDemo } = useDemoMode();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoadingSiret, setIsLoadingSiret] = useState(false);
   const [siretError, setSiretError] = useState<string | null>(null);
@@ -186,7 +188,11 @@ export default function SelectLaundromat() {
 
         {/* Empty state or Sites list */}
         {!hasSites ? (
-          <LaundryEmptyState onAddLaundry={openAddDialog} />
+          <LaundryEmptyState 
+            onAddLaundry={openAddDialog} 
+            onViewDemo={createDemoSite}
+            isDemoLoading={isCreatingDemo}
+          />
         ) : (
           <>
             {/* Actions */}
