@@ -34,5 +34,17 @@
   "pricing": "Tarifs",
   "features": "Fonctionnalités",
   "testimonials": "Témoignages",
-  "faq": "FAQ"
+  "faq": "FAQ",
+  "footer": {
+    "description": "La solution complète pour piloter et optimiser vos laveries automatiques.",
+    "navigation": "Navigation",
+    "legal": "Informations légales",
+    "legalNotice": "Mentions légales",
+    "privacyPolicy": "Politique de confidentialité",
+    "termsOfService": "CGV",
+    "contact": "Contact",
+    "copyright": "© {{year}} Lavcom. Tous droits réservés.",
+    "simulator": "Simulateur",
+    "operatorsPricing": "Tarifs Exploitants"
+  }
 }

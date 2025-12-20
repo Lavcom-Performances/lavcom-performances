@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Mail, Phone, MapPin } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 
 export function Footer() {
+  const { t } = useTranslation('common');
   const currentYear = new Date().getFullYear();
 
   return (
@@ -19,32 +21,32 @@ export function Footer() {
               />
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
-              La solution complète pour piloter et optimiser vos laveries automatiques.
+              {t('footer.description')}
             </p>
           </div>
 
           {/* Navigation */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Navigation</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t('footer.navigation')}</h4>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Accueil
+                  {t('home')}
                 </Link>
               </li>
               <li>
                 <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Tarifs Exploitants
+                  {t('footer.operatorsPricing')}
                 </Link>
               </li>
               <li>
                 <Link to="/simulateur" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Simulateur
+                  {t('footer.simulator')}
                 </Link>
               </li>
               <li>
                 <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Connexion
+                  {t('login')}
                 </Link>
               </li>
             </ul>
@@ -52,21 +54,21 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Informations légales</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t('footer.legal')}</h4>
             <ul className="space-y-2">
               <li>
                 <Link to="/mentions-legales" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Mentions légales
+                  {t('footer.legalNotice')}
                 </Link>
               </li>
               <li>
                 <Link to="/mentions-legales#confidentialite" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Politique de confidentialité
+                  {t('footer.privacyPolicy')}
                 </Link>
               </li>
               <li>
                 <Link to="/mentions-legales#cgv" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  CGV
+                  {t('footer.termsOfService')}
                 </Link>
               </li>
             </ul>
@@ -74,7 +76,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Contact</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t('footer.contact')}</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
@@ -107,7 +109,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground text-center sm:text-left">
-            © {currentYear} Lavcom. Tous droits réservés.
+            {t('footer.copyright', { year: currentYear })}
           </p>
           <div className="flex items-center gap-4">
             <a 

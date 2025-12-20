@@ -34,5 +34,17 @@
   "pricing": "Precios",
   "features": "Características",
   "testimonials": "Testimonios",
-  "faq": "FAQ"
+  "faq": "FAQ",
+  "footer": {
+    "description": "La solución completa para gestionar y optimizar sus lavanderías.",
+    "navigation": "Navegación",
+    "legal": "Información legal",
+    "legalNotice": "Aviso legal",
+    "privacyPolicy": "Política de privacidad",
+    "termsOfService": "Condiciones de venta",
+    "contact": "Contacto",
+    "copyright": "© {{year}} Lavcom. Todos los derechos reservados.",
+    "simulator": "Simulador",
+    "operatorsPricing": "Precios para operadores"
+  }
 }
