@@ -2,7 +2,8 @@
   "profile": {
     "avatar": {
       "rotateLeft": "Um -90° drehen",
-      "rotateRight": "Um +90° drehen"
+      "rotateRight": "Um +90° drehen",
+      "preview": "Vorschau"
     }
   },
   "accessibility": {

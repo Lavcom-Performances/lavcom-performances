@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import {
@@ -53,7 +53,51 @@ export function AvatarCropDialog({
   const [scale, setScale] = useState(1);
   const [rotate, setRotate] = useState(0);
   const imgRef = useRef<HTMLImageElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Generate preview whenever crop, scale, or rotate changes
+  useEffect(() => {
+    if (!completedCrop || !imgRef.current || !previewCanvasRef.current) return;
+
+    const image = imgRef.current;
+    const canvas = previewCanvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) return;
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    const previewSize = 80;
+    canvas.width = previewSize;
+    canvas.height = previewSize;
+
+    ctx.imageSmoothingQuality = "high";
+
+    // Clear canvas
+    ctx.clearRect(0, 0, previewSize, previewSize);
+
+    // Apply rotation
+    const rotateRads = (rotate * Math.PI) / 180;
+    const centerX = previewSize / 2;
+    const centerY = previewSize / 2;
+
+    ctx.translate(centerX, centerY);
+    ctx.rotate(rotateRads);
+    ctx.translate(-centerX, -centerY);
+
+    ctx.drawImage(
+      image,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
+      0,
+      0,
+      previewSize,
+      previewSize
+    );
+  }, [completedCrop, rotate]);
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     setCrop(centerAspectCrop(width, height, 1));
@@ -141,29 +185,41 @@ export function AvatarCropDialog({
         </DialogHeader>
 
         <div className="flex flex-col gap-4">
-          <div className="flex justify-center py-2">
-            <ReactCrop
-              crop={crop}
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
-              onComplete={(c) => setCompletedCrop(c)}
-              aspect={1}
-              circularCrop
-              className="max-h-[300px]"
-            >
-              <img
-                ref={imgRef}
-                src={imageSrc}
-                alt="Crop preview"
-                onLoad={onImageLoad}
-                className="max-h-[300px] max-w-full"
-                style={{
-                  transform: `scale(${scale}) rotate(${rotate}deg)`,
-                  transformOrigin: "center",
-                }}
-              />
-            </ReactCrop>
+          <div className="flex gap-4">
+            <div className="flex-1 flex justify-center py-2">
+              <ReactCrop
+                crop={crop}
+                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                onComplete={(c) => setCompletedCrop(c)}
+                aspect={1}
+                circularCrop
+                className="max-h-[300px]"
+              >
+                <img
+                  ref={imgRef}
+                  src={imageSrc}
+                  alt="Crop preview"
+                  onLoad={onImageLoad}
+                  className="max-h-[300px] max-w-full"
+                  style={{
+                    transform: `scale(${scale}) rotate(${rotate}deg)`,
+                    transformOrigin: "center",
+                  }}
+                />
+              </ReactCrop>
+            </div>
+            
+            {completedCrop && (
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-xs text-muted-foreground">{t("app:profile.avatar.preview")}</span>
+                <canvas
+                  ref={previewCanvasRef}
+                  className="rounded-full border-2 border-primary/20"
+                  style={{ width: 80, height: 80 }}
+                />
+              </div>
+            )}
           </div>
-
           <div className="space-y-4 px-2">
             <div className="flex items-center gap-3">
               <ZoomIn className="h-4 w-4 text-muted-foreground shrink-0" />
