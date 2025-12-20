@@ -8,6 +8,7 @@ import { SimulationLayout } from "@/components/layout/SimulationLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ViewModeProvider } from "@/hooks/useViewMode";
 import { RouteTracker } from "@/components/analytics/RouteTracker";
+import { CookieBanner } from "@/components/cookies/CookieBanner";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -108,6 +109,7 @@ const App = () => (
           
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <CookieBanner />
         </BrowserRouter>
       </TooltipProvider>
     </ViewModeProvider>

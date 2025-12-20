@@ -12,6 +12,7 @@ import { CityAutocomplete } from "@/components/simulation/CityAutocomplete";
 import { LaundryEmptyState } from "@/components/laundromat/LaundryEmptyState";
 import { useSites } from "@/hooks/useSites";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function SelectLaundromat() {
   const navigate = useNavigate();
@@ -180,15 +181,18 @@ export default function SelectLaundromat() {
             <span className="hidden sm:inline">Accueil</span>
           </Link>
           
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="gap-2 text-muted-foreground"
-            onClick={() => navigate("/company-settings")}
-          >
-            <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Entreprise</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle collapsed className="h-9 w-9" />
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="gap-2 text-muted-foreground"
+              onClick={() => navigate("/company-settings")}
+            >
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">Entreprise</span>
+            </Button>
+          </div>
         </div>
       </header>
 
