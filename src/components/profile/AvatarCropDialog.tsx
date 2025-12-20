@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AvatarCropDialogProps {
@@ -56,6 +56,7 @@ export function AvatarCropDialog({
   const [flipV, setFlipV] = useState(false);
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
+  const [saturation, setSaturation] = useState(100);
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -93,7 +94,7 @@ export function AvatarCropDialog({
     ctx.translate(-centerX, -centerY);
 
     // Apply filters
-    ctx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
+    ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
 
     ctx.drawImage(
       image,
@@ -106,7 +107,7 @@ export function AvatarCropDialog({
       previewSize,
       previewSize
     );
-  }, [completedCrop, rotate, flipH, flipV, brightness, contrast]);
+  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation]);
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     setCrop(centerAspectCrop(width, height, 1));
@@ -150,7 +151,7 @@ export function AvatarCropDialog({
       ctx.translate(-centerX, -centerY);
 
       // Apply filters
-      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
+      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
 
       ctx.drawImage(
         image,
@@ -189,6 +190,7 @@ export function AvatarCropDialog({
       setFlipV(false);
       setBrightness(100);
       setContrast(100);
+      setSaturation(100);
       setCrop(undefined);
       setCompletedCrop(undefined);
     }
@@ -223,7 +225,7 @@ export function AvatarCropDialog({
                   style={{
                     transform: `scale(${scale}) rotate(${rotate}deg) scaleX(${flipH ? -1 : 1}) scaleY(${flipV ? -1 : 1})`,
                     transformOrigin: "center",
-                    filter: `brightness(${brightness}%) contrast(${contrast}%)`,
+                    filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
                   }}
                 />
               </ReactCrop>
@@ -353,8 +355,23 @@ export function AvatarCropDialog({
               <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{contrast}%</span>
             </div>
 
+            {/* Saturation control */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Palette className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.saturation")}</span>
+              <Slider
+                value={[saturation]}
+                onValueChange={(values) => setSaturation(values[0])}
+                min={0}
+                max={200}
+                step={1}
+                className="flex-1"
+              />
+              <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{saturation}%</span>
+            </div>
+
             {/* Reset button */}
-            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100) && (
+            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100) && (
               <Button
                 type="button"
                 variant="ghost"
@@ -366,6 +383,7 @@ export function AvatarCropDialog({
                   setFlipV(false);
                   setBrightness(100);
                   setContrast(100);
+                  setSaturation(100);
                 }}
                 className="w-full"
               >
