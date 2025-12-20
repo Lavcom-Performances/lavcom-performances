@@ -10,7 +10,8 @@
       "brightness": "Helderheid",
       "contrast": "Contrast",
       "saturation": "Verzadiging",
-      "blur": "Vervagen"
+      "blur": "Vervagen",
+      "sharpen": "Verscherpen"
     }
   },
   "accessibility": {

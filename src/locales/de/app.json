@@ -10,7 +10,8 @@
       "brightness": "Helligkeit",
       "contrast": "Kontrast",
       "saturation": "Sättigung",
-      "blur": "Unschärfe"
+      "blur": "Unschärfe",
+      "sharpen": "Schärfe"
     }
   },
   "accessibility": {

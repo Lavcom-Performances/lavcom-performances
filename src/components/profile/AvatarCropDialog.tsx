@@ -10,8 +10,39 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+// Apply sharpening using unsharp mask technique
+function applySharpen(ctx: CanvasRenderingContext2D, width: number, height: number, amount: number) {
+  if (amount === 0) return;
+  
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  const tempData = new Uint8ClampedArray(data);
+  
+  // Sharpen kernel: center = 1 + 4*amount, edges = -amount
+  const factor = amount / 100;
+  
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const idx = (y * width + x) * 4;
+      const idxUp = ((y - 1) * width + x) * 4;
+      const idxDown = ((y + 1) * width + x) * 4;
+      const idxLeft = (y * width + (x - 1)) * 4;
+      const idxRight = (y * width + (x + 1)) * 4;
+      
+      for (let c = 0; c < 3; c++) {
+        const center = tempData[idx + c];
+        const neighbors = tempData[idxUp + c] + tempData[idxDown + c] + tempData[idxLeft + c] + tempData[idxRight + c];
+        const sharpened = center + factor * (4 * center - neighbors);
+        data[idx + c] = Math.min(255, Math.max(0, sharpened));
+      }
+    }
+  }
+  
+  ctx.putImageData(imageData, 0, 0);
+}
 
 interface AvatarCropDialogProps {
   open: boolean;
@@ -58,6 +89,7 @@ export function AvatarCropDialog({
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
   const [blur, setBlur] = useState(0);
+  const [sharpen, setSharpen] = useState(0);
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -108,7 +140,11 @@ export function AvatarCropDialog({
       previewSize,
       previewSize
     );
-  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur]);
+
+    // Reset transform before applying sharpen
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    applySharpen(ctx, previewSize, previewSize, sharpen);
+  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur, sharpen]);
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     setCrop(centerAspectCrop(width, height, 1));
@@ -166,6 +202,10 @@ export function AvatarCropDialog({
         outputSize
       );
 
+      // Reset transform before applying sharpen
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      applySharpen(ctx, Math.round(outputSize * pixelRatio), Math.round(outputSize * pixelRatio), sharpen);
+
       canvas.toBlob(
         (blob) => {
           if (blob) {
@@ -193,6 +233,7 @@ export function AvatarCropDialog({
       setContrast(100);
       setSaturation(100);
       setBlur(0);
+      setSharpen(0);
       setCrop(undefined);
       setCompletedCrop(undefined);
     }
@@ -387,8 +428,23 @@ export function AvatarCropDialog({
               <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{blur}px</span>
             </div>
 
+            {/* Sharpen control */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Focus className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.sharpen")}</span>
+              <Slider
+                value={[sharpen]}
+                onValueChange={(values) => setSharpen(values[0])}
+                min={0}
+                max={100}
+                step={5}
+                className="flex-1"
+              />
+              <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{sharpen}%</span>
+            </div>
+
             {/* Reset button */}
-            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0) && (
+            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0 || sharpen !== 0) && (
               <Button
                 type="button"
                 variant="ghost"
@@ -402,6 +458,7 @@ export function AvatarCropDialog({
                   setContrast(100);
                   setSaturation(100);
                   setBlur(0);
+                  setSharpen(0);
                 }}
                 className="w-full"
               >
