@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -53,15 +54,8 @@ import { trackEbookClick, trackContactSubmit } from "@/lib/analytics";
 import { z } from "zod";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import ebookAvantOuvrir from "@/assets/ebook-avant-ouvrir.jpg";
-import { t } from "@/lib/i18n";
 import { HeroValueSlider } from "@/components/landing/HeroValueSlider";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
-
-const contactSchema = z.object({
-  name: z.string().trim().min(1, t("validation").nameRequired).max(100, t("validation").nameTooLong),
-  email: z.string().trim().email(t("validation").invalidEmail).max(255, t("validation").emailTooLong),
-  message: z.string().trim().min(10, t("validation").messageMinLength).max(1000, t("validation").messageMaxLength)
-});
 
 const testimonials = [
   {
@@ -89,9 +83,17 @@ const testimonials = [
 
 const LandingPage = () => {
   const { toast } = useToast();
+  const { t } = useTranslation(['landing', 'common', 'errors', 'app']);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
   const [contactErrors, setContactErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+
+  // Dynamic schema with translations
+  const contactSchema = z.object({
+    name: z.string().trim().min(1, t('errors:validation.nameRequired')).max(100, t('errors:validation.nameTooLong')),
+    email: z.string().trim().email(t('errors:validation.invalidEmail')).max(255, t('errors:validation.emailTooLong')),
+    message: z.string().trim().min(10, t('errors:validation.messageMinLength')).max(1000, t('errors:validation.messageMaxLength'))
+  });
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,8 +127,8 @@ const LandingPage = () => {
 
       if (response.ok) {
         toast({
-          title: t("landing").contact.successTitle,
-          description: t("landing").contact.successDescription,
+          title: t("landing:contact.successTitle"),
+          description: t("landing:contact.successDescription"),
         });
         setContactForm({ name: "", email: "", message: "" });
       } else {
@@ -135,8 +137,8 @@ const LandingPage = () => {
     } catch (error) {
       console.error("Formspree error:", error);
       toast({
-        title: t("landing").contact.errorTitle,
-        description: t("landing").contact.errorDescription,
+        title: t("landing:contact.errorTitle"),
+        description: t("landing:contact.errorDescription"),
         variant: "destructive",
       });
     } finally {
@@ -154,26 +156,26 @@ const LandingPage = () => {
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-              Tarifs
+              {t("common:pricing")}
             </Link>
             <Link to="/simulateur" className="text-lavcom-orange hover:text-lavcom-orange-dark font-medium transition-colors">
-              {t("nav").simulationOpening}
+              {t("landing:futursExploitants.simulator")}
             </Link>
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t("nav").features}
+              {t("common:features")}
             </a>
             <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t("nav").testimonials}
+              {t("common:testimonials")}
             </a>
             <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t("nav").faq}
+              {t("common:faq")}
             </a>
           </nav>
           <div className="flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="btn-bounce">
-                  {t("common").login}
+                  {t("common:login")}
                   <ChevronDown className="ml-1 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -182,8 +184,8 @@ const LandingPage = () => {
                   <Link to="/login?mode=exploitant" className="flex items-center gap-2 cursor-pointer">
                     <Building2 className="h-4 w-4" />
                     <div>
-                      <p className="font-medium">Exploitant</p>
-                      <p className="text-xs text-muted-foreground">Accès à mes laveries</p>
+                      <p className="font-medium">{t("app:dropdown.exploitant")}</p>
+                      <p className="text-xs text-muted-foreground">{t("app:dropdown.exploitantDesc")}</p>
                     </div>
                   </Link>
                 </DropdownMenuItem>
@@ -191,8 +193,8 @@ const LandingPage = () => {
                   <Link to="/login?mode=simulateur" className="flex items-center gap-2 cursor-pointer">
                     <Calculator className="h-4 w-4" />
                     <div>
-                      <p className="font-medium">Futur exploitant</p>
-                      <p className="text-xs text-muted-foreground">Accès au simulateur</p>
+                      <p className="font-medium">{t("app:dropdown.futureExploitant")}</p>
+                      <p className="text-xs text-muted-foreground">{t("app:dropdown.futureExploitantDesc")}</p>
                     </div>
                   </Link>
                 </DropdownMenuItem>
@@ -200,7 +202,7 @@ const LandingPage = () => {
             </DropdownMenu>
             <Link to="/signup">
               <Button className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white font-semibold">
-                14 jours gratuits
+                {t("common:freeTrial")}
                 <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             </Link>
@@ -216,7 +218,7 @@ const LandingPage = () => {
         <div className="text-center mb-4 md:mb-6 px-4">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium animate-fade-in">
             <Zap className="h-3 w-3 md:h-4 md:w-4" />
-            Le tableau de bord performance des laveries automatiques
+            {t("landing:hero.badge")}
           </div>
         </div>
         
@@ -230,13 +232,13 @@ const LandingPage = () => {
             <a href="#exploitants" className="w-full sm:w-auto">
               <Button size="default" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-sm md:text-lg px-4 md:px-8 w-full sm:w-auto">
                 <Building2 className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                Je veux optimiser mes laveries
+                {t("landing:hero.optimizeLaundries")}
               </Button>
             </a>
             <a href="#futurs-exploitants" className="w-full sm:w-auto">
               <Button size="default" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-sm md:text-lg px-4 md:px-8 w-full sm:w-auto">
                 <Rocket className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                Je veux ouvrir une laverie
+                {t("landing:hero.openLaundry")}
               </Button>
             </a>
           </div>
@@ -245,17 +247,17 @@ const LandingPage = () => {
           <div className="mt-4 md:mt-6 flex flex-wrap items-center justify-center gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground animate-fade-in">
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-lavcom-green" />
-              Essai gratuit 14 jours
+              {t("common:freeTrial")}
             </span>
             <span className="hidden sm:inline text-border">•</span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-lavcom-green" />
-              Sans engagement
+              {t("common:noCommitment")}
             </span>
             <span className="hidden sm:inline text-border">•</span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-lavcom-green" />
-              Sans carte bancaire
+              {t("common:noCreditCard")}
             </span>
           </div>
         </div>
@@ -268,10 +270,10 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-3xl text-center">
           <ScrollReveal>
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground mb-3 md:mb-4">
-              Deux profils, deux solutions
+              {t("landing:twoProfiles.title")}
             </h2>
             <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
-              Que vous gériez déjà une laverie ou que vous prépariez votre projet, Lavcom Performances s'adapte à vos besoins.
+              {t("landing:twoProfiles.subtitle")}
             </p>
           </ScrollReveal>
         </div>
@@ -287,44 +289,44 @@ const LandingPage = () => {
             <ScrollReveal direction="left" className="text-left">
               <div className="inline-flex items-center gap-2 bg-lavcom-green/20 text-lavcom-green-dark dark:text-lavcom-green px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium mb-3 md:mb-4">
                 <Building2 className="h-3 w-3 md:h-4 md:w-4" />
-                Pour les exploitants de laveries
+                {t("landing:exploitants.badge")}
               </div>
               
               <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px]">
-                Pour les exploitants qui veulent tirer le meilleur de leurs laveries
+                {t("landing:exploitants.title")}
               </h2>
               
               {/* 3 bénéfices en bullet points */}
               <ul className="space-y-2 md:space-y-3 mb-4 md:mb-6 text-left">
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Voir en un coup d'œil ce que chaque laverie rapporte vraiment.</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:exploitants.benefit1")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Repérer les machines qui marchent fort et celles qui pourraient mieux tourner.</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:exploitants.benefit2")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-green shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Recevoir des idées simples d'actions : ajuster un prix, ajouter un séchoir, revoir un horaire d'ouverture.</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:exploitants.benefit3")}</span>
                 </li>
               </ul>
               
               <p className="text-muted-foreground text-sm md:text-base mb-6 md:mb-8 italic">
-                Vous gardez le contrôle. Lavcom Performances vous aide juste à voir plus clair et à décider plus vite.
+                {t("landing:exploitants.keepControl")}
               </p>
               
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
                 <Link to="/signup">
                   <Button size="default" className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white text-sm md:text-base w-full sm:w-auto">
-                    Essayer 14 jours gratuits
+                    {t("landing:exploitants.tryFree")}
                     <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </Link>
                 <Link to="/login?mode=exploitant">
                   <Button size="default" variant="outline" className="btn-bounce border-lavcom-green/50 text-lavcom-green-dark dark:text-lavcom-green hover:bg-lavcom-green/10 text-sm md:text-base w-full sm:w-auto">
-                    Se connecter
+                    {t("landing:exploitants.signIn")}
                   </Button>
                 </Link>
               </div>
@@ -333,10 +335,10 @@ const LandingPage = () => {
             {/* Visuel / Stats */}
             <ScrollReveal direction="right" delay={0.2} className="grid grid-cols-2 gap-2 md:gap-4">
               {[
-                { value: "24/7", label: "Suivi temps réel", icon: Clock },
-                { value: "+25%", label: "CA moyen constaté", icon: TrendingUp },
-                { value: "10h", label: "Gagnées / semaine", icon: Zap },
-                { value: "40%", label: "Réduction pannes", icon: Shield }
+                { value: "24/7", label: t("landing:exploitants.stats.realtime"), icon: Clock },
+                { value: "+25%", label: t("landing:exploitants.stats.avgRevenue"), icon: TrendingUp },
+                { value: "10h", label: t("landing:exploitants.stats.timeSaved"), icon: Zap },
+                { value: "40%", label: t("landing:exploitants.stats.reducedBreakdowns"), icon: Shield }
               ].map((stat, index) => (
                 <Card 
                   key={stat.label}
@@ -774,10 +776,10 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="text-left md:text-center mb-10 md:mb-16">
             <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[400px] md:max-w-none">
-              {t("landing").testimonials.title}
+              {t("landing:testimonials.title")}
             </h2>
             <p className="text-muted-foreground text-sm md:text-lg max-w-2xl md:mx-auto">
-              {t("landing").testimonials.subtitle}
+              {t("landing:testimonials.subtitle")}
             </p>
           </div>
           
@@ -821,10 +823,10 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              {t("landing").faq.title}
+              {t("landing:faq.title")}
             </h2>
             <p className="text-muted-foreground text-lg">
-              {t("landing").faq.subtitle}
+              {t("landing:faq.subtitle")}
             </p>
           </div>
           
@@ -1013,12 +1015,12 @@ const LandingPage = () => {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      {t("landing").contact.sending}
+                      {t("landing:contact.sending")}
                     </>
                   ) : (
                     <>
                       <Send className="mr-2 h-5 w-5" />
-                      {t("landing").contact.send}
+                      {t("landing:contact.send")}
                     </>
                   )}
                 </Button>
