@@ -1,4 +1,10 @@
 {
+  "profile": {
+    "avatar": {
+      "rotateLeft": "Rotar -90°",
+      "rotateRight": "Rotar +90°"
+    }
+  },
   "accessibility": {
     "showPassword": "Mostrar contraseña",
     "hidePassword": "Ocultar contraseña"
