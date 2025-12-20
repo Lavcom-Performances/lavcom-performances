@@ -97,12 +97,15 @@
       "companyPlaceholder": "La Mia Lavanderia SRL",
       "password": "Password",
       "passwordPlaceholder": "Minimo 8 caratteri",
+      "confirmPassword": "Conferma password",
+      "confirmPasswordPlaceholder": "Reinserisci la password",
       "submit": "Inizia la mia prova gratuita",
       "creating": "Creazione..."
     },
     "validation": {
       "invalidEmail": "Indirizzo email non valido",
       "passwordMin": "La password deve contenere almeno 8 caratteri",
+      "passwordMismatch": "Le password non corrispondono",
       "firstNameRequired": "Il nome è obbligatorio",
       "lastNameRequired": "Il cognome è obbligatorio"
     },

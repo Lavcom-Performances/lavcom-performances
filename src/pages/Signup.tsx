@@ -16,10 +16,12 @@ export default function Signup() {
   const { t } = useTranslation(['app', 'common']);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
@@ -37,9 +39,13 @@ export default function Signup() {
       .regex(/[a-z]/, t('app:passwordStrength.criteria.hasLowercase'))
       .regex(/[0-9]/, t('app:passwordStrength.criteria.hasNumber'))
       .regex(/[!@#$%^&*(),.?":{}|<>]/, t('app:passwordStrength.criteria.hasSpecial')),
+    confirmPassword: z.string(),
     firstName: z.string().min(1, t('app:signup.validation.firstNameRequired')),
     lastName: z.string().min(1, t('app:signup.validation.lastNameRequired')),
     companyName: z.string().optional(),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('app:signup.validation.passwordMismatch'),
+    path: ["confirmPassword"],
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,6 +56,7 @@ export default function Signup() {
     const result = signupSchema.safeParse({
       email,
       password,
+      confirmPassword,
       firstName,
       lastName,
       companyName,
@@ -270,6 +277,31 @@ export default function Signup() {
               <PasswordStrengthIndicator password={password} />
               {errors.password && (
                 <p className="text-xs text-destructive">{errors.password}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">{t('app:signup.form.confirmPassword')} *</Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder={t('app:signup.form.confirmPasswordPlaceholder')}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className={`pr-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="text-xs text-destructive">{errors.confirmPassword}</p>
               )}
             </div>
 
