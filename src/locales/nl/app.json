@@ -19,7 +19,30 @@
     "changeLaundry": "Wasserette wisselen",
     "backToHome": "Terug naar home",
     "features": "Functies",
-    "simulationOpening": "Openingssimulatie"
+    "simulationOpening": "Openingssimulatie",
+    "profile": "Mijn profiel"
+  },
+  "profile": {
+    "title": "Mijn profiel",
+    "subtitle": "Beheer uw persoonlijke gegevens",
+    "personalInfo": "Persoonlijke informatie",
+    "personalInfoDescription": "Werk uw contactgegevens en persoonlijke informatie bij",
+    "companyInfo": "Bedrijfsinformatie",
+    "email": "E-mail",
+    "emailReadOnly": "Het e-mailadres kan niet worden gewijzigd",
+    "firstName": "Voornaam",
+    "lastName": "Achternaam",
+    "companyName": "Bedrijfsnaam",
+    "phone": "Telefoon",
+    "siret": "Bedrijfs-ID",
+    "save": "Opslaan",
+    "saving": "Opslaan...",
+    "updateSuccess": "Profiel bijgewerkt",
+    "updateSuccessDescription": "Uw gegevens zijn succesvol opgeslagen",
+    "validation": {
+      "firstNameRequired": "Voornaam is verplicht",
+      "lastNameRequired": "Achternaam is verplicht"
+    }
   },
   "charts": {
     "annualRevenue": "Jaaromzet",

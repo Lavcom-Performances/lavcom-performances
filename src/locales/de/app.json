@@ -19,7 +19,30 @@
     "changeLaundry": "Waschsalon wechseln",
     "backToHome": "Zurück zur Startseite",
     "features": "Funktionen",
-    "simulationOpening": "Eröffnungssimulation"
+    "simulationOpening": "Eröffnungssimulation",
+    "profile": "Mein Profil"
+  },
+  "profile": {
+    "title": "Mein Profil",
+    "subtitle": "Verwalten Sie Ihre persönlichen Daten",
+    "personalInfo": "Persönliche Informationen",
+    "personalInfoDescription": "Aktualisieren Sie Ihre Kontaktdaten und persönlichen Informationen",
+    "companyInfo": "Unternehmensinformationen",
+    "email": "E-Mail",
+    "emailReadOnly": "Die E-Mail-Adresse kann nicht geändert werden",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "companyName": "Firmenname",
+    "phone": "Telefon",
+    "siret": "Unternehmens-ID",
+    "save": "Speichern",
+    "saving": "Wird gespeichert...",
+    "updateSuccess": "Profil aktualisiert",
+    "updateSuccessDescription": "Ihre Daten wurden erfolgreich gespeichert",
+    "validation": {
+      "firstNameRequired": "Vorname ist erforderlich",
+      "lastNameRequired": "Nachname ist erforderlich"
+    }
   },
   "charts": {
     "annualRevenue": "Jahresumsatz",

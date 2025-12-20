@@ -1,0 +1,281 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Loader2, Save, User, Building2, Phone, FileText, Mail, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+import { formatFirstName, formatLastName } from "@/lib/textUtils";
+
+export default function ProfilePage() {
+  const { t } = useTranslation(['app', 'common']);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { profile, updateProfile, loading: authLoading } = useAuth();
+  
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [siret, setSiret] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Sync form with profile data
+  useEffect(() => {
+    if (profile) {
+      setFirstName(profile.first_name || "");
+      setLastName(profile.last_name || "");
+      setCompanyName(profile.company_name || "");
+      setPhone(profile.phone || "");
+      setSiret(profile.siret || "");
+    }
+  }, [profile]);
+
+  const profileSchema = z.object({
+    firstName: z.string().min(1, t('app:profile.validation.firstNameRequired')),
+    lastName: z.string().min(1, t('app:profile.validation.lastNameRequired')),
+    companyName: z.string().optional(),
+    phone: z.string().optional(),
+    siret: z.string().optional(),
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+
+    // Validate
+    const result = profileSchema.safeParse({
+      firstName,
+      lastName,
+      companyName,
+      phone,
+      siret,
+    });
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach(err => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setIsLoading(true);
+
+    const { error } = await updateProfile({
+      first_name: formatFirstName(firstName),
+      last_name: formatLastName(lastName),
+      company_name: companyName || null,
+      phone: phone || null,
+      siret: siret || null,
+    });
+
+    setIsLoading(false);
+
+    if (error) {
+      toast({
+        title: t('common:error'),
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: t('app:profile.updateSuccess'),
+      description: t('app:profile.updateSuccessDescription'),
+    });
+  };
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="container max-w-2xl py-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate(-1)}
+          aria-label={t('common:back')}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-display font-semibold text-foreground">
+            {t('app:profile.title')}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {t('app:profile.subtitle')}
+          </p>
+        </div>
+      </div>
+
+      {/* Profile Form */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5 text-primary" />
+            {t('app:profile.personalInfo')}
+          </CardTitle>
+          <CardDescription>
+            {t('app:profile.personalInfoDescription')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6" aria-label={t('app:profile.title')}>
+            {/* Email (read-only) */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                {t('app:profile.email')}
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={profile?.email || ""}
+                disabled
+                className="bg-muted"
+              />
+              <p className="text-xs text-muted-foreground">
+                {t('app:profile.emailReadOnly')}
+              </p>
+            </div>
+
+            {/* Name fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">{t('app:profile.firstName')} *</Label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  placeholder={t('app:signup.form.firstNamePlaceholder')}
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  aria-required="true"
+                  aria-invalid={!!errors.firstName}
+                  aria-describedby={errors.firstName ? "firstName-error" : undefined}
+                  className={`focus:ring-2 focus:ring-primary focus:ring-offset-1 ${errors.firstName ? "border-destructive" : ""}`}
+                />
+                {errors.firstName && (
+                  <p id="firstName-error" className="text-xs text-destructive" role="alert">{errors.firstName}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lastName">{t('app:profile.lastName')} *</Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  placeholder={t('app:signup.form.lastNamePlaceholder')}
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  aria-required="true"
+                  aria-invalid={!!errors.lastName}
+                  aria-describedby={errors.lastName ? "lastName-error" : undefined}
+                  className={`focus:ring-2 focus:ring-primary focus:ring-offset-1 ${errors.lastName ? "border-destructive" : ""}`}
+                />
+                {errors.lastName && (
+                  <p id="lastName-error" className="text-xs text-destructive" role="alert">{errors.lastName}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Company info */}
+            <div className="pt-4 border-t">
+              <h3 className="text-sm font-medium text-foreground mb-4 flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-primary" />
+                {t('app:profile.companyInfo')}
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">{t('app:profile.companyName')}</Label>
+                  <Input
+                    id="companyName"
+                    type="text"
+                    placeholder={t('app:signup.form.companyPlaceholder')}
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    className="focus:ring-2 focus:ring-primary focus:ring-offset-1"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      {t('app:profile.phone')}
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+33 6 12 34 56 78"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      autoComplete="tel"
+                      className="focus:ring-2 focus:ring-primary focus:ring-offset-1"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="siret" className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-muted-foreground" />
+                      {t('app:profile.siret')}
+                    </Label>
+                    <Input
+                      id="siret"
+                      type="text"
+                      placeholder="123 456 789 00012"
+                      value={siret}
+                      onChange={(e) => setSiret(e.target.value)}
+                      className="focus:ring-2 focus:ring-primary focus:ring-offset-1"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Submit button */}
+            <div className="flex justify-end pt-4">
+              <Button
+                type="submit"
+                variant="lavcom"
+                size="lg"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                    {t('app:profile.saving')}
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" aria-hidden="true" />
+                    {t('app:profile.save')}
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

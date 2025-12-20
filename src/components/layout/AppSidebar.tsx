@@ -21,7 +21,8 @@ import {
   Lightbulb,
   Wrench,
   DollarSign,
-  Calculator
+  Calculator,
+  UserCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -331,6 +332,16 @@ export function AppSidebar({
 
       {/* User Section */}
       <div className="p-3 border-t border-sidebar-border space-y-1">
+        <NavLink
+          to="/profile"
+          className={cn(
+            "sidebar-item",
+            location.pathname === "/profile" && "sidebar-item-active"
+          )}
+        >
+          <UserCircle className="h-5 w-5 shrink-0" />
+          {!collapsed && <span>{t('app:nav.profile')}</span>}
+        </NavLink>
         <ThemeToggle collapsed={collapsed} className="sidebar-item" />
         <LanguageSelector variant="sidebar" collapsed={collapsed} />
         <NavLink

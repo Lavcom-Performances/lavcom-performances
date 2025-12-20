@@ -27,6 +27,7 @@ import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
 import LaundromatSettings from "./pages/LaundromatSettings";
 import CompanySettings from "./pages/CompanySettings";
+import ProfilePage from "./pages/ProfilePage";
 
 // Simulation pages (new layout)
 import SimulationProjectPage from "./pages/simulation/SimulationProjectPage";
@@ -89,6 +90,7 @@ const App = () => (
             </ProtectedRoute>
           }>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/laundromat-settings" element={<LaundromatSettings />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />

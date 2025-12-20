@@ -19,7 +19,30 @@
     "changeLaundry": "Change laundry",
     "backToHome": "Back to home",
     "features": "Features",
-    "simulationOpening": "Opening simulation"
+    "simulationOpening": "Opening simulation",
+    "profile": "My profile"
+  },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Manage your personal information",
+    "personalInfo": "Personal information",
+    "personalInfoDescription": "Update your contact details and personal information",
+    "companyInfo": "Company information",
+    "email": "Email",
+    "emailReadOnly": "Email address cannot be changed",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "companyName": "Company name",
+    "phone": "Phone",
+    "siret": "Company ID",
+    "save": "Save",
+    "saving": "Saving...",
+    "updateSuccess": "Profile updated",
+    "updateSuccessDescription": "Your information has been saved successfully",
+    "validation": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required"
+    }
   },
   "charts": {
     "annualRevenue": "Annual Revenue",
