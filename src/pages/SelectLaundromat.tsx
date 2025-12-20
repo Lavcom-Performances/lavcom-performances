@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Search, CheckCircle2 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Search, CheckCircle2, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -168,7 +168,16 @@ export default function SelectLaundromat() {
   const hasSites = sites.length > 0;
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6 md:p-8 relative">
+      {/* Back to home button */}
+      <Link 
+        to="/" 
+        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border"
+      >
+        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" />
+        <span className="hidden sm:inline">Accueil</span>
+      </Link>
+      
       <div className="w-full max-w-2xl space-y-6 sm:space-y-8 animate-fade-in">
         {/* Header */}
         <div className="text-center space-y-2">
