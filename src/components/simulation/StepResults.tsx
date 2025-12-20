@@ -14,8 +14,8 @@ import {
   FileDown,
   MessageCircle,
   AlertTriangle,
-  BookOpen,
-  ExternalLink
+  ExternalLink,
+  ArrowRight
 } from "lucide-react";
 import { 
   SimulationProject, 
@@ -26,6 +26,7 @@ import {
 } from "@/types/simulation";
 import { generateSimulationReport } from "@/utils/simulationPdfExport";
 import { toast } from "@/hooks/use-toast";
+import ebookCover from "@/assets/ebook-avant-ouvrir.jpg";
 
 interface StepResultsProps {
   project: SimulationProject;
@@ -360,35 +361,50 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
         </CardContent>
       </Card>
 
-      {/* Encart e-book */}
-      <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/30">
-        <CardContent className="py-6">
-          <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
-            <div className="p-3 rounded-full bg-primary/20">
-              <BookOpen className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-foreground">Aller plus loin : valider sérieusement votre projet</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Cette simulation vous donne un ordre de grandeur financier. Pour analyser votre zone, 
-                votre local et votre rentabilité de façon plus complète (étude de zone en 6 points, 
-                grilles d'audit, budget CAPEX/OPEX, check-list "Prêt à ouvrir"…), consultez le guide :
-              </p>
-              <p className="text-sm font-medium text-primary mt-2">
-                "Avant d'ouvrir : le guide du futur exploitant de laverie"
-                <span className="text-muted-foreground font-normal"> – Collection Laverie Pro by Lavcom</span>
-              </p>
-            </div>
-            <Button 
-              variant="outline" 
-              className="gap-2 shrink-0"
-              onClick={() => window.open('https://lavcom.fr/nos-ebooks-2/', '_blank')}
-            >
-              <ExternalLink className="h-4 w-4" />
-              Découvrir le guide
-            </Button>
+      {/* Encart e-book avec image */}
+      <Card className="overflow-hidden border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-lg group">
+        <div className="flex flex-col md:flex-row">
+          {/* Image du guide */}
+          <div className="md:w-48 lg:w-56 shrink-0 bg-gradient-to-br from-primary/10 to-primary/5 p-4 flex items-center justify-center">
+            <img 
+              src={ebookCover} 
+              alt="Guide Avant d'ouvrir - Le guide du futur exploitant de laverie"
+              className="w-32 md:w-full max-w-[140px] md:max-w-none h-auto rounded-lg shadow-md group-hover:scale-105 transition-transform duration-300"
+            />
           </div>
-        </CardContent>
+          
+          {/* Contenu */}
+          <CardContent className="flex-1 py-6 px-4 md:px-6">
+            <div className="flex flex-col h-full justify-between gap-4">
+              <div>
+                <Badge variant="secondary" className="mb-3 bg-primary/10 text-primary border-0">
+                  Guide offert
+                </Badge>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Avant d'ouvrir : le guide du futur exploitant
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Cette simulation vous donne un ordre de grandeur. Pour valider sérieusement votre projet, 
+                  téléchargez notre guide complet : étude de zone en 6 points, grilles d'audit, 
+                  budget CAPEX/OPEX, check-list "Prêt à ouvrir"…
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <Button 
+                  className="gap-2 group/btn"
+                  onClick={() => window.open('https://lavcom.fr/nos-ebooks-2/', '_blank')}
+                >
+                  Découvrir le guide
+                  <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+                <span className="text-xs text-muted-foreground">
+                  Collection Laverie Pro by Lavcom
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </div>
       </Card>
     </div>
   );
