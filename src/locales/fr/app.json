@@ -19,7 +19,30 @@
     "changeLaundry": "Changer de laverie",
     "backToHome": "Retour à l'accueil",
     "features": "Fonctionnalités",
-    "simulationOpening": "Simulation ouverture"
+    "simulationOpening": "Simulation ouverture",
+    "profile": "Mon profil"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "subtitle": "Gérez vos informations personnelles",
+    "personalInfo": "Informations personnelles",
+    "personalInfoDescription": "Mettez à jour vos coordonnées et informations de contact",
+    "companyInfo": "Informations entreprise",
+    "email": "Email",
+    "emailReadOnly": "L'adresse email ne peut pas être modifiée",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "companyName": "Nom de l'entreprise",
+    "phone": "Téléphone",
+    "siret": "SIRET",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "updateSuccess": "Profil mis à jour",
+    "updateSuccessDescription": "Vos informations ont été enregistrées avec succès",
+    "validation": {
+      "firstNameRequired": "Le prénom est requis",
+      "lastNameRequired": "Le nom est requis"
+    }
   },
   "charts": {
     "annualRevenue": "CA Annuel",
