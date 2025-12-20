@@ -335,7 +335,21 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
 
   const formatTrend = (trend: number | null) => {
     if (trend === null || isNaN(trend)) {
-      return <span className="text-muted-foreground">N/A</span>;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-flex items-center gap-1 text-muted-foreground cursor-help">
+                N/A
+                <Info className="h-3 w-3" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              <p>Aucune donnée disponible pour la période précédente ({periodDays} jours avant).</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
     }
     
     const isPositive = trend > 0;
