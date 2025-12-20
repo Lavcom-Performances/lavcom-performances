@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AvatarCropDialogProps {
@@ -57,6 +57,7 @@ export function AvatarCropDialog({
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
+  const [blur, setBlur] = useState(0);
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -94,7 +95,7 @@ export function AvatarCropDialog({
     ctx.translate(-centerX, -centerY);
 
     // Apply filters
-    ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+    ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px)`;
 
     ctx.drawImage(
       image,
@@ -107,7 +108,7 @@ export function AvatarCropDialog({
       previewSize,
       previewSize
     );
-  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation]);
+  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur]);
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     setCrop(centerAspectCrop(width, height, 1));
@@ -151,7 +152,7 @@ export function AvatarCropDialog({
       ctx.translate(-centerX, -centerY);
 
       // Apply filters
-      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px)`;
 
       ctx.drawImage(
         image,
@@ -191,6 +192,7 @@ export function AvatarCropDialog({
       setBrightness(100);
       setContrast(100);
       setSaturation(100);
+      setBlur(0);
       setCrop(undefined);
       setCompletedCrop(undefined);
     }
@@ -225,7 +227,7 @@ export function AvatarCropDialog({
                   style={{
                     transform: `scale(${scale}) rotate(${rotate}deg) scaleX(${flipH ? -1 : 1}) scaleY(${flipV ? -1 : 1})`,
                     transformOrigin: "center",
-                    filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
+                    filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px)`,
                   }}
                 />
               </ReactCrop>
@@ -370,8 +372,23 @@ export function AvatarCropDialog({
               <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{saturation}%</span>
             </div>
 
+            {/* Blur control */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Droplets className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.blur")}</span>
+              <Slider
+                value={[blur]}
+                onValueChange={(values) => setBlur(values[0])}
+                min={0}
+                max={10}
+                step={0.5}
+                className="flex-1"
+              />
+              <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{blur}px</span>
+            </div>
+
             {/* Reset button */}
-            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100) && (
+            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0) && (
               <Button
                 type="button"
                 variant="ghost"
@@ -384,6 +401,7 @@ export function AvatarCropDialog({
                   setBrightness(100);
                   setContrast(100);
                   setSaturation(100);
+                  setBlur(0);
                 }}
                 className="w-full"
               >
