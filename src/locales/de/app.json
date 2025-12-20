@@ -60,7 +60,9 @@
       "deleteError": "Löschen fehlgeschlagen",
       "cropTitle": "Foto zuschneiden",
       "cropConfirm": "Anwenden",
-      "cropping": "Verarbeitung..."
+      "cropping": "Verarbeitung...",
+      "zoom": "Zoom",
+      "rotate": "Drehen"
     },
     "password": {
       "title": "Passwort ändern",

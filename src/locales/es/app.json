@@ -60,7 +60,9 @@
       "deleteError": "Error al eliminar",
       "cropTitle": "Recortar foto",
       "cropConfirm": "Aplicar",
-      "cropping": "Procesando..."
+      "cropping": "Procesando...",
+      "zoom": "Zoom",
+      "rotate": "Rotar"
     },
     "password": {
       "title": "Cambiar contraseña",
