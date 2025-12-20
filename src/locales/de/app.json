@@ -6,7 +6,9 @@
       "preview": "Vorschau",
       "flip": "Spiegeln",
       "flipHorizontal": "Horizontal",
-      "flipVertical": "Vertikal"
+      "flipVertical": "Vertikal",
+      "brightness": "Helligkeit",
+      "contrast": "Kontrast"
     }
   },
   "accessibility": {

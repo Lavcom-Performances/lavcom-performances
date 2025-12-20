@@ -6,7 +6,9 @@
       "preview": "Anteprima",
       "flip": "Capovolgi",
       "flipHorizontal": "Orizzontale",
-      "flipVertical": "Verticale"
+      "flipVertical": "Verticale",
+      "brightness": "Luminosità",
+      "contrast": "Contrasto"
     }
   },
   "accessibility": {

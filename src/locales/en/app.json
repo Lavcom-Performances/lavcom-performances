@@ -6,7 +6,9 @@
       "preview": "Preview",
       "flip": "Flip",
       "flipHorizontal": "Horizontal",
-      "flipVertical": "Vertical"
+      "flipVertical": "Vertical",
+      "brightness": "Brightness",
+      "contrast": "Contrast"
     }
   },
   "accessibility": {
