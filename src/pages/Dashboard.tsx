@@ -28,6 +28,7 @@ import { ProfitabilityKPIs } from "@/components/dashboard/ProfitabilityKPIs";
 import { ProfitabilitySection } from "@/components/dashboard/ProfitabilitySection";
 import { DashboardEmptyState } from "@/components/dashboard/DashboardEmptyState";
 import { GoalsConfigDialog } from "@/components/dashboard/GoalsConfigDialog";
+import { SiteComparisonSection } from "@/components/dashboard/SiteComparisonSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { calculateProfitabilityMetrics, LaundryCosts } from "@/types/costs";
@@ -408,6 +409,7 @@ export default function Dashboard() {
 
         {/* Comparatifs */}
         <TabsContent value="comparison" className="space-y-6">
+          {/* KPIs comparatifs du site actuel */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <ComparisonCard 
               title="CA Période" 
@@ -442,6 +444,9 @@ export default function Dashboard() {
               percentageChange={0}
             />
           </div>
+
+          {/* Section comparaison multi-sites */}
+          <SiteComparisonSection dateRange={dateRange} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <MonthlyRevenueChart data={stats.monthlyData} />

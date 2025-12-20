@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Building2, 
   Clock, 
@@ -47,6 +47,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { ReportVariantDialog } from "@/components/report/ReportVariantDialog";
 import { ReportVariant } from "@/types/report";
+import { useSiteCosts } from "@/hooks/useSiteCosts";
+import { useSites } from "@/hooks/useSites";
 
 interface Machine {
   id: string;
@@ -97,12 +99,19 @@ interface LaundryCostsState {
 }
 
 export default function LaundromatSettings() {
+  // Get current site
+  const { getDefaultSite } = useSites();
+  const defaultSite = getDefaultSite();
+  
+  // Get site costs from DB
+  const { costs: dbCosts, upsertCosts, isLoading: costsLoading } = useSiteCosts(defaultSite?.id);
+  
   // Laundromat info
   const [laundryInfo, setLaundryInfo] = useState<LaundryInfo>({
-    name: "Laverie Centre-Ville",
-    address: "123 Rue de la Laverie",
-    city: "Paris",
-    postalCode: "75001",
+    name: defaultSite?.name || "Laverie Centre-Ville",
+    address: defaultSite?.address || "123 Rue de la Laverie",
+    city: defaultSite?.city || "Paris",
+    postalCode: defaultSite?.postal_code || "75001",
     phone: "01 23 45 67 89",
     email: "contact@laverie-centre.fr",
     responsibleName: "Jean Dupont",
@@ -136,7 +145,7 @@ export default function LaundromatSettings() {
     { id: "SL3", name: "Sèche-linge 3", type: "SL", capacity: 14, cycleDuration: 8, pricePerCycle: 1, maintenanceThreshold: 600, cyclesSinceLastMaintenance: 512, lastMaintenanceDate: "2024-08-01" },
   ]);
 
-  // Charges / Coûts
+  // Charges / Coûts - sync with DB
   const [costs, setCosts] = useState<LaundryCostsState>({
     fixed_rent: 850,
     fixed_lease: 450,
@@ -147,6 +156,22 @@ export default function LaundromatSettings() {
     var_energy_water_percent: 12,
     var_detergent_percent: 3,
   });
+
+  // Sync costs from DB when loaded
+  useEffect(() => {
+    if (dbCosts) {
+      setCosts({
+        fixed_rent: dbCosts.fixed_rent,
+        fixed_lease: dbCosts.fixed_lease,
+        fixed_subscriptions: dbCosts.fixed_subscriptions,
+        fixed_insurance: dbCosts.fixed_insurance,
+        fixed_cleaning: dbCosts.fixed_cleaning,
+        fixed_other: dbCosts.fixed_other,
+        var_energy_water_percent: dbCosts.var_energy_water_percent,
+        var_detergent_percent: dbCosts.var_detergent_percent,
+      });
+    }
+  }, [dbCosts]);
 
   // Mock revenue data for calculations
   const siteTurnoverMonth = 3495;
@@ -192,8 +217,16 @@ export default function LaundromatSettings() {
     ));
   };
 
-  const handleSave = () => {
-    toast.success("Paramètres enregistrés avec succès");
+  const handleSave = async () => {
+    try {
+      // Save costs to database
+      if (defaultSite?.id) {
+        await upsertCosts.mutateAsync(costs);
+      }
+      toast.success("Paramètres enregistrés avec succès");
+    } catch (error) {
+      toast.error("Erreur lors de l'enregistrement");
+    }
   };
 
   // Calculations
