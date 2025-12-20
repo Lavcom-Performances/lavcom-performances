@@ -47,6 +47,7 @@
       "change": "Changer la photo",
       "upload": "Télécharger une photo",
       "hint": "JPG, PNG ou GIF. 2 Mo max.",
+      "dragHint": "Ou glissez-déposez une image",
       "invalidType": "Veuillez sélectionner une image",
       "tooLarge": "L'image ne doit pas dépasser 2 Mo",
       "uploadError": "Erreur lors du téléchargement",

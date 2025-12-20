@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Camera, Loader2, Trash2 } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { Camera, Loader2, Trash2, Upload } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { AvatarCropDialog } from "./AvatarCropDialog";
+import { cn } from "@/lib/utils";
 
 interface AvatarUploadProps {
   userId: string;
@@ -39,6 +40,7 @@ export function AvatarUpload({
   const [isDeleting, setIsDeleting] = useState(false);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getInitials = () => {
@@ -47,10 +49,7 @@ export function AvatarUpload({
     return first + last || "?";
   };
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  const processFile = useCallback((file: File) => {
     // Validate file type
     if (!file.type.startsWith("image/")) {
       toast({
@@ -75,12 +74,42 @@ export function AvatarUpload({
     const imageUrl = URL.createObjectURL(file);
     setSelectedImageSrc(imageUrl);
     setCropDialogOpen(true);
+  }, [t, toast]);
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    processFile(file);
 
     // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+  }, [processFile]);
 
   const handleCropComplete = async (croppedBlob: Blob) => {
     setCropDialogOpen(false);
@@ -130,7 +159,7 @@ export function AvatarUpload({
         variant: "destructive",
       });
     } finally {
-      setIsUploading(true);
+      setIsUploading(false);
     }
   };
 
@@ -185,11 +214,23 @@ export function AvatarUpload({
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative group">
+      <div
+        className={cn(
+          "relative group p-2 rounded-full transition-all duration-200",
+          isDragOver && "ring-2 ring-primary ring-offset-2 ring-offset-background bg-primary/5"
+        )}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
         <Avatar className="h-24 w-24 border-2 border-border">
           <AvatarImage src={currentAvatarUrl || undefined} alt="Avatar" />
           <AvatarFallback className="text-xl bg-primary/10 text-primary">
-            {getInitials()}
+            {isDragOver ? (
+              <Upload className="h-8 w-8 animate-pulse" />
+            ) : (
+              getInitials()
+            )}
           </AvatarFallback>
         </Avatar>
         
@@ -222,6 +263,8 @@ export function AvatarUpload({
       <div className="flex flex-col items-center gap-2">
         <p className="text-xs text-muted-foreground text-center">
           {t('app:profile.avatar.hint')}
+          <br />
+          <span className="text-primary/70">{t('app:profile.avatar.dragHint')}</span>
         </p>
         
         {currentAvatarUrl && (

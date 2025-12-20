@@ -47,6 +47,7 @@
       "change": "Cambia foto",
       "upload": "Carica foto",
       "hint": "JPG, PNG o GIF. Max 2 MB.",
+      "dragHint": "Oppure trascina e rilascia un'immagine",
       "invalidType": "Seleziona un'immagine",
       "tooLarge": "L'immagine deve essere inferiore a 2 MB",
       "uploadError": "Caricamento fallito",

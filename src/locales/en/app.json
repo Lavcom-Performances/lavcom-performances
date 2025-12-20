@@ -47,6 +47,7 @@
       "change": "Change photo",
       "upload": "Upload photo",
       "hint": "JPG, PNG or GIF. 2 MB max.",
+      "dragHint": "Or drag and drop an image",
       "invalidType": "Please select an image",
       "tooLarge": "Image must be less than 2 MB",
       "uploadError": "Upload failed",
