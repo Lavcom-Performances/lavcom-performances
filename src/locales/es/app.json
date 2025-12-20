@@ -97,12 +97,15 @@
       "companyPlaceholder": "Mi Lavandería SL",
       "password": "Contraseña",
       "passwordPlaceholder": "Mínimo 8 caracteres",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Vuelva a escribir su contraseña",
       "submit": "Iniciar mi prueba gratuita",
       "creating": "Creando..."
     },
     "validation": {
       "invalidEmail": "Dirección de correo inválida",
       "passwordMin": "La contraseña debe tener al menos 8 caracteres",
+      "passwordMismatch": "Las contraseñas no coinciden",
       "firstNameRequired": "El nombre es obligatorio",
       "lastNameRequired": "El apellido es obligatorio"
     },

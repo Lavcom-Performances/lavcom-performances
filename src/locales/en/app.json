@@ -97,12 +97,15 @@
       "companyPlaceholder": "My Laundry LLC",
       "password": "Password",
       "passwordPlaceholder": "Minimum 8 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
       "submit": "Start my free trial",
       "creating": "Creating..."
     },
     "validation": {
       "invalidEmail": "Invalid email address",
       "passwordMin": "Password must be at least 8 characters",
+      "passwordMismatch": "Passwords do not match",
       "firstNameRequired": "First name is required",
       "lastNameRequired": "Last name is required"
     },

@@ -97,12 +97,15 @@
       "companyPlaceholder": "Ma Laverie SARL",
       "password": "Mot de passe",
       "passwordPlaceholder": "Minimum 8 caractères",
+      "confirmPassword": "Confirmer le mot de passe",
+      "confirmPasswordPlaceholder": "Retapez votre mot de passe",
       "submit": "Démarrer mon essai gratuit",
       "creating": "Création en cours..."
     },
     "validation": {
       "invalidEmail": "Adresse email invalide",
       "passwordMin": "Le mot de passe doit contenir au moins 8 caractères",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
       "firstNameRequired": "Le prénom est requis",
       "lastNameRequired": "Le nom est requis"
     },
