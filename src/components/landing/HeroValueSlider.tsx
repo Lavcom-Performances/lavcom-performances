@@ -29,7 +29,7 @@ const heroSlides: HeroSlide[] = [
   },
   {
     id: "slide2",
-    title: "Fini les laveries dont on ne sait pas si elles tournent vraiment bien",
+    title: "Vos laveries sont-elles vraiment performantes ?",
     subtitle: "Suivez vos recettes, vos périodes fortes et vos machines moins performantes. Vous savez enfin où agir.",
     ctaLabel: "Voir un exemple de tableau de bord",
     image: heroSlide2
