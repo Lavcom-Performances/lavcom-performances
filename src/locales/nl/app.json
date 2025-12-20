@@ -42,6 +42,21 @@
     "validation": {
       "firstNameRequired": "Voornaam is verplicht",
       "lastNameRequired": "Achternaam is verplicht"
+    },
+    "password": {
+      "title": "Wachtwoord wijzigen",
+      "description": "Kies een nieuw veilig wachtwoord voor uw account",
+      "newPassword": "Nieuw wachtwoord",
+      "newPasswordPlaceholder": "Voer uw nieuwe wachtwoord in",
+      "confirmPassword": "Bevestig wachtwoord",
+      "confirmPasswordPlaceholder": "Bevestig uw nieuwe wachtwoord",
+      "update": "Wachtwoord bijwerken",
+      "updating": "Bijwerken...",
+      "updateSuccess": "Wachtwoord bijgewerkt",
+      "updateSuccessDescription": "Uw wachtwoord is succesvol bijgewerkt",
+      "required": "Wachtwoord is verplicht",
+      "tooWeak": "Wachtwoord is te zwak",
+      "noMatch": "Wachtwoorden komen niet overeen"
     }
   },
   "charts": {

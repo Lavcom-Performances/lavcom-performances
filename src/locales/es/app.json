@@ -42,6 +42,21 @@
     "validation": {
       "firstNameRequired": "El nombre es obligatorio",
       "lastNameRequired": "El apellido es obligatorio"
+    },
+    "password": {
+      "title": "Cambiar contraseña",
+      "description": "Elija una nueva contraseña segura para su cuenta",
+      "newPassword": "Nueva contraseña",
+      "newPasswordPlaceholder": "Ingrese su nueva contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Confirme su nueva contraseña",
+      "update": "Actualizar contraseña",
+      "updating": "Actualizando...",
+      "updateSuccess": "Contraseña actualizada",
+      "updateSuccessDescription": "Su contraseña se ha actualizado correctamente",
+      "required": "La contraseña es obligatoria",
+      "tooWeak": "La contraseña es demasiado débil",
+      "noMatch": "Las contraseñas no coinciden"
     }
   },
   "charts": {
