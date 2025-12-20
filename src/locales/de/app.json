@@ -13,6 +13,7 @@
       "blur": "Unschärfe",
       "sharpen": "Schärfe",
       "sepia": "Sepia",
+      "invert": "Invertieren",
       "presets": {
         "title": "Voreinstellungen",
         "selectPlaceholder": "Voreinstellung laden...",
@@ -37,7 +38,8 @@
           "default_warm": "Warm",
           "default_soft": "Sanft",
           "default_dramatic": "Dramatisch",
-          "default_sepia": "Sepia"
+          "default_sepia": "Sepia",
+          "default_negative": "Negativ"
         }
       }
     }

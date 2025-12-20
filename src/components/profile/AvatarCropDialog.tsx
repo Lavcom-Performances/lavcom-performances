@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -33,18 +33,20 @@ interface FilterPreset {
   blur: number;
   sharpen: number;
   sepia: number;
+  invert: number;
   isDefault?: boolean;
 }
 
 // Default presets with translation keys
 const DEFAULT_PRESETS: Omit<FilterPreset, "name">[] = [
-  { id: "default_bw", brightness: 100, contrast: 110, saturation: 0, blur: 0, sharpen: 20, sepia: 0, isDefault: true },
-  { id: "default_vintage", brightness: 105, contrast: 90, saturation: 70, blur: 0.5, sharpen: 0, sepia: 40, isDefault: true },
-  { id: "default_hd", brightness: 100, contrast: 105, saturation: 105, blur: 0, sharpen: 50, sepia: 0, isDefault: true },
-  { id: "default_warm", brightness: 105, contrast: 100, saturation: 120, blur: 0, sharpen: 10, sepia: 15, isDefault: true },
-  { id: "default_soft", brightness: 105, contrast: 95, saturation: 90, blur: 1, sharpen: 0, sepia: 0, isDefault: true },
-  { id: "default_dramatic", brightness: 95, contrast: 130, saturation: 110, blur: 0, sharpen: 30, sepia: 0, isDefault: true },
-  { id: "default_sepia", brightness: 100, contrast: 100, saturation: 100, blur: 0, sharpen: 0, sepia: 100, isDefault: true },
+  { id: "default_bw", brightness: 100, contrast: 110, saturation: 0, blur: 0, sharpen: 20, sepia: 0, invert: 0, isDefault: true },
+  { id: "default_vintage", brightness: 105, contrast: 90, saturation: 70, blur: 0.5, sharpen: 0, sepia: 40, invert: 0, isDefault: true },
+  { id: "default_hd", brightness: 100, contrast: 105, saturation: 105, blur: 0, sharpen: 50, sepia: 0, invert: 0, isDefault: true },
+  { id: "default_warm", brightness: 105, contrast: 100, saturation: 120, blur: 0, sharpen: 10, sepia: 15, invert: 0, isDefault: true },
+  { id: "default_soft", brightness: 105, contrast: 95, saturation: 90, blur: 1, sharpen: 0, sepia: 0, invert: 0, isDefault: true },
+  { id: "default_dramatic", brightness: 95, contrast: 130, saturation: 110, blur: 0, sharpen: 30, sepia: 0, invert: 0, isDefault: true },
+  { id: "default_sepia", brightness: 100, contrast: 100, saturation: 100, blur: 0, sharpen: 0, sepia: 100, invert: 0, isDefault: true },
+  { id: "default_negative", brightness: 100, contrast: 100, saturation: 100, blur: 0, sharpen: 0, sepia: 0, invert: 100, isDefault: true },
 ];
 
 function loadPresets(): FilterPreset[] {
@@ -138,6 +140,7 @@ export function AvatarCropDialog({
   const [blur, setBlur] = useState(0);
   const [sharpen, setSharpen] = useState(0);
   const [sepia, setSepia] = useState(0);
+  const [invert, setInvert] = useState(0);
   
   // Presets state
   const [presets, setPresets] = useState<FilterPreset[]>(loadPresets);
@@ -181,7 +184,7 @@ export function AvatarCropDialog({
     ctx.translate(-centerX, -centerY);
 
     // Apply filters
-    ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px) sepia(${sepia}%)`;
+    ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px) sepia(${sepia}%) invert(${invert}%)`;
 
     ctx.drawImage(
       image,
@@ -198,7 +201,7 @@ export function AvatarCropDialog({
     // Reset transform before applying sharpen
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     applySharpen(ctx, previewSize, previewSize, sharpen);
-  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur, sharpen, sepia]);
+  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur, sharpen, sepia, invert]);
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     setCrop(centerAspectCrop(width, height, 1));
@@ -242,7 +245,7 @@ export function AvatarCropDialog({
       ctx.translate(-centerX, -centerY);
 
       // Apply filters
-      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px) sepia(${sepia}%)`;
+      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px) sepia(${sepia}%) invert(${invert}%)`;
 
       ctx.drawImage(
         image,
@@ -289,6 +292,7 @@ export function AvatarCropDialog({
       setBlur(0);
       setSharpen(0);
       setSepia(0);
+      setInvert(0);
       setCrop(undefined);
       setCompletedCrop(undefined);
     }
@@ -323,7 +327,7 @@ export function AvatarCropDialog({
                   style={{
                     transform: `scale(${scale}) rotate(${rotate}deg) scaleX(${flipH ? -1 : 1}) scaleY(${flipV ? -1 : 1})`,
                     transformOrigin: "center",
-                    filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px) sepia(${sepia}%)`,
+                    filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px) sepia(${sepia}%) invert(${invert}%)`,
                   }}
                 />
               </ReactCrop>
@@ -513,8 +517,23 @@ export function AvatarCropDialog({
               <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{sepia}%</span>
             </div>
 
+            {/* Invert control */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <CircleOff className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.invert")}</span>
+              <Slider
+                value={[invert]}
+                onValueChange={(values) => setInvert(values[0])}
+                min={0}
+                max={100}
+                step={5}
+                className="flex-1"
+              />
+              <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{invert}%</span>
+            </div>
+
             {/* Reset button */}
-            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0 || sharpen !== 0 || sepia !== 0) && (
+            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0 || sharpen !== 0 || sepia !== 0 || invert !== 0) && (
               <Button
                 type="button"
                 variant="ghost"
@@ -530,6 +549,7 @@ export function AvatarCropDialog({
                   setBlur(0);
                   setSharpen(0);
                   setSepia(0);
+                  setInvert(0);
                   setSelectedPresetId("");
                 }}
                 className="w-full"
@@ -559,6 +579,7 @@ export function AvatarCropDialog({
                       setBlur(preset.blur);
                       setSharpen(preset.sharpen);
                       setSepia(preset.sepia);
+                      setInvert(preset.invert);
                       setSelectedPresetId(preset.id);
                     }}
                   >
@@ -581,6 +602,7 @@ export function AvatarCropDialog({
                         setBlur(preset.blur);
                         setSharpen(preset.sharpen);
                         setSepia(preset.sepia ?? 0);
+                        setInvert(preset.invert ?? 0);
                         setSelectedPresetId(id);
                       }
                     }}
@@ -642,6 +664,7 @@ export function AvatarCropDialog({
                       blur,
                       sharpen,
                       sepia,
+                      invert,
                     };
                     const updatedPresets = [...presets, newPreset];
                     setPresets(updatedPresets);
