@@ -164,8 +164,85 @@
   },
   "dropdown": {
     "exploitant": "Operator",
-    "exploitantDesc": "Access my laundries",
+    "exploitantDesc": "You already own laundromats",
     "futureExploitant": "Future operator",
-    "futureExploitantDesc": "Access simulator"
+    "futureExploitantDesc": "You are considering starting"
+  },
+  "subscribe": {
+    "steps": {
+      "company": "Company",
+      "contact": "Contact",
+      "payment": "Payment"
+    },
+    "backToPricing": "Back to pricing",
+    "company": {
+      "title": "Company information",
+      "description": "This information will be used for billing.",
+      "companyName": "Company name",
+      "companyNamePlaceholder": "My Company Ltd",
+      "siret": "Company ID",
+      "siretPlaceholder": "123 456 789 00012",
+      "siretHint": "14 digits",
+      "address": "Address",
+      "addressPlaceholder": "123 Laundry Street",
+      "postalCode": "Postal code",
+      "postalCodePlaceholder": "10001",
+      "city": "City",
+      "cityPlaceholder": "New York"
+    },
+    "contact": {
+      "title": "Subscriber details",
+      "description": "The person responsible for the subscription.",
+      "civility": "Title",
+      "mr": "Mr.",
+      "mrs": "Mrs.",
+      "firstName": "First name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Smith",
+      "function": "Position",
+      "functionPlaceholder": "Manager",
+      "email": "Email",
+      "emailPlaceholder": "john.smith@mycompany.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 234 567 8900"
+    },
+    "payment": {
+      "title": "Summary and payment",
+      "description": "Review your information before proceeding to payment.",
+      "laundryCount": "Number of laundromats",
+      "chosenPlan": "Chosen plan",
+      "monthly": "Monthly",
+      "noCommitment": "No commitment",
+      "annual": "Annual",
+      "monthsFree": "2 months free",
+      "perMonth": "month",
+      "perYear": "year",
+      "summary": "Summary",
+      "companyLabel": "Company",
+      "contactLabel": "Contact",
+      "laundryCountLabel": "Number of laundromats",
+      "pricePerLaundry": "Price per laundromat",
+      "total": "Total",
+      "savings": "Saving {{amount}}€/year"
+    },
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next",
+      "processing": "Processing...",
+      "proceedPayment": "Proceed to payment"
+    },
+    "validation": {
+      "incompleteTitle": "Incomplete information",
+      "incompleteDesc": "Please fill in all required fields.",
+      "invalidSiretTitle": "Invalid company ID",
+      "invalidSiretDesc": "Company ID must contain 14 digits.",
+      "invalidEmailTitle": "Invalid email",
+      "invalidEmailDesc": "Please enter a valid email address."
+    },
+    "success": {
+      "title": "Registration successful!",
+      "description": "Your subscription has been activated. Welcome to Lavcom Analytics!"
+    }
   }
 }

@@ -164,8 +164,85 @@
   },
   "dropdown": {
     "exploitant": "Exploitant",
-    "exploitantDesc": "Toegang tot mijn wasserettes",
+    "exploitantDesc": "U bezit al wasserettes",
     "futureExploitant": "Toekomstige exploitant",
-    "futureExploitantDesc": "Toegang tot de simulator"
+    "futureExploitantDesc": "U overweegt te starten"
+  },
+  "subscribe": {
+    "steps": {
+      "company": "Bedrijf",
+      "contact": "Contact",
+      "payment": "Betaling"
+    },
+    "backToPricing": "Terug naar prijzen",
+    "company": {
+      "title": "Bedrijfsgegevens",
+      "description": "Deze informatie wordt gebruikt voor facturering.",
+      "companyName": "Bedrijfsnaam",
+      "companyNamePlaceholder": "Mijn Bedrijf BV",
+      "siret": "KvK-nummer",
+      "siretPlaceholder": "12345678",
+      "siretHint": "14 cijfers",
+      "address": "Adres",
+      "addressPlaceholder": "Wasserettestraat 123",
+      "postalCode": "Postcode",
+      "postalCodePlaceholder": "1012 AB",
+      "city": "Stad",
+      "cityPlaceholder": "Amsterdam"
+    },
+    "contact": {
+      "title": "Abonneegegevens",
+      "description": "De persoon die verantwoordelijk is voor het abonnement.",
+      "civility": "Aanhef",
+      "mr": "Dhr.",
+      "mrs": "Mevr.",
+      "firstName": "Voornaam",
+      "firstNamePlaceholder": "Jan",
+      "lastName": "Achternaam",
+      "lastNamePlaceholder": "Jansen",
+      "function": "Functie",
+      "functionPlaceholder": "Directeur",
+      "email": "E-mail",
+      "emailPlaceholder": "jan.jansen@mijnbedrijf.nl",
+      "phone": "Telefoon",
+      "phonePlaceholder": "+31 6 12 34 56 78"
+    },
+    "payment": {
+      "title": "Overzicht en betaling",
+      "description": "Controleer uw gegevens voordat u doorgaat met betalen.",
+      "laundryCount": "Aantal wasserettes",
+      "chosenPlan": "Gekozen abonnement",
+      "monthly": "Maandelijks",
+      "noCommitment": "Zonder verplichtingen",
+      "annual": "Jaarlijks",
+      "monthsFree": "2 maanden gratis",
+      "perMonth": "maand",
+      "perYear": "jaar",
+      "summary": "Overzicht",
+      "companyLabel": "Bedrijf",
+      "contactLabel": "Contact",
+      "laundryCountLabel": "Aantal wasserettes",
+      "pricePerLaundry": "Prijs per wasserette",
+      "total": "Totaal",
+      "savings": "Besparing van {{amount}}€/jaar"
+    },
+    "navigation": {
+      "previous": "Vorige",
+      "next": "Volgende",
+      "processing": "Verwerken...",
+      "proceedPayment": "Doorgaan naar betaling"
+    },
+    "validation": {
+      "incompleteTitle": "Onvolledige gegevens",
+      "incompleteDesc": "Vul alstublieft alle verplichte velden in.",
+      "invalidSiretTitle": "Ongeldig KvK-nummer",
+      "invalidSiretDesc": "Het KvK-nummer moet 14 cijfers bevatten.",
+      "invalidEmailTitle": "Ongeldige e-mail",
+      "invalidEmailDesc": "Voer alstublieft een geldig e-mailadres in."
+    },
+    "success": {
+      "title": "Registratie geslaagd!",
+      "description": "Uw abonnement is geactiveerd. Welkom bij Lavcom Analytics!"
+    }
   }
 }

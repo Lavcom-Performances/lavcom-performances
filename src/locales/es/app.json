@@ -164,8 +164,85 @@
   },
   "dropdown": {
     "exploitant": "Operador",
-    "exploitantDesc": "Acceso a mis lavanderías",
+    "exploitantDesc": "Ya posees lavanderías",
     "futureExploitant": "Futuro operador",
-    "futureExploitantDesc": "Acceso al simulador"
+    "futureExploitantDesc": "Estás pensando en empezar"
+  },
+  "subscribe": {
+    "steps": {
+      "company": "Empresa",
+      "contact": "Contacto",
+      "payment": "Pago"
+    },
+    "backToPricing": "Volver a tarifas",
+    "company": {
+      "title": "Información de la empresa",
+      "description": "Esta información se utilizará para la facturación.",
+      "companyName": "Razón social",
+      "companyNamePlaceholder": "Mi Empresa SL",
+      "siret": "CIF/NIF",
+      "siretPlaceholder": "B12345678",
+      "siretHint": "14 dígitos",
+      "address": "Dirección",
+      "addressPlaceholder": "Calle Lavandería 123",
+      "postalCode": "Código postal",
+      "postalCodePlaceholder": "28001",
+      "city": "Ciudad",
+      "cityPlaceholder": "Madrid"
+    },
+    "contact": {
+      "title": "Datos del suscriptor",
+      "description": "La persona responsable de la suscripción.",
+      "civility": "Título",
+      "mr": "Sr.",
+      "mrs": "Sra.",
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "Juan",
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "García",
+      "function": "Cargo",
+      "functionPlaceholder": "Gerente",
+      "email": "Email",
+      "emailPlaceholder": "juan.garcia@miempresa.es",
+      "phone": "Teléfono",
+      "phonePlaceholder": "+34 612 345 678"
+    },
+    "payment": {
+      "title": "Resumen y pago",
+      "description": "Verifique su información antes de proceder al pago.",
+      "laundryCount": "Número de lavanderías",
+      "chosenPlan": "Plan elegido",
+      "monthly": "Mensual",
+      "noCommitment": "Sin compromiso",
+      "annual": "Anual",
+      "monthsFree": "2 meses gratis",
+      "perMonth": "mes",
+      "perYear": "año",
+      "summary": "Resumen",
+      "companyLabel": "Empresa",
+      "contactLabel": "Contacto",
+      "laundryCountLabel": "Número de lavanderías",
+      "pricePerLaundry": "Precio por lavandería",
+      "total": "Total",
+      "savings": "Ahorro de {{amount}}€/año"
+    },
+    "navigation": {
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "processing": "Procesando...",
+      "proceedPayment": "Proceder al pago"
+    },
+    "validation": {
+      "incompleteTitle": "Información incompleta",
+      "incompleteDesc": "Por favor complete todos los campos obligatorios.",
+      "invalidSiretTitle": "CIF/NIF inválido",
+      "invalidSiretDesc": "El CIF/NIF debe contener 14 dígitos.",
+      "invalidEmailTitle": "Email inválido",
+      "invalidEmailDesc": "Por favor introduzca una dirección de email válida."
+    },
+    "success": {
+      "title": "¡Registro exitoso!",
+      "description": "Su suscripción ha sido activada. ¡Bienvenido a Lavcom Analytics!"
+    }
   }
 }
