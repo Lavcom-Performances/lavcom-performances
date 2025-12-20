@@ -22,6 +22,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { 
   Building2, 
   TrendingUp, 
@@ -32,7 +38,8 @@ import {
   CheckSquare,
   ExternalLink,
   FileText,
-  Settings
+  Settings,
+  Info
 } from 'lucide-react';
 import { useSites } from '@/hooks/useSites';
 import { useMultipleSitesCosts } from '@/hooks/useSiteCosts';
@@ -452,7 +459,24 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
                     <TableHead className="text-right">CA Période</TableHead>
                     <TableHead className="text-right">Résultat</TableHead>
                     <TableHead className="text-right">Cycles/jour</TableHead>
-                    <TableHead className="text-right">Évolution</TableHead>
+                    <TableHead className="text-right">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="inline-flex items-center gap-1 cursor-help">
+                              Évolution
+                              <Info className="h-3 w-3 text-muted-foreground" />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs">
+                            <p>
+                              Évolution du CA par rapport aux {periodDays} jours précédents.
+                              Calcul : (période actuelle - période précédente) / période précédente × 100
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableHead>
                     <TableHead className="w-[100px]"></TableHead>
                   </TableRow>
                 </TableHeader>
