@@ -14,6 +14,7 @@
       "sharpen": "Schärfe",
       "sepia": "Sepia",
       "invert": "Invertieren",
+      "grayscale": "Graustufen",
       "presets": {
         "title": "Voreinstellungen",
         "selectPlaceholder": "Voreinstellung laden...",

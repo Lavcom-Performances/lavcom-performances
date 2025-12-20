@@ -14,6 +14,7 @@
       "sharpen": "Nitidezza",
       "sepia": "Seppia",
       "invert": "Inverti",
+      "grayscale": "Scala di grigi",
       "presets": {
         "title": "Preset",
         "selectPlaceholder": "Carica un preset...",
