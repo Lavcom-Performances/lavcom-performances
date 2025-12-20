@@ -11,6 +11,7 @@ import {
   Clock,
   WashingMachine,
   Loader2,
+  Settings,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -26,11 +27,14 @@ import { WeekdayPerformanceChart } from "@/components/dashboard/WeekdayPerforman
 import { ProfitabilityKPIs } from "@/components/dashboard/ProfitabilityKPIs";
 import { ProfitabilitySection } from "@/components/dashboard/ProfitabilitySection";
 import { DashboardEmptyState } from "@/components/dashboard/DashboardEmptyState";
+import { GoalsConfigDialog } from "@/components/dashboard/GoalsConfigDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { calculateProfitabilityMetrics, LaundryCosts } from "@/types/costs";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useSites } from "@/hooks/useSites";
+import { useUserGoals } from "@/hooks/useUserGoals";
 
 // Default costs for profitability calculation (user can configure these later)
 const defaultCosts: LaundryCosts = {
@@ -53,8 +57,10 @@ export default function Dashboard() {
     from: subDays(new Date(), 30),
     to: new Date(),
   });
+  const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
 
   const { stats, isLoading, isEmpty } = useDashboardStats(dateRange, defaultSite?.id);
+  const { goals } = useUserGoals(defaultSite?.id);
 
   // Format currency
   const formatCurrency = (value: number) => {
@@ -125,20 +131,37 @@ export default function Dashboard() {
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
-            Tableau de bord
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Vue d'ensemble complète de vos performances
-            {defaultSite && <span className="ml-1">• {defaultSite.name}</span>}
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
+              Tableau de bord
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Vue d'ensemble complète de vos performances
+              {defaultSite && <span className="ml-1">• {defaultSite.name}</span>}
+            </p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setGoalsDialogOpen(true)}
+            className="gap-2"
+          >
+            <Settings className="h-4 w-4" />
+            <span className="hidden sm:inline">Objectifs</span>
+          </Button>
         </div>
         <DateRangePicker 
           dateRange={dateRange}
           onDateChange={setDateRange}
         />
       </div>
+
+      <GoalsConfigDialog 
+        open={goalsDialogOpen} 
+        onOpenChange={setGoalsDialogOpen}
+        siteId={defaultSite?.id}
+      />
 
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
@@ -207,12 +230,12 @@ export default function Dashboard() {
               <MiniProgressCard 
                 title="Objectif mensuel" 
                 current={stats.totalRevenue} 
-                target={4500} 
+                target={goals.monthly_revenue_goal} 
               />
               <MiniProgressCard 
                 title="Cycles réalisés" 
                 current={stats.totalTransactions} 
-                target={600} 
+                target={goals.monthly_transactions_goal} 
                 unit="cycles"
               />
               <ComparisonCard 
@@ -303,12 +326,12 @@ export default function Dashboard() {
             <MiniProgressCard 
               title="Objectif CA mensuel" 
               current={stats.totalRevenue} 
-              target={4500} 
+              target={goals.monthly_revenue_goal} 
             />
             <MiniProgressCard 
               title="Objectif CA annuel" 
               current={stats.totalRevenue * 12} 
-              target={54000} 
+              target={goals.annual_revenue_goal} 
             />
           </div>
 
