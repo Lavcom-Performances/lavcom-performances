@@ -1,0 +1,30 @@
+{
+  "validation": {
+    "nameRequired": "Le nom est requis",
+    "nameTooLong": "Le nom est trop long",
+    "invalidEmail": "Email invalide",
+    "emailTooLong": "Email trop long",
+    "messageMinLength": "Le message doit contenir au moins 10 caractères",
+    "messageMaxLength": "Le message est trop long (max 1000 caractères)",
+    "invalidSiret": "SIRET invalide",
+    "siretMust14": "Le numéro SIRET doit contenir 14 chiffres",
+    "incompleteInfo": "Informations incomplètes",
+    "fillAllFields": "Veuillez remplir tous les champs obligatoires"
+  },
+  "network": {
+    "serviceUnavailable": "Service temporairement indisponible",
+    "tryAgain": "Veuillez réessayer",
+    "connectionError": "Erreur de connexion"
+  },
+  "siret": {
+    "lookupUnavailable": "Recherche SIRET indisponible pour le moment. Vous pouvez continuer en remplissant les champs manuellement.",
+    "retry": "Réessayer",
+    "helpText": "Le SIRET sert uniquement à pré-remplir. Vous pouvez le laisser vide.",
+    "prefilledBadge": "Pré-rempli via SIRET",
+    "invalidFormat": "Format SIRET invalide (14 chiffres attendus)"
+  },
+  "generic": {
+    "somethingWentWrong": "Une erreur est survenue",
+    "pleaseTryAgain": "Veuillez réessayer plus tard"
+  }
+}

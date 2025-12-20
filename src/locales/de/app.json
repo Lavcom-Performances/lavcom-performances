@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "profitability": "Rentabilité",
+    "simulation": "Simulation",
+    "recommendations": "Recommandations",
+    "maintenance": "Maintenance",
+    "operations": "Opérations",
+    "importExport": "Import / Export",
+    "users": "Utilisateurs",
+    "settings": "Paramètres",
+    "charts": "Graphiques",
+    "analyses": "Analyses",
+    "administration": "Administration",
+    "changeLaundry": "Changer de laverie",
+    "backToHome": "Retour à l'accueil"
+  },
+  "charts": {
+    "annualRevenue": "CA Annuel",
+    "monthlyRevenue": "CA par mois",
+    "dailyRevenue": "CA par jour",
+    "payments": "Paiements",
+    "machines": "Machines",
+    "occupancyRate": "Taux occupation",
+    "hourlyFreq": "Fréq. par heure",
+    "dailyFreq": "Fréq. par jour",
+    "halfHourlyFreq": "Fréq. 30 min",
+    "heatmap": "Affluence (Heatmap)",
+    "products": "Produits"
+  },
+  "login": {
+    "exploitant": {
+      "title": "Connexion",
+      "subtitle": "Entrez vos identifiants pour accéder à votre espace",
+      "leftPanelSubtitle": "Analysez les performances de vos laveries en un coup d'œil"
+    },
+    "simulator": {
+      "title": "Connexion Simulateur",
+      "subtitle": "Accédez à votre espace simulation",
+      "leftPanelSubtitle": "Simulez la rentabilité de votre future laverie"
+    },
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "votre@email.com",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "••••••••",
+      "forgotPassword": "Mot de passe oublié ?",
+      "submit": "Se connecter",
+      "connecting": "Connexion..."
+    },
+    "notSubscribed": "Pas encore abonné ?",
+    "discoverOffers": "Découvrir nos offres",
+    "discoverSimulatorPacks": "Découvrir les packs simulateur",
+    "switchToExploitant": "Vous êtes exploitant ?",
+    "exploitantLogin": "Connexion exploitant",
+    "switchToSimulator": "Vous voulez ouvrir une laverie ?",
+    "simulatorLogin": "Connexion simulateur",
+    "welcomeExploitant": "Bienvenue sur Lavcom Performances",
+    "welcomeSimulator": "Bienvenue sur Lavcom Performances Création",
+    "loginSuccess": "Connexion réussie"
+  },
+  "dropdown": {
+    "exploitant": "Exploitant",
+    "exploitantDesc": "Accès à mes laveries",
+    "futureExploitant": "Futur exploitant",
+    "futureExploitantDesc": "Accès au simulateur"
+  }
+}

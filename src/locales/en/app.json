@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "profitability": "Profitability",
+    "simulation": "Simulation",
+    "recommendations": "Recommendations",
+    "maintenance": "Maintenance",
+    "operations": "Operations",
+    "importExport": "Import / Export",
+    "users": "Users",
+    "settings": "Settings",
+    "charts": "Charts",
+    "analyses": "Analyses",
+    "administration": "Administration",
+    "changeLaundry": "Change laundry",
+    "backToHome": "Back to home"
+  },
+  "charts": {
+    "annualRevenue": "Annual Revenue",
+    "monthlyRevenue": "Monthly Revenue",
+    "dailyRevenue": "Daily Revenue",
+    "payments": "Payments",
+    "machines": "Machines",
+    "occupancyRate": "Occupancy Rate",
+    "hourlyFreq": "Hourly Freq.",
+    "dailyFreq": "Daily Freq.",
+    "halfHourlyFreq": "30 min Freq.",
+    "heatmap": "Traffic (Heatmap)",
+    "products": "Products"
+  },
+  "login": {
+    "exploitant": {
+      "title": "Login",
+      "subtitle": "Enter your credentials to access your space",
+      "leftPanelSubtitle": "Analyze your laundries' performance at a glance"
+    },
+    "simulator": {
+      "title": "Simulator Login",
+      "subtitle": "Access your simulation space",
+      "leftPanelSubtitle": "Simulate the profitability of your future laundry"
+    },
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "connecting": "Connecting..."
+    },
+    "notSubscribed": "Not subscribed yet?",
+    "discoverOffers": "Discover our offers",
+    "discoverSimulatorPacks": "Discover simulator packs",
+    "switchToExploitant": "Are you an operator?",
+    "exploitantLogin": "Operator login",
+    "switchToSimulator": "Want to open a laundry?",
+    "simulatorLogin": "Simulator login",
+    "welcomeExploitant": "Welcome to Lavcom Performances",
+    "welcomeSimulator": "Welcome to Lavcom Performances Creation",
+    "loginSuccess": "Login successful"
+  },
+  "dropdown": {
+    "exploitant": "Operator",
+    "exploitantDesc": "Access my laundries",
+    "futureExploitant": "Future operator",
+    "futureExploitantDesc": "Access simulator"
+  }
+}

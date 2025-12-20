@@ -1,0 +1,30 @@
+{
+  "validation": {
+    "nameRequired": "Name is required",
+    "nameTooLong": "Name is too long",
+    "invalidEmail": "Invalid email",
+    "emailTooLong": "Email too long",
+    "messageMinLength": "Message must be at least 10 characters",
+    "messageMaxLength": "Message is too long (max 1000 characters)",
+    "invalidSiret": "Invalid SIRET",
+    "siretMust14": "SIRET number must contain 14 digits",
+    "incompleteInfo": "Incomplete information",
+    "fillAllFields": "Please fill in all required fields"
+  },
+  "network": {
+    "serviceUnavailable": "Service temporarily unavailable",
+    "tryAgain": "Please try again",
+    "connectionError": "Connection error"
+  },
+  "siret": {
+    "lookupUnavailable": "SIRET lookup unavailable at the moment. You can continue by filling in the fields manually.",
+    "retry": "Retry",
+    "helpText": "SIRET is only used to pre-fill. You can leave it empty.",
+    "prefilledBadge": "Pre-filled via SIRET",
+    "invalidFormat": "Invalid SIRET format (14 digits expected)"
+  },
+  "generic": {
+    "somethingWentWrong": "Something went wrong",
+    "pleaseTryAgain": "Please try again later"
+  }
+}

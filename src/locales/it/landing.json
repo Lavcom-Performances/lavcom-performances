@@ -1,0 +1,112 @@
+{
+  "hero": {
+    "badge": "Le tableau de bord performance des laveries automatiques",
+    "optimizeLaundries": "Je veux optimiser mes laveries",
+    "openLaundry": "Je veux ouvrir une laverie"
+  },
+  "twoProfiles": {
+    "title": "Deux profils, deux solutions",
+    "subtitle": "Que vous gériez déjà une laverie ou que vous prépariez votre projet, Lavcom Performances s'adapte à vos besoins."
+  },
+  "exploitants": {
+    "badge": "Pour les exploitants de laveries",
+    "title": "Pour les exploitants qui veulent tirer le meilleur de leurs laveries",
+    "benefit1": "Voir en un coup d'œil ce que chaque laverie rapporte vraiment.",
+    "benefit2": "Repérer les machines qui marchent fort et celles qui pourraient mieux tourner.",
+    "benefit3": "Recevoir des idées simples d'actions : ajuster un prix, ajouter un séchoir, revoir un horaire d'ouverture.",
+    "keepControl": "Vous gardez le contrôle. Lavcom Performances vous aide juste à voir plus clair et à décider plus vite.",
+    "tryFree": "Essayer 14 jours gratuits",
+    "signIn": "Se connecter",
+    "stats": {
+      "realtime": "Suivi temps réel",
+      "avgRevenue": "CA moyen constaté",
+      "timeSaved": "Gagnées / semaine",
+      "reducedBreakdowns": "Réduction pannes"
+    }
+  },
+  "futursExploitants": {
+    "badge": "Vous souhaitez ouvrir une laverie ?",
+    "title": "Pour ceux qui veulent ouvrir une laverie et bien démarrer",
+    "benefit1": "Estimez combien votre projet peut rapporter selon le local, les machines, les tarifs.",
+    "benefit2": "Testez plusieurs configurations : avec ou sans séchoirs, selon la zone, etc.",
+    "benefit3": "Identifiez votre seuil de rentabilité avant de vous lancer.",
+    "noGuessing": "Plus besoin de deviner. Vous simulez, vous voyez, vous décidez.",
+    "testSimulator": "Tester le simulateur gratuit",
+    "seePacks": "Voir les packs",
+    "simulator": "Simulateur",
+    "profitability": "de rentabilité",
+    "profitabilityThreshold": "Seuil rentabilité",
+    "unlimitedScenarios": "Scénarios illimités",
+    "pdfReport": "Rapport PDF",
+    "expertCall": "Visio expert"
+  },
+  "ebook": {
+    "badge": "Ressource gratuite",
+    "title": "Avant d'ouvrir : 10 questions à se poser",
+    "description": "Choisir le bon local, estimer les charges, comprendre la réglementation… Téléchargez notre ebook gratuit pour éviter les erreurs classiques.",
+    "cta": "Télécharger l'ebook PDF",
+    "pages": "pages"
+  },
+  "features": {
+    "title": "Tout ce dont vous avez besoin",
+    "subtitle": "Des outils puissants pour analyser et optimiser chaque aspect de votre laverie",
+    "dashboards": {
+      "title": "Tableaux de bord en temps réel",
+      "description": "Visualisez vos performances avec des KPIs clairs et des graphiques interactifs."
+    },
+    "predictive": {
+      "title": "Analyses prédictives",
+      "description": "Anticipez les tendances et optimisez votre chiffre d'affaires grâce à l'IA."
+    },
+    "alerts": {
+      "title": "Alertes intelligentes",
+      "description": "Soyez notifié instantanément des anomalies et des opportunités."
+    },
+    "revenue": {
+      "title": "Suivi des revenus",
+      "description": "Analysez vos revenus par période, machine et mode de paiement."
+    },
+    "maintenance": {
+      "title": "Maintenance prédictive",
+      "description": "Réduisez les pannes grâce aux recommandations de maintenance."
+    },
+    "optimization": {
+      "title": "Optimisation opérationnelle",
+      "description": "Identifiez les heures creuses et maximisez le taux d'occupation."
+    }
+  },
+  "benefits": {
+    "title": "Des résultats concrets pour votre activité",
+    "subtitle": "Nos clients constatent des améliorations significatives dès les premiers mois d'utilisation.",
+    "item1": "Augmentez votre chiffre d'affaires jusqu'à 25%",
+    "item2": "Réduisez les temps d'arrêt machine de 40%",
+    "item3": "Gagnez 10h/semaine sur la gestion administrative",
+    "item4": "Accédez à vos données depuis n'importe où"
+  },
+  "testimonials": {
+    "title": "Ce que disent nos clients",
+    "subtitle": "Des gérants de laverie comme vous partagent leur expérience"
+  },
+  "contact": {
+    "title": "Une question ?",
+    "subtitle": "Notre équipe est là pour vous aider à démarrer",
+    "namePlaceholder": "Votre nom",
+    "emailPlaceholder": "votre@email.com",
+    "messagePlaceholder": "Votre message...",
+    "send": "Envoyer le message",
+    "sending": "Envoi en cours...",
+    "successTitle": "Message envoyé !",
+    "successDescription": "Nous vous répondrons dans les plus brefs délais.",
+    "errorTitle": "Erreur",
+    "errorDescription": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "subtitle": "Tout ce que vous devez savoir sur Lavcom Performances"
+  },
+  "cta": {
+    "startNow": "Commencer maintenant",
+    "watchDemo": "Voir la démo",
+    "discoverOffers": "Découvrir nos offres"
+  }
+}
