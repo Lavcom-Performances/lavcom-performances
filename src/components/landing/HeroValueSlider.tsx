@@ -217,15 +217,15 @@ export const HeroValueSlider = () => {
 
       {/* Layer 4: Text content with crossfade */}
       <div className="relative z-[4] h-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] flex items-center">
-        <div className="w-[55%] md:w-full max-w-7xl md:mx-auto px-3 md:px-8 lg:px-16 xl:px-20">
-          <div className="max-w-full md:max-w-[520px] lg:max-w-[540px] relative">
+        <div className="w-[55%] md:w-full max-w-7xl md:mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+          <div className="max-w-full md:max-w-[520px] lg:max-w-[560px] relative md:ml-4 lg:ml-8">
             {/* Previous slide text (fading out) */}
             {previousSlide && (
               <div className="absolute inset-0 animate-fade-out pointer-events-none">
-                <h1 className="text-base md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.15] max-w-full md:max-w-[480px]">
+                <h1 className="text-base md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.15] max-w-full md:max-w-[500px]">
                   {previousSlide.title}
                 </h1>
-                <p className="hidden md:block text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed">
+                <p className="hidden md:block text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed max-w-[460px]">
                   {previousSlide.subtitle}
                 </p>
               </div>
@@ -236,7 +236,7 @@ export const HeroValueSlider = () => {
               "transition-all duration-700 ease-out",
               isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
             )} style={{ transitionDelay: isTransitioning ? "0ms" : "100ms" }}>
-              <h1 className="text-base md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.15] max-w-full md:max-w-[480px]">
+              <h1 className="text-base md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.15] max-w-full md:max-w-[500px]">
                 {currentSlide.title}
               </h1>
             </div>
@@ -246,7 +246,7 @@ export const HeroValueSlider = () => {
               "hidden md:block transition-all duration-700 ease-out",
               isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
             )} style={{ transitionDelay: isTransitioning ? "0ms" : "200ms" }}>
-              <p className="text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed">
+              <p className="text-base md:text-lg text-muted-foreground mb-8 md:mb-10 leading-relaxed max-w-[460px]">
                 {currentSlide.subtitle}
               </p>
             </div>
@@ -273,7 +273,7 @@ export const HeroValueSlider = () => {
             </div>
 
             {/* Dots indicator */}
-            <div className="flex items-center gap-1.5 md:gap-2 mt-6 md:mt-12">
+            <div className="flex items-center gap-1.5 md:gap-2 mt-8 md:mt-14">
               {heroSlides.map((_, index) => (
                 <button
                   key={index}
