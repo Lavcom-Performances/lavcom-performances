@@ -13,6 +13,7 @@
       "blur": "Vervagen",
       "sharpen": "Verscherpen",
       "sepia": "Sepia",
+      "invert": "Omkeren",
       "presets": {
         "title": "Voorinstellingen",
         "selectPlaceholder": "Voorinstelling laden...",
@@ -37,7 +38,8 @@
           "default_warm": "Warm",
           "default_soft": "Zacht",
           "default_dramatic": "Dramatisch",
-          "default_sepia": "Sepia"
+          "default_sepia": "Sepia",
+          "default_negative": "Negatief"
         }
       }
     }

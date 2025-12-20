@@ -13,6 +13,7 @@
       "blur": "Desenfoque",
       "sharpen": "Nitidez",
       "sepia": "Sepia",
+      "invert": "Invertir",
       "presets": {
         "title": "Ajustes preestablecidos",
         "selectPlaceholder": "Cargar un ajuste...",
@@ -37,7 +38,8 @@
           "default_warm": "Cálido",
           "default_soft": "Suave",
           "default_dramatic": "Dramático",
-          "default_sepia": "Sepia"
+          "default_sepia": "Sepia",
+          "default_negative": "Negativo"
         }
       }
     }

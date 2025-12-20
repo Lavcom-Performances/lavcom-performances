@@ -13,6 +13,7 @@
       "blur": "Flou",
       "sharpen": "Netteté",
       "sepia": "Sépia",
+      "invert": "Inverser",
       "presets": {
         "title": "Préréglages",
         "selectPlaceholder": "Charger un préréglage...",
@@ -37,7 +38,8 @@
           "default_warm": "Chaud",
           "default_soft": "Doux",
           "default_dramatic": "Dramatique",
-          "default_sepia": "Sépia"
+          "default_sepia": "Sépia",
+          "default_negative": "Négatif"
         }
       }
     }

@@ -13,6 +13,7 @@
       "blur": "Sfocatura",
       "sharpen": "Nitidezza",
       "sepia": "Seppia",
+      "invert": "Inverti",
       "presets": {
         "title": "Preset",
         "selectPlaceholder": "Carica un preset...",
@@ -37,7 +38,8 @@
           "default_warm": "Caldo",
           "default_soft": "Morbido",
           "default_dramatic": "Drammatico",
-          "default_sepia": "Seppia"
+          "default_sepia": "Seppia",
+          "default_negative": "Negativo"
         }
       }
     }
