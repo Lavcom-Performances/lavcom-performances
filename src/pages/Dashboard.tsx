@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { DateRange } from "react-day-picker";
-import { subDays } from "date-fns";
+import { subDays, parseISO } from "date-fns";
 import { 
   Euro, 
   CreditCard, 
@@ -50,18 +51,51 @@ const defaultCosts: LaundryCosts = {
 };
 
 export default function Dashboard() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isExpert } = useViewMode();
-  const { getDefaultSite } = useSites();
-  const defaultSite = getDefaultSite();
+  const { sites, getDefaultSite } = useSites();
   
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 30),
-    to: new Date(),
+  // Get site from URL or default
+  const urlSiteId = searchParams.get('site');
+  const urlDateStart = searchParams.get('date_start');
+  const urlDateEnd = searchParams.get('date_end');
+  
+  const selectedSite = useMemo(() => {
+    if (urlSiteId) {
+      return sites.find(s => s.id === urlSiteId) || getDefaultSite();
+    }
+    return getDefaultSite();
+  }, [urlSiteId, sites, getDefaultSite]);
+  
+  // Initialize date range from URL or defaults
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    if (urlDateStart && urlDateEnd) {
+      return {
+        from: parseISO(urlDateStart),
+        to: parseISO(urlDateEnd),
+      };
+    }
+    return {
+      from: subDays(new Date(), 30),
+      to: new Date(),
+    };
   });
+  
   const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
 
-  const { stats, isLoading, isEmpty } = useDashboardStats(dateRange, defaultSite?.id);
-  const { goals } = useUserGoals(defaultSite?.id);
+  // Sync date range changes to URL
+  const handleDateChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+    if (range?.from && range?.to) {
+      const params = new URLSearchParams(searchParams);
+      params.set('date_start', range.from.toISOString().split('T')[0]);
+      params.set('date_end', range.to.toISOString().split('T')[0]);
+      setSearchParams(params, { replace: true });
+    }
+  };
+
+  const { stats, isLoading, isEmpty } = useDashboardStats(dateRange, selectedSite?.id);
+  const { goals } = useUserGoals(selectedSite?.id);
 
   // Format currency
   const formatCurrency = (value: number) => {
@@ -139,7 +173,7 @@ export default function Dashboard() {
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
               Vue d'ensemble complète de vos performances
-              {defaultSite && <span className="ml-1">• {defaultSite.name}</span>}
+              {selectedSite && <span className="ml-1">• {selectedSite.name}</span>}
             </p>
           </div>
           <Button 
@@ -154,14 +188,14 @@ export default function Dashboard() {
         </div>
         <DateRangePicker 
           dateRange={dateRange}
-          onDateChange={setDateRange}
+          onDateChange={handleDateChange}
         />
       </div>
 
       <GoalsConfigDialog 
         open={goalsDialogOpen} 
         onOpenChange={setGoalsDialogOpen}
-        siteId={defaultSite?.id}
+        siteId={selectedSite?.id}
       />
 
       <Tabs defaultValue="overview" className="space-y-6">

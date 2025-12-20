@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -51,14 +52,37 @@ const paymentModeBadge = (mode: string | null) => {
 };
 
 export default function Operations() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isExpert } = useViewMode();
   const { toast } = useToast();
   const { sites, getDefaultSite } = useSites();
   
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 30),
-    to: new Date(),
+  // Get site from URL or default
+  const urlSiteId = searchParams.get('site');
+  const urlDateStart = searchParams.get('date_start');
+  const urlDateEnd = searchParams.get('date_end');
+  
+  const selectedSite = useMemo(() => {
+    if (urlSiteId) {
+      return sites.find(s => s.id === urlSiteId) || getDefaultSite();
+    }
+    return getDefaultSite();
+  }, [urlSiteId, sites, getDefaultSite]);
+  
+  // Initialize date range from URL or defaults
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    if (urlDateStart && urlDateEnd) {
+      return {
+        from: parseISO(urlDateStart),
+        to: parseISO(urlDateEnd),
+      };
+    }
+    return {
+      from: subDays(new Date(), 30),
+      to: new Date(),
+    };
   });
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
@@ -66,14 +90,23 @@ export default function Operations() {
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  const defaultSite = getDefaultSite();
+  // Sync date range changes to URL
+  const handleDateChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+    if (range?.from && range?.to) {
+      const params = new URLSearchParams(searchParams);
+      params.set('date_start', range.from.toISOString().split('T')[0]);
+      params.set('date_end', range.to.toISOString().split('T')[0]);
+      setSearchParams(params, { replace: true });
+    }
+  };
 
   const { operations, isLoading, isEmpty, refetch } = useOperations({
     dateRange,
     searchQuery,
     category: categoryFilter,
     paymentMode: paymentFilter,
-    siteId: defaultSite?.id,
+    siteId: selectedSite?.id,
   });
 
   // Calculate KPIs
@@ -180,7 +213,7 @@ export default function Operations() {
       }));
 
       generateOperationsPdf({
-        laundromatName: defaultSite?.name || "Ma Laverie",
+        laundromatName: selectedSite?.name || "Ma Laverie",
         dateFrom: dateRange.from,
         dateTo: dateRange.to,
         operations: pdfOperations,
@@ -306,7 +339,7 @@ export default function Operations() {
         <div className="flex flex-col lg:flex-row gap-4">
           <DateRangePicker 
             dateRange={dateRange}
-            onDateChange={setDateRange}
+            onDateChange={handleDateChange}
           />
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
