@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
+import { useViewMode } from "@/hooks/useViewMode";
 
 interface KPICardProps {
   title: string;
@@ -14,6 +15,17 @@ interface KPICardProps {
   variant?: "default" | "primary" | "success" | "warning";
 }
 
+// Format trend value to reasonable precision
+function formatTrendValue(value: number): string {
+  if (Math.abs(value) >= 10) {
+    return Math.round(value).toString();
+  }
+  if (Math.abs(value) >= 1) {
+    return value.toFixed(1);
+  }
+  return value.toFixed(2);
+}
+
 export function KPICard({ 
   title, 
   value, 
@@ -23,16 +35,20 @@ export function KPICard({
   className,
   variant = "default"
 }: KPICardProps) {
+  const { isExpert } = useViewMode();
+
   return (
     <div className={cn(
       "kpi-card animate-fade-in",
       className
     )}>
-      <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+      <div className="flex items-start justify-between gap-2">
+        <div className="space-y-1 min-w-0 flex-1">
+          <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
+            {title}
+          </p>
           <p className={cn(
-            "text-2xl font-display font-bold tracking-tight",
+            "text-lg sm:text-xl lg:text-2xl font-display font-bold tracking-tight truncate",
             variant === "primary" && "text-primary",
             variant === "success" && "text-lime-600",
             variant === "warning" && "text-amber-500"
@@ -40,19 +56,21 @@ export function KPICard({
             {value}
           </p>
           {subtitle && (
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+              {subtitle}
+            </p>
           )}
         </div>
         {Icon && (
           <div className={cn(
-            "p-2 rounded-lg",
+            "p-1.5 sm:p-2 rounded-lg shrink-0",
             variant === "default" && "bg-muted",
             variant === "primary" && "bg-primary/10",
-            variant === "success" && "bg-lime-100",
-            variant === "warning" && "bg-amber-100"
+            variant === "success" && "bg-lime-100 dark:bg-lime-900/30",
+            variant === "warning" && "bg-amber-100 dark:bg-amber-900/30"
           )}>
             <Icon className={cn(
-              "h-5 w-5",
+              "h-4 w-4 sm:h-5 sm:w-5",
               variant === "default" && "text-muted-foreground",
               variant === "primary" && "text-primary",
               variant === "success" && "text-lime-600",
@@ -63,19 +81,24 @@ export function KPICard({
       </div>
       
       {trend && (
-        <div className="flex items-center gap-1 mt-3 pt-3 border-t border-border/50">
+        <div className="flex items-center gap-1 mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-border/50">
           {trend.isPositive ? (
-            <TrendingUp className="h-4 w-4 text-lime-600" />
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-lime-600 shrink-0" />
           ) : (
-            <TrendingDown className="h-4 w-4 text-red-500" />
+            <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-red-500 shrink-0" />
           )}
           <span className={cn(
-            "text-sm font-medium",
+            "text-xs sm:text-sm font-medium whitespace-nowrap",
             trend.isPositive ? "text-lime-600" : "text-red-600"
           )}>
-            {trend.isPositive ? "+" : ""}{trend.value}%
+            {trend.isPositive ? "+" : "-"}{formatTrendValue(trend.value)}%
           </span>
-          <span className="text-xs text-muted-foreground">vs période précédente</span>
+          {/* Show label only in expert mode and on larger screens */}
+          {isExpert && (
+            <span className="hidden sm:inline text-[10px] sm:text-xs text-muted-foreground truncate">
+              vs précédent
+            </span>
+          )}
         </div>
       )}
     </div>
