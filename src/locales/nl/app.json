@@ -57,7 +57,10 @@
       "deleteConfirmDescription": "Deze actie kan niet ongedaan worden gemaakt. Uw profielfoto wordt permanent verwijderd.",
       "deleteSuccess": "Foto verwijderd",
       "deleteSuccessDescription": "Uw profielfoto is verwijderd",
-      "deleteError": "Verwijderen mislukt"
+      "deleteError": "Verwijderen mislukt",
+      "cropTitle": "Foto bijsnijden",
+      "cropConfirm": "Toepassen",
+      "cropping": "Verwerken..."
     },
     "password": {
       "title": "Wachtwoord wijzigen",

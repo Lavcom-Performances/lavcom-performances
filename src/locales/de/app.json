@@ -57,7 +57,10 @@
       "deleteConfirmDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Ihr Profilfoto wird dauerhaft gelöscht.",
       "deleteSuccess": "Foto gelöscht",
       "deleteSuccessDescription": "Ihr Profilfoto wurde gelöscht",
-      "deleteError": "Löschen fehlgeschlagen"
+      "deleteError": "Löschen fehlgeschlagen",
+      "cropTitle": "Foto zuschneiden",
+      "cropConfirm": "Anwenden",
+      "cropping": "Verarbeitung..."
     },
     "password": {
       "title": "Passwort ändern",

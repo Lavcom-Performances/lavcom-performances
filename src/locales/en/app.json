@@ -57,7 +57,10 @@
       "deleteConfirmDescription": "This action cannot be undone. Your profile photo will be permanently deleted.",
       "deleteSuccess": "Photo deleted",
       "deleteSuccessDescription": "Your profile photo has been deleted",
-      "deleteError": "Failed to delete photo"
+      "deleteError": "Failed to delete photo",
+      "cropTitle": "Crop your photo",
+      "cropConfirm": "Apply",
+      "cropping": "Processing..."
     },
     "password": {
       "title": "Change password",

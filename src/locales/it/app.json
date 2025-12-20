@@ -57,7 +57,10 @@
       "deleteConfirmDescription": "Questa azione non può essere annullata. La tua foto profilo verrà eliminata definitivamente.",
       "deleteSuccess": "Foto eliminata",
       "deleteSuccessDescription": "La tua foto profilo è stata eliminata",
-      "deleteError": "Eliminazione fallita"
+      "deleteError": "Eliminazione fallita",
+      "cropTitle": "Ritaglia la foto",
+      "cropConfirm": "Applica",
+      "cropping": "Elaborazione..."
     },
     "password": {
       "title": "Cambia password",
