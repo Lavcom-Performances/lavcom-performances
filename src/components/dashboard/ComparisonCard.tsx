@@ -11,6 +11,17 @@ interface ComparisonCardProps {
   className?: string;
 }
 
+// Format percentage to reasonable precision
+function formatPercentage(value: number): string {
+  if (Math.abs(value) >= 10) {
+    return Math.round(value).toString();
+  }
+  if (Math.abs(value) >= 1) {
+    return value.toFixed(1);
+  }
+  return value.toFixed(2);
+}
+
 export function ComparisonCard({ 
   title, 
   current, 
@@ -25,19 +36,21 @@ export function ComparisonCard({
   
   return (
     <div className={cn(
-      "bg-card border border-border rounded-lg p-4 space-y-3",
+      "bg-card border border-border rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3",
       className
     )}>
-      <p className="text-sm font-medium text-muted-foreground">{title}</p>
+      <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
+        {title}
+      </p>
       
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1">
-          <p className="text-xs text-muted-foreground">{currentLabel}</p>
-          <p className="text-lg font-bold text-foreground">{current}</p>
+      <div className="grid grid-cols-2 gap-2 sm:gap-4">
+        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+          <p className="text-[10px] sm:text-xs text-muted-foreground">{currentLabel}</p>
+          <p className="text-base sm:text-lg font-bold text-foreground truncate">{current}</p>
         </div>
-        <div className="space-y-1">
-          <p className="text-xs text-muted-foreground">{previousLabel}</p>
-          <p className="text-lg font-semibold text-muted-foreground">{previous}</p>
+        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+          <p className="text-[10px] sm:text-xs text-muted-foreground">{previousLabel}</p>
+          <p className="text-base sm:text-lg font-semibold text-muted-foreground truncate">{previous}</p>
         </div>
       </div>
       
@@ -46,16 +59,18 @@ export function ComparisonCard({
         isPositive ? "text-lime-600" : isNeutral ? "text-muted-foreground" : "text-red-500"
       )}>
         {isPositive ? (
-          <TrendingUp className="h-4 w-4" />
+          <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
         ) : isNeutral ? (
-          <Minus className="h-4 w-4" />
+          <Minus className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
         ) : (
-          <TrendingDown className="h-4 w-4" />
+          <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
         )}
-        <span className="text-sm font-medium">
-          {isPositive ? "+" : ""}{percentageChange.toFixed(1)}%
+        <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
+          {isPositive ? "+" : ""}{formatPercentage(percentageChange)}%
         </span>
-        <span className="text-xs text-muted-foreground ml-1">vs {previousLabel}</span>
+        <span className="hidden sm:inline text-[10px] sm:text-xs text-muted-foreground ml-1">
+          vs {previousLabel}
+        </span>
       </div>
     </div>
   );
