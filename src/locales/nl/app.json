@@ -85,7 +85,8 @@
     "confirmEmail": "Bevestig uw e-mailadres",
     "freeTrial": "14 dagen gratis proberen",
     "or": "of",
-    "decorativeText": "De beheeroplossing voor wasserette-exploitanten"
+    "decorativeText": "De beheeroplossing voor wasserette-exploitanten",
+    "continueWithGoogle": "Doorgaan met Google"
   },
   "signup": {
     "title": "Account aanmaken",
@@ -131,7 +132,8 @@
       "feature4": "Slimme aanbevelingen",
       "feature5": "Zonder verplichtingen, zonder creditcard"
     },
-    "decorativeText": "Sluit u aan bij wasserette-exploitanten die hun prestaties optimaliseren"
+    "decorativeText": "Sluit u aan bij wasserette-exploitanten die hun prestaties optimaliseren",
+    "continueWithGoogle": "Doorgaan met Google"
   },
   "forgotPassword": {
     "title": "Wachtwoord vergeten",

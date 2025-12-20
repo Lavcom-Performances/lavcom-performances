@@ -85,7 +85,8 @@
     "confirmEmail": "Veuillez confirmer votre email",
     "freeTrial": "Essai gratuit 14 jours",
     "or": "ou",
-    "decorativeText": "La solution de pilotage pour les gérants de laveries"
+    "decorativeText": "La solution de pilotage pour les gérants de laveries",
+    "continueWithGoogle": "Continuer avec Google"
   },
   "signup": {
     "title": "Créer votre compte",
@@ -131,7 +132,8 @@
       "feature4": "Recommandations intelligentes",
       "feature5": "Sans engagement, sans CB"
     },
-    "decorativeText": "Rejoignez les gérants de laveries qui optimisent leurs performances"
+    "decorativeText": "Rejoignez les gérants de laveries qui optimisent leurs performances",
+    "continueWithGoogle": "Continuer avec Google"
   },
   "forgotPassword": {
     "title": "Mot de passe oublié",
