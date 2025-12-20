@@ -11,7 +11,16 @@
       "contrast": "Contrast",
       "saturation": "Saturation",
       "blur": "Blur",
-      "sharpen": "Sharpen"
+      "sharpen": "Sharpen",
+      "presets": {
+        "title": "Presets",
+        "selectPlaceholder": "Load a preset...",
+        "namePlaceholder": "Preset name",
+        "save": "Save",
+        "delete": "Delete",
+        "saveSuccess": "Preset saved",
+        "deleteSuccess": "Preset deleted"
+      }
     }
   },
   "accessibility": {

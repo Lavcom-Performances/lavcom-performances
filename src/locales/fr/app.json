@@ -11,7 +11,16 @@
       "contrast": "Contraste",
       "saturation": "Saturation",
       "blur": "Flou",
-      "sharpen": "Netteté"
+      "sharpen": "Netteté",
+      "presets": {
+        "title": "Préréglages",
+        "selectPlaceholder": "Charger un préréglage...",
+        "namePlaceholder": "Nom du préréglage",
+        "save": "Sauvegarder",
+        "delete": "Supprimer",
+        "saveSuccess": "Préréglage sauvegardé",
+        "deleteSuccess": "Préréglage supprimé"
+      }
     }
   },
   "accessibility": {
