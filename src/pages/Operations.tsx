@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { DateRange } from "react-day-picker";
-import { subDays, format, startOfDay, startOfMonth, startOfYear, getHours, parseISO } from "date-fns";
+import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Search, Download, Upload, Loader2 } from "lucide-react";
+import { Search, Download, Upload, Loader2, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -26,6 +26,7 @@ import { OperationsKPIRow } from "@/components/operations/OperationsKPIRow";
 import { HourlyBarChart } from "@/components/operations/HourlyBarChart";
 import { MachineCountList } from "@/components/operations/MachineCountList";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
+import { ImportHistoryDialog } from "@/components/operations/ImportHistoryDialog";
 import { OperationsEmptyState } from "@/components/operations/OperationsEmptyState";
 import { generateOperationsPdf } from "@/utils/operationsPdfExport";
 import { useToast } from "@/hooks/use-toast";
@@ -62,6 +63,7 @@ export default function Operations() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
   const defaultSite = getDefaultSite();
@@ -269,6 +271,13 @@ export default function Operations() {
           </Button>
           <Button 
             variant="outline"
+            onClick={() => setIsHistoryDialogOpen(true)}
+          >
+            <History className="h-4 w-4 mr-2" />
+            Historique
+          </Button>
+          <Button 
+            variant="outline"
             onClick={handleExportPdf}
             disabled={isExporting || operations.length === 0}
           >
@@ -283,6 +292,13 @@ export default function Operations() {
         open={isImportDialogOpen} 
         onOpenChange={setIsImportDialogOpen}
         onImportComplete={handleImportComplete}
+      />
+
+      {/* Import History Dialog */}
+      <ImportHistoryDialog
+        open={isHistoryDialogOpen}
+        onOpenChange={setIsHistoryDialogOpen}
+        onBatchDeleted={refetch}
       />
 
       {/* Filters */}
