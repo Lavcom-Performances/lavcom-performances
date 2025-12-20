@@ -12,6 +12,7 @@
       "saturation": "Saturación",
       "blur": "Desenfoque",
       "sharpen": "Nitidez",
+      "sepia": "Sepia",
       "presets": {
         "title": "Ajustes preestablecidos",
         "selectPlaceholder": "Cargar un ajuste...",
@@ -32,7 +33,8 @@
           "default_hd": "Alta definición",
           "default_warm": "Cálido",
           "default_soft": "Suave",
-          "default_dramatic": "Dramático"
+          "default_dramatic": "Dramático",
+          "default_sepia": "Sepia"
         }
       }
     }

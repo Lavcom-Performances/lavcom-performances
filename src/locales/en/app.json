@@ -12,6 +12,7 @@
       "saturation": "Saturation",
       "blur": "Blur",
       "sharpen": "Sharpen",
+      "sepia": "Sepia",
       "presets": {
         "title": "Presets",
         "selectPlaceholder": "Load a preset...",
@@ -32,7 +33,8 @@
           "default_hd": "High Definition",
           "default_warm": "Warm",
           "default_soft": "Soft",
-          "default_dramatic": "Dramatic"
+          "default_dramatic": "Dramatic",
+          "default_sepia": "Sepia"
         }
       }
     }
