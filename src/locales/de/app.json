@@ -142,7 +142,10 @@
     "successDescription": "Ein Link zum Zurücksetzen wurde an {{email}} gesendet. Überprüfen Sie Ihren Posteingang.",
     "backToLogin": "Zurück zur Anmeldung",
     "securityTitle": "Kontosicherheit",
-    "securityDescription": "Wir senden Ihnen einen sicheren Link zum Zurücksetzen Ihres Passworts. Dieser Link läuft nach 1 Stunde ab."
+    "securityDescription": "Wir senden Ihnen einen sicheren Link zum Zurücksetzen Ihres Passworts. Dieser Link läuft nach 1 Stunde ab.",
+    "rateLimitTitle": "Bitte warten",
+    "rateLimitDescription": "Sie können in {{seconds}} Sekunden einen neuen Link anfordern",
+    "rateLimitWaiting": "Erneut versuchen in {{seconds}}s"
   },
   "resetPassword": {
     "title": "Neues Passwort",

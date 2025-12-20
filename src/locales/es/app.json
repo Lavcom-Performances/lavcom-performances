@@ -142,7 +142,10 @@
     "successDescription": "Se ha enviado un enlace de restablecimiento a {{email}}. Revise su bandeja de entrada.",
     "backToLogin": "Volver al inicio de sesión",
     "securityTitle": "Seguridad de la cuenta",
-    "securityDescription": "Le enviaremos un enlace seguro para restablecer su contraseña. Este enlace expira después de 1 hora."
+    "securityDescription": "Le enviaremos un enlace seguro para restablecer su contraseña. Este enlace expira después de 1 hora.",
+    "rateLimitTitle": "Por favor espere",
+    "rateLimitDescription": "Puede solicitar un nuevo enlace en {{seconds}} segundos",
+    "rateLimitWaiting": "Reintentar en {{seconds}}s"
   },
   "resetPassword": {
     "title": "Nueva contraseña",
