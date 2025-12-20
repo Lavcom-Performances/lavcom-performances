@@ -526,64 +526,129 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
         </CardContent>
       </Card>
 
-      {/* Revenue Comparison Chart */}
+      {/* Charts Grid */}
       {selectedSiteIds.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Comparaison du CA par laverie</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={sortedData.map(site => ({
-                    name: site.name.length > 15 ? site.name.substring(0, 15) + '...' : site.name,
-                    fullName: site.name,
-                    revenue: site.revenue,
-                    trend: site.trend,
-                  }))}
-                  margin={{ top: 10, right: 30, left: 20, bottom: 40 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis 
-                    dataKey="name" 
-                    tick={{ fontSize: 12 }}
-                    angle={-25}
-                    textAnchor="end"
-                    height={60}
-                    className="fill-muted-foreground"
-                  />
-                  <YAxis 
-                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k€`}
-                    className="fill-muted-foreground"
-                    tick={{ fontSize: 12 }}
-                  />
-                  <RechartsTooltip 
-                    formatter={(value: number) => [
-                      new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value) + ' €',
-                      'CA'
-                    ]}
-                    labelFormatter={(label, payload) => payload?.[0]?.payload?.fullName || label}
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--background))', 
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                    }}
-                  />
-                  <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
-                    {sortedData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={index === 0 ? 'hsl(var(--lavcom-green))' : 'hsl(var(--primary))'}
-                        opacity={index === 0 ? 1 : 0.7}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Revenue Comparison Chart */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Comparaison du CA</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart 
+                    data={sortedData.map(site => ({
+                      name: site.name.length > 12 ? site.name.substring(0, 12) + '...' : site.name,
+                      fullName: site.name,
+                      revenue: site.revenue,
+                    }))}
+                    margin={{ top: 10, right: 20, left: 10, bottom: 40 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ fontSize: 11 }}
+                      angle={-25}
+                      textAnchor="end"
+                      height={50}
+                      className="fill-muted-foreground"
+                    />
+                    <YAxis 
+                      tickFormatter={(value) => `${(value / 1000).toFixed(0)}k€`}
+                      className="fill-muted-foreground"
+                      tick={{ fontSize: 11 }}
+                      width={45}
+                    />
+                    <RechartsTooltip 
+                      formatter={(value: number) => [
+                        new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value) + ' €',
+                        'CA'
+                      ]}
+                      labelFormatter={(label, payload) => payload?.[0]?.payload?.fullName || label}
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                      }}
+                    />
+                    <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+                      {sortedData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={index === 0 ? 'hsl(var(--lavcom-green))' : 'hsl(var(--primary))'}
+                          opacity={index === 0 ? 1 : 0.7}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Occupation Comparison Chart */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Comparaison des cycles/jour</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart 
+                    data={[...sortedData]
+                      .sort((a, b) => b.occupation - a.occupation)
+                      .map(site => ({
+                        name: site.name.length > 12 ? site.name.substring(0, 12) + '...' : site.name,
+                        fullName: site.name,
+                        occupation: site.occupation,
+                      }))}
+                    margin={{ top: 10, right: 20, left: 10, bottom: 40 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ fontSize: 11 }}
+                      angle={-25}
+                      textAnchor="end"
+                      height={50}
+                      className="fill-muted-foreground"
+                    />
+                    <YAxis 
+                      tickFormatter={(value) => value.toFixed(0)}
+                      className="fill-muted-foreground"
+                      tick={{ fontSize: 11 }}
+                      width={35}
+                    />
+                    <RechartsTooltip 
+                      formatter={(value: number) => [
+                        value.toFixed(1) + ' cycles/jour',
+                        'Occupation'
+                      ]}
+                      labelFormatter={(label, payload) => payload?.[0]?.payload?.fullName || label}
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                      }}
+                    />
+                    <Bar dataKey="occupation" radius={[4, 4, 0, 0]}>
+                      {[...sortedData]
+                        .sort((a, b) => b.occupation - a.occupation)
+                        .map((entry, index) => (
+                          <Cell 
+                            key={`cell-occ-${index}`} 
+                            fill={index === 0 ? 'hsl(var(--lavcom-yellow))' : 'hsl(var(--secondary))'}
+                            opacity={index === 0 ? 1 : 0.7}
+                          />
+                        ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Comparison Table */}
