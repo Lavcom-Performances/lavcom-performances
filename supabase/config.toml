@@ -2,3 +2,6 @@ project_id = "betvwipgtcrhmludzgxw"
 
 [functions.fetch-from-siret]
 verify_jwt = false
+
+[functions.create-demo]
+verify_jwt = true
