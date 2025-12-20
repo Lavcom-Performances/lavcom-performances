@@ -142,7 +142,10 @@
     "successDescription": "Een herstellink is verzonden naar {{email}}. Controleer uw inbox.",
     "backToLogin": "Terug naar inloggen",
     "securityTitle": "Accountbeveiliging",
-    "securityDescription": "We sturen u een beveiligde link om uw wachtwoord te resetten. Deze link verloopt na 1 uur."
+    "securityDescription": "We sturen u een beveiligde link om uw wachtwoord te resetten. Deze link verloopt na 1 uur.",
+    "rateLimitTitle": "Even geduld",
+    "rateLimitDescription": "U kunt over {{seconds}} seconden een nieuwe link aanvragen",
+    "rateLimitWaiting": "Opnieuw proberen over {{seconds}}s"
   },
   "resetPassword": {
     "title": "Nieuw wachtwoord",

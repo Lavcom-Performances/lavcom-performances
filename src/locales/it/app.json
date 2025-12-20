@@ -142,7 +142,10 @@
     "successDescription": "Un link di reimpostazione è stato inviato a {{email}}. Controlla la tua casella di posta.",
     "backToLogin": "Torna al login",
     "securityTitle": "Sicurezza dell'account",
-    "securityDescription": "Ti invieremo un link sicuro per reimpostare la password. Questo link scade dopo 1 ora."
+    "securityDescription": "Ti invieremo un link sicuro per reimpostare la password. Questo link scade dopo 1 ora.",
+    "rateLimitTitle": "Attendere prego",
+    "rateLimitDescription": "Potrai richiedere un nuovo link tra {{seconds}} secondi",
+    "rateLimitWaiting": "Riprova tra {{seconds}}s"
   },
   "resetPassword": {
     "title": "Nuova password",

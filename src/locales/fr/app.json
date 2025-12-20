@@ -142,7 +142,10 @@
     "successDescription": "Un lien de réinitialisation a été envoyé à {{email}}. Vérifiez votre boîte de réception.",
     "backToLogin": "Retour à la connexion",
     "securityTitle": "Sécurité de votre compte",
-    "securityDescription": "Nous vous enverrons un lien sécurisé pour réinitialiser votre mot de passe. Ce lien expire après 1 heure."
+    "securityDescription": "Nous vous enverrons un lien sécurisé pour réinitialiser votre mot de passe. Ce lien expire après 1 heure.",
+    "rateLimitTitle": "Veuillez patienter",
+    "rateLimitDescription": "Vous pourrez renvoyer un lien dans {{seconds}} secondes",
+    "rateLimitWaiting": "Réessayer dans {{seconds}}s"
   },
   "resetPassword": {
     "title": "Nouveau mot de passe",

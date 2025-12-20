@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Loader2, Home, ArrowLeft, Mail, CheckCircle2 } from "lucide-react";
+import { Loader2, Home, ArrowLeft, Mail, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,19 +10,59 @@ import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
+const RATE_LIMIT_SECONDS = 60;
+const STORAGE_KEY = "forgot_password_last_request";
+
 export default function ForgotPassword() {
   const { t } = useTranslation(['app', 'common']);
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const { toast } = useToast();
 
   const emailSchema = z.string().email(t('app:signup.validation.invalidEmail'));
 
+  // Check for existing cooldown on mount
+  useEffect(() => {
+    const lastRequest = localStorage.getItem(STORAGE_KEY);
+    if (lastRequest) {
+      const elapsed = Math.floor((Date.now() - parseInt(lastRequest)) / 1000);
+      const remaining = RATE_LIMIT_SECONDS - elapsed;
+      if (remaining > 0) {
+        setCooldownSeconds(remaining);
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  }, []);
+
+  // Countdown timer
+  useEffect(() => {
+    if (cooldownSeconds > 0) {
+      const timer = setTimeout(() => {
+        setCooldownSeconds(cooldownSeconds - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownSeconds]);
+
+  const isRateLimited = cooldownSeconds > 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Check rate limit
+    if (isRateLimited) {
+      toast({
+        title: t('app:forgotPassword.rateLimitTitle'),
+        description: t('app:forgotPassword.rateLimitDescription', { seconds: cooldownSeconds }),
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Validate email
     const result = emailSchema.safeParse(email);
@@ -47,6 +87,10 @@ export default function ForgotPassword() {
       });
       return;
     }
+
+    // Set rate limit
+    localStorage.setItem(STORAGE_KEY, Date.now().toString());
+    setCooldownSeconds(RATE_LIMIT_SECONDS);
 
     setIsSuccess(true);
   };
@@ -163,12 +207,18 @@ export default function ForgotPassword() {
                   variant="lavcom"
                   size="xl"
                   className="w-full"
-                  disabled={isLoading}
+                  disabled={isLoading || isRateLimited}
+                  aria-disabled={isLoading || isRateLimited}
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                       {t('app:forgotPassword.sending')}
+                    </>
+                  ) : isRateLimited ? (
+                    <>
+                      <Clock className="h-4 w-4" aria-hidden="true" />
+                      {t('app:forgotPassword.rateLimitWaiting', { seconds: cooldownSeconds })}
                     </>
                   ) : (
                     t('app:forgotPassword.submit')

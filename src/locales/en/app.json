@@ -142,7 +142,10 @@
     "successDescription": "A reset link has been sent to {{email}}. Check your inbox.",
     "backToLogin": "Back to login",
     "securityTitle": "Account security",
-    "securityDescription": "We'll send you a secure link to reset your password. This link expires after 1 hour."
+    "securityDescription": "We'll send you a secure link to reset your password. This link expires after 1 hour.",
+    "rateLimitTitle": "Please wait",
+    "rateLimitDescription": "You can request a new link in {{seconds}} seconds",
+    "rateLimitWaiting": "Retry in {{seconds}}s"
   },
   "resetPassword": {
     "title": "New password",
