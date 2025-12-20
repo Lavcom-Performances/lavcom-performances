@@ -99,19 +99,27 @@ interface LaundryCostsState {
 }
 
 export default function LaundromatSettings() {
-  // Get current site
-  const { getDefaultSite } = useSites();
-  const defaultSite = getDefaultSite();
+  // Get URL param for site selection from drill-down
+  const [searchParams] = useState(() => new URLSearchParams(window.location.search));
+  const siteIdFromUrl = searchParams.get('site');
+  
+  // Get sites
+  const { sites, getDefaultSite } = useSites();
+  
+  // Determine which site to use: URL param > default site
+  const selectedSite = siteIdFromUrl 
+    ? sites.find(s => s.id === siteIdFromUrl) || getDefaultSite()
+    : getDefaultSite();
   
   // Get site costs from DB
-  const { costs: dbCosts, upsertCosts, isLoading: costsLoading } = useSiteCosts(defaultSite?.id);
+  const { costs: dbCosts, upsertCosts, isLoading: costsLoading } = useSiteCosts(selectedSite?.id);
   
   // Laundromat info
   const [laundryInfo, setLaundryInfo] = useState<LaundryInfo>({
-    name: defaultSite?.name || "Laverie Centre-Ville",
-    address: defaultSite?.address || "123 Rue de la Laverie",
-    city: defaultSite?.city || "Paris",
-    postalCode: defaultSite?.postal_code || "75001",
+    name: selectedSite?.name || "Laverie Centre-Ville",
+    address: selectedSite?.address || "123 Rue de la Laverie",
+    city: selectedSite?.city || "Paris",
+    postalCode: selectedSite?.postal_code || "75001",
     phone: "01 23 45 67 89",
     email: "contact@laverie-centre.fr",
     responsibleName: "Jean Dupont",
@@ -220,7 +228,7 @@ export default function LaundromatSettings() {
   const handleSave = async () => {
     try {
       // Save costs to database
-      if (defaultSite?.id) {
+      if (selectedSite?.id) {
         await upsertCosts.mutateAsync(costs);
       }
       toast.success("Paramètres enregistrés avec succès");
