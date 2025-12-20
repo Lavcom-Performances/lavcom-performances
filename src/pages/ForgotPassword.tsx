@@ -56,9 +56,10 @@ export default function ForgotPassword() {
       {/* Back to home button */}
       <Link 
         to="/" 
-        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border"
+        aria-label={t('common:home')}
+        className="absolute top-3 left-3 md:top-4 md:left-4 z-10 flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
-        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" />
+        <Home className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden="true" />
         <span className="hidden sm:inline">{t('common:home')}</span>
       </Link>
 
@@ -136,7 +137,7 @@ export default function ForgotPassword() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6" aria-label={t('app:forgotPassword.title')}>
                 <div className="space-y-2">
                   <Label htmlFor="email">{t('app:login.form.email')}</Label>
                   <Input
@@ -146,10 +147,14 @@ export default function ForgotPassword() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className={`h-11 ${error ? "border-destructive" : ""}`}
+                    aria-required="true"
+                    aria-invalid={!!error}
+                    aria-describedby={error ? "email-error" : undefined}
+                    autoComplete="email"
+                    className={`h-11 focus:ring-2 focus:ring-primary focus:ring-offset-1 ${error ? "border-destructive" : ""}`}
                   />
                   {error && (
-                    <p className="text-xs text-destructive">{error}</p>
+                    <p id="email-error" className="text-xs text-destructive" role="alert">{error}</p>
                   )}
                 </div>
 

@@ -1,4 +1,8 @@
 {
+  "accessibility": {
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
+  },
   "nav": {
     "dashboard": "Tableau de bord",
     "profitability": "Rentabilité",

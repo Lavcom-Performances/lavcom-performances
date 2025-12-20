@@ -1,4 +1,8 @@
 {
+  "accessibility": {
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "profitability": "Profitability",
