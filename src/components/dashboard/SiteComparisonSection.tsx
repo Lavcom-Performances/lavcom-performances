@@ -57,7 +57,7 @@ interface SiteComparisonSectionProps {
   dateRange?: DateRange;
 }
 
-type SortField = 'revenue' | 'profit' | 'occupation' | 'trend';
+type SortField = 'revenue' | 'transactions' | 'profit' | 'occupation' | 'trend';
 
 const getStorageKey = (userId?: string) => `lavcom-comparison-sites-${userId || 'anonymous'}`;
 
@@ -262,6 +262,10 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
         case 'revenue':
           aVal = a.revenue;
           bVal = b.revenue;
+          break;
+        case 'transactions':
+          aVal = a.transactions;
+          bVal = b.transactions;
           break;
         case 'profit':
           aVal = a.profit;
@@ -494,6 +498,7 @@ export function SiteComparisonSection({ dateRange }: SiteComparisonSectionProps)
                 </SelectTrigger>
                 <SelectContent className="bg-background z-50">
                   <SelectItem value="revenue">CA (décroissant)</SelectItem>
+                  <SelectItem value="transactions">Transactions (décroissant)</SelectItem>
                   <SelectItem value="profit">Résultat (décroissant)</SelectItem>
                   <SelectItem value="occupation">Occupation (décroissant)</SelectItem>
                   <SelectItem value="trend">Évolution (décroissant)</SelectItem>
