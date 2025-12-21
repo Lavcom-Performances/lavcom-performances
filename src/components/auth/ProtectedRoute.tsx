@@ -3,19 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { TrialExpiredPaywall } from '@/components/trial/TrialExpiredPaywall';
+import { EmailVerificationRequired } from '@/components/auth/EmailVerificationRequired';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: ReactNode;
   requireSubscription?: boolean;
+  requireEmailVerification?: boolean;
 }
 
 export function ProtectedRoute({ 
   children, 
-  requireSubscription = true 
+  requireSubscription = true,
+  requireEmailVerification = true,
 }: ProtectedRouteProps) {
   const navigate = useNavigate();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, signOut, isEmailVerified } = useAuth();
   const { isSubscriptionActive, isExpired, loading: subLoading } = useSubscription();
 
   useEffect(() => {
@@ -39,6 +42,19 @@ export function ProtectedRoute({
   // Not authenticated - will redirect via useEffect
   if (!isAuthenticated) {
     return null;
+  }
+
+  // Email not verified - show verification required screen
+  if (requireEmailVerification && !isEmailVerified && user?.email) {
+    return (
+      <EmailVerificationRequired 
+        email={user.email}
+        onLogout={async () => {
+          await signOut();
+          navigate('/login', { replace: true });
+        }}
+      />
+    );
   }
 
   // Subscription expired - show paywall

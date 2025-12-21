@@ -132,6 +132,9 @@ export function useAuth() {
     return { error };
   };
 
+  // Check if email is verified
+  const isEmailVerified = !!user?.email_confirmed_at;
+
   return {
     user,
     session,
@@ -144,5 +147,6 @@ export function useAuth() {
     updateProfile,
     updatePassword,
     isAuthenticated: !!session,
+    isEmailVerified,
   };
 }
