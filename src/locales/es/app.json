@@ -20,6 +20,8 @@
       "vignette": "Viñeta",
       "dropShadow": "Sombra",
       "temperature": "Temperatura",
+      "highlights": "Luces",
+      "shadows": "Sombras",
       "outputFormat": "Formato",
       "formats": {
         "square": "Cuadrado",

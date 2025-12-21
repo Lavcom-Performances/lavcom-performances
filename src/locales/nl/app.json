@@ -20,6 +20,8 @@
       "vignette": "Vignet",
       "dropShadow": "Schaduw",
       "temperature": "Temperatuur",
+      "highlights": "Hooglichten",
+      "shadows": "Schaduwen",
       "outputFormat": "Formaat",
       "formats": {
         "square": "Vierkant",
