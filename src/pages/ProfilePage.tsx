@@ -14,6 +14,7 @@ import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/aut
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { MFASetup } from "@/components/auth/MFASetup";
 import { ReAuthDialog } from "@/components/auth/ReAuthDialog";
+import { SecurityChecklist } from "@/components/security/SecurityChecklist";
 
 export default function ProfilePage() {
   const { t } = useTranslation(['app', 'common']);
@@ -475,6 +476,9 @@ export default function ProfilePage() {
 
       {/* MFA Security Card */}
       <MFASetup />
+
+      {/* Account Security Checklist */}
+      <SecurityChecklist variant="account" />
 
       {/* Re-auth Dialog for Password Change */}
       <ReAuthDialog

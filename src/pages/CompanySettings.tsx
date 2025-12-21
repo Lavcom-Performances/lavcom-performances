@@ -10,7 +10,8 @@ import {
   X,
   Check,
   Image as ImageIcon,
-  AlertCircle
+  AlertCircle,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -26,6 +27,7 @@ import {
   formatPhoneNumber, 
   formatPhoneDisplay 
 } from "@/lib/textUtils";
+import { SecurityChecklist } from "@/components/security/SecurityChecklist";
 
 interface CompanyInfo {
   name: string;
@@ -241,14 +243,18 @@ export default function CompanySettings() {
         </div>
 
         <Tabs defaultValue="identity" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-lg">
             <TabsTrigger value="identity" className="gap-2">
               <Building2 className="h-4 w-4" />
-              Identité
+              <span className="hidden sm:inline">Identité</span>
             </TabsTrigger>
             <TabsTrigger value="theme" className="gap-2">
               <Palette className="h-4 w-4" />
-              Thème
+              <span className="hidden sm:inline">Thème</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="gap-2">
+              <Shield className="h-4 w-4" />
+              <span className="hidden sm:inline">Sécurité</span>
             </TabsTrigger>
           </TabsList>
 
@@ -574,6 +580,11 @@ export default function CompanySettings() {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Security Tab */}
+          <TabsContent value="security" className="space-y-6">
+            <SecurityChecklist variant="project" />
           </TabsContent>
         </Tabs>
       </div>

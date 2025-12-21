@@ -643,5 +643,37 @@
     "frequencyErrorUser": "Vous avez atteint la limite d'imports. Réessayez dans {{time}}.",
     "validating": "Validation en cours...",
     "suggestion": "Vous pouvez importer vos données par période (ex : mois par mois) pour de meilleurs résultats."
+  },
+  "security": {
+    "accountTitle": "Sécurité du compte",
+    "accountDescription": "Vérifiez que votre compte est bien protégé",
+    "projectTitle": "Sécurité du projet",
+    "projectDescription": "État des protections de votre espace",
+    "viewBackend": "Voir le backend",
+    "manualCheckNote": "La protection contre les mots de passe compromis doit être activée manuellement dans les paramètres du backend (Auth → Security).",
+    "status": {
+      "ok": "Activé",
+      "warning": "Recommandé",
+      "missing": "Non activé",
+      "unknown": "Inconnu"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "Email vérifié",
+        "description": "Votre adresse email a été confirmée"
+      },
+      "mfa": {
+        "label": "Double authentification (2FA)",
+        "description": "Protégez votre compte avec un code temporaire"
+      },
+      "rateLimit": {
+        "label": "Protection anti-abus",
+        "description": "Limite les tentatives de connexion et d'import"
+      },
+      "leakedPassword": {
+        "label": "Protection mots de passe compromis",
+        "description": "Vérifie si votre mot de passe a été exposé dans des fuites de données"
+      }
+    }
   }
 }
