@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.import-csv-check]
 verify_jwt = true
+
+[functions.cleanup-login-logs]
+verify_jwt = false
