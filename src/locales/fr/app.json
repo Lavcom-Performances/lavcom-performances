@@ -783,6 +783,18 @@
       "signOutSuccess": "Sessions terminées",
       "signOutSuccessDescription": "Toutes vos sessions ont été fermées avec succès",
       "signOutError": "Une erreur est survenue lors de la déconnexion"
-    }
+    },
+    "loginHistory": {
+      "title": "Historique des connexions",
+      "description": "Conservé pendant {{days}} jours",
+      "entries": "connexions",
+      "noLogs": "Aucune connexion enregistrée",
+      "newDevice": "Nouvel appareil",
+      "unknownBrowser": "Navigateur inconnu",
+      "unknownOS": "OS inconnu",
+      "unknownDevice": "Appareil inconnu",
+      "showAll": "Afficher tout ({{count}} connexions)"
+    },
+    "openBackend": "Ouvrir le backend"
   }
 }

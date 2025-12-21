@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { SecurityAccountChecklist } from "./SecurityAccountChecklist";
 import { SecurityProjectChecklist } from "./SecurityProjectChecklist";
+import { LoginHistory } from "./LoginHistory";
 
 export interface SecurityScore {
   score: number;
@@ -168,6 +169,9 @@ export function SecurityCenter() {
         isMFAEnabled={isMFAEnabled}
         onScoreChange={setAccountScore}
       />
+
+      {/* Login History */}
+      <LoginHistory />
 
       {/* Project Security Checklist */}
       <SecurityProjectChecklist 
