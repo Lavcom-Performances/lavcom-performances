@@ -23,6 +23,8 @@
       "temperature": "Temperatuur",
       "highlights": "Hooglichten",
       "shadows": "Schaduwen",
+      "curves": "Curves",
+      "curvesLabel": "Toonaanpassing",
       "outputFormat": "Formaat",
       "formats": {
         "square": "Vierkant",

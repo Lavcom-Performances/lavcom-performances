@@ -23,6 +23,8 @@
       "temperature": "Température",
       "highlights": "Hautes lumières",
       "shadows": "Ombres",
+      "curves": "Courbes",
+      "curvesLabel": "Ajustement des tons",
       "outputFormat": "Format",
       "formats": {
         "square": "Carré",

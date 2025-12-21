@@ -23,6 +23,8 @@
       "temperature": "Temperatura",
       "highlights": "Luces",
       "shadows": "Sombras",
+      "curves": "Curvas",
+      "curvesLabel": "Ajuste de tonos",
       "outputFormat": "Formato",
       "formats": {
         "square": "Cuadrado",
