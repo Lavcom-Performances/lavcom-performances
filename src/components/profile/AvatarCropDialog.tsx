@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer, Square, RectangleVertical, RectangleHorizontal, Maximize } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer, Square, RectangleVertical, RectangleHorizontal, Maximize, SunDim, Moon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -40,26 +40,28 @@ interface FilterPreset {
   vignette: number;
   dropShadow: number;
   temperature: number;
+  highlights: number;
+  shadows: number;
   isDefault?: boolean;
   outputFormat?: "square" | "portrait" | "landscape" | "free";
 }
 
 // Default presets with translation keys
 const DEFAULT_PRESETS: Omit<FilterPreset, "name">[] = [
-  { id: "default_bw", brightness: 100, contrast: 110, saturation: 0, blur: 0, sharpen: 20, sepia: 0, invert: 0, grayscale: 100, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, isDefault: true },
-  { id: "default_vintage", brightness: 105, contrast: 90, saturation: 70, blur: 0.5, sharpen: 0, sepia: 40, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 30, dropShadow: 0, temperature: 20, isDefault: true },
-  { id: "default_hd", brightness: 100, contrast: 105, saturation: 105, blur: 0, sharpen: 50, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, isDefault: true },
-  { id: "default_warm", brightness: 105, contrast: 100, saturation: 120, blur: 0, sharpen: 10, sepia: 15, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 40, isDefault: true },
-  { id: "default_soft", brightness: 105, contrast: 95, saturation: 90, blur: 1, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, isDefault: true },
-  { id: "default_dramatic", brightness: 95, contrast: 130, saturation: 110, blur: 0, sharpen: 30, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 50, dropShadow: 0, temperature: 0, isDefault: true },
-  { id: "default_sepia", brightness: 100, contrast: 100, saturation: 100, blur: 0, sharpen: 0, sepia: 100, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, isDefault: true },
-  { id: "default_negative", brightness: 100, contrast: 100, saturation: 100, blur: 0, sharpen: 0, sepia: 0, invert: 100, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, isDefault: true },
-  { id: "default_psychedelic", brightness: 100, contrast: 110, saturation: 150, blur: 0, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 180, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, isDefault: true },
-  { id: "default_ghost", brightness: 110, contrast: 90, saturation: 80, blur: 0, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 50, vignette: 0, dropShadow: 0, temperature: 0, isDefault: true },
-  { id: "default_cinematic", brightness: 95, contrast: 115, saturation: 90, blur: 0, sharpen: 10, sepia: 10, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 60, dropShadow: 0, temperature: 10, isDefault: true },
-  { id: "default_floating", brightness: 100, contrast: 100, saturation: 100, blur: 0, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 80, temperature: 0, isDefault: true },
-  { id: "default_cold", brightness: 100, contrast: 105, saturation: 90, blur: 0, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: -50, isDefault: true },
-  { id: "default_sunset", brightness: 105, contrast: 100, saturation: 130, blur: 0, sharpen: 0, sepia: 10, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 20, dropShadow: 0, temperature: 60, isDefault: true },
+  { id: "default_bw", brightness: 100, contrast: 110, saturation: 0, blur: 0, sharpen: 20, sepia: 0, invert: 0, grayscale: 100, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, highlights: 0, shadows: 0, isDefault: true },
+  { id: "default_vintage", brightness: 105, contrast: 90, saturation: 70, blur: 0.5, sharpen: 0, sepia: 40, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 30, dropShadow: 0, temperature: 20, highlights: -10, shadows: 20, isDefault: true },
+  { id: "default_hd", brightness: 100, contrast: 105, saturation: 105, blur: 0, sharpen: 50, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, highlights: 20, shadows: -20, isDefault: true },
+  { id: "default_warm", brightness: 105, contrast: 100, saturation: 120, blur: 0, sharpen: 10, sepia: 15, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 40, highlights: 0, shadows: 0, isDefault: true },
+  { id: "default_soft", brightness: 105, contrast: 95, saturation: 90, blur: 1, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, highlights: 15, shadows: 15, isDefault: true },
+  { id: "default_dramatic", brightness: 95, contrast: 130, saturation: 110, blur: 0, sharpen: 30, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 50, dropShadow: 0, temperature: 0, highlights: -30, shadows: -30, isDefault: true },
+  { id: "default_sepia", brightness: 100, contrast: 100, saturation: 100, blur: 0, sharpen: 0, sepia: 100, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, highlights: 0, shadows: 0, isDefault: true },
+  { id: "default_negative", brightness: 100, contrast: 100, saturation: 100, blur: 0, sharpen: 0, sepia: 0, invert: 100, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, highlights: 0, shadows: 0, isDefault: true },
+  { id: "default_psychedelic", brightness: 100, contrast: 110, saturation: 150, blur: 0, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 180, opacity: 100, vignette: 0, dropShadow: 0, temperature: 0, highlights: 0, shadows: 0, isDefault: true },
+  { id: "default_ghost", brightness: 110, contrast: 90, saturation: 80, blur: 0, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 50, vignette: 0, dropShadow: 0, temperature: 0, highlights: 30, shadows: 30, isDefault: true },
+  { id: "default_cinematic", brightness: 95, contrast: 115, saturation: 90, blur: 0, sharpen: 10, sepia: 10, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 60, dropShadow: 0, temperature: 10, highlights: -20, shadows: 10, isDefault: true },
+  { id: "default_floating", brightness: 100, contrast: 100, saturation: 100, blur: 0, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 80, temperature: 0, highlights: 0, shadows: 0, isDefault: true },
+  { id: "default_cold", brightness: 100, contrast: 105, saturation: 90, blur: 0, sharpen: 0, sepia: 0, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 0, dropShadow: 0, temperature: -50, highlights: 10, shadows: -10, isDefault: true },
+  { id: "default_sunset", brightness: 105, contrast: 100, saturation: 130, blur: 0, sharpen: 0, sepia: 10, invert: 0, grayscale: 0, hueRotate: 0, opacity: 100, vignette: 20, dropShadow: 0, temperature: 60, highlights: 0, shadows: 0, isDefault: true },
 ];
 
 function loadPresets(): FilterPreset[] {
@@ -186,6 +188,47 @@ function applyTemperature(ctx: CanvasRenderingContext2D, width: number, height: 
   ctx.putImageData(imageData, 0, 0);
 }
 
+// Apply highlights and shadows adjustment
+// Highlights: adjusts bright areas (-100 to +100)
+// Shadows: adjusts dark areas (-100 to +100)
+function applyClarity(ctx: CanvasRenderingContext2D, width: number, height: number, highlights: number, shadows: number) {
+  if (highlights === 0 && shadows === 0) return;
+  
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  
+  const highlightsFactor = highlights / 100;
+  const shadowsFactor = shadows / 100;
+  
+  for (let i = 0; i < data.length; i += 4) {
+    // Calculate luminance (brightness) of the pixel
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+    const luminance = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+    
+    // Apply highlights to bright areas (luminance > 0.5)
+    // Apply shadows to dark areas (luminance < 0.5)
+    let adjustment = 0;
+    
+    if (luminance > 0.5) {
+      // Highlights: more effect on brighter pixels
+      const highlightStrength = (luminance - 0.5) * 2; // 0 to 1
+      adjustment = highlightsFactor * highlightStrength * 50;
+    } else {
+      // Shadows: more effect on darker pixels
+      const shadowStrength = (0.5 - luminance) * 2; // 0 to 1
+      adjustment = shadowsFactor * shadowStrength * 50;
+    }
+    
+    data[i] = Math.min(255, Math.max(0, r + adjustment));
+    data[i + 1] = Math.min(255, Math.max(0, g + adjustment));
+    data[i + 2] = Math.min(255, Math.max(0, b + adjustment));
+  }
+  
+  ctx.putImageData(imageData, 0, 0);
+}
+
 interface AvatarCropDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -249,6 +292,8 @@ export function AvatarCropDialog({
   const [vignette, setVignette] = useState(0);
   const [dropShadow, setDropShadow] = useState(0);
   const [temperature, setTemperature] = useState(0);
+  const [highlights, setHighlights] = useState(0);
+  const [shadows, setShadows] = useState(0);
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("square");
   
   // Presets state
@@ -317,9 +362,10 @@ export function AvatarCropDialog({
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     applySharpen(ctx, previewWidth, previewHeight, sharpen);
     applyTemperature(ctx, previewWidth, previewHeight, temperature);
+    applyClarity(ctx, previewWidth, previewHeight, highlights, shadows);
     applyVignette(ctx, previewWidth, previewHeight, vignette);
     applyDropShadow(ctx, previewWidth, previewHeight, dropShadow);
-  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur, sharpen, sepia, invert, grayscale, hueRotate, opacity, vignette, dropShadow, temperature, outputFormat]);
+  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur, sharpen, sepia, invert, grayscale, hueRotate, opacity, vignette, dropShadow, temperature, highlights, shadows, outputFormat]);
 
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
@@ -413,6 +459,7 @@ export function AvatarCropDialog({
       ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       applySharpen(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), sharpen);
       applyTemperature(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), temperature);
+      applyClarity(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), highlights, shadows);
       applyVignette(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), vignette);
       applyDropShadow(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), dropShadow);
 
@@ -452,6 +499,8 @@ export function AvatarCropDialog({
       setVignette(0);
       setDropShadow(0);
       setTemperature(0);
+      setHighlights(0);
+      setShadows(0);
       setOutputFormat("square");
       setCrop(undefined);
       setCompletedCrop(undefined);
@@ -867,8 +916,38 @@ export function AvatarCropDialog({
               <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{temperature > 0 ? '+' : ''}{temperature}</span>
             </div>
 
+            {/* Highlights control */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <SunDim className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.highlights")}</span>
+              <Slider
+                value={[highlights]}
+                onValueChange={(values) => setHighlights(values[0])}
+                min={-100}
+                max={100}
+                step={5}
+                className="flex-1"
+              />
+              <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{highlights > 0 ? '+' : ''}{highlights}</span>
+            </div>
+
+            {/* Shadows control */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Moon className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.shadows")}</span>
+              <Slider
+                value={[shadows]}
+                onValueChange={(values) => setShadows(values[0])}
+                min={-100}
+                max={100}
+                step={5}
+                className="flex-1"
+              />
+              <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{shadows > 0 ? '+' : ''}{shadows}</span>
+            </div>
+
             {/* Reset button */}
-            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0 || sharpen !== 0 || sepia !== 0 || invert !== 0 || grayscale !== 0 || hueRotate !== 0 || opacity !== 100 || vignette !== 0 || dropShadow !== 0 || temperature !== 0 || outputFormat !== "square") && (
+            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0 || sharpen !== 0 || sepia !== 0 || invert !== 0 || grayscale !== 0 || hueRotate !== 0 || opacity !== 100 || vignette !== 0 || dropShadow !== 0 || temperature !== 0 || highlights !== 0 || shadows !== 0 || outputFormat !== "square") && (
               <Button
                 type="button"
                 variant="ghost"
@@ -891,6 +970,8 @@ export function AvatarCropDialog({
                   setVignette(0);
                   setDropShadow(0);
                   setTemperature(0);
+                  setHighlights(0);
+                  setShadows(0);
                   setOutputFormat("square");
                   if (imgRef.current) {
                     const { width, height } = imgRef.current;
@@ -932,6 +1013,8 @@ export function AvatarCropDialog({
                       setVignette(preset.vignette);
                       setDropShadow(preset.dropShadow);
                       setTemperature(preset.temperature);
+                      setHighlights(preset.highlights);
+                      setShadows(preset.shadows);
                       setSelectedPresetId(preset.id);
                     }}
                   >
@@ -961,6 +1044,8 @@ export function AvatarCropDialog({
                         setVignette(preset.vignette ?? 0);
                         setDropShadow(preset.dropShadow ?? 0);
                         setTemperature(preset.temperature ?? 0);
+                        setHighlights(preset.highlights ?? 0);
+                        setShadows(preset.shadows ?? 0);
                         setSelectedPresetId(id);
                       }
                     }}
@@ -1029,6 +1114,8 @@ export function AvatarCropDialog({
                       vignette,
                       dropShadow,
                       temperature,
+                      highlights,
+                      shadows,
                     };
                     const updatedPresets = [...presets, newPreset];
                     setPresets(updatedPresets);

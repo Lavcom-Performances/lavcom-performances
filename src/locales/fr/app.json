@@ -20,6 +20,8 @@
       "vignette": "Vignette",
       "dropShadow": "Ombre",
       "temperature": "Température",
+      "highlights": "Hautes lumières",
+      "shadows": "Ombres",
       "outputFormat": "Format",
       "formats": {
         "square": "Carré",
