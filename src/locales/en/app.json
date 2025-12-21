@@ -20,6 +20,12 @@
       "vignette": "Vignette",
       "dropShadow": "Shadow",
       "temperature": "Temperature",
+      "outputFormat": "Format",
+      "formats": {
+        "square": "Square",
+        "portrait": "Portrait",
+        "landscape": "Landscape"
+      },
       "presets": {
         "title": "Presets",
         "selectPlaceholder": "Load a preset...",

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer, Square, RectangleVertical, RectangleHorizontal } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -41,6 +41,7 @@ interface FilterPreset {
   dropShadow: number;
   temperature: number;
   isDefault?: boolean;
+  outputFormat?: "square" | "portrait" | "landscape";
 }
 
 // Default presets with translation keys
@@ -212,6 +213,14 @@ function centerAspectCrop(
   );
 }
 
+type OutputFormat = "square" | "portrait" | "landscape";
+
+const OUTPUT_FORMATS: { id: OutputFormat; aspect: number; width: number; height: number }[] = [
+  { id: "square", aspect: 1, width: 256, height: 256 },
+  { id: "portrait", aspect: 3 / 4, width: 192, height: 256 },
+  { id: "landscape", aspect: 4 / 3, width: 256, height: 192 },
+];
+
 export function AvatarCropDialog({
   open,
   onOpenChange,
@@ -239,6 +248,7 @@ export function AvatarCropDialog({
   const [vignette, setVignette] = useState(0);
   const [dropShadow, setDropShadow] = useState(0);
   const [temperature, setTemperature] = useState(0);
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>("square");
   
   // Presets state
   const [presets, setPresets] = useState<FilterPreset[]>(loadPresets);
@@ -261,19 +271,21 @@ export function AvatarCropDialog({
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
-    const previewSize = 80;
-    canvas.width = previewSize;
-    canvas.height = previewSize;
+    const format = OUTPUT_FORMATS.find(f => f.id === outputFormat) || OUTPUT_FORMATS[0];
+    const previewWidth = 80;
+    const previewHeight = Math.round(previewWidth / format.aspect);
+    canvas.width = previewWidth;
+    canvas.height = previewHeight;
 
     ctx.imageSmoothingQuality = "high";
 
     // Clear canvas
-    ctx.clearRect(0, 0, previewSize, previewSize);
+    ctx.clearRect(0, 0, previewWidth, previewHeight);
 
     // Apply rotation
     const rotateRads = (rotate * Math.PI) / 180;
-    const centerX = previewSize / 2;
-    const centerY = previewSize / 2;
+    const centerX = previewWidth / 2;
+    const centerY = previewHeight / 2;
 
     ctx.translate(centerX, centerY);
     ctx.rotate(rotateRads);
@@ -292,21 +304,23 @@ export function AvatarCropDialog({
       completedCrop.height * scaleY,
       0,
       0,
-      previewSize,
-      previewSize
+      previewWidth,
+      previewHeight
     );
 
     // Reset transform before applying post-processing effects
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    applySharpen(ctx, previewSize, previewSize, sharpen);
-    applyTemperature(ctx, previewSize, previewSize, temperature);
-    applyVignette(ctx, previewSize, previewSize, vignette);
-    applyDropShadow(ctx, previewSize, previewSize, dropShadow);
-  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur, sharpen, sepia, invert, grayscale, hueRotate, opacity, vignette, dropShadow, temperature]);
+    applySharpen(ctx, previewWidth, previewHeight, sharpen);
+    applyTemperature(ctx, previewWidth, previewHeight, temperature);
+    applyVignette(ctx, previewWidth, previewHeight, vignette);
+    applyDropShadow(ctx, previewWidth, previewHeight, dropShadow);
+  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur, sharpen, sepia, invert, grayscale, hueRotate, opacity, vignette, dropShadow, temperature, outputFormat]);
+
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
-    setCrop(centerAspectCrop(width, height, 1));
-  }, []);
+    const format = OUTPUT_FORMATS.find(f => f.id === outputFormat) || OUTPUT_FORMATS[0];
+    setCrop(centerAspectCrop(width, height, format.aspect));
+  }, [outputFormat]);
 
   const handleCropComplete = async () => {
     if (!completedCrop || !imgRef.current) return;
@@ -326,18 +340,20 @@ export function AvatarCropDialog({
       const scaleY = image.naturalHeight / image.height;
 
       const pixelRatio = window.devicePixelRatio || 1;
-      const outputSize = 256;
+      const format = OUTPUT_FORMATS.find(f => f.id === outputFormat) || OUTPUT_FORMATS[0];
+      const outputWidth = format.width;
+      const outputHeight = format.height;
 
-      canvas.width = outputSize * pixelRatio;
-      canvas.height = outputSize * pixelRatio;
+      canvas.width = outputWidth * pixelRatio;
+      canvas.height = outputHeight * pixelRatio;
 
       ctx.scale(pixelRatio, pixelRatio);
       ctx.imageSmoothingQuality = "high";
 
       // Apply rotation
       const rotateRads = (rotate * Math.PI) / 180;
-      const centerX = outputSize / 2;
-      const centerY = outputSize / 2;
+      const centerX = outputWidth / 2;
+      const centerY = outputHeight / 2;
 
       ctx.translate(centerX, centerY);
       ctx.rotate(rotateRads);
@@ -356,16 +372,16 @@ export function AvatarCropDialog({
         completedCrop.height * scaleY,
         0,
         0,
-        outputSize,
-        outputSize
+        outputWidth,
+        outputHeight
       );
 
       // Reset transform before applying post-processing effects
       ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-      applySharpen(ctx, Math.round(outputSize * pixelRatio), Math.round(outputSize * pixelRatio), sharpen);
-      applyTemperature(ctx, Math.round(outputSize * pixelRatio), Math.round(outputSize * pixelRatio), temperature);
-      applyVignette(ctx, Math.round(outputSize * pixelRatio), Math.round(outputSize * pixelRatio), vignette);
-      applyDropShadow(ctx, Math.round(outputSize * pixelRatio), Math.round(outputSize * pixelRatio), dropShadow);
+      applySharpen(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), sharpen);
+      applyTemperature(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), temperature);
+      applyVignette(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), vignette);
+      applyDropShadow(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), dropShadow);
 
       canvas.toBlob(
         (blob) => {
@@ -403,6 +419,7 @@ export function AvatarCropDialog({
       setVignette(0);
       setDropShadow(0);
       setTemperature(0);
+      setOutputFormat("square");
       setCrop(undefined);
       setCompletedCrop(undefined);
     }
@@ -424,8 +441,8 @@ export function AvatarCropDialog({
                 crop={crop}
                 onChange={(_, percentCrop) => setCrop(percentCrop)}
                 onComplete={(c) => setCompletedCrop(c)}
-                aspect={1}
-                circularCrop
+                aspect={OUTPUT_FORMATS.find(f => f.id === outputFormat)?.aspect || 1}
+                circularCrop={outputFormat === "square"}
                 className="max-h-[200px] sm:max-h-[300px]"
               >
                 <img
@@ -448,8 +465,11 @@ export function AvatarCropDialog({
                 <span className="text-xs text-muted-foreground">{t("app:profile.avatar.preview")}</span>
                 <canvas
                   ref={previewCanvasRef}
-                  className="rounded-full border-2 border-primary/20"
-                  style={{ width: 60, height: 60 }}
+                  className={`border-2 border-primary/20 ${outputFormat === "square" ? "rounded-full" : "rounded-lg"}`}
+                  style={{ 
+                    width: 60, 
+                    height: outputFormat === "square" ? 60 : outputFormat === "portrait" ? 80 : 45
+                  }}
                 />
               </div>
             )}
@@ -457,6 +477,65 @@ export function AvatarCropDialog({
 
           {/* Controls section */}
           <div className="space-y-3 sm:space-y-4 px-1 sm:px-2">
+            {/* Output format selector */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Square className="h-4 w-4 text-muted-foreground shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.outputFormat")}</span>
+              <div className="flex gap-2 flex-1">
+                <Button
+                  type="button"
+                  variant={outputFormat === "square" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setOutputFormat("square");
+                    if (imgRef.current) {
+                      const { width, height } = imgRef.current;
+                      setCrop(centerAspectCrop(width, height, 1));
+                    }
+                  }}
+                  className="flex-1 px-2 sm:px-3"
+                  title={t("app:profile.avatar.formats.square")}
+                >
+                  <Square className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("app:profile.avatar.formats.square")}</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant={outputFormat === "portrait" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setOutputFormat("portrait");
+                    if (imgRef.current) {
+                      const { width, height } = imgRef.current;
+                      setCrop(centerAspectCrop(width, height, 3 / 4));
+                    }
+                  }}
+                  className="flex-1 px-2 sm:px-3"
+                  title={t("app:profile.avatar.formats.portrait")}
+                >
+                  <RectangleVertical className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("app:profile.avatar.formats.portrait")}</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant={outputFormat === "landscape" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setOutputFormat("landscape");
+                    if (imgRef.current) {
+                      const { width, height } = imgRef.current;
+                      setCrop(centerAspectCrop(width, height, 4 / 3));
+                    }
+                  }}
+                  className="flex-1 px-2 sm:px-3"
+                  title={t("app:profile.avatar.formats.landscape")}
+                >
+                  <RectangleHorizontal className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("app:profile.avatar.formats.landscape")}</span>
+                </Button>
+              </div>
+            </div>
+
             {/* Zoom control */}
             <div className="flex items-center gap-2 sm:gap-3">
               <ZoomIn className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -733,7 +812,7 @@ export function AvatarCropDialog({
             </div>
 
             {/* Reset button */}
-            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0 || sharpen !== 0 || sepia !== 0 || invert !== 0 || grayscale !== 0 || hueRotate !== 0 || opacity !== 100 || vignette !== 0 || dropShadow !== 0 || temperature !== 0) && (
+            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0 || sharpen !== 0 || sepia !== 0 || invert !== 0 || grayscale !== 0 || hueRotate !== 0 || opacity !== 100 || vignette !== 0 || dropShadow !== 0 || temperature !== 0 || outputFormat !== "square") && (
               <Button
                 type="button"
                 variant="ghost"
@@ -756,6 +835,11 @@ export function AvatarCropDialog({
                   setVignette(0);
                   setDropShadow(0);
                   setTemperature(0);
+                  setOutputFormat("square");
+                  if (imgRef.current) {
+                    const { width, height } = imgRef.current;
+                    setCrop(centerAspectCrop(width, height, 1));
+                  }
                   setSelectedPresetId("");
                 }}
                 className="w-full"
