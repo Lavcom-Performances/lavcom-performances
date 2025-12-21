@@ -25,6 +25,7 @@
       "shadows": "Schaduwen",
       "curves": "Curves",
       "curvesLabel": "Toonaanpassing",
+      "vibrance": "Levendigheid",
       "outputFormat": "Formaat",
       "formats": {
         "square": "Vierkant",
@@ -63,7 +64,8 @@
           "default_cinematic": "Filmisch",
           "default_floating": "Zwevend",
           "default_cold": "Koud",
-          "default_sunset": "Zonsondergang"
+          "default_sunset": "Zonsondergang",
+          "default_vibrant": "Levendig"
         }
       }
     }

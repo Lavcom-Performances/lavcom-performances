@@ -25,6 +25,7 @@
       "shadows": "Schatten",
       "curves": "Kurven",
       "curvesLabel": "Tonanpassung",
+      "vibrance": "Dynamik",
       "outputFormat": "Format",
       "formats": {
         "square": "Quadrat",
@@ -63,7 +64,8 @@
           "default_cinematic": "Filmisch",
           "default_floating": "Schwebend",
           "default_cold": "Kalt",
-          "default_sunset": "Sonnenuntergang"
+          "default_sunset": "Sonnenuntergang",
+          "default_vibrant": "Lebendig"
         }
       }
     }
