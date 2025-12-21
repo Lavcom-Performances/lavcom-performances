@@ -25,6 +25,7 @@
       "shadows": "Ombre",
       "curves": "Curve",
       "curvesLabel": "Regolazione toni",
+      "vibrance": "Vividezza",
       "outputFormat": "Formato",
       "formats": {
         "square": "Quadrato",
@@ -63,7 +64,8 @@
           "default_cinematic": "Cinematografico",
           "default_floating": "Fluttuante",
           "default_cold": "Freddo",
-          "default_sunset": "Tramonto"
+          "default_sunset": "Tramonto",
+          "default_vibrant": "Vibrante"
         }
       }
     }
