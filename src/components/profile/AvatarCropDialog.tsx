@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer, Square, RectangleVertical, RectangleHorizontal } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer, Square, RectangleVertical, RectangleHorizontal, Maximize } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -41,7 +41,7 @@ interface FilterPreset {
   dropShadow: number;
   temperature: number;
   isDefault?: boolean;
-  outputFormat?: "square" | "portrait" | "landscape";
+  outputFormat?: "square" | "portrait" | "landscape" | "free";
 }
 
 // Default presets with translation keys
@@ -213,12 +213,13 @@ function centerAspectCrop(
   );
 }
 
-type OutputFormat = "square" | "portrait" | "landscape";
+type OutputFormat = "square" | "portrait" | "landscape" | "free";
 
-const OUTPUT_FORMATS: { id: OutputFormat; aspect: number; width: number; height: number }[] = [
+const OUTPUT_FORMATS: { id: OutputFormat; aspect: number | undefined; width: number; height: number }[] = [
   { id: "square", aspect: 1, width: 256, height: 256 },
   { id: "portrait", aspect: 3 / 4, width: 192, height: 256 },
   { id: "landscape", aspect: 4 / 3, width: 256, height: 192 },
+  { id: "free", aspect: undefined, width: 256, height: 256 },
 ];
 
 export function AvatarCropDialog({
@@ -273,7 +274,11 @@ export function AvatarCropDialog({
 
     const format = OUTPUT_FORMATS.find(f => f.id === outputFormat) || OUTPUT_FORMATS[0];
     const previewWidth = 80;
-    const previewHeight = Math.round(previewWidth / format.aspect);
+    // For free format, calculate height based on actual crop ratio
+    const cropAspect = completedCrop.width / completedCrop.height;
+    const previewHeight = format.aspect 
+      ? Math.round(previewWidth / format.aspect)
+      : Math.round(previewWidth / cropAspect);
     canvas.width = previewWidth;
     canvas.height = previewHeight;
 
@@ -319,7 +324,18 @@ export function AvatarCropDialog({
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     const format = OUTPUT_FORMATS.find(f => f.id === outputFormat) || OUTPUT_FORMATS[0];
-    setCrop(centerAspectCrop(width, height, format.aspect));
+    if (format.aspect) {
+      setCrop(centerAspectCrop(width, height, format.aspect));
+    } else {
+      // Free crop: start with a centered 90% crop
+      setCrop({
+        unit: "%",
+        x: 5,
+        y: 5,
+        width: 90,
+        height: 90,
+      });
+    }
   }, [outputFormat]);
 
   const handleCropComplete = async () => {
@@ -341,8 +357,25 @@ export function AvatarCropDialog({
 
       const pixelRatio = window.devicePixelRatio || 1;
       const format = OUTPUT_FORMATS.find(f => f.id === outputFormat) || OUTPUT_FORMATS[0];
-      const outputWidth = format.width;
-      const outputHeight = format.height;
+      
+      // For free format, use the actual crop dimensions (max 256px)
+      let outputWidth: number;
+      let outputHeight: number;
+      
+      if (format.aspect) {
+        outputWidth = format.width;
+        outputHeight = format.height;
+      } else {
+        const cropAspect = completedCrop.width / completedCrop.height;
+        const maxSize = 256;
+        if (cropAspect >= 1) {
+          outputWidth = maxSize;
+          outputHeight = Math.round(maxSize / cropAspect);
+        } else {
+          outputHeight = maxSize;
+          outputWidth = Math.round(maxSize * cropAspect);
+        }
+      }
 
       canvas.width = outputWidth * pixelRatio;
       canvas.height = outputHeight * pixelRatio;
@@ -441,7 +474,7 @@ export function AvatarCropDialog({
                 crop={crop}
                 onChange={(_, percentCrop) => setCrop(percentCrop)}
                 onComplete={(c) => setCompletedCrop(c)}
-                aspect={OUTPUT_FORMATS.find(f => f.id === outputFormat)?.aspect || 1}
+                aspect={OUTPUT_FORMATS.find(f => f.id === outputFormat)?.aspect}
                 circularCrop={outputFormat === "square"}
                 className="max-h-[200px] sm:max-h-[300px]"
               >
@@ -468,7 +501,7 @@ export function AvatarCropDialog({
                   className={`border-2 border-primary/20 ${outputFormat === "square" ? "rounded-full" : "rounded-lg"}`}
                   style={{ 
                     width: 60, 
-                    height: outputFormat === "square" ? 60 : outputFormat === "portrait" ? 80 : 45
+                    height: outputFormat === "square" ? 60 : outputFormat === "portrait" ? 80 : outputFormat === "landscape" ? 45 : 60
                   }}
                 />
               </div>
@@ -532,6 +565,29 @@ export function AvatarCropDialog({
                 >
                   <RectangleHorizontal className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">{t("app:profile.avatar.formats.landscape")}</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant={outputFormat === "free" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setOutputFormat("free");
+                    if (imgRef.current) {
+                      const { width, height } = imgRef.current;
+                      setCrop({
+                        unit: "%",
+                        x: 5,
+                        y: 5,
+                        width: 90,
+                        height: 90,
+                      });
+                    }
+                  }}
+                  className="flex-1 px-2 sm:px-3"
+                  title={t("app:profile.avatar.formats.free")}
+                >
+                  <Maximize className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{t("app:profile.avatar.formats.free")}</span>
                 </Button>
               </div>
             </div>
