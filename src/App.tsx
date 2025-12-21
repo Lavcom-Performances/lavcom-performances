@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ViewModeProvider } from "@/hooks/useViewMode";
 import { RouteTracker } from "@/components/analytics/RouteTracker";
 import { CookieBanner } from "@/components/cookies/CookieBanner";
+import { LoginLoggerProvider } from "@/components/auth/LoginLoggerProvider";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -60,6 +61,7 @@ const App = () => (
         <Toaster />
         <Sonner />
       <BrowserRouter>
+        <LoginLoggerProvider>
         <RouteTracker />
         <Routes>
           {/* Public routes */}
@@ -118,6 +120,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
         <CookieBanner />
+        </LoginLoggerProvider>
         </BrowserRouter>
       </TooltipProvider>
     </ViewModeProvider>
