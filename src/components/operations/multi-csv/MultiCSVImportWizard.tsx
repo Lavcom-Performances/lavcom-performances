@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, X, Upload } from "lucide-react";
 import {
   Dialog,
@@ -14,6 +15,7 @@ import { MultiCSVAssociationStep } from "./MultiCSVAssociationStep";
 import { MultiCSVImportStep } from "./MultiCSVImportStep";
 import { parseCSVToColumns, autoDetectMapping, parseRows, calculateSummary } from "../csv-import/csvParser";
 import { useOperationsImport } from "@/hooks/useOperationsImport";
+import { useImportRateLimit } from "@/hooks/useImportRateLimit";
 import { useSites } from "@/hooks/useSites";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,9 +33,11 @@ export function MultiCSVImportWizard({
   onOpenChange,
 }: MultiCSVImportWizardProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation("app");
   const { user } = useAuth();
   const { sites, createSite, fetchSites } = useSites();
   const { importOperations, isImporting: isImportingOne } = useOperationsImport();
+  const { validateFile, validateLines, checkRateLimit, showFileError, limits } = useImportRateLimit();
 
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [files, setFiles] = useState<FileWithMeta[]>([]);
@@ -95,21 +99,39 @@ export function MultiCSVImportWizard({
     async (newFiles: File[]) => {
       setIsProcessing(true);
 
-      const fileItems: FileWithMeta[] = newFiles.map((file) => ({
-        id: generateId(),
-        file,
-        status: "parsing" as const,
-        siteId: null,
-        summary: null,
-        parsedRows: [],
-        error: null,
-        duplicateWarning: null,
-      }));
+      const fileItems: FileWithMeta[] = newFiles.map((file) => {
+        // Validate file size immediately
+        const validation = validateFile(file);
+        if (!validation.valid) {
+          return {
+            id: generateId(),
+            file,
+            status: "error" as const,
+            siteId: null,
+            summary: null,
+            parsedRows: [],
+            error: t(`csvImport.${validation.errorKey}`),
+            duplicateWarning: null,
+          };
+        }
+        return {
+          id: generateId(),
+          file,
+          status: "parsing" as const,
+          siteId: null,
+          summary: null,
+          parsedRows: [],
+          error: null,
+          duplicateWarning: null,
+        };
+      });
 
       setFiles((prev) => [...prev, ...fileItems]);
 
-      // Process each file
+      // Process each file that passed initial validation
       for (const fileItem of fileItems) {
+        if (fileItem.status === "error") continue;
+        
         try {
           const text = await fileItem.file.text();
           const { columns, rows } = parseCSVToColumns(text);
@@ -119,6 +141,19 @@ export function MultiCSVImportWizard({
               prev.map((f) =>
                 f.id === fileItem.id
                   ? { ...f, status: "error" as const, error: "Fichier vide ou format invalide" }
+                  : f
+              )
+            );
+            continue;
+          }
+
+          // Validate line count
+          const lineValidation = validateLines(rows.length);
+          if (!lineValidation.valid) {
+            setFiles((prev) =>
+              prev.map((f) =>
+                f.id === fileItem.id
+                  ? { ...f, status: "error" as const, error: t(`csvImport.${lineValidation.errorKey}`) }
                   : f
               )
             );
@@ -165,7 +200,7 @@ export function MultiCSVImportWizard({
 
       setIsProcessing(false);
     },
-    [checkDuplicate]
+    [checkDuplicate, validateFile, validateLines, t]
   );
 
   // Remove file
