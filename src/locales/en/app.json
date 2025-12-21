@@ -88,6 +88,7 @@
     "importExport": "Import / Export",
     "users": "Users",
     "settings": "Settings",
+    "security": "Security",
     "charts": "Charts",
     "analyses": "Analyses",
     "administration": "Administration",
@@ -679,6 +680,98 @@
         "label": "Compromised password protection",
         "description": "Checks if your password has been exposed in data breaches"
       }
+    }
+  },
+  "securityCenter": {
+    "title": "Security Center",
+    "description": "View and improve the protection of your account and data",
+    "globalScore": "Global score",
+    "accountScore": "Account score",
+    "projectScore": "Project score",
+    "accountTitle": "Account Security",
+    "accountDescription": "Protection of your identity and access",
+    "projectTitle": "Project Security",
+    "projectDescription": "Protection of your data and configurations",
+    "enableMFA": "Enable 2FA",
+    "changePassword": "Change",
+    "comingSoon": "Coming soon",
+    "seeHowToActivate": "See how to activate",
+    "openBackend": "Open backend",
+    "whyImportant": "Why",
+    "inApp": "In app",
+    "inBackend": "Backend",
+    "backendNote": "Some protections require manual activation in the backend settings. Items marked 'Backend' are managed server-side.",
+    "status": {
+      "ok": "Enabled",
+      "warning": "Recommended",
+      "toActivate": "To activate",
+      "missing": "Not enabled"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "Email verified",
+        "description": "Your email address has been confirmed",
+        "whyImportant": "Enables account recovery and security notifications"
+      },
+      "mfa": {
+        "label": "Two-factor authentication (2FA)",
+        "description": "Protect your account with a temporary code",
+        "whyImportant": "Prevents access even if your password is compromised"
+      },
+      "passwordStrong": {
+        "label": "Strong password",
+        "description": "Your password meets security criteria",
+        "whyImportant": "A strong password resists brute force attacks"
+      },
+      "sessions": {
+        "label": "Session management",
+        "description": "Control devices connected to your account",
+        "whyImportant": "Allows detecting and revoking unauthorized access"
+      },
+      "rls": {
+        "label": "Data isolation (RLS)",
+        "description": "Each user only sees their own data",
+        "whyImportant": "Prevents a user from accessing another's data"
+      },
+      "rateLimit": {
+        "label": "Abuse protection",
+        "description": "Limits login, import and export attempts",
+        "whyImportant": "Protects against brute force attacks and spam"
+      },
+      "edgeFunctions": {
+        "label": "Secure backend functions",
+        "description": "Functions create-demo, fetch-from-siret and import-csv-check are audited",
+        "whyImportant": "Ensures server-side code is secure"
+      },
+      "leakedPassword": {
+        "label": "Compromised password protection",
+        "description": "Checks if passwords have been exposed in breaches",
+        "whyImportant": "Prevents using passwords known to hackers"
+      },
+      "importLimits": {
+        "label": "Import limits",
+        "description": "Files limited to 20 MB and 200,000 rows",
+        "whyImportant": "Protects against overload and resource abuse"
+      },
+      "exportLimits": {
+        "label": "Export limits",
+        "description": "PDF and Excel exports with rate limiting",
+        "whyImportant": "Prevents massive data extraction"
+      }
+    },
+    "leakedPassword": {
+      "modalTitle": "Enable protection",
+      "modalDescription": "Compromised password protection",
+      "infoBox": "This feature checks if a password has been exposed in known data breaches. It must be enabled manually in the backend.",
+      "step1Title": "Access the backend",
+      "step1Description": "Click the button below to open the backend settings",
+      "step2Title": "Go to Authentication",
+      "step2Description": "In the left menu, click on 'Authentication'",
+      "step3Title": "Open security settings",
+      "step3Description": "Click on 'Providers' then look for the 'Password' section to see options",
+      "step4Title": "Enable 'Leaked Password Protection'",
+      "step4Description": "Check the 'Enable Leaked Password Protection' option and save",
+      "successIndicator": "Once enabled, users will be warned if they use a compromised password"
     }
   }
 }

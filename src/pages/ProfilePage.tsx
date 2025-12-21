@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Save, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff, Shield } from "lucide-react";
+import { Loader2, Save, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +14,7 @@ import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/aut
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { MFASetup } from "@/components/auth/MFASetup";
 import { ReAuthDialog } from "@/components/auth/ReAuthDialog";
-import { SecurityChecklist } from "@/components/security/SecurityChecklist";
+import { SecurityCenter } from "@/components/security/SecurityCenter";
 
 export default function ProfilePage() {
   const { t } = useTranslation(['app', 'common']);
@@ -479,8 +479,8 @@ export default function ProfilePage() {
         <MFASetup />
       </div>
 
-      {/* Account Security Checklist */}
-      <SecurityChecklist variant="account" />
+      {/* Security Center */}
+      <SecurityCenter />
 
       {/* Re-auth Dialog for Password Change */}
       <ReAuthDialog

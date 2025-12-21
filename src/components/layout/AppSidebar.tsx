@@ -21,7 +21,8 @@ import {
   Lightbulb,
   Wrench,
   DollarSign,
-  Calculator
+  Calculator,
+  Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -100,6 +101,7 @@ export function AppSidebar({
   const adminNavigation = [
     { name: t('app:nav.users'), href: "/admin/users", icon: Users, permission: "MANAGE_USERS" },
     { name: t('app:nav.settings'), href: "/admin/settings", icon: Settings, permission: "MANAGE_OPTIONS" },
+    { name: t('app:nav.security'), href: "/profile#security", icon: Shield, permission: "MANAGE_OPTIONS" },
   ];
 
   const handleLogout = async () => {
