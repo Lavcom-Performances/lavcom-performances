@@ -1,5 +1,8 @@
 project_id = "betvwipgtcrhmludzgxw"
 
+[functions.auth-signup]
+verify_jwt = false
+
 [functions.fetch-from-siret]
 verify_jwt = false
 
