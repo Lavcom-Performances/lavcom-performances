@@ -651,6 +651,10 @@
     "projectDescription": "État des protections de votre espace",
     "viewBackend": "Voir le backend",
     "enableMFA": "Activer le MFA",
+    "score": "Score sécurité",
+    "progress": "Progression",
+    "itemsSecured": "éléments sécurisés",
+    "secured": "sécurisé",
     "manualCheckNote": "La protection contre les mots de passe compromis doit être activée manuellement dans les paramètres du backend (Auth → Security).",
     "status": {
       "ok": "Activé",

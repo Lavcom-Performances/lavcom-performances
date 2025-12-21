@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
@@ -193,30 +194,87 @@ export function SecurityChecklist({ variant = 'account' }: SecurityChecklistProp
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <Shield className="h-5 w-5 text-primary" />
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center relative ${
+              scorePercent === 100 
+                ? 'bg-green-500/10' 
+                : scorePercent >= 50 
+                  ? 'bg-amber-500/10'
+                  : 'bg-destructive/10'
+            }`}>
+              <Shield className={`h-5 w-5 ${
+                scorePercent === 100 
+                  ? 'text-green-600' 
+                  : scorePercent >= 50 
+                    ? 'text-amber-600'
+                    : 'text-destructive'
+              }`} />
+              <span className={`absolute -bottom-1 -right-1 text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center ${
+                scorePercent === 100 
+                  ? 'bg-green-500 text-white' 
+                  : scorePercent >= 50 
+                    ? 'bg-amber-500 text-white'
+                    : 'bg-destructive text-destructive-foreground'
+              }`}>
+                {okCount}
+              </span>
             </div>
             <div>
-              <CardTitle className="flex items-center gap-2">
-                {title}
-                <Badge 
-                  variant="outline" 
-                  className={`ml-2 ${
-                    scorePercent === 100 
-                      ? 'bg-green-500/10 text-green-600 border-green-500/20' 
-                      : scorePercent >= 50 
-                        ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
-                        : 'bg-destructive/10 text-destructive border-destructive/20'
-                  }`}
-                >
-                  {okCount}/{totalCount}
-                </Badge>
-              </CardTitle>
-              <CardDescription>{description}</CardDescription>
+              <CardTitle className="text-base">{title}</CardTitle>
+              <CardDescription className="text-xs">{description}</CardDescription>
             </div>
+          </div>
+          <div className="text-right hidden sm:block">
+            <span className={`text-2xl font-bold ${
+              scorePercent === 100 
+                ? 'text-green-600' 
+                : scorePercent >= 50 
+                  ? 'text-amber-600'
+                  : 'text-destructive'
+            }`}>
+              {scorePercent}%
+            </span>
+            <p className="text-xs text-muted-foreground">{t('app:security.score')}</p>
+          </div>
+        </div>
+        
+        {/* Progress bar */}
+        <div className="mt-4 space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">{t('app:security.progress')}</span>
+            <span className={`font-medium ${
+              scorePercent === 100 
+                ? 'text-green-600' 
+                : scorePercent >= 50 
+                  ? 'text-amber-600'
+                  : 'text-destructive'
+            }`}>
+              {okCount} / {totalCount} {t('app:security.itemsSecured')}
+            </span>
+          </div>
+          <Progress 
+            value={scorePercent} 
+            className={`h-2 ${
+              scorePercent === 100 
+                ? '[&>div]:bg-green-500' 
+                : scorePercent >= 50 
+                  ? '[&>div]:bg-amber-500'
+                  : '[&>div]:bg-destructive'
+            }`}
+          />
+          {/* Mobile percentage display */}
+          <div className="sm:hidden text-center mt-2">
+            <span className={`text-lg font-bold ${
+              scorePercent === 100 
+                ? 'text-green-600' 
+                : scorePercent >= 50 
+                  ? 'text-amber-600'
+                  : 'text-destructive'
+            }`}>
+              {scorePercent}% {t('app:security.secured')}
+            </span>
           </div>
         </div>
       </CardHeader>
