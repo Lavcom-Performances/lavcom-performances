@@ -650,6 +650,7 @@
     "projectTitle": "Project Security",
     "projectDescription": "Protection status of your workspace",
     "viewBackend": "View backend",
+    "enableMFA": "Enable MFA",
     "manualCheckNote": "Leaked password protection must be enabled manually in the backend settings (Auth → Security).",
     "status": {
       "ok": "Enabled",

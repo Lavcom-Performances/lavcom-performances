@@ -475,7 +475,9 @@ export default function ProfilePage() {
       </Card>
 
       {/* MFA Security Card */}
-      <MFASetup />
+      <div id="mfa-setup-section">
+        <MFASetup />
+      </div>
 
       {/* Account Security Checklist */}
       <SecurityChecklist variant="account" />
