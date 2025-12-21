@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Save, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
+import { Loader2, Save, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,8 @@ import { z } from "zod";
 import { formatFirstName, formatLastName } from "@/lib/textUtils";
 import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/auth/PasswordStrengthIndicator";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
+import { MFASetup } from "@/components/auth/MFASetup";
+import { ReAuthDialog } from "@/components/auth/ReAuthDialog";
 
 export default function ProfilePage() {
   const { t } = useTranslation(['app', 'common']);
@@ -35,6 +37,8 @@ export default function ProfilePage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({});
+  const [showReAuthForPassword, setShowReAuthForPassword] = useState(false);
+  const [pendingPasswordChange, setPendingPasswordChange] = useState(false);
   
   const { strength: passwordStrength } = usePasswordStrength(newPassword);
 
@@ -132,11 +136,18 @@ export default function ProfilePage() {
       return;
     }
 
+    // Require re-authentication before changing password
+    setPendingPasswordChange(true);
+    setShowReAuthForPassword(true);
+  };
+
+  const handlePasswordChangeAfterReAuth = async () => {
     setIsPasswordLoading(true);
 
     const { error } = await updatePassword(newPassword);
 
     setIsPasswordLoading(false);
+    setPendingPasswordChange(false);
 
     if (error) {
       toast({
@@ -461,6 +472,21 @@ export default function ProfilePage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* MFA Security Card */}
+      <MFASetup />
+
+      {/* Re-auth Dialog for Password Change */}
+      <ReAuthDialog
+        open={showReAuthForPassword}
+        onOpenChange={(open) => {
+          setShowReAuthForPassword(open);
+          if (!open) setPendingPasswordChange(false);
+        }}
+        onSuccess={handlePasswordChangeAfterReAuth}
+        title={t('app:profile.password.reAuthTitle')}
+        description={t('app:profile.password.reAuthDescription')}
+      />
     </div>
   );
 }
