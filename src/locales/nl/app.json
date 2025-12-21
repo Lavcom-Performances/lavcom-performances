@@ -24,7 +24,8 @@
       "formats": {
         "square": "Vierkant",
         "portrait": "Portret",
-        "landscape": "Landschap"
+        "landscape": "Landschap",
+        "free": "Vrij"
       },
       "presets": {
         "title": "Voorinstellingen",

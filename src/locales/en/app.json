@@ -24,7 +24,8 @@
       "formats": {
         "square": "Square",
         "portrait": "Portrait",
-        "landscape": "Landscape"
+        "landscape": "Landscape",
+        "free": "Free"
       },
       "presets": {
         "title": "Presets",

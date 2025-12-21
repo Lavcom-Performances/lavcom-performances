@@ -24,7 +24,8 @@
       "formats": {
         "square": "Carré",
         "portrait": "Portrait",
-        "landscape": "Paysage"
+        "landscape": "Paysage",
+        "free": "Libre"
       },
       "presets": {
         "title": "Préréglages",
