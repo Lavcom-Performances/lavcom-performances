@@ -693,6 +693,26 @@ export function AvatarCropDialog({
               <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{rotate}°</span>
             </div>
 
+            {/* Rotation presets */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="w-4 shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground w-12 sm:w-16 hidden sm:inline">{t("app:profile.avatar.rotatePresets")}</span>
+              <div className="flex flex-wrap gap-1 sm:gap-2 flex-1">
+                {[-45, -30, -15, 0, 15, 30, 45].map((angle) => (
+                  <Button
+                    key={angle}
+                    type="button"
+                    variant={rotate === angle ? "default" : "outline"}
+                    size="sm"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => setRotate(angle)}
+                  >
+                    {angle > 0 ? '+' : ''}{angle}°
+                  </Button>
+                ))}
+              </div>
+            </div>
+
             {/* Flip controls - icon-only on mobile */}
             <div className="flex items-center gap-2 sm:gap-3">
               <FlipHorizontal className="h-4 w-4 text-muted-foreground shrink-0" />
