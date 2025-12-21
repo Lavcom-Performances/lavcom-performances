@@ -26,6 +26,10 @@
       "curves": "Courbes",
       "curvesLabel": "Ajustement des tons",
       "vibrance": "Vibrance",
+      "detectFace": "Détecter visage",
+      "faceDetected": "Visage détecté et centré",
+      "faceNotDetected": "Aucun visage détecté, centrage automatique appliqué",
+      "faceDetectionError": "Erreur lors de la détection du visage",
       "outputFormat": "Format",
       "formats": {
         "square": "Carré",

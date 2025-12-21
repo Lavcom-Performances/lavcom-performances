@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer, Square, RectangleVertical, RectangleHorizontal, Maximize, SunDim, Moon, TrendingUp, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer, Square, RectangleVertical, RectangleHorizontal, Maximize, SunDim, Moon, TrendingUp, ChevronDown, ChevronUp, Sparkles, ScanFace } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { CurveEditor, CurvePoint, DEFAULT_CURVE_POINTS, computeCurveLUT } from "./CurveEditor";
@@ -390,6 +390,7 @@ export function AvatarCropDialog({
   const [curvePoints, setCurvePoints] = useState<CurvePoint[]>([...DEFAULT_CURVE_POINTS]);
   const [curvesOpen, setCurvesOpen] = useState(false);
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("square");
+  const [isDetectingFace, setIsDetectingFace] = useState(false);
   
   // Presets state
   const [presets, setPresets] = useState<FilterPreset[]>(loadPresets);
@@ -398,6 +399,125 @@ export function AvatarCropDialog({
   
   const imgRef = useRef<HTMLImageElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Face detection function using native FaceDetector API or fallback
+  const detectAndCenterFace = useCallback(async () => {
+    if (!imgRef.current) return;
+    
+    setIsDetectingFace(true);
+    
+    try {
+      const image = imgRef.current;
+      const imageWidth = image.naturalWidth;
+      const imageHeight = image.naturalHeight;
+      const displayWidth = image.width;
+      const displayHeight = image.height;
+      
+      // Check if FaceDetector API is available (Chrome)
+      if ('FaceDetector' in window) {
+        try {
+          // @ts-ignore - FaceDetector is not in TypeScript types
+          const faceDetector = new window.FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
+          const faces = await faceDetector.detect(image);
+          
+          if (faces.length > 0) {
+            const face = faces[0].boundingBox;
+            
+            // Calculate face center in natural image coordinates
+            const faceCenterX = face.x + face.width / 2;
+            const faceCenterY = face.y + face.height / 2;
+            
+            // Expand bounding box to include some margin around face (1.8x for avatar framing)
+            const expandedSize = Math.max(face.width, face.height) * 1.8;
+            
+            // Get current aspect ratio
+            const format = OUTPUT_FORMATS.find(f => f.id === outputFormat) || OUTPUT_FORMATS[0];
+            const aspect = format.aspect || 1;
+            
+            // Calculate crop dimensions in natural coordinates
+            let cropWidth: number;
+            let cropHeight: number;
+            
+            if (aspect >= 1) {
+              cropWidth = expandedSize;
+              cropHeight = expandedSize / aspect;
+            } else {
+              cropHeight = expandedSize;
+              cropWidth = expandedSize * aspect;
+            }
+            
+            // Center the crop on the face
+            let cropX = faceCenterX - cropWidth / 2;
+            let cropY = faceCenterY - cropHeight / 2;
+            
+            // Clamp to image bounds
+            cropX = Math.max(0, Math.min(imageWidth - cropWidth, cropX));
+            cropY = Math.max(0, Math.min(imageHeight - cropHeight, cropY));
+            
+            // Adjust size if it exceeds bounds
+            cropWidth = Math.min(cropWidth, imageWidth);
+            cropHeight = Math.min(cropHeight, imageHeight);
+            
+            // Convert to percentage of display size
+            const scaleX = displayWidth / imageWidth;
+            const scaleY = displayHeight / imageHeight;
+            
+            const newCrop: Crop = {
+              unit: '%',
+              x: (cropX / imageWidth) * 100,
+              y: (cropY / imageHeight) * 100,
+              width: (cropWidth / imageWidth) * 100,
+              height: (cropHeight / imageHeight) * 100,
+            };
+            
+            setCrop(newCrop);
+            toast.success(t("app:profile.avatar.faceDetected"));
+            return;
+          }
+        } catch (apiError) {
+          console.log("FaceDetector API failed, using fallback", apiError);
+        }
+      }
+      
+      // Fallback: center crop with slight upward bias (faces are usually in upper-center)
+      const format = OUTPUT_FORMATS.find(f => f.id === outputFormat) || OUTPUT_FORMATS[0];
+      const aspect = format.aspect || 1;
+      
+      // Calculate a centered crop with upward bias
+      const cropSize = 70; // 70% of the image
+      let cropWidth: number;
+      let cropHeight: number;
+      
+      if (aspect >= 1) {
+        cropWidth = cropSize;
+        cropHeight = cropSize / aspect;
+      } else {
+        cropHeight = cropSize;
+        cropWidth = cropSize * aspect;
+      }
+      
+      // Center horizontally, bias upward vertically
+      const cropX = (100 - cropWidth) / 2;
+      const cropY = Math.max(5, (100 - cropHeight) / 2 - 10); // 10% upward bias
+      
+      const newCrop: Crop = {
+        unit: '%',
+        x: cropX,
+        y: cropY,
+        width: cropWidth,
+        height: cropHeight,
+      };
+      
+      setCrop(newCrop);
+      toast.info(t("app:profile.avatar.faceNotDetected"));
+      
+    } catch (error) {
+      console.error("Face detection error:", error);
+      toast.error(t("app:profile.avatar.faceDetectionError"));
+    } finally {
+      setIsDetectingFace(false);
+    }
+  }, [outputFormat, t]);
 
   // Generate preview whenever crop, scale, or rotate changes
   useEffect(() => {
@@ -740,6 +860,23 @@ export function AvatarCropDialog({
                   <span className="hidden sm:inline">{t("app:profile.avatar.formats.free")}</span>
                 </Button>
               </div>
+              {/* Face detection button */}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={detectAndCenterFace}
+                disabled={isDetectingFace}
+                className="px-2 sm:px-3"
+                title={t("app:profile.avatar.detectFace")}
+              >
+                {isDetectingFace ? (
+                  <Loader2 className="h-4 w-4 animate-spin sm:mr-2" />
+                ) : (
+                  <ScanFace className="h-4 w-4 sm:mr-2" />
+                )}
+                <span className="hidden sm:inline">{t("app:profile.avatar.detectFace")}</span>
+              </Button>
             </div>
 
             {/* Zoom control */}

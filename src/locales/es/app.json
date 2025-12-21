@@ -26,6 +26,10 @@
       "curves": "Curvas",
       "curvesLabel": "Ajuste de tonos",
       "vibrance": "Intensidad",
+      "detectFace": "Detectar rostro",
+      "faceDetected": "Rostro detectado y centrado",
+      "faceNotDetected": "Ningún rostro detectado, centrado automático aplicado",
+      "faceDetectionError": "Error en la detección de rostro",
       "outputFormat": "Formato",
       "formats": {
         "square": "Cuadrado",

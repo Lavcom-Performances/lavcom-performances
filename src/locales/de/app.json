@@ -26,6 +26,10 @@
       "curves": "Kurven",
       "curvesLabel": "Tonanpassung",
       "vibrance": "Dynamik",
+      "detectFace": "Gesicht erkennen",
+      "faceDetected": "Gesicht erkannt und zentriert",
+      "faceNotDetected": "Kein Gesicht erkannt, automatische Zentrierung angewendet",
+      "faceDetectionError": "Fehler bei der Gesichtserkennung",
       "outputFormat": "Format",
       "formats": {
         "square": "Quadrat",

@@ -26,6 +26,10 @@
       "curves": "Curve",
       "curvesLabel": "Regolazione toni",
       "vibrance": "Vividezza",
+      "detectFace": "Rileva volto",
+      "faceDetected": "Volto rilevato e centrato",
+      "faceNotDetected": "Nessun volto rilevato, centraggio automatico applicato",
+      "faceDetectionError": "Errore nel rilevamento del volto",
       "outputFormat": "Formato",
       "formats": {
         "square": "Quadrato",
