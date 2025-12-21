@@ -19,6 +19,7 @@
       "opacity": "Deckkraft",
       "vignette": "Vignette",
       "dropShadow": "Schatten",
+      "temperature": "Temperatur",
       "presets": {
         "title": "Voreinstellungen",
         "selectPlaceholder": "Voreinstellung laden...",
@@ -48,7 +49,9 @@
           "default_psychedelic": "Psychedelisch",
           "default_ghost": "Geist",
           "default_cinematic": "Filmisch",
-          "default_floating": "Schwebend"
+          "default_floating": "Schwebend",
+          "default_cold": "Kalt",
+          "default_sunset": "Sonnenuntergang"
         }
       }
     }

@@ -19,6 +19,7 @@
       "opacity": "Opacity",
       "vignette": "Vignette",
       "dropShadow": "Shadow",
+      "temperature": "Temperature",
       "presets": {
         "title": "Presets",
         "selectPlaceholder": "Load a preset...",
@@ -48,7 +49,9 @@
           "default_psychedelic": "Psychedelic",
           "default_ghost": "Ghost",
           "default_cinematic": "Cinematic",
-          "default_floating": "Floating"
+          "default_floating": "Floating",
+          "default_cold": "Cold",
+          "default_sunset": "Sunset"
         }
       }
     }

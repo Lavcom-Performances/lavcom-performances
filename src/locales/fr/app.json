@@ -19,6 +19,7 @@
       "opacity": "Opacité",
       "vignette": "Vignette",
       "dropShadow": "Ombre",
+      "temperature": "Température",
       "presets": {
         "title": "Préréglages",
         "selectPlaceholder": "Charger un préréglage...",
@@ -48,7 +49,9 @@
           "default_psychedelic": "Psychédélique",
           "default_ghost": "Fantôme",
           "default_cinematic": "Cinématique",
-          "default_floating": "Flottant"
+          "default_floating": "Flottant",
+          "default_cold": "Froid",
+          "default_sunset": "Coucher de soleil"
         }
       }
     }

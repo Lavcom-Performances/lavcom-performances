@@ -19,6 +19,7 @@
       "opacity": "Opacidad",
       "vignette": "Viñeta",
       "dropShadow": "Sombra",
+      "temperature": "Temperatura",
       "presets": {
         "title": "Ajustes preestablecidos",
         "selectPlaceholder": "Cargar un ajuste...",
@@ -48,7 +49,9 @@
           "default_psychedelic": "Psicodélico",
           "default_ghost": "Fantasma",
           "default_cinematic": "Cinematográfico",
-          "default_floating": "Flotante"
+          "default_floating": "Flotante",
+          "default_cold": "Frío",
+          "default_sunset": "Atardecer"
         }
       }
     }
