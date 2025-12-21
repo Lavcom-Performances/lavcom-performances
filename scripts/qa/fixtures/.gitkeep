@@ -1,0 +1,3 @@
+# Dossier pour les fixtures de test
+# Les fichiers volumineux (>200k lignes) ne doivent pas être commités
+# Utiliser le script generate-large-csv.sh pour les créer localement
