@@ -17,6 +17,8 @@
       "grayscale": "Grayscale",
       "hueRotate": "Hue",
       "opacity": "Opacity",
+      "vignette": "Vignette",
+      "dropShadow": "Shadow",
       "presets": {
         "title": "Presets",
         "selectPlaceholder": "Load a preset...",
@@ -44,7 +46,9 @@
           "default_sepia": "Sepia",
           "default_negative": "Negative",
           "default_psychedelic": "Psychedelic",
-          "default_ghost": "Ghost"
+          "default_ghost": "Ghost",
+          "default_cinematic": "Cinematic",
+          "default_floating": "Floating"
         }
       }
     }

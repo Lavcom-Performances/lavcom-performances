@@ -17,6 +17,8 @@
       "grayscale": "Grijstinten",
       "hueRotate": "Tint",
       "opacity": "Dekking",
+      "vignette": "Vignet",
+      "dropShadow": "Schaduw",
       "presets": {
         "title": "Voorinstellingen",
         "selectPlaceholder": "Voorinstelling laden...",
@@ -44,7 +46,9 @@
           "default_sepia": "Sepia",
           "default_negative": "Negatief",
           "default_psychedelic": "Psychedelisch",
-          "default_ghost": "Spook"
+          "default_ghost": "Spook",
+          "default_cinematic": "Filmisch",
+          "default_floating": "Zwevend"
         }
       }
     }
