@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Loader2, Save, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Loader2, Save, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff, Shield, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +14,6 @@ import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/aut
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { MFASetup } from "@/components/auth/MFASetup";
 import { ReAuthDialog } from "@/components/auth/ReAuthDialog";
-import { SecurityCenter } from "@/components/security/SecurityCenter";
 
 export default function ProfilePage() {
   const { t } = useTranslation(['app', 'common']);
@@ -479,8 +478,25 @@ export default function ProfilePage() {
         <MFASetup />
       </div>
 
-      {/* Security Center */}
-      <SecurityCenter />
+      {/* Security Link Card */}
+      <Card className="hover:bg-muted/50 transition-colors">
+        <Link to="/security" className="block">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Shield className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-base">{t('app:securityCenter.title')}</CardTitle>
+                  <CardDescription className="text-xs">{t('app:securityCenter.description')}</CardDescription>
+                </div>
+              </div>
+              <ArrowRight className="h-5 w-5 text-muted-foreground" />
+            </div>
+          </CardHeader>
+        </Link>
+      </Card>
 
       {/* Re-auth Dialog for Password Change */}
       <ReAuthDialog
