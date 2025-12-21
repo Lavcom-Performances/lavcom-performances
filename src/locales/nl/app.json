@@ -3,6 +3,7 @@
     "avatar": {
       "rotateLeft": "Roteer -90°",
       "rotateRight": "Roteer +90°",
+      "rotatePresets": "Voorinstellingen",
       "preview": "Voorbeeld",
       "flip": "Spiegelen",
       "flipHorizontal": "Horizontaal",

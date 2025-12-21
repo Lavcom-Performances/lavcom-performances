@@ -3,6 +3,7 @@
     "avatar": {
       "rotateLeft": "Rotate -90°",
       "rotateRight": "Rotate +90°",
+      "rotatePresets": "Presets",
       "preview": "Preview",
       "flip": "Flip",
       "flipHorizontal": "Horizontal",
