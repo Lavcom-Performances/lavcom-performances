@@ -20,6 +20,12 @@
       "vignette": "Vignet",
       "dropShadow": "Schaduw",
       "temperature": "Temperatuur",
+      "outputFormat": "Formaat",
+      "formats": {
+        "square": "Vierkant",
+        "portrait": "Portret",
+        "landscape": "Landschap"
+      },
       "presets": {
         "title": "Voorinstellingen",
         "selectPlaceholder": "Voorinstelling laden...",

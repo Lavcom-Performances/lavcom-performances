@@ -20,6 +20,12 @@
       "vignette": "Vignette",
       "dropShadow": "Ombre",
       "temperature": "Température",
+      "outputFormat": "Format",
+      "formats": {
+        "square": "Carré",
+        "portrait": "Portrait",
+        "landscape": "Paysage"
+      },
       "presets": {
         "title": "Préréglages",
         "selectPlaceholder": "Charger un préréglage...",
