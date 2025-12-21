@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Eye, EyeOff, Loader2, Home, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Loader2, Home, Sparkles, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { useTranslation } from "react-i18next";
+import { 
+  checkClientRateLimit, 
+  recordClientRequest, 
+  getCooldownRemaining,
+  formatCooldown 
+} from "@/lib/rateLimiter";
 
 export default function Login() {
   const { t } = useTranslation(['app', 'common']);
@@ -16,10 +22,26 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { signIn, signInWithGoogle, isAuthenticated, loading } = useAuth();
+
+  // Check rate limit cooldown on mount and update countdown
+  useEffect(() => {
+    if (email) {
+      const remaining = getCooldownRemaining('auth/login', email);
+      setCooldownSeconds(remaining);
+    }
+  }, [email]);
+
+  useEffect(() => {
+    if (cooldownSeconds > 0) {
+      const timer = setTimeout(() => setCooldownSeconds(cooldownSeconds - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownSeconds]);
 
   // Get mode and redirect from URL params
   const mode = searchParams.get("mode") ?? "exploitant";
@@ -39,9 +61,27 @@ export default function Login() {
     }
   }, [loading, isAuthenticated, navigate, redirectUrl, isSimulatorMode]);
 
+  const isRateLimited = cooldownSeconds > 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check client-side rate limit
+    const rateLimitCheck = checkClientRateLimit('auth/login', email);
+    if (!rateLimitCheck.allowed) {
+      setCooldownSeconds(rateLimitCheck.cooldownSeconds);
+      toast({
+        title: t('app:rateLimit.auth_login.title'),
+        description: t('app:rateLimit.auth_login.message', { time: formatCooldown(rateLimitCheck.cooldownSeconds) }),
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
+    
+    // Record the attempt
+    recordClientRequest('auth/login', email);
     
     const { error } = await signIn(email, password);
     
@@ -237,12 +277,17 @@ export default function Login() {
               variant="lavcom"
               size="xl"
               className="w-full"
-              disabled={isLoading}
+              disabled={isLoading || isRateLimited}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   {t('app:login.form.connecting')}
+                </>
+              ) : isRateLimited ? (
+                <>
+                  <Clock className="h-4 w-4" />
+                  {t('app:rateLimit.cooldownMessage', { time: formatCooldown(cooldownSeconds) })}
                 </>
               ) : (
                 t('app:login.form.submit')

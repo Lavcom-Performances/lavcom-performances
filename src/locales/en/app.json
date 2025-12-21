@@ -592,5 +592,52 @@
       "hasNumber": "One number",
       "hasSpecial": "One special character"
     }
+  },
+  "rateLimit": {
+    "title": "Too many attempts",
+    "genericMessage": "Please wait before trying again.",
+    "cooldownMessage": "Retry in {{time}}",
+    "auth_login": {
+      "title": "Login temporarily limited",
+      "message": "For security reasons, please wait {{time}} before trying again."
+    },
+    "auth_signup": {
+      "title": "Signup temporarily limited",
+      "message": "Please wait {{time}} before creating a new account."
+    },
+    "auth_resend": {
+      "title": "Email sending limited",
+      "message": "You can resend an email in {{time}}."
+    },
+    "auth_reset": {
+      "title": "Reset limited",
+      "message": "You can request a new link in {{time}}."
+    },
+    "edge_fetch_from_siret": {
+      "title": "SIRET search limited",
+      "message": "Please wait {{time}} before searching again."
+    },
+    "edge_create_demo": {
+      "title": "Demo creation limited",
+      "message": "You recently created a demo. Try again in {{time}}."
+    },
+    "import_csv": {
+      "title": "Import limited",
+      "message": "Please wait {{time}} before importing again."
+    },
+    "export_pdf": {
+      "title": "PDF export limited",
+      "message": "Please wait {{time}} before exporting again."
+    },
+    "export_xlsx": {
+      "title": "Excel export limited",
+      "message": "Please wait {{time}} before exporting again."
+    }
+  },
+  "csvImport": {
+    "fileSizeError": "File exceeds maximum allowed size (20 MB).",
+    "fileTypeError": "Only CSV files are accepted.",
+    "maxLinesError": "File contains too many rows (max 100,000).",
+    "frequencyError": "Please wait before importing a new file."
   }
 }

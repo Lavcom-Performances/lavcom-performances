@@ -154,6 +154,39 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          count: number
+          created_at: string
+          id: string
+          identifier: string
+          ip_hash: string | null
+          scope: string
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          id?: string
+          identifier: string
+          ip_hash?: string | null
+          scope: string
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          id?: string
+          identifier?: string
+          ip_hash?: string | null
+          scope?: string
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       site_costs: {
         Row: {
           created_at: string
@@ -337,6 +370,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
       owns_operation_site: {
         Args: { _site_id: string; _user_id: string }
         Returns: boolean

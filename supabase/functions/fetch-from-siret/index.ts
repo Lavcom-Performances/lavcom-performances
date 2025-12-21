@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { checkRateLimit, hashIP, maskEmail, rateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,11 +21,51 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
   try {
     const url = new URL(req.url);
     const siret = url.searchParams.get('siret');
 
-    console.log(`Fetching data for SIRET: ${siret}`);
+    // Get client IP for rate limiting
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() 
+      || req.headers.get('x-real-ip') 
+      || 'unknown';
+    const ipHash = await hashIP(clientIP);
+
+    // Get user ID from auth header if available
+    const authHeader = req.headers.get('Authorization');
+    let identifier = `ip:${ipHash}`;
+    
+    if (authHeader) {
+      // Try to extract user from JWT
+      try {
+        const token = authHeader.replace('Bearer ', '');
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.sub) {
+          identifier = `user:${payload.sub}`;
+        }
+      } catch {
+        // Use IP-based identifier
+      }
+    }
+
+    // Check rate limit
+    const rateLimitResult = await checkRateLimit(
+      supabaseUrl,
+      supabaseServiceKey,
+      'edge/fetch-from-siret',
+      identifier,
+      ipHash
+    );
+
+    if (!rateLimitResult.allowed) {
+      console.log(`Rate limit hit: fetch-from-siret, identifier=${maskEmail(identifier)}`);
+      return rateLimitResponse(rateLimitResult.cooldownSeconds!, 'edge/fetch-from-siret', corsHeaders);
+    }
+
+    console.log(`Fetching data for SIRET: ${siret?.slice(0, 4)}****`);
 
     // Validation du SIRET
     if (!siret || siret.length !== 14 || !/^[0-9]+$/.test(siret)) {
@@ -38,12 +79,8 @@ serve(async (req) => {
       );
     }
 
-    // Appel à l'API SIRENE (API publique de l'INSEE via api.gouv.fr)
-    // Cette API est gratuite et ne nécessite pas de clé API pour les requêtes basiques
-    const sireneUrl = `https://api.insee.fr/api-sirene/3.11/siret/${siret}`;
-    
-    // Try the official INSEE API first, then fallback to entreprise.data.gouv.fr
-    let response = await fetch(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`);
+    // Appel à l'API SIRENE
+    const response = await fetch(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`);
     
     console.log(`API Response status: ${response.status}`);
 
@@ -110,7 +147,7 @@ serve(async (req) => {
       naf_code: etablissement.activite_principale || uniteLegale.activite_principale || "",
     };
 
-    console.log('Returning data:', JSON.stringify(result));
+    console.log('Returning data successfully');
 
     return new Response(
       JSON.stringify(result),
