@@ -522,8 +522,111 @@
       "minLength": "Mindestens 8 Zeichen",
       "hasUppercase": "Ein Großbuchstabe",
       "hasLowercase": "Ein Kleinbuchstabe",
-      "hasNumber": "Eine Zahl",
+      "hasNumber": "Eine Ziffer",
       "hasSpecial": "Ein Sonderzeichen"
+    }
+  },
+  "securityCenter": {
+    "title": "Sicherheitszentrum",
+    "description": "Visualisieren und verbessern Sie den Schutz Ihres Kontos und Ihrer Daten",
+    "globalScore": "Gesamtpunktzahl",
+    "accountScore": "Kontopunktzahl",
+    "projectScore": "Projektpunktzahl",
+    "accountTitle": "Kontosicherheit",
+    "accountDescription": "Schutz Ihrer Identität und Ihres Zugangs",
+    "projectTitle": "Projektsicherheit",
+    "projectDescription": "Schutz Ihrer Daten und Konfigurationen",
+    "enableMFA": "2FA aktivieren",
+    "changePassword": "Ändern",
+    "comingSoon": "Demnächst verfügbar",
+    "seeHowToActivate": "Aktivierung anzeigen",
+    "openBackend": "Backend öffnen",
+    "whyImportant": "Warum",
+    "inApp": "In der App",
+    "inBackend": "Backend",
+    "backendNote": "Einige Schutzmaßnahmen erfordern eine manuelle Aktivierung in den Backend-Einstellungen. Elemente mit 'Backend' werden serverseitig verwaltet.",
+    "status": {
+      "ok": "Aktiviert",
+      "warning": "Empfohlen",
+      "toActivate": "Zu aktivieren",
+      "missing": "Nicht aktiviert"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "E-Mail verifiziert",
+        "description": "Ihre E-Mail-Adresse wurde bestätigt",
+        "whyImportant": "Ermöglicht Kontowiederherstellung und Sicherheitsbenachrichtigungen"
+      },
+      "mfa": {
+        "label": "Zwei-Faktor-Authentifizierung (2FA)",
+        "description": "Schützen Sie Ihr Konto mit einem temporären Code",
+        "whyImportant": "Verhindert Zugriff selbst wenn Ihr Passwort kompromittiert ist"
+      },
+      "passwordStrong": {
+        "label": "Starkes Passwort",
+        "description": "Ihr Passwort erfüllt die Sicherheitskriterien",
+        "whyImportant": "Ein starkes Passwort widersteht Brute-Force-Angriffen"
+      },
+      "sessions": {
+        "label": "Sitzungsverwaltung",
+        "description": "Kontrollieren Sie die mit Ihrem Konto verbundenen Geräte",
+        "whyImportant": "Ermöglicht die Erkennung und den Widerruf unbefugter Zugriffe"
+      },
+      "rls": {
+        "label": "Datenisolierung (RLS)",
+        "description": "Jeder Benutzer sieht nur seine eigenen Daten",
+        "whyImportant": "Verhindert, dass ein Benutzer auf die Daten eines anderen zugreift"
+      },
+      "rateLimit": {
+        "label": "Missbrauchsschutz",
+        "description": "Begrenzt Anmelde-, Import- und Exportversuche",
+        "whyImportant": "Schützt vor Brute-Force-Angriffen und Spam"
+      },
+      "edgeFunctions": {
+        "label": "Sichere Backend-Funktionen",
+        "description": "Die Funktionen create-demo, fetch-from-siret und import-csv-check sind geprüft",
+        "whyImportant": "Garantiert, dass der serverseitige Code sicher ist"
+      },
+      "leakedPassword": {
+        "label": "Schutz vor kompromittierten Passwörtern",
+        "description": "Prüft, ob Passwörter in Datenlecks offengelegt wurden",
+        "whyImportant": "Verhindert die Verwendung von Hackern bekannten Passwörtern"
+      },
+      "importLimits": {
+        "label": "Import-Limits",
+        "description": "Dateien auf 20 MB und 200.000 Zeilen begrenzt",
+        "whyImportant": "Schützt vor Überlastung und Ressourcenmissbrauch"
+      },
+      "exportLimits": {
+        "label": "Export-Limits",
+        "description": "PDF- und Excel-Exporte mit Rate-Limiting",
+        "whyImportant": "Verhindert massenhafte Datenextraktion"
+      }
+    },
+    "leakedPassword": {
+      "modalTitle": "Schutz aktivieren",
+      "modalDescription": "Schutz vor kompromittierten Passwörtern",
+      "infoBox": "Diese Funktion prüft, ob ein Passwort in bekannten Datenlecks offengelegt wurde. Sie muss manuell im Backend aktiviert werden.",
+      "step1Title": "Backend aufrufen",
+      "step1Description": "Klicken Sie auf die Schaltfläche unten, um die Backend-Einstellungen zu öffnen",
+      "step2Title": "Zu Authentication gehen",
+      "step2Description": "Klicken Sie im linken Menü auf 'Authentication'",
+      "step3Title": "Sicherheitseinstellungen öffnen",
+      "step3Description": "Klicken Sie auf 'Providers' und suchen Sie den Abschnitt 'Password' für die Optionen",
+      "step4Title": "'Leaked Password Protection' aktivieren",
+      "step4Description": "Aktivieren Sie 'Enable Leaked Password Protection' und speichern Sie",
+      "successIndicator": "Nach der Aktivierung werden Benutzer gewarnt, wenn sie ein kompromittiertes Passwort verwenden"
+    },
+    "sessions": {
+      "signOutAll": "Alle abmelden",
+      "confirmTitle": "Alle Sitzungen beenden?",
+      "confirmDescription": "Sie werden von allen Ihren Geräten abgemeldet, einschließlich diesem.",
+      "warning": "Diese Aktion meldet Sie sofort ab. Sie müssen sich auf jedem Gerät erneut anmelden.",
+      "confirmSignOut": "Ja, alle abmelden",
+      "signingOut": "Abmelden...",
+      "signOutSuccess": "Sitzungen beendet",
+      "signOutSuccessDescription": "Alle Ihre Sitzungen wurden erfolgreich geschlossen",
+      "signOutError": "Beim Abmelden ist ein Fehler aufgetreten"
     }
   }
 }
