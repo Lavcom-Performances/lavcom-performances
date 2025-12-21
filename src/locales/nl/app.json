@@ -26,6 +26,10 @@
       "curves": "Curves",
       "curvesLabel": "Toonaanpassing",
       "vibrance": "Levendigheid",
+      "detectFace": "Gezicht detecteren",
+      "faceDetected": "Gezicht gedetecteerd en gecentreerd",
+      "faceNotDetected": "Geen gezicht gedetecteerd, automatische centrering toegepast",
+      "faceDetectionError": "Fout bij gezichtsdetectie",
       "outputFormat": "Formaat",
       "formats": {
         "square": "Vierkant",

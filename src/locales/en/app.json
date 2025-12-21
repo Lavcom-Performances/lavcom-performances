@@ -26,6 +26,10 @@
       "curves": "Curves",
       "curvesLabel": "Tone adjustment",
       "vibrance": "Vibrance",
+      "detectFace": "Detect face",
+      "faceDetected": "Face detected and centered",
+      "faceNotDetected": "No face detected, auto-centering applied",
+      "faceDetectionError": "Face detection error",
       "outputFormat": "Format",
       "formats": {
         "square": "Square",
