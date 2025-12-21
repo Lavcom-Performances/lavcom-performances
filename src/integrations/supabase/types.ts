@@ -160,6 +160,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          log_retention_days: number
           phone: string | null
           siret: string | null
           updated_at: string | null
@@ -172,6 +173,7 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          log_retention_days?: number
           phone?: string | null
           siret?: string | null
           updated_at?: string | null
@@ -184,6 +186,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          log_retention_days?: number
           phone?: string | null
           siret?: string | null
           updated_at?: string | null

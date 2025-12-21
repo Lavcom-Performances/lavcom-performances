@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SecurityAccountChecklist } from "./SecurityAccountChecklist";
 import { SecurityProjectChecklist } from "./SecurityProjectChecklist";
 import { LoginHistory } from "./LoginHistory";
+import { LogRetentionSettings } from "./LogRetentionSettings";
 
 export interface SecurityScore {
   score: number;
@@ -172,6 +173,9 @@ export function SecurityCenter() {
 
       {/* Login History */}
       <LoginHistory />
+
+      {/* Log Retention Settings */}
+      <LogRetentionSettings />
 
       {/* Project Security Checklist */}
       <SecurityProjectChecklist 

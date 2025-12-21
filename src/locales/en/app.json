@@ -795,6 +795,20 @@
       "unknownDevice": "Unknown device",
       "showAll": "Show all ({{count}} logins)"
     },
+    "logRetention": {
+      "title": "Retention Period",
+      "description": "Configure how long your login logs are kept",
+      "daysLabel": "days",
+      "days": "{{count}} days",
+      "oneWeek": "1 week",
+      "oneMonth": "1 month",
+      "threeMonths": "3 months",
+      "sixMonths": "6 months",
+      "oneYear": "1 year",
+      "infoText": "Login logs older than this period will be automatically deleted every night.",
+      "saveSuccess": "Preference saved",
+      "saveSuccessDescription": "Your logs will be kept for {{days}} days"
+    },
     "openBackend": "Open backend"
   }
 }

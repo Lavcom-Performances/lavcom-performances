@@ -31,11 +31,13 @@ interface LoginLog {
 }
 
 const ITEMS_PER_PAGE = 10;
-const RETENTION_DAYS = 90;
+const DEFAULT_RETENTION_DAYS = 90;
 
 export function LoginHistory() {
   const { t, i18n } = useTranslation(['app', 'common']);
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  
+  const retentionDays = profile?.log_retention_days ?? DEFAULT_RETENTION_DAYS;
   
   const [logs, setLogs] = useState<LoginLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -124,10 +126,10 @@ export function LoginHistory() {
               <Clock className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-base">{t('app:securityCenter.loginHistory.title')}</CardTitle>
-              <CardDescription className="text-xs">
-                {t('app:securityCenter.loginHistory.description', { days: RETENTION_DAYS })}
-              </CardDescription>
+            <CardTitle className="text-base">{t('app:securityCenter.loginHistory.title')}</CardTitle>
+            <CardDescription className="text-xs">
+              {t('app:securityCenter.loginHistory.description', { days: retentionDays })}
+            </CardDescription>
             </div>
           </div>
           {totalCount > 0 && (

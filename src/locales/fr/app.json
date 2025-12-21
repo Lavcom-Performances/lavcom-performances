@@ -795,6 +795,20 @@
       "unknownDevice": "Appareil inconnu",
       "showAll": "Afficher tout ({{count}} connexions)"
     },
+    "logRetention": {
+      "title": "Durée de conservation",
+      "description": "Configurez combien de temps vos logs de connexion sont conservés",
+      "daysLabel": "jours",
+      "days": "{{count}} jours",
+      "oneWeek": "1 semaine",
+      "oneMonth": "1 mois",
+      "threeMonths": "3 mois",
+      "sixMonths": "6 mois",
+      "oneYear": "1 an",
+      "infoText": "Les logs de connexion plus anciens que cette durée seront automatiquement supprimés chaque nuit.",
+      "saveSuccess": "Préférence enregistrée",
+      "saveSuccessDescription": "Vos logs seront conservés pendant {{days}} jours"
+    },
     "openBackend": "Ouvrir le backend"
   }
 }
