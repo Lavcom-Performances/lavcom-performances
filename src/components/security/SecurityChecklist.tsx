@@ -105,6 +105,13 @@ export function SecurityChecklist({ variant = 'account' }: SecurityChecklistProp
     window.dispatchEvent(new CustomEvent('lovable:open-backend'));
   };
 
+  const scrollToMFASection = () => {
+    const mfaSection = document.getElementById('mfa-setup-section');
+    if (mfaSection) {
+      mfaSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const accountItems: SecurityItem[] = [
     {
       id: 'email',
@@ -119,6 +126,17 @@ export function SecurityChecklist({ variant = 'account' }: SecurityChecklistProp
       description: t('app:security.items.mfa.description'),
       status: isMFAEnabled ? 'ok' : 'warning',
       icon: <Smartphone className="h-4 w-4" />,
+      action: !isMFAEnabled ? (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="gap-1.5 text-xs"
+          onClick={scrollToMFASection}
+        >
+          <Smartphone className="h-3 w-3" />
+          {t('app:security.enableMFA')}
+        </Button>
+      ) : undefined,
     },
   ];
 
