@@ -17,6 +17,8 @@
       "grayscale": "Scala di grigi",
       "hueRotate": "Tonalità",
       "opacity": "Opacità",
+      "vignette": "Vignettatura",
+      "dropShadow": "Ombra",
       "presets": {
         "title": "Preset",
         "selectPlaceholder": "Carica un preset...",
@@ -44,7 +46,9 @@
           "default_sepia": "Seppia",
           "default_negative": "Negativo",
           "default_psychedelic": "Psichedelico",
-          "default_ghost": "Fantasma"
+          "default_ghost": "Fantasma",
+          "default_cinematic": "Cinematografico",
+          "default_floating": "Fluttuante"
         }
       }
     }

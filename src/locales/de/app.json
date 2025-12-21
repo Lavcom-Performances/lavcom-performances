@@ -17,6 +17,8 @@
       "grayscale": "Graustufen",
       "hueRotate": "Farbton",
       "opacity": "Deckkraft",
+      "vignette": "Vignette",
+      "dropShadow": "Schatten",
       "presets": {
         "title": "Voreinstellungen",
         "selectPlaceholder": "Voreinstellung laden...",
@@ -44,7 +46,9 @@
           "default_sepia": "Sepia",
           "default_negative": "Negativ",
           "default_psychedelic": "Psychedelisch",
-          "default_ghost": "Geist"
+          "default_ghost": "Geist",
+          "default_cinematic": "Filmisch",
+          "default_floating": "Schwebend"
         }
       }
     }
