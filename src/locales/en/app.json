@@ -643,5 +643,37 @@
     "frequencyErrorUser": "You have reached the import limit. Try again in {{time}}.",
     "validating": "Validating...",
     "suggestion": "You can import your data by period (e.g. month by month) for better results."
+  },
+  "security": {
+    "accountTitle": "Account Security",
+    "accountDescription": "Check that your account is well protected",
+    "projectTitle": "Project Security",
+    "projectDescription": "Protection status of your workspace",
+    "viewBackend": "View backend",
+    "manualCheckNote": "Leaked password protection must be enabled manually in the backend settings (Auth → Security).",
+    "status": {
+      "ok": "Enabled",
+      "warning": "Recommended",
+      "missing": "Not enabled",
+      "unknown": "Unknown"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "Email verified",
+        "description": "Your email address has been confirmed"
+      },
+      "mfa": {
+        "label": "Two-factor authentication (2FA)",
+        "description": "Protect your account with a temporary code"
+      },
+      "rateLimit": {
+        "label": "Abuse protection",
+        "description": "Limits login and import attempts"
+      },
+      "leakedPassword": {
+        "label": "Compromised password protection",
+        "description": "Checks if your password has been exposed in data breaches"
+      }
+    }
   }
 }
