@@ -19,6 +19,7 @@
       "opacity": "Dekking",
       "vignette": "Vignet",
       "dropShadow": "Schaduw",
+      "temperature": "Temperatuur",
       "presets": {
         "title": "Voorinstellingen",
         "selectPlaceholder": "Voorinstelling laden...",
@@ -48,7 +49,9 @@
           "default_psychedelic": "Psychedelisch",
           "default_ghost": "Spook",
           "default_cinematic": "Filmisch",
-          "default_floating": "Zwevend"
+          "default_floating": "Zwevend",
+          "default_cold": "Koud",
+          "default_sunset": "Zonsondergang"
         }
       }
     }
