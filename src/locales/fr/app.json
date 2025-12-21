@@ -88,6 +88,7 @@
     "importExport": "Import / Export",
     "users": "Utilisateurs",
     "settings": "Paramètres",
+    "security": "Sécurité",
     "charts": "Graphiques",
     "analyses": "Analyses",
     "administration": "Administration",
@@ -679,6 +680,98 @@
         "label": "Protection mots de passe compromis",
         "description": "Vérifie si votre mot de passe a été exposé dans des fuites de données"
       }
+    }
+  },
+  "securityCenter": {
+    "title": "Centre de sécurité",
+    "description": "Visualisez et améliorez la protection de votre compte et de vos données",
+    "globalScore": "Score global",
+    "accountScore": "Score compte",
+    "projectScore": "Score projet",
+    "accountTitle": "Sécurité du compte",
+    "accountDescription": "Protection de votre identité et accès",
+    "projectTitle": "Sécurité du projet",
+    "projectDescription": "Protection de vos données et configurations",
+    "enableMFA": "Activer la 2FA",
+    "changePassword": "Modifier",
+    "comingSoon": "Bientôt disponible",
+    "seeHowToActivate": "Voir comment activer",
+    "openBackend": "Ouvrir le backend",
+    "whyImportant": "Pourquoi",
+    "inApp": "Dans l'app",
+    "inBackend": "Backend",
+    "backendNote": "Certaines protections nécessitent une activation manuelle dans les paramètres du backend. Les éléments marqués 'Backend' sont gérés côté serveur.",
+    "status": {
+      "ok": "Activé",
+      "warning": "Recommandé",
+      "toActivate": "À activer",
+      "missing": "Non activé"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "Email vérifié",
+        "description": "Votre adresse email a été confirmée",
+        "whyImportant": "Permet la récupération de compte et les notifications de sécurité"
+      },
+      "mfa": {
+        "label": "Double authentification (2FA)",
+        "description": "Protégez votre compte avec un code temporaire",
+        "whyImportant": "Empêche l'accès même si votre mot de passe est compromis"
+      },
+      "passwordStrong": {
+        "label": "Mot de passe robuste",
+        "description": "Votre mot de passe respecte les critères de sécurité",
+        "whyImportant": "Un mot de passe fort résiste aux attaques par force brute"
+      },
+      "sessions": {
+        "label": "Gestion des sessions",
+        "description": "Contrôlez les appareils connectés à votre compte",
+        "whyImportant": "Permet de détecter et révoquer les accès non autorisés"
+      },
+      "rls": {
+        "label": "Isolation des données (RLS)",
+        "description": "Chaque utilisateur ne voit que ses propres données",
+        "whyImportant": "Empêche un utilisateur d'accéder aux données d'un autre"
+      },
+      "rateLimit": {
+        "label": "Protection anti-abus",
+        "description": "Limite les tentatives de connexion, import et export",
+        "whyImportant": "Protège contre les attaques par force brute et le spam"
+      },
+      "edgeFunctions": {
+        "label": "Fonctions backend sécurisées",
+        "description": "Les fonctions create-demo, fetch-from-siret et import-csv-check sont auditées",
+        "whyImportant": "Garantit que le code côté serveur est sûr"
+      },
+      "leakedPassword": {
+        "label": "Protection mots de passe compromis",
+        "description": "Vérifie si les mots de passe ont été exposés dans des fuites",
+        "whyImportant": "Empêche l'utilisation de mots de passe connus des hackers"
+      },
+      "importLimits": {
+        "label": "Limites d'import",
+        "description": "Fichiers limités à 20 Mo et 200 000 lignes",
+        "whyImportant": "Protège contre les surcharges et abus de ressources"
+      },
+      "exportLimits": {
+        "label": "Limites d'export",
+        "description": "Exports PDF et Excel avec rate limiting",
+        "whyImportant": "Empêche l'extraction massive de données"
+      }
+    },
+    "leakedPassword": {
+      "modalTitle": "Activer la protection",
+      "modalDescription": "Protection contre les mots de passe compromis",
+      "infoBox": "Cette fonctionnalité vérifie si un mot de passe a été exposé dans des fuites de données connues. Elle doit être activée manuellement dans le backend.",
+      "step1Title": "Accéder au backend",
+      "step1Description": "Cliquez sur le bouton ci-dessous pour ouvrir les paramètres du backend",
+      "step2Title": "Aller dans Authentication",
+      "step2Description": "Dans le menu de gauche, cliquez sur 'Authentication'",
+      "step3Title": "Ouvrir les paramètres de sécurité",
+      "step3Description": "Cliquez sur 'Providers' puis cherchez la section 'Password' pour voir les options",
+      "step4Title": "Activer 'Leaked Password Protection'",
+      "step4Description": "Cochez l'option 'Enable Leaked Password Protection' et sauvegardez",
+      "successIndicator": "Une fois activé, les utilisateurs seront avertis s'ils utilisent un mot de passe compromis"
     }
   }
 }

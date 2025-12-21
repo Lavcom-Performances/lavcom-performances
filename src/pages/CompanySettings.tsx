@@ -27,7 +27,7 @@ import {
   formatPhoneNumber, 
   formatPhoneDisplay 
 } from "@/lib/textUtils";
-import { SecurityChecklist } from "@/components/security/SecurityChecklist";
+import { SecurityCenter } from "@/components/security/SecurityCenter";
 
 interface CompanyInfo {
   name: string;
@@ -584,7 +584,7 @@ export default function CompanySettings() {
 
           {/* Security Tab */}
           <TabsContent value="security" className="space-y-6">
-            <SecurityChecklist variant="project" />
+            <SecurityCenter />
           </TabsContent>
         </Tabs>
       </div>
