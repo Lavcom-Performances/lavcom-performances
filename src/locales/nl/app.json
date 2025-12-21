@@ -16,6 +16,7 @@
       "invert": "Omkeren",
       "grayscale": "Grijstinten",
       "hueRotate": "Tint",
+      "opacity": "Dekking",
       "presets": {
         "title": "Voorinstellingen",
         "selectPlaceholder": "Voorinstelling laden...",
@@ -42,7 +43,8 @@
           "default_dramatic": "Dramatisch",
           "default_sepia": "Sepia",
           "default_negative": "Negatief",
-          "default_psychedelic": "Psychedelisch"
+          "default_psychedelic": "Psychedelisch",
+          "default_ghost": "Spook"
         }
       }
     }

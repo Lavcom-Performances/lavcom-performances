@@ -16,6 +16,7 @@
       "invert": "Invertir",
       "grayscale": "Escala de grises",
       "hueRotate": "Tono",
+      "opacity": "Opacidad",
       "presets": {
         "title": "Ajustes preestablecidos",
         "selectPlaceholder": "Cargar un ajuste...",
@@ -42,7 +43,8 @@
           "default_dramatic": "Dramático",
           "default_sepia": "Sepia",
           "default_negative": "Negativo",
-          "default_psychedelic": "Psicodélico"
+          "default_psychedelic": "Psicodélico",
+          "default_ghost": "Fantasma"
         }
       }
     }

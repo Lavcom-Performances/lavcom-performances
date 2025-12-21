@@ -16,6 +16,7 @@
       "invert": "Invertieren",
       "grayscale": "Graustufen",
       "hueRotate": "Farbton",
+      "opacity": "Deckkraft",
       "presets": {
         "title": "Voreinstellungen",
         "selectPlaceholder": "Voreinstellung laden...",
@@ -42,7 +43,8 @@
           "default_dramatic": "Dramatisch",
           "default_sepia": "Sepia",
           "default_negative": "Negativ",
-          "default_psychedelic": "Psychedelisch"
+          "default_psychedelic": "Psychedelisch",
+          "default_ghost": "Geist"
         }
       }
     }
