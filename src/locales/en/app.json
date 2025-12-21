@@ -783,6 +783,18 @@
       "signOutSuccess": "Sessions ended",
       "signOutSuccessDescription": "All your sessions have been successfully closed",
       "signOutError": "An error occurred while signing out"
-    }
+    },
+    "loginHistory": {
+      "title": "Login History",
+      "description": "Kept for {{days}} days",
+      "entries": "logins",
+      "noLogs": "No logins recorded",
+      "newDevice": "New device",
+      "unknownBrowser": "Unknown browser",
+      "unknownOS": "Unknown OS",
+      "unknownDevice": "Unknown device",
+      "showAll": "Show all ({{count}} logins)"
+    },
+    "openBackend": "Open backend"
   }
 }
