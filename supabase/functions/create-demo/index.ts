@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, hashIP, rateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -145,6 +146,9 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
   try {
     // Get user from auth header
     const authHeader = req.headers.get("Authorization");
@@ -157,8 +161,6 @@ serve(async (req) => {
     }
 
     // Create Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Get user from JWT
@@ -171,6 +173,26 @@ serve(async (req) => {
         JSON.stringify({ error: "Non autorisé" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Get client IP for rate limiting
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() 
+      || req.headers.get('x-real-ip') 
+      || 'unknown';
+    const ipHash = await hashIP(clientIP);
+
+    // Check rate limit (1 per 24h per user)
+    const rateLimitResult = await checkRateLimit(
+      supabaseUrl,
+      supabaseKey,
+      'edge/create-demo',
+      `user:${user.id}`,
+      ipHash
+    );
+
+    if (!rateLimitResult.allowed) {
+      console.log(`Rate limit hit: create-demo, user=${user.id}`);
+      return rateLimitResponse(rateLimitResult.cooldownSeconds!, 'edge/create-demo', corsHeaders);
     }
 
     console.log(`Creating demo for user: ${user.id}`);
