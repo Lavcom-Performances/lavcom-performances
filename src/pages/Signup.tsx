@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff, Loader2, Home, CheckCircle2, Gift } from "lucide-react";
+import { Eye, EyeOff, Loader2, Home, CheckCircle2, Gift, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,8 @@ import { z } from "zod";
 import { formatFirstName, formatLastName } from "@/lib/textUtils";
 import { useTranslation } from "react-i18next";
 import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/auth/PasswordStrengthIndicator";
-
+import { supabase } from "@/integrations/supabase/client";
+import { formatCooldown } from "@/lib/rateLimiter";
 export default function Signup() {
   const { t } = useTranslation(['app', 'common']);
   const [email, setEmail] = useState("");
@@ -25,12 +26,23 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
   
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signUp, signInWithGoogle } = useAuth();
+  const { signInWithGoogle } = useAuth();
 
   const { strength: passwordStrength } = usePasswordStrength(password);
+
+  const isRateLimited = cooldownSeconds > 0;
+
+  // Countdown effect for cooldown
+  useEffect(() => {
+    if (cooldownSeconds > 0) {
+      const timer = setTimeout(() => setCooldownSeconds(cooldownSeconds - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownSeconds]);
 
   const signupSchema = z.object({
     email: z.string().email(t('app:signup.validation.invalidEmail')),
@@ -80,37 +92,68 @@ export default function Signup() {
     const formattedFirstName = formatFirstName(firstName);
     const formattedLastName = formatLastName(lastName);
     
-    const { error } = await signUp(email, password, {
-      first_name: formattedFirstName,
-      last_name: formattedLastName,
-      company_name: companyName,
-    });
-    
-    setIsLoading(false);
-    
-    if (error) {
-      if (error.message.includes("already registered")) {
+    try {
+      // Call edge function with rate limiting
+      const { data, error: invokeError } = await supabase.functions.invoke('auth-signup', {
+        body: {
+          email,
+          password,
+          metadata: {
+            first_name: formattedFirstName,
+            last_name: formattedLastName,
+            company_name: companyName,
+          },
+        },
+      });
+      
+      setIsLoading(false);
+      
+      // Handle rate limit (429)
+      if (invokeError?.message?.includes('429') || data?.error === 'rate_limit_exceeded') {
+        const cooldown = data?.cooldown_seconds || 60;
+        setCooldownSeconds(cooldown);
         toast({
-          title: t('app:signup.existingAccount'),
-          description: t('app:signup.alreadyRegistered'),
+          title: t('app:rateLimit.auth_signup.title'),
+          description: t('app:rateLimit.auth_signup.message', { time: formatCooldown(cooldown) }),
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: t('common:error'),
-          description: error.message,
-          variant: "destructive",
-        });
+        return;
       }
-      return;
+      
+      // Handle other errors from edge function
+      if (invokeError || data?.error) {
+        const errorMessage = data?.error || invokeError?.message || t('common:error');
+        
+        if (errorMessage.includes("already registered")) {
+          toast({
+            title: t('app:signup.existingAccount'),
+            description: t('app:signup.alreadyRegistered'),
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: t('common:error'),
+            description: errorMessage,
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+      
+      toast({
+        title: t('app:signup.accountCreated'),
+        description: t('app:signup.trialStarted'),
+      });
+      
+      navigate("/dashboard");
+    } catch (err) {
+      setIsLoading(false);
+      toast({
+        title: t('common:error'),
+        description: t('common:error'),
+        variant: "destructive",
+      });
     }
-    
-    toast({
-      title: t('app:signup.accountCreated'),
-      description: t('app:signup.trialStarted'),
-    });
-    
-    navigate("/dashboard");
   };
 
   const trialFeatures = [
@@ -338,12 +381,17 @@ export default function Signup() {
               variant="lavcom"
               size="xl"
               className="w-full"
-              disabled={isLoading}
+              disabled={isLoading || isRateLimited}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   {t('app:signup.form.creating')}
+                </>
+              ) : isRateLimited ? (
+                <>
+                  <Clock className="h-4 w-4" />
+                  {t('app:rateLimit.cooldownMessage', { time: formatCooldown(cooldownSeconds) })}
                 </>
               ) : (
                 t('app:signup.form.submit')
