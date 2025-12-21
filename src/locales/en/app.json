@@ -772,6 +772,17 @@
       "step4Title": "Enable 'Leaked Password Protection'",
       "step4Description": "Check the 'Enable Leaked Password Protection' option and save",
       "successIndicator": "Once enabled, users will be warned if they use a compromised password"
+    },
+    "sessions": {
+      "signOutAll": "Sign out all",
+      "confirmTitle": "Sign out all sessions?",
+      "confirmDescription": "You will be signed out from all your devices, including this one.",
+      "warning": "This action will sign you out immediately. You will need to sign in again on each device.",
+      "confirmSignOut": "Yes, sign out all",
+      "signingOut": "Signing out...",
+      "signOutSuccess": "Sessions ended",
+      "signOutSuccessDescription": "All your sessions have been successfully closed",
+      "signOutError": "An error occurred while signing out"
     }
   }
 }

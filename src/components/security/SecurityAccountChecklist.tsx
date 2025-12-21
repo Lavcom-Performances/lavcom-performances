@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import type { SecurityScore } from "./SecurityCenter";
+import { SignOutAllSessions } from "./SignOutAllSessions";
 
 type SecurityStatus = 'ok' | 'warning' | 'error';
 type CriticalityLevel = 'critical' | 'high' | 'medium' | 'low';
@@ -113,14 +114,11 @@ export function SecurityAccountChecklist({
       label: t('app:securityCenter.items.sessions.label'),
       description: t('app:securityCenter.items.sessions.description'),
       whyImportant: t('app:securityCenter.items.sessions.whyImportant'),
-      status: 'ok', // Informational
+      status: 'ok', // Informational - always OK
       icon: <MonitorSmartphone className="h-4 w-4" />,
       criticality: 'low',
       responsible: 'app',
-      action: {
-        label: t('app:securityCenter.comingSoon'),
-        onClick: () => {},
-      },
+      // Action handled separately with SignOutAllSessions component
     },
   ];
 
@@ -228,7 +226,7 @@ export function SecurityAccountChecklist({
                   </p>
                 </div>
               </div>
-              {item.action && item.id !== 'sessions' && (
+              {item.action && (
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -239,14 +237,11 @@ export function SecurityAccountChecklist({
                 </Button>
               )}
               {item.id === 'sessions' && (
-                <Button 
+                <SignOutAllSessions 
                   variant="outline" 
                   size="sm" 
                   className="shrink-0 gap-1.5 text-xs"
-                  disabled
-                >
-                  {t('app:securityCenter.comingSoon')}
-                </Button>
+                />
               )}
             </div>
           </div>
