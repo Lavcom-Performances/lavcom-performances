@@ -635,9 +635,13 @@
     }
   },
   "csvImport": {
-    "fileSizeError": "Le fichier dépasse la taille maximale autorisée (20 Mo).",
+    "fileSizeError": "Le fichier est trop volumineux (max 20 Mo). Essayez d'importer par périodes plus courtes (1 à 3 mois).",
     "fileTypeError": "Seuls les fichiers CSV sont acceptés.",
-    "maxLinesError": "Le fichier contient trop de lignes (max 100 000).",
-    "frequencyError": "Veuillez patienter avant d'importer un nouveau fichier."
+    "maxLinesError": "Le fichier contient trop de lignes (max 200 000). Essayez de le découper en plusieurs fichiers.",
+    "frequencyError": "Imports trop rapprochés. Réessayez dans {{time}}.",
+    "frequencyErrorSite": "Un import est déjà en cours sur cette laverie. Réessayez dans {{time}}.",
+    "frequencyErrorUser": "Vous avez atteint la limite d'imports. Réessayez dans {{time}}.",
+    "validating": "Validation en cours...",
+    "suggestion": "Vous pouvez importer vos données par période (ex : mois par mois) pour de meilleurs résultats."
   }
 }

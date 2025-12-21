@@ -143,7 +143,7 @@ export function getCooldownRemaining(scope: RateLimitScope, identifier: string):
 // File size validation for CSV imports
 export const CSV_MAX_SIZE_MB = 20;
 export const CSV_MAX_SIZE_BYTES = CSV_MAX_SIZE_MB * 1024 * 1024;
-export const CSV_MAX_LINES = 100000;
+export const CSV_MAX_LINES = 200000;
 
 export function validateCSVFile(file: File): { valid: boolean; error?: string } {
   // Check file extension
@@ -157,6 +157,14 @@ export function validateCSVFile(file: File): { valid: boolean; error?: string } 
     return { valid: false, error: 'fileSizeError' };
   }
 
+  return { valid: true };
+}
+
+// Validate line count after parsing
+export function validateLineCount(lineCount: number): { valid: boolean; error?: string } {
+  if (lineCount > CSV_MAX_LINES) {
+    return { valid: false, error: 'maxLinesError' };
+  }
   return { valid: true };
 }
 

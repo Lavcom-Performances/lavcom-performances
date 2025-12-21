@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { Upload, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { Upload, ArrowLeft, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +9,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useSites } from "@/hooks/useSites";
 import { useOperationsImport } from "@/hooks/useOperationsImport";
+import { useImportRateLimit } from "@/hooks/useImportRateLimit";
 
 import { CSVDropZone } from "./csv-import/CSVDropZone";
 import { CSVPreviewTable } from "./csv-import/CSVPreviewTable";
@@ -40,8 +43,10 @@ interface CSVImportDialogProps {
 
 export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImportDialogProps) {
   const { toast } = useToast();
+  const { t } = useTranslation("app");
   const { sites, isLoading: sitesLoading, createSite, getDefaultSite } = useSites();
   const { importOperations, isImporting } = useOperationsImport();
+  const { validateFile, validateLines, checkRateLimit, showFileError, isChecking, limits } = useImportRateLimit();
   
   // Step management
   const [currentStep, setCurrentStep] = useState<ImportStep>("upload");
@@ -65,6 +70,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
   
   // Import state
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // Set default site when sites load
   useEffect(() => {
@@ -105,25 +111,39 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
+    setValidationError(null);
     
     const file = e.dataTransfer.files[0];
     if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+      // Validate file size
+      const validation = validateFile(file);
+      if (!validation.valid && validation.errorKey) {
+        setValidationError(showFileError(validation.errorKey));
+        return;
+      }
       setSelectedFile(file);
     } else {
       toast({
         title: "Format non supporté",
-        description: "Veuillez sélectionner un fichier CSV.",
+        description: t("csvImport.fileTypeError"),
         variant: "destructive",
       });
     }
-  }, [toast]);
+  }, [toast, t, validateFile, showFileError]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setValidationError(null);
+      // Validate file size
+      const validation = validateFile(file);
+      if (!validation.valid && validation.errorKey) {
+        setValidationError(showFileError(validation.errorKey));
+        return;
+      }
       setSelectedFile(file);
     }
-  }, []);
+  }, [validateFile, showFileError]);
 
   const handleClearFile = useCallback(() => {
     setSelectedFile(null);
@@ -137,6 +157,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
       program: null,
       paymentMode: null,
     });
+    setValidationError(null);
   }, []);
 
   const handleCreateSite = useCallback(async (name: string) => {
@@ -146,6 +167,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
 
   const handleProceedToPreview = useCallback(async () => {
     if (!selectedFile) return;
+    setValidationError(null);
 
     try {
       const text = await selectedFile.text();
@@ -157,6 +179,13 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
           description: "Le fichier ne contient pas de données exploitables.",
           variant: "destructive",
         });
+        return;
+      }
+
+      // Validate line count
+      const lineValidation = validateLines(parsedRows.length);
+      if (!lineValidation.valid && lineValidation.errorKey) {
+        setValidationError(showFileError(lineValidation.errorKey));
         return;
       }
 
@@ -175,7 +204,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
         variant: "destructive",
       });
     }
-  }, [selectedFile, toast]);
+  }, [selectedFile, toast, validateLines, showFileError]);
 
   const handleMappingChange = useCallback((columnType: keyof ColumnMapping, columnIndex: number | null) => {
     setMapping((prev) => ({
@@ -205,6 +234,18 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
       return;
     }
 
+    // Check server-side rate limit before importing
+    const rateLimitResult = await checkRateLimit(selectedSiteId, selectedFile.name);
+    if (!rateLimitResult.allowed) {
+      setValidationError(rateLimitResult.error || t("csvImport.frequencyError", { time: rateLimitResult.cooldownFormatted }));
+      toast({
+        title: t("rateLimit.import_csv.title"),
+        description: rateLimitResult.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
     const result = await importOperations(selectedSiteId, selectedFile.name, parsedRows);
 
     setImportResult(result);
@@ -223,7 +264,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
         variant: "destructive",
       });
     }
-  }, [canImport, selectedSiteId, selectedFile, mapping, parsedRows, importOperations, toast, onImportComplete]);
+  }, [canImport, selectedSiteId, selectedFile, mapping, parsedRows, importOperations, toast, onImportComplete, checkRateLimit, t]);
 
   const handleClose = useCallback(() => {
     // Reset all state
@@ -240,6 +281,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
       paymentMode: null,
     });
     setImportResult(null);
+    setValidationError(null);
     onOpenChange(false);
   }, [onOpenChange]);
 
@@ -308,6 +350,14 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
                 onClearFile={handleClearFile}
               />
 
+              {/* Validation error inline */}
+              {validationError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{validationError}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="flex justify-end">
                 <Button
                   onClick={handleProceedToPreview}
@@ -335,6 +385,14 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
                 <CSVImportSummary summary={summary} />
               )}
 
+              {/* Validation error inline */}
+              {validationError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{validationError}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="flex justify-between">
                 <Button variant="outline" onClick={handleBack}>
                   <ArrowLeft className="h-4 w-4 mr-2" />
@@ -342,10 +400,15 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
                 </Button>
                 <Button
                   onClick={handleImport}
-                  disabled={!canImport || isImporting}
+                  disabled={!canImport || isImporting || isChecking}
                   className="bg-lavcom-green hover:bg-lavcom-green-dark text-white"
                 >
-                  {isImporting ? (
+                  {isChecking ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      {t("csvImport.validating")}
+                    </>
+                  ) : isImporting ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                       Import en cours...
