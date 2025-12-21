@@ -23,6 +23,8 @@
       "temperature": "Temperature",
       "highlights": "Highlights",
       "shadows": "Shadows",
+      "curves": "Curves",
+      "curvesLabel": "Tone adjustment",
       "outputFormat": "Format",
       "formats": {
         "square": "Square",

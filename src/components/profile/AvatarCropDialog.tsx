@@ -18,9 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer, Square, RectangleVertical, RectangleHorizontal, Maximize, SunDim, Moon } from "lucide-react";
+import { Loader2, ZoomIn, RotateCw, RotateCcw, FlipHorizontal, FlipVertical, Sun, Contrast, Palette, Droplets, Focus, Save, Trash2, Download, Upload, Sunset, CircleOff, CircleDot, Rainbow, Eye, Circle, Layers, Thermometer, Square, RectangleVertical, RectangleHorizontal, Maximize, SunDim, Moon, TrendingUp, ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { CurveEditor, CurvePoint, DEFAULT_CURVE_POINTS, computeCurveLUT } from "./CurveEditor";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const PRESETS_STORAGE_KEY = "avatar-filter-presets";
 
@@ -42,6 +44,7 @@ interface FilterPreset {
   temperature: number;
   highlights: number;
   shadows: number;
+  curvePoints?: CurvePoint[];
   isDefault?: boolean;
   outputFormat?: "square" | "portrait" | "landscape" | "free";
 }
@@ -229,6 +232,29 @@ function applyClarity(ctx: CanvasRenderingContext2D, width: number, height: numb
   ctx.putImageData(imageData, 0, 0);
 }
 
+// Apply curves adjustment using lookup table
+function applyCurves(ctx: CanvasRenderingContext2D, width: number, height: number, curvePoints: CurvePoint[]) {
+  // Check if curve is default (no adjustment needed)
+  if (curvePoints.length === 2 && 
+      curvePoints[0].x === 0 && curvePoints[0].y === 0 && 
+      curvePoints[1].x === 255 && curvePoints[1].y === 255) {
+    return;
+  }
+  
+  const lut = computeCurveLUT(curvePoints);
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  
+  for (let i = 0; i < data.length; i += 4) {
+    data[i] = lut[data[i]];         // Red
+    data[i + 1] = lut[data[i + 1]]; // Green
+    data[i + 2] = lut[data[i + 2]]; // Blue
+    // Alpha unchanged
+  }
+  
+  ctx.putImageData(imageData, 0, 0);
+}
+
 interface AvatarCropDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -294,6 +320,8 @@ export function AvatarCropDialog({
   const [temperature, setTemperature] = useState(0);
   const [highlights, setHighlights] = useState(0);
   const [shadows, setShadows] = useState(0);
+  const [curvePoints, setCurvePoints] = useState<CurvePoint[]>([...DEFAULT_CURVE_POINTS]);
+  const [curvesOpen, setCurvesOpen] = useState(false);
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("square");
   
   // Presets state
@@ -363,9 +391,10 @@ export function AvatarCropDialog({
     applySharpen(ctx, previewWidth, previewHeight, sharpen);
     applyTemperature(ctx, previewWidth, previewHeight, temperature);
     applyClarity(ctx, previewWidth, previewHeight, highlights, shadows);
+    applyCurves(ctx, previewWidth, previewHeight, curvePoints);
     applyVignette(ctx, previewWidth, previewHeight, vignette);
     applyDropShadow(ctx, previewWidth, previewHeight, dropShadow);
-  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur, sharpen, sepia, invert, grayscale, hueRotate, opacity, vignette, dropShadow, temperature, highlights, shadows, outputFormat]);
+  }, [completedCrop, rotate, flipH, flipV, brightness, contrast, saturation, blur, sharpen, sepia, invert, grayscale, hueRotate, opacity, vignette, dropShadow, temperature, highlights, shadows, curvePoints, outputFormat]);
 
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
@@ -460,6 +489,7 @@ export function AvatarCropDialog({
       applySharpen(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), sharpen);
       applyTemperature(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), temperature);
       applyClarity(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), highlights, shadows);
+      applyCurves(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), curvePoints);
       applyVignette(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), vignette);
       applyDropShadow(ctx, Math.round(outputWidth * pixelRatio), Math.round(outputHeight * pixelRatio), dropShadow);
 
@@ -501,6 +531,7 @@ export function AvatarCropDialog({
       setTemperature(0);
       setHighlights(0);
       setShadows(0);
+      setCurvePoints([...DEFAULT_CURVE_POINTS]);
       setOutputFormat("square");
       setCrop(undefined);
       setCompletedCrop(undefined);
@@ -966,8 +997,40 @@ export function AvatarCropDialog({
               <span className="text-xs sm:text-sm text-muted-foreground w-10 sm:w-12 text-right">{shadows > 0 ? '+' : ''}{shadows}</span>
             </div>
 
+            {/* Curves editor */}
+            <Collapsible open={curvesOpen} onOpenChange={setCurvesOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>{t("app:profile.avatar.curves")}</span>
+                    {(curvePoints.length !== 2 || curvePoints[0].y !== 0 || curvePoints[1].y !== 255) && (
+                      <span className="h-2 w-2 rounded-full bg-primary" />
+                    )}
+                  </div>
+                  {curvesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-3">
+                <div className="flex justify-center">
+                  <CurveEditor
+                    points={curvePoints}
+                    onChange={setCurvePoints}
+                    width={200}
+                    height={200}
+                    label={t("app:profile.avatar.curvesLabel")}
+                  />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
             {/* Reset button */}
-            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0 || sharpen !== 0 || sepia !== 0 || invert !== 0 || grayscale !== 0 || hueRotate !== 0 || opacity !== 100 || vignette !== 0 || dropShadow !== 0 || temperature !== 0 || highlights !== 0 || shadows !== 0 || outputFormat !== "square") && (
+            {(scale !== 1 || rotate !== 0 || flipH || flipV || brightness !== 100 || contrast !== 100 || saturation !== 100 || blur !== 0 || sharpen !== 0 || sepia !== 0 || invert !== 0 || grayscale !== 0 || hueRotate !== 0 || opacity !== 100 || vignette !== 0 || dropShadow !== 0 || temperature !== 0 || highlights !== 0 || shadows !== 0 || curvePoints.length !== 2 || curvePoints[0].y !== 0 || curvePoints[1].y !== 255 || outputFormat !== "square") && (
               <Button
                 type="button"
                 variant="ghost"
@@ -992,6 +1055,7 @@ export function AvatarCropDialog({
                   setTemperature(0);
                   setHighlights(0);
                   setShadows(0);
+                  setCurvePoints([...DEFAULT_CURVE_POINTS]);
                   setOutputFormat("square");
                   if (imgRef.current) {
                     const { width, height } = imgRef.current;
