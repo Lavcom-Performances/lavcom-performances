@@ -513,17 +513,120 @@
     }
   },
   "passwordStrength": {
-    "label": "Sicurezza della password",
+    "label": "Sicurezza password",
     "weak": "Debole",
     "fair": "Discreta",
     "good": "Buona",
     "strong": "Forte",
     "criteria": {
-      "minLength": "Minimo 8 caratteri",
+      "minLength": "Almeno 8 caratteri",
       "hasUppercase": "Una maiuscola",
       "hasLowercase": "Una minuscola",
       "hasNumber": "Un numero",
       "hasSpecial": "Un carattere speciale"
+    }
+  },
+  "securityCenter": {
+    "title": "Centro sicurezza",
+    "description": "Visualizza e migliora la protezione del tuo account e dei tuoi dati",
+    "globalScore": "Punteggio globale",
+    "accountScore": "Punteggio account",
+    "projectScore": "Punteggio progetto",
+    "accountTitle": "Sicurezza dell'account",
+    "accountDescription": "Protezione della tua identità e accesso",
+    "projectTitle": "Sicurezza del progetto",
+    "projectDescription": "Protezione dei tuoi dati e configurazioni",
+    "enableMFA": "Attiva 2FA",
+    "changePassword": "Modifica",
+    "comingSoon": "Prossimamente",
+    "seeHowToActivate": "Scopri come attivare",
+    "openBackend": "Apri backend",
+    "whyImportant": "Perché",
+    "inApp": "Nell'app",
+    "inBackend": "Backend",
+    "backendNote": "Alcune protezioni richiedono l'attivazione manuale nelle impostazioni del backend. Gli elementi contrassegnati 'Backend' sono gestiti lato server.",
+    "status": {
+      "ok": "Attivato",
+      "warning": "Consigliato",
+      "toActivate": "Da attivare",
+      "missing": "Non attivato"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "Email verificata",
+        "description": "Il tuo indirizzo email è stato confermato",
+        "whyImportant": "Consente il recupero dell'account e le notifiche di sicurezza"
+      },
+      "mfa": {
+        "label": "Autenticazione a due fattori (2FA)",
+        "description": "Proteggi il tuo account con un codice temporaneo",
+        "whyImportant": "Impedisce l'accesso anche se la tua password è compromessa"
+      },
+      "passwordStrong": {
+        "label": "Password robusta",
+        "description": "La tua password rispetta i criteri di sicurezza",
+        "whyImportant": "Una password forte resiste agli attacchi brute force"
+      },
+      "sessions": {
+        "label": "Gestione delle sessioni",
+        "description": "Controlla i dispositivi connessi al tuo account",
+        "whyImportant": "Permette di rilevare e revocare gli accessi non autorizzati"
+      },
+      "rls": {
+        "label": "Isolamento dei dati (RLS)",
+        "description": "Ogni utente vede solo i propri dati",
+        "whyImportant": "Impedisce a un utente di accedere ai dati di un altro"
+      },
+      "rateLimit": {
+        "label": "Protezione anti-abuso",
+        "description": "Limita i tentativi di accesso, importazione ed esportazione",
+        "whyImportant": "Protegge dagli attacchi brute force e dallo spam"
+      },
+      "edgeFunctions": {
+        "label": "Funzioni backend sicure",
+        "description": "Le funzioni create-demo, fetch-from-siret e import-csv-check sono verificate",
+        "whyImportant": "Garantisce che il codice lato server sia sicuro"
+      },
+      "leakedPassword": {
+        "label": "Protezione password compromesse",
+        "description": "Verifica se le password sono state esposte in violazioni",
+        "whyImportant": "Impedisce l'uso di password conosciute dagli hacker"
+      },
+      "importLimits": {
+        "label": "Limiti di importazione",
+        "description": "File limitati a 20 MB e 200.000 righe",
+        "whyImportant": "Protegge da sovraccarichi e abusi di risorse"
+      },
+      "exportLimits": {
+        "label": "Limiti di esportazione",
+        "description": "Esportazioni PDF e Excel con rate limiting",
+        "whyImportant": "Impedisce l'estrazione massiva di dati"
+      }
+    },
+    "leakedPassword": {
+      "modalTitle": "Attiva la protezione",
+      "modalDescription": "Protezione contro le password compromesse",
+      "infoBox": "Questa funzionalità verifica se una password è stata esposta in violazioni di dati note. Deve essere attivata manualmente nel backend.",
+      "step1Title": "Accedi al backend",
+      "step1Description": "Clicca sul pulsante qui sotto per aprire le impostazioni del backend",
+      "step2Title": "Vai su Authentication",
+      "step2Description": "Nel menu a sinistra, clicca su 'Authentication'",
+      "step3Title": "Apri le impostazioni di sicurezza",
+      "step3Description": "Clicca su 'Providers' e cerca la sezione 'Password' per vedere le opzioni",
+      "step4Title": "Attiva 'Leaked Password Protection'",
+      "step4Description": "Seleziona l'opzione 'Enable Leaked Password Protection' e salva",
+      "successIndicator": "Una volta attivato, gli utenti saranno avvisati se usano una password compromessa"
+    },
+    "sessions": {
+      "signOutAll": "Disconnetti tutto",
+      "confirmTitle": "Disconnettere tutte le sessioni?",
+      "confirmDescription": "Sarai disconnesso da tutti i tuoi dispositivi, incluso questo.",
+      "warning": "Questa azione ti disconnetterà immediatamente. Dovrai riconnetterti su ogni dispositivo.",
+      "confirmSignOut": "Sì, disconnetti tutto",
+      "signingOut": "Disconnessione...",
+      "signOutSuccess": "Sessioni terminate",
+      "signOutSuccessDescription": "Tutte le tue sessioni sono state chiuse con successo",
+      "signOutError": "Si è verificato un errore durante la disconnessione"
     }
   }
 }

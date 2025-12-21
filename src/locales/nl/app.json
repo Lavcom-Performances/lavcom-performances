@@ -525,5 +525,108 @@
       "hasNumber": "Een cijfer",
       "hasSpecial": "Een speciaal teken"
     }
+  },
+  "securityCenter": {
+    "title": "Beveiligingscentrum",
+    "description": "Bekijk en verbeter de bescherming van uw account en gegevens",
+    "globalScore": "Totaalscore",
+    "accountScore": "Accountscore",
+    "projectScore": "Projectscore",
+    "accountTitle": "Accountbeveiliging",
+    "accountDescription": "Bescherming van uw identiteit en toegang",
+    "projectTitle": "Projectbeveiliging",
+    "projectDescription": "Bescherming van uw gegevens en configuraties",
+    "enableMFA": "2FA activeren",
+    "changePassword": "Wijzigen",
+    "comingSoon": "Binnenkort beschikbaar",
+    "seeHowToActivate": "Bekijk hoe te activeren",
+    "openBackend": "Backend openen",
+    "whyImportant": "Waarom",
+    "inApp": "In de app",
+    "inBackend": "Backend",
+    "backendNote": "Sommige beveiligingen vereisen handmatige activering in de backend-instellingen. Items gemarkeerd met 'Backend' worden server-side beheerd.",
+    "status": {
+      "ok": "Geactiveerd",
+      "warning": "Aanbevolen",
+      "toActivate": "Te activeren",
+      "missing": "Niet geactiveerd"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "E-mail geverifieerd",
+        "description": "Uw e-mailadres is bevestigd",
+        "whyImportant": "Maakt accountherstel en beveiligingsmeldingen mogelijk"
+      },
+      "mfa": {
+        "label": "Tweefactorauthenticatie (2FA)",
+        "description": "Bescherm uw account met een tijdelijke code",
+        "whyImportant": "Voorkomt toegang zelfs als uw wachtwoord is gecompromitteerd"
+      },
+      "passwordStrong": {
+        "label": "Sterk wachtwoord",
+        "description": "Uw wachtwoord voldoet aan de beveiligingscriteria",
+        "whyImportant": "Een sterk wachtwoord weerstaat brute force-aanvallen"
+      },
+      "sessions": {
+        "label": "Sessiebeheer",
+        "description": "Beheer de apparaten die verbonden zijn met uw account",
+        "whyImportant": "Maakt het mogelijk om ongeautoriseerde toegang te detecteren en in te trekken"
+      },
+      "rls": {
+        "label": "Gegevensisolatie (RLS)",
+        "description": "Elke gebruiker ziet alleen zijn eigen gegevens",
+        "whyImportant": "Voorkomt dat een gebruiker toegang krijgt tot de gegevens van een ander"
+      },
+      "rateLimit": {
+        "label": "Misbruikbeveiliging",
+        "description": "Beperkt aanmeld-, import- en exportpogingen",
+        "whyImportant": "Beschermt tegen brute force-aanvallen en spam"
+      },
+      "edgeFunctions": {
+        "label": "Beveiligde backend-functies",
+        "description": "De functies create-demo, fetch-from-siret en import-csv-check zijn gecontroleerd",
+        "whyImportant": "Garandeert dat de server-side code veilig is"
+      },
+      "leakedPassword": {
+        "label": "Bescherming gecompromitteerde wachtwoorden",
+        "description": "Controleert of wachtwoorden zijn blootgesteld in datalekken",
+        "whyImportant": "Voorkomt het gebruik van wachtwoorden die bekend zijn bij hackers"
+      },
+      "importLimits": {
+        "label": "Importlimieten",
+        "description": "Bestanden beperkt tot 20 MB en 200.000 regels",
+        "whyImportant": "Beschermt tegen overbelasting en misbruik van bronnen"
+      },
+      "exportLimits": {
+        "label": "Exportlimieten",
+        "description": "PDF- en Excel-exporten met snelheidsbeperking",
+        "whyImportant": "Voorkomt massale gegevensextractie"
+      }
+    },
+    "leakedPassword": {
+      "modalTitle": "Bescherming activeren",
+      "modalDescription": "Bescherming tegen gecompromitteerde wachtwoorden",
+      "infoBox": "Deze functionaliteit controleert of een wachtwoord is blootgesteld in bekende datalekken. Het moet handmatig worden geactiveerd in de backend.",
+      "step1Title": "Backend openen",
+      "step1Description": "Klik op de onderstaande knop om de backend-instellingen te openen",
+      "step2Title": "Ga naar Authentication",
+      "step2Description": "Klik in het linkermenu op 'Authentication'",
+      "step3Title": "Beveiligingsinstellingen openen",
+      "step3Description": "Klik op 'Providers' en zoek de sectie 'Password' voor de opties",
+      "step4Title": "'Leaked Password Protection' activeren",
+      "step4Description": "Vink de optie 'Enable Leaked Password Protection' aan en sla op",
+      "successIndicator": "Na activering worden gebruikers gewaarschuwd als ze een gecompromitteerd wachtwoord gebruiken"
+    },
+    "sessions": {
+      "signOutAll": "Alles uitloggen",
+      "confirmTitle": "Alle sessies beëindigen?",
+      "confirmDescription": "U wordt uitgelogd van al uw apparaten, inclusief dit apparaat.",
+      "warning": "Deze actie logt u onmiddellijk uit. U moet opnieuw inloggen op elk apparaat.",
+      "confirmSignOut": "Ja, alles uitloggen",
+      "signingOut": "Uitloggen...",
+      "signOutSuccess": "Sessies beëindigd",
+      "signOutSuccessDescription": "Al uw sessies zijn succesvol gesloten",
+      "signOutError": "Er is een fout opgetreden bij het uitloggen"
+    }
   }
 }
