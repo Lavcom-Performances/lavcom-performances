@@ -1,0 +1,6 @@
+Date;Heure;Montant;Machine;Programme;Mode_Paiement
+2024-01-15;09:30:00;5.50;LL-01;Lavage 40°;CB
+2024-01-15;10:15:00;3.50;SL-01;Séchage 30min;Espèces
+2024-01-15;11:00:00;6.00;LL-02;Lavage 60°;CB
+2024-01-15;14:30:00;4.50;LL-01;Lavage 30°;Carte Fidélité
+2024-01-15;16:45:00;5.00;SL-02;Séchage 45min;Mobile
