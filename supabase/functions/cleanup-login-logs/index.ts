@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const RETENTION_DAYS = 90;
+const DEFAULT_RETENTION_DAYS = 90;
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -28,34 +28,64 @@ serve(async (req) => {
     // Use service role to bypass RLS
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Calculate the cutoff date
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - RETENTION_DAYS);
-    const cutoffDateStr = cutoffDate.toISOString();
+    // Get all profiles with their retention settings
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, log_retention_days');
 
-    console.log(`[cleanup-login-logs] Deleting logs older than ${cutoffDateStr} (${RETENTION_DAYS} days)`);
-
-    // Delete old login logs
-    const { data, error, count } = await supabase
-      .from('login_logs')
-      .delete()
-      .lt('created_at', cutoffDateStr)
-      .select('id');
-
-    if (error) {
-      console.error('[cleanup-login-logs] Error deleting logs:', error);
-      throw error;
+    if (profilesError) {
+      console.error('[cleanup-login-logs] Error fetching profiles:', profilesError);
+      throw profilesError;
     }
 
-    const deletedCount = data?.length || 0;
-    console.log(`[cleanup-login-logs] Successfully deleted ${deletedCount} old login logs`);
+    let totalDeleted = 0;
+    const results: { user_id: string; deleted: number; retention_days: number }[] = [];
+
+    // Process each user with their specific retention period
+    for (const profile of profiles || []) {
+      const retentionDays = profile.log_retention_days || DEFAULT_RETENTION_DAYS;
+      
+      // Calculate the cutoff date for this user
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+      const cutoffDateStr = cutoffDate.toISOString();
+
+      console.log(`[cleanup-login-logs] User ${profile.id}: deleting logs older than ${cutoffDateStr} (${retentionDays} days retention)`);
+
+      // Delete old login logs for this user
+      const { data, error } = await supabase
+        .from('login_logs')
+        .delete()
+        .eq('user_id', profile.id)
+        .lt('created_at', cutoffDateStr)
+        .select('id');
+
+      if (error) {
+        console.error(`[cleanup-login-logs] Error deleting logs for user ${profile.id}:`, error);
+        continue;
+      }
+
+      const deletedCount = data?.length || 0;
+      if (deletedCount > 0) {
+        totalDeleted += deletedCount;
+        results.push({
+          user_id: profile.id,
+          deleted: deletedCount,
+          retention_days: retentionDays
+        });
+        console.log(`[cleanup-login-logs] Deleted ${deletedCount} logs for user ${profile.id}`);
+      }
+    }
+
+    console.log(`[cleanup-login-logs] Job complete. Total deleted: ${totalDeleted} logs across ${results.length} users`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        deleted: deletedCount,
-        cutoffDate: cutoffDateStr,
-        retentionDays: RETENTION_DAYS
+        totalDeleted,
+        usersProcessed: profiles?.length || 0,
+        usersWithDeletions: results.length,
+        details: results
       }),
       { 
         status: 200, 

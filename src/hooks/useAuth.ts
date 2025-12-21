@@ -11,6 +11,7 @@ interface Profile {
   siret: string | null;
   phone: string | null;
   avatar_url: string | null;
+  log_retention_days: number;
 }
 
 export function useAuth() {
