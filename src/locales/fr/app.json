@@ -772,6 +772,17 @@
       "step4Title": "Activer 'Leaked Password Protection'",
       "step4Description": "Cochez l'option 'Enable Leaked Password Protection' et sauvegardez",
       "successIndicator": "Une fois activé, les utilisateurs seront avertis s'ils utilisent un mot de passe compromis"
+    },
+    "sessions": {
+      "signOutAll": "Déconnecter tout",
+      "confirmTitle": "Déconnecter toutes les sessions ?",
+      "confirmDescription": "Vous serez déconnecté de tous vos appareils, y compris celui-ci.",
+      "warning": "Cette action va vous déconnecter immédiatement. Vous devrez vous reconnecter sur chaque appareil.",
+      "confirmSignOut": "Oui, tout déconnecter",
+      "signingOut": "Déconnexion...",
+      "signOutSuccess": "Sessions terminées",
+      "signOutSuccessDescription": "Toutes vos sessions ont été fermées avec succès",
+      "signOutError": "Une erreur est survenue lors de la déconnexion"
     }
   }
 }
