@@ -48,8 +48,17 @@ import {
   Eye,
   Lightbulb,
   BookOpen,
-  ExternalLink
+  ExternalLink,
+  Phone,
+  Link2
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { trackEbookClick, trackContactSubmit } from "@/lib/analytics";
@@ -67,8 +76,31 @@ const LandingPage = () => {
   const { toast } = useToast();
   const { t } = useTranslation(['landing', 'common', 'errors', 'app']);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
-  const [contactErrors, setContactErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+  const [contactForm, setContactForm] = useState({ 
+    topic: "", 
+    email: "", 
+    message: "", 
+    subject: "", 
+    phone: "",
+    pageUrl: ""
+  });
+  const [contactErrors, setContactErrors] = useState<{ 
+    topic?: string; 
+    email?: string; 
+    message?: string;
+    subject?: string;
+    phone?: string;
+  }>({});
+  
+  // Contact topic options
+  const contactTopics = [
+    { value: "support", label: t("landing:contact.topics.support") },
+    { value: "billing", label: t("landing:contact.topics.billing") },
+    { value: "simulator", label: t("landing:contact.topics.simulator") },
+    { value: "demo", label: t("landing:contact.topics.demo") },
+    { value: "press", label: t("landing:contact.topics.press") },
+    { value: "other", label: t("landing:contact.topics.other") },
+  ];
   
   // Track active section for nav highlighting
   const sectionIds = useMemo(() => ['features', 'testimonials', 'faq'], []);
@@ -76,9 +108,12 @@ const LandingPage = () => {
 
   // Dynamic schema with translations
   const contactSchema = z.object({
-    name: z.string().trim().min(1, t('errors:validation.nameRequired')).max(100, t('errors:validation.nameTooLong')),
+    topic: z.string().min(1, t('errors:validation.topicRequired')),
     email: z.string().trim().email(t('errors:validation.invalidEmail')).max(255, t('errors:validation.emailTooLong')),
-    message: z.string().trim().min(10, t('errors:validation.messageMinLength')).max(1000, t('errors:validation.messageMaxLength'))
+    message: z.string().trim().min(10, t('errors:validation.messageMinLength')).max(1000, t('errors:validation.messageMaxLength')),
+    subject: z.string().max(120, t('errors:validation.subjectTooLong')).optional(),
+    phone: z.string().max(20, t('errors:validation.phoneTooLong')).optional(),
+    pageUrl: z.string().max(500).optional(),
   });
 
   const handleContactSubmit = async (e: React.FormEvent) => {
@@ -87,7 +122,7 @@ const LandingPage = () => {
 
     const result = contactSchema.safeParse(contactForm);
     if (!result.success) {
-      const errors: { name?: string; email?: string; message?: string } = {};
+      const errors: { topic?: string; email?: string; message?: string; subject?: string; phone?: string } = {};
       result.error.errors.forEach((err) => {
         const field = err.path[0] as keyof typeof errors;
         errors[field] = err.message;
@@ -99,11 +134,18 @@ const LandingPage = () => {
     setIsSubmitting(true);
     
     try {
+      // Get topic label for the email
+      const topicLabel = contactTopics.find(t => t.value === contactForm.topic)?.label || contactForm.topic;
+      
       const { data, error } = await supabase.functions.invoke('send-contact', {
         body: {
-          name: contactForm.name,
+          topic: topicLabel,
+          topicValue: contactForm.topic,
           email: contactForm.email,
           message: contactForm.message,
+          subject: contactForm.subject || undefined,
+          phone: contactForm.phone || undefined,
+          pageUrl: contactForm.pageUrl || undefined,
         },
       });
 
@@ -115,7 +157,7 @@ const LandingPage = () => {
         title: t("landing:contact.successTitle"),
         description: t("landing:contact.successDescription"),
       });
-      setContactForm({ name: "", email: "", message: "" });
+      setContactForm({ topic: "", email: "", message: "", subject: "", phone: "", pageUrl: "" });
       trackContactSubmit();
     } catch (error) {
       console.error("Contact form error:", error);
@@ -1000,30 +1042,56 @@ const LandingPage = () => {
             </div>
             
             <Card className="p-6 md:p-8 card-lavcom">
-              <form onSubmit={handleContactSubmit} className="space-y-6">
+              <form onSubmit={handleContactSubmit} className="space-y-5">
+                {/* Topic dropdown - REQUIRED */}
                 <div className="space-y-2">
-                  <Label htmlFor="contact-name" className="text-foreground font-medium">
-                    {t("landing:contact.nameLabel")}
+                  <Label htmlFor="contact-topic" className="text-foreground font-medium">
+                    {t("landing:contact.topicLabel")} <span className="text-destructive">*</span>
                   </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      id="contact-name"
-                      placeholder={t("landing:contact.namePlaceholder")}
-                      value={contactForm.name}
-                      onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
-                      className="pl-10"
-                      maxLength={100}
-                    />
-                  </div>
-                  {contactErrors.name && (
-                    <p className="text-sm text-destructive">{contactErrors.name}</p>
+                  <Select
+                    value={contactForm.topic}
+                    onValueChange={(value) => setContactForm(prev => ({ ...prev, topic: value, pageUrl: "" }))}
+                  >
+                    <SelectTrigger id="contact-topic" className="w-full">
+                      <SelectValue placeholder={t("landing:contact.topicPlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {contactTopics.map((topic) => (
+                        <SelectItem key={topic.value} value={topic.value}>
+                          {topic.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {contactErrors.topic && (
+                    <p className="text-sm text-destructive">{contactErrors.topic}</p>
                   )}
                 </div>
-                
+
+                {/* Conditional URL field for Support/Bug */}
+                {contactForm.topic === "support" && (
+                  <div className="space-y-2 animate-fade-in">
+                    <Label htmlFor="contact-pageUrl" className="text-foreground font-medium text-sm">
+                      {t("landing:contact.pageUrlLabel")} <span className="text-muted-foreground text-xs">({t("common:optional")})</span>
+                    </Label>
+                    <div className="relative">
+                      <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="contact-pageUrl"
+                        placeholder={t("landing:contact.pageUrlPlaceholder")}
+                        value={contactForm.pageUrl}
+                        onChange={(e) => setContactForm(prev => ({ ...prev, pageUrl: e.target.value }))}
+                        className="pl-10 text-sm"
+                        maxLength={500}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Email - REQUIRED */}
                 <div className="space-y-2">
                   <Label htmlFor="contact-email" className="text-foreground font-medium">
-                    {t("landing:contact.emailLabel")}
+                    {t("landing:contact.emailLabel")} <span className="text-destructive">*</span>
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -1042,9 +1110,10 @@ const LandingPage = () => {
                   )}
                 </div>
                 
+                {/* Message - REQUIRED */}
                 <div className="space-y-2">
                   <Label htmlFor="contact-message" className="text-foreground font-medium">
-                    {t("landing:contact.messageLabel")}
+                    {t("landing:contact.messageLabel")} <span className="text-destructive">*</span>
                   </Label>
                   <Textarea
                     id="contact-message"
@@ -1059,6 +1128,47 @@ const LandingPage = () => {
                       <p className="text-destructive">{contactErrors.message}</p>
                     )}
                     <span className="ml-auto">{contactForm.message.length}/1000</span>
+                  </div>
+                </div>
+
+                {/* Optional fields section */}
+                <div className="border-t border-border pt-4 space-y-4">
+                  <p className="text-sm text-muted-foreground">{t("landing:contact.optionalFields")}</p>
+                  
+                  {/* Subject - OPTIONAL */}
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-subject" className="text-foreground font-medium text-sm">
+                      {t("landing:contact.subjectLabel")}
+                    </Label>
+                    <Input
+                      id="contact-subject"
+                      placeholder={t("landing:contact.subjectPlaceholder")}
+                      value={contactForm.subject}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, subject: e.target.value }))}
+                      maxLength={120}
+                    />
+                    <div className="flex justify-end text-xs text-muted-foreground">
+                      <span>{contactForm.subject.length}/120</span>
+                    </div>
+                  </div>
+
+                  {/* Phone - OPTIONAL */}
+                  <div className="space-y-2">
+                    <Label htmlFor="contact-phone" className="text-foreground font-medium text-sm">
+                      {t("landing:contact.phoneLabel")}
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="contact-phone"
+                        type="tel"
+                        placeholder={t("landing:contact.phonePlaceholder")}
+                        value={contactForm.phone}
+                        onChange={(e) => setContactForm(prev => ({ ...prev, phone: e.target.value }))}
+                        className="pl-10"
+                        maxLength={20}
+                      />
+                    </div>
                   </div>
                 </div>
                 
