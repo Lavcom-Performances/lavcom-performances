@@ -12,3 +12,13 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /operations
+Disallow: /profitability
+Disallow: /recommendations
+Disallow: /settings
+Disallow: /profile
+Disallow: /security
+Disallow: /simulation
+
+Sitemap: https://app.lavcom.fr/sitemap.xml
