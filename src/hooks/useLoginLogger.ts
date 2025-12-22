@@ -62,32 +62,25 @@ export const useLoginLogger = () => {
       const deviceInfo = parseUserAgent(userAgent);
       const deviceHash = await generateDeviceHash(deviceInfo);
 
-      // Check if this device has been used before
-      const { data: existingLogs } = await supabase
-        .from('login_logs')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('ip_hash', deviceHash)
-        .eq('browser', deviceInfo.browser)
-        .eq('os', deviceInfo.os)
-        .limit(1);
-
-      const isNewDevice = !existingLogs || existingLogs.length === 0;
-
-      // Log the login
-      const { error } = await supabase.from('login_logs').insert({
-        user_id: userId,
-        user_agent: deviceInfo.userAgent,
-        browser: deviceInfo.browser,
-        os: deviceInfo.os,
-        device_type: deviceInfo.deviceType,
-        ip_hash: deviceHash,
-        is_new_device: isNewDevice,
+      // Call edge function to log login (uses service role for INSERT)
+      const { data, error } = await supabase.functions.invoke('log-login', {
+        body: {
+          user_agent: deviceInfo.userAgent,
+          browser: deviceInfo.browser,
+          os: deviceInfo.os,
+          device_type: deviceInfo.deviceType,
+          device_hash: deviceHash,
+        },
       });
 
       if (error) {
         console.error('Failed to log login:', error);
-      } else if (isNewDevice) {
+        return { isNewDevice: false };
+      }
+
+      const isNewDevice = data?.is_new_device ?? false;
+      
+      if (isNewDevice) {
         console.log('New device detected - login logged');
       }
 
