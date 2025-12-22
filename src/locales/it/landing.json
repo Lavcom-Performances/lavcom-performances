@@ -125,7 +125,8 @@
       "billing": "Pacchetti e pagamento",
       "simulator": "Simulatore (domande prima dell'acquisto)",
       "demo": "Richiesta demo / partnership",
-      "press": "Stampa / Associazione / Istituzionale"
+      "press": "Stampa / Associazione / Istituzionale",
+      "other": "Altro"
     },
     "namePlaceholder": "Il tuo nome",
     "nameLabel": "Nome completo",

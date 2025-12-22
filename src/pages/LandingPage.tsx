@@ -97,6 +97,7 @@ const LandingPage = () => {
     { value: "simulator", label: t("landing:contact.topics.simulator") },
     { value: "demo", label: t("landing:contact.topics.demo") },
     { value: "press", label: t("landing:contact.topics.press") },
+    { value: "other", label: t("landing:contact.topics.other") },
   ];
   
   // Track active section for nav highlighting

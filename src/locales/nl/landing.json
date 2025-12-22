@@ -125,7 +125,8 @@
       "billing": "Pakketten & betaling",
       "simulator": "Simulator (vragen voor aankoop)",
       "demo": "Demo-aanvraag / partnerschap",
-      "press": "Pers / Vereniging / Institutioneel"
+      "press": "Pers / Vereniging / Institutioneel",
+      "other": "Anders"
     },
     "namePlaceholder": "Uw naam",
     "nameLabel": "Volledige naam",
