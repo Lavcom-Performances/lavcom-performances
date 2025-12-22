@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useActiveSection } from "@/hooks/useActiveSection";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,10 @@ const LandingPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
   const [contactErrors, setContactErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+  
+  // Track active section for nav highlighting
+  const sectionIds = useMemo(() => ['features', 'testimonials', 'faq'], []);
+  const activeSection = useActiveSection(sectionIds);
 
   // Dynamic schema with translations
   const contactSchema = z.object({
@@ -154,7 +159,11 @@ const LandingPage = () => {
                 e.preventDefault();
                 document.getElementById('features')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className={`transition-colors ${
+                activeSection === 'features' 
+                  ? 'text-lavcom-green font-medium' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               {t("common:features")}
             </a>
@@ -164,7 +173,11 @@ const LandingPage = () => {
                 e.preventDefault();
                 document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className={`transition-colors ${
+                activeSection === 'testimonials' 
+                  ? 'text-lavcom-green font-medium' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               {t("common:testimonials")}
             </a>
@@ -174,7 +187,11 @@ const LandingPage = () => {
                 e.preventDefault();
                 document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className={`transition-colors ${
+                activeSection === 'faq' 
+                  ? 'text-lavcom-green font-medium' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               {t("common:faq")}
             </a>
