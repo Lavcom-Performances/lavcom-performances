@@ -35,6 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useOperations } from "@/hooks/useOperations";
 import { useSites } from "@/hooks/useSites";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const paymentModeBadge = (mode: string | null) => {
   if (!mode) return <span className="text-muted-foreground">-</span>;
@@ -304,7 +305,14 @@ export default function Operations() {
   }
 
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <>
+      <SEOHead 
+        title="Opérations"
+        description="Gérez les opérations et transactions de votre laverie automatique."
+        url="/operations"
+        noindex={true}
+      />
+      <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -504,5 +512,6 @@ export default function Operations() {
         )}
       </div>
     </div>
+    </>
   );
 }

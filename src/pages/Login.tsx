@@ -14,6 +14,7 @@ import {
   getCooldownRemaining,
   formatCooldown 
 } from "@/lib/rateLimiter";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 export default function Login() {
   const { t } = useTranslation(['app', 'common']);
@@ -130,7 +131,14 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex bg-background relative">
+    <>
+      <SEOHead 
+        title="Connexion"
+        description="Connectez-vous à Lavcom Performances pour accéder à votre tableau de bord de gestion de laverie automatique."
+        url="/login"
+        noindex={true}
+      />
+      <div className="min-h-screen flex bg-background relative">
       {/* Back to home button */}
       <Link 
         to="/" 
@@ -399,5 +407,6 @@ export default function Login() {
         </div>
       </div>
     </div>
+    </>
   );
 }

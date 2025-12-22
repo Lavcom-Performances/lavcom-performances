@@ -57,6 +57,7 @@ import ebookAvantOuvrir from "@/assets/ebook-avant-ouvrir.jpg";
 import { HeroValueSlider } from "@/components/landing/HeroValueSlider";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
 import { LanguageSelector } from "@/components/ui/language-selector";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 // Testimonials data moved to i18n - see landing:testimonials namespace
 
@@ -126,7 +127,14 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead 
+        url="/"
+        title="Logiciel de gestion pour laveries automatiques"
+        description="Lavcom Performances : logiciel d'analyse et de gestion pour laveries automatiques. Optimisez vos revenus avec des tableaux de bord intelligents, analyses de rentabilité et alertes en temps réel."
+        keywords="laverie automatique, gestion laverie, logiciel laverie, analyse laverie, tableau de bord laverie, rentabilité laverie, simulateur laverie"
+      />
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -1186,6 +1194,7 @@ const LandingPage = () => {
         </div>
       </footer>
     </div>
+    </>
   );
 };
 

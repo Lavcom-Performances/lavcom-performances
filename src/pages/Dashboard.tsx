@@ -39,6 +39,7 @@ import { useViewMode } from "@/hooks/useViewMode";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useSites } from "@/hooks/useSites";
 import { useUserGoals } from "@/hooks/useUserGoals";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 // Default costs for profitability calculation (user can configure these later)
 const defaultCosts: LaundryCosts = {
@@ -206,7 +207,14 @@ export default function Dashboard() {
   const defaultTab = urlTab === 'comparatifs' ? 'comparatifs' : 'analyses';
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+    <>
+      <SEOHead 
+        title="Tableau de bord"
+        description="Tableau de bord de gestion de votre laverie automatique. Suivez vos revenus, transactions et performances en temps réel."
+        url="/dashboard"
+        noindex={true}
+      />
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div className="flex items-start justify-between flex-wrap gap-3">
@@ -550,5 +558,6 @@ export default function Dashboard() {
         </TabsContent>
       </Tabs>
     </div>
+    </>
   );
 }

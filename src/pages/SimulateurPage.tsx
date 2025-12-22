@@ -17,6 +17,7 @@ import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { Footer } from "@/components/layout/Footer";
 import { WASHER_CAPACITIES, DRYER_CAPACITIES } from "@/types/simulation";
 import { SIMULATOR_PLANS } from "@/config/pricingConfig";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 // Constantes de calcul
 const HOURS_OPEN = 14; // heures d'ouverture par jour
@@ -121,7 +122,14 @@ export default function SimulateurPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-amber-500/5">
+    <>
+      <SEOHead 
+        title="Simulateur de rentabilité laverie"
+        description="Simulez la rentabilité de votre projet de laverie automatique. Estimez votre chiffre d'affaires mensuel gratuitement avec notre outil de simulation."
+        url="/simulateur"
+        keywords="simulateur laverie, rentabilité laverie automatique, business plan laverie, ouverture laverie, estimation revenus laverie"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-amber-500/5">
       {/* Header */}
       <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -415,5 +423,6 @@ export default function SimulateurPage() {
       
       <Footer />
     </div>
+    </>
   );
 }
