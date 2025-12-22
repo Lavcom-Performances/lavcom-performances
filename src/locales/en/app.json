@@ -369,8 +369,9 @@
   "pricing": {
     "badge": "Operator Pricing – Discounted rates based on number of laundries",
     "title": "Choose your subscription",
-    "subtitle": "The more laundries you have, the lower the price per laundry.",
+    "subtitle": "Start with a 14-day free trial, then choose your plan.",
     "laundryCount": "Number of laundries",
+    "startTrial": "Start 14-day free trial",
     "plans": {
       "monthly": {
         "title": "Monthly",
@@ -399,7 +400,7 @@
       "tier2": "3 to 5 laundries",
       "tier3": "6+ laundries",
       "perMonthPerLaundry": "€/month per laundry",
-      "note": "The displayed amount adjusts automatically when you change the number of laundries. Annual subscription gives you 2 free months."
+      "note": "14-day free trial, no credit card required. The displayed amount adjusts automatically based on laundry count. Annual subscription gives you 2 free months."
     }
   },
   "dropdown": {
@@ -928,5 +929,21 @@
       "amount": "Amount",
       "program": "Program"
     }
+  },
+  "trialExpired": {
+    "title": "Your free trial has ended",
+    "subtitle": "Continue optimizing your laundromats with Lavcom Performances Pro",
+    "featuresTitle": "Included in Pro plan",
+    "features": {
+      "dashboard": "Unlimited multi-laundry dashboard",
+      "export": "PDF export of all reports",
+      "recommendations": "AI-powered recommendations",
+      "maintenance": "Predictive maintenance",
+      "support": "Priority support"
+    },
+    "cta": "Subscribe now",
+    "priceInfo": "Starting at €29/month per laundry",
+    "question": "Have a question?",
+    "contact": "Contact our team"
   }
 }

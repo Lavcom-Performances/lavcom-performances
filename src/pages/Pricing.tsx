@@ -20,8 +20,8 @@ export default function Pricing() {
 
   const pricing = getLaundromatPricing(laundryCount);
 
-  const handleSelectPlan = (planId: string) => {
-    navigate(`/subscribe?plan=${planId}&count=${laundryCount}`);
+  const handleStartTrial = () => {
+    navigate('/signup');
   };
 
   const incrementCount = () => setLaundryCount(prev => Math.min(prev + 1, 20));
@@ -68,9 +68,13 @@ export default function Pricing() {
           <h1 className="font-display text-2xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-3 md:mb-4 leading-tight">
             {t('app:pricing.title')}
           </h1>
-          <p className="text-muted-foreground text-sm sm:text-lg lg:text-xl px-2">
+          <p className="text-muted-foreground text-sm sm:text-lg lg:text-xl px-2 mb-4">
             {t('app:pricing.subtitle')}
           </p>
+          {/* Free trial highlight */}
+          <Badge className="bg-primary/10 text-primary border-primary/30 px-4 py-2 text-sm md:text-base font-medium">
+            ✨ {t('app:pricing.startTrial')} — {t('common:noCreditCard')}
+          </Badge>
         </div>
 
         {/* Laundry count selector */}
@@ -155,9 +159,9 @@ export default function Pricing() {
             <CardFooter>
               <Button 
                 className="w-full h-10 md:h-12 text-sm md:text-base font-medium"
-                onClick={() => handleSelectPlan("annual")}
+                onClick={handleStartTrial}
               >
-                {t('app:pricing.plans.annual.cta')}
+                {t('app:pricing.startTrial')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>
@@ -195,9 +199,9 @@ export default function Pricing() {
               <Button 
                 className="w-full h-10 md:h-12 text-sm md:text-base font-medium"
                 variant="outline"
-                onClick={() => handleSelectPlan("monthly")}
+                onClick={handleStartTrial}
               >
-                {t('app:pricing.plans.monthly.cta')}
+                {t('app:pricing.startTrial')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>

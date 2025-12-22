@@ -358,8 +358,9 @@
   "pricing": {
     "badge": "Betreiber-Tarife – Mengenrabatt nach Anzahl der Waschsalons",
     "title": "Wählen Sie Ihr Abonnement",
-    "subtitle": "Je mehr Waschsalons Sie haben, desto niedriger ist der Preis pro Waschsalon.",
+    "subtitle": "Starten Sie mit einer 14-tägigen kostenlosen Testversion, dann wählen Sie Ihren Plan.",
     "laundryCount": "Anzahl der Waschsalons",
+    "startTrial": "14 Tage kostenlos testen",
     "plans": {
       "monthly": {
         "title": "Monatlich",
@@ -388,7 +389,7 @@
       "tier2": "3 bis 5 Waschsalons",
       "tier3": "6 Waschsalons und mehr",
       "perMonthPerLaundry": "€/Monat pro Waschsalon",
-      "note": "Der angezeigte Betrag passt sich automatisch an, wenn Sie die Anzahl der Waschsalons ändern. Das Jahresabonnement bietet Ihnen 2 Gratismonate."
+      "note": "14 Tage kostenlos testen, keine Kreditkarte erforderlich. Der angezeigte Betrag passt sich automatisch an die Anzahl der Waschsalons an. Das Jahresabonnement bietet Ihnen 2 Gratismonate."
     }
   },
   "dropdown": {
@@ -685,5 +686,21 @@
       "signOutSuccessDescription": "Alle Ihre Sitzungen wurden erfolgreich geschlossen",
       "signOutError": "Beim Abmelden ist ein Fehler aufgetreten"
     }
+  },
+  "trialExpired": {
+    "title": "Ihre kostenlose Testversion ist beendet",
+    "subtitle": "Optimieren Sie Ihre Waschsalons weiter mit Lavcom Performances Pro",
+    "featuresTitle": "Im Pro-Plan enthalten",
+    "features": {
+      "dashboard": "Unbegrenztes Multi-Waschsalon-Dashboard",
+      "export": "PDF-Export aller Berichte",
+      "recommendations": "KI-gestützte Empfehlungen",
+      "maintenance": "Vorausschauende Wartung",
+      "support": "Prioritäts-Support"
+    },
+    "cta": "Jetzt abonnieren",
+    "priceInfo": "Ab 29€/Monat pro Waschsalon",
+    "question": "Haben Sie Fragen?",
+    "contact": "Kontaktieren Sie unser Team"
   }
 }
