@@ -992,52 +992,21 @@ const LandingPage = () => {
       </section>
 
       {/* Contact Form Section */}
-      <section id="contact" className="py-20 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                {t("landing:contact.titleFull")}
-              </h2>
-              <p className="text-muted-foreground text-lg mb-8">
-                {t("landing:contact.subtitleFull")}
-              </p>
-              
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <Mail className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-1">{t("landing:contact.emailLabel")}</h3>
-                    <p className="text-muted-foreground">{t("landing:contact.emailAddress")}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <Clock className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-1">{t("landing:contact.hoursLabel")}</h3>
-                    <p className="text-muted-foreground">{t("landing:contact.hours")}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <MessageSquare className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-1">{t("landing:contact.responseLabel")}</h3>
-                    <p className="text-muted-foreground">{t("landing:contact.responseTime")}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <Card className="p-6 md:p-8 card-lavcom">
-              <form onSubmit={handleContactSubmit} className="space-y-5">
+      <section id="contact" className="py-20 px-4 bg-gradient-to-b from-background to-muted/30">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              {t("landing:contact.titleFull")}
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              {t("landing:contact.subtitleFull")}
+            </p>
+          </div>
+          
+          <Card className="p-6 md:p-8 card-lavcom max-w-3xl mx-auto">
+            <form onSubmit={handleContactSubmit} className="space-y-6">
+              {/* Row 1: Topic + Email */}
+              <div className="grid md:grid-cols-2 gap-4">
                 {/* Topic dropdown - REQUIRED */}
                 <div className="space-y-2">
                   <Label htmlFor="contact-topic" className="text-foreground font-medium">
@@ -1063,26 +1032,6 @@ const LandingPage = () => {
                   )}
                 </div>
 
-                {/* Conditional URL field for Support/Bug */}
-                {contactForm.topic === "support" && (
-                  <div className="space-y-2 animate-fade-in">
-                    <Label htmlFor="contact-pageUrl" className="text-foreground font-medium text-sm">
-                      {t("landing:contact.pageUrlLabel")} <span className="text-muted-foreground text-xs">({t("common:optional")})</span>
-                    </Label>
-                    <div className="relative">
-                      <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="contact-pageUrl"
-                        placeholder={t("landing:contact.pageUrlPlaceholder")}
-                        value={contactForm.pageUrl}
-                        onChange={(e) => setContactForm(prev => ({ ...prev, pageUrl: e.target.value }))}
-                        className="pl-10 text-sm"
-                        maxLength={500}
-                      />
-                    </div>
-                  </div>
-                )}
-
                 {/* Email - REQUIRED */}
                 <div className="space-y-2">
                   <Label htmlFor="contact-email" className="text-foreground font-medium">
@@ -1104,52 +1053,70 @@ const LandingPage = () => {
                     <p className="text-sm text-destructive">{contactErrors.email}</p>
                   )}
                 </div>
-                
-                {/* Message - REQUIRED */}
-                <div className="space-y-2">
-                  <Label htmlFor="contact-message" className="text-foreground font-medium">
-                    {t("landing:contact.messageLabel")} <span className="text-destructive">*</span>
+              </div>
+
+              {/* Conditional URL field for Support/Bug */}
+              {contactForm.topic === "support" && (
+                <div className="space-y-2 animate-fade-in">
+                  <Label htmlFor="contact-pageUrl" className="text-foreground font-medium text-sm">
+                    {t("landing:contact.pageUrlLabel")} <span className="text-muted-foreground text-xs">({t("common:optional")})</span>
                   </Label>
-                  <Textarea
-                    id="contact-message"
-                    placeholder={t("landing:contact.messageHint")}
-                    value={contactForm.message}
-                    onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
-                    rows={4}
-                    maxLength={1000}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    {contactErrors.message && (
-                      <p className="text-destructive">{contactErrors.message}</p>
-                    )}
-                    <span className="ml-auto">{contactForm.message.length}/1000</span>
+                  <div className="relative">
+                    <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="contact-pageUrl"
+                      placeholder={t("landing:contact.pageUrlPlaceholder")}
+                      value={contactForm.pageUrl}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, pageUrl: e.target.value }))}
+                      className="pl-10 text-sm"
+                      maxLength={500}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* Message - REQUIRED */}
+              <div className="space-y-2">
+                <Label htmlFor="contact-message" className="text-foreground font-medium">
+                  {t("landing:contact.messageLabel")} <span className="text-destructive">*</span>
+                </Label>
+                <Textarea
+                  id="contact-message"
+                  placeholder={t("landing:contact.messageHint")}
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
+                  rows={3}
+                  maxLength={1000}
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  {contactErrors.message && (
+                    <p className="text-destructive">{contactErrors.message}</p>
+                  )}
+                  <span className="ml-auto">{contactForm.message.length}/1000</span>
+                </div>
+              </div>
+
+              {/* Row 3: Phone (optional) + Submit button */}
+              <div className="grid md:grid-cols-2 gap-4 items-end">
+                {/* Phone - OPTIONAL */}
+                <div className="space-y-2">
+                  <Label htmlFor="contact-phone" className="text-foreground font-medium text-sm">
+                    {t("landing:contact.phoneLabel")} <span className="text-muted-foreground text-xs">({t("common:optional")})</span>
+                  </Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="contact-phone"
+                      type="tel"
+                      placeholder={t("landing:contact.phonePlaceholder")}
+                      value={contactForm.phone}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, phone: e.target.value }))}
+                      className="pl-10"
+                      maxLength={20}
+                    />
                   </div>
                 </div>
 
-                {/* Optional fields section */}
-                <div className="border-t border-border pt-4 space-y-4">
-                  <p className="text-sm text-muted-foreground">{t("landing:contact.optionalFields")}</p>
-
-                  {/* Phone - OPTIONAL */}
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-phone" className="text-foreground font-medium text-sm">
-                      {t("landing:contact.phoneLabel")}
-                    </Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="contact-phone"
-                        type="tel"
-                        placeholder={t("landing:contact.phonePlaceholder")}
-                        value={contactForm.phone}
-                        onChange={(e) => setContactForm(prev => ({ ...prev, phone: e.target.value }))}
-                        className="pl-10"
-                        maxLength={20}
-                      />
-                    </div>
-                  </div>
-                </div>
-                
                 <Button 
                   type="submit" 
                   size="lg" 
@@ -1168,9 +1135,37 @@ const LandingPage = () => {
                     </>
                   )}
                 </Button>
-              </form>
-            </Card>
-          </div>
+              </div>
+            </form>
+            
+            {/* Contact info row below form */}
+            <div className="mt-8 pt-6 border-t border-border grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Mail className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{t("landing:contact.emailAddress")}</p>
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Clock className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{t("landing:contact.hours")}</p>
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{t("landing:contact.responseTime")}</p>
+                </div>
+              </div>
+            </div>
+          </Card>
         </div>
       </section>
 
