@@ -1081,19 +1081,37 @@ const LandingPage = () => {
           
           <Card className="p-6 md:p-8 card-lavcom max-w-3xl mx-auto">
             <form onSubmit={handleContactSubmit} className="space-y-6" onFocus={handleFormInteraction}>
-              {/* Honeypot field - invisible to users, catches bots */}
-              <div className="absolute -left-[9999px] opacity-0 pointer-events-none" aria-hidden="true">
-                <label htmlFor="contact-company-website">Company Website</label>
-                <input
-                  type="text"
-                  id="contact-company-website"
-                  name="company_website"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  value={contactForm.honeypot}
-                  onChange={(e) => setContactForm(prev => ({ ...prev, honeypot: e.target.value }))}
-                />
-              </div>
+              {/* Honeypot field - invisible to users in prod, visible in dev for testing */}
+              {import.meta.env.DEV ? (
+                <div className="bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-md p-3 text-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-amber-600 dark:text-amber-400 font-medium">🍯 Honeypot (DEV only)</span>
+                    {contactForm.honeypot && (
+                      <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded">BOT DETECTED</span>
+                    )}
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder="Remplir = bot détecté (silencieux)"
+                    value={contactForm.honeypot}
+                    onChange={(e) => setContactForm(prev => ({ ...prev, honeypot: e.target.value }))}
+                    className="text-sm"
+                  />
+                </div>
+              ) : (
+                <div className="absolute -left-[9999px] opacity-0 pointer-events-none" aria-hidden="true">
+                  <label htmlFor="contact-company-website">Company Website</label>
+                  <input
+                    type="text"
+                    id="contact-company-website"
+                    name="company_website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={contactForm.honeypot}
+                    onChange={(e) => setContactForm(prev => ({ ...prev, honeypot: e.target.value }))}
+                  />
+                </div>
+              )}
 
               {/* General error message (rate limit, etc) */}
               {contactErrors.general && (
