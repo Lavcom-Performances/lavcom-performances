@@ -26,5 +26,10 @@
   "generic": {
     "somethingWentWrong": "Une erreur est survenue",
     "pleaseTryAgain": "Veuillez réessayer plus tard"
+  },
+  "payment": {
+    "checkoutFailed": "Erreur lors de la création du paiement",
+    "noSessionUrl": "Impossible d'obtenir le lien de paiement",
+    "unexpected": "Une erreur inattendue est survenue"
   }
 }
