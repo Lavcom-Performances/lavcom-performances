@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Mail, Phone, Linkedin, Instagram, Facebook } from "lucide-react";
+import { Mail, Linkedin, Instagram, Facebook } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 
 export function Footer() {
@@ -17,7 +17,7 @@ export function Footer() {
               <img 
                 src={lavcomLogo} 
                 alt="Lavcom Performances" 
-                className="h-10 w-auto"
+                className="h-14 w-auto"
               />
             </Link>
             <p className="text-sm text-muted-foreground mb-4">
@@ -85,15 +85,6 @@ export function Footer() {
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   contact@lavcom.fr
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <Phone className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                <a 
-                  href="tel:+33123456789" 
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  01 23 45 67 89
                 </a>
               </li>
             </ul>
