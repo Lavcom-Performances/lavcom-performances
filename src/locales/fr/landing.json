@@ -38,7 +38,22 @@
     "profitabilityThreshold": "Seuil rentabilité",
     "unlimitedScenarios": "Scénarios illimités",
     "pdfReport": "Rapport PDF",
-    "expertCall": "Visio expert"
+    "expertCall": "Visio expert",
+    "title2": "Pour ceux qui veulent ouvrir une laverie avec des chiffres réalistes",
+    "description": "Le simulateur Lavcom Performances vous aide à estimer :",
+    "benefit1Long": "Vos charges principales (loyer, prêts, énergie, eau, etc.)",
+    "benefit2Long": "Vos recettes possibles selon la fréquentation",
+    "benefit3Long": "Votre seuil de rentabilité",
+    "noGuessing2": "Vous ne devinez pas. Vous partez avec des ordres de grandeur clairs.",
+    "trySimulator": "Essayer le simulateur",
+    "discoverPacks": "Découvrir les packs",
+    "chargeAnalysis": "Analyse charges",
+    "scenarios": "Scénarios",
+    "packEssentiel": "Pack Essentiel",
+    "packProjet": "Pack Projet",
+    "packComparateur": "Pack Comparateur",
+    "packPremium": "Pack Premium",
+    "singlePayment": "Paiement unique — aucun renouvellement automatique"
   },
   "ebook": {
     "badge": "Guide expert",
@@ -112,6 +127,16 @@
   },
   "pdfExample": {
     "cta": "Voir un exemple (PDF)"
+  },
+  "reportDemo": {
+    "title": "À quoi ressemble un rapport Lavcom Performances ?",
+    "description": "Chaque mois, vous recevez un rapport d'analyse des performances de votre laverie :",
+    "item1": "Synthèse du mois",
+    "item2": "Chiffres clés (CA, fréquentation, occupation)",
+    "item3": "Focus machine par machine",
+    "item4": "Recommandations concrètes",
+    "footer": "Un document lisible, à partager avec votre banque ou expert-comptable.",
+    "badge": "Exemple de rapport PDF"
   },
   "contact": {
     "title": "Une question ?",

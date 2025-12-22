@@ -38,7 +38,22 @@
     "profitabilityThreshold": "Punto de equilibrio",
     "unlimitedScenarios": "Escenarios ilimitados",
     "pdfReport": "Informe PDF",
-    "expertCall": "Llamada con experto"
+    "expertCall": "Llamada con experto",
+    "title2": "Para quienes quieren abrir una lavandería con cifras realistas",
+    "description": "El simulador Lavcom Performances te ayuda a estimar:",
+    "benefit1Long": "Tus gastos principales (alquiler, préstamos, energía, agua, etc.)",
+    "benefit2Long": "Tus ingresos posibles según la afluencia",
+    "benefit3Long": "Tu punto de equilibrio",
+    "noGuessing2": "No más adivinanzas. Empiezas con estimaciones claras.",
+    "trySimulator": "Probar el simulador",
+    "discoverPacks": "Descubrir los paquetes",
+    "chargeAnalysis": "Análisis de gastos",
+    "scenarios": "Escenarios",
+    "packEssentiel": "Pack Esencial",
+    "packProjet": "Pack Proyecto",
+    "packComparateur": "Pack Comparador",
+    "packPremium": "Pack Premium",
+    "singlePayment": "Pago único — sin renovación automática"
   },
   "ebook": {
     "badge": "Guía experta",
@@ -112,6 +127,16 @@
   },
   "pdfExample": {
     "cta": "Ver un ejemplo (PDF)"
+  },
+  "reportDemo": {
+    "title": "¿Cómo es un informe de Lavcom Performances?",
+    "description": "Cada mes, recibes un informe de análisis de rendimiento de tu lavandería:",
+    "item1": "Resumen mensual",
+    "item2": "Cifras clave (ingresos, afluencia, ocupación)",
+    "item3": "Enfoque máquina por máquina",
+    "item4": "Recomendaciones concretas",
+    "footer": "Un documento legible para compartir con tu banco o contable.",
+    "badge": "Ejemplo de informe PDF"
   },
   "contact": {
     "title": "¿Tienes una pregunta?",
