@@ -29,6 +29,7 @@ import ImportExport from "./pages/ImportExport";
 import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
+import CGV from "./pages/CGV";
 import LaundromatSettings from "./pages/LaundromatSettings";
 import CompanySettings from "./pages/CompanySettings";
 import ProfilePage from "./pages/ProfilePage";
@@ -83,6 +84,7 @@ const App = () => (
           <Route path="/select-laundromat" element={<SelectLaundromat />} />
           <Route path="/company-settings" element={<CompanySettings />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
+          <Route path="/cgv" element={<CGV />} />
           
           {/* Simulation routes with dedicated layout (no sidebar) */}
           <Route element={<SimulationLayout />}>
