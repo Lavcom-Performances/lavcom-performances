@@ -65,7 +65,7 @@ serve(async (req) => {
       logStep("Existing customer found", { customerId });
     }
 
-    // Create checkout session (one-time payment, card only)
+    // Create checkout session (one-time payment, card only, no Link)
     const origin = req.headers.get("origin") || "https://lavcom.app";
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -83,6 +83,9 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         pack_id: packId,
+      },
+      saved_payment_method_options: {
+        payment_method_save: 'disabled',
       },
     });
     logStep("Checkout session created", { sessionId: session.id, url: session.url });
