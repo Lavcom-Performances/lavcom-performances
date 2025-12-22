@@ -153,6 +153,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          access_expires_at: string | null
           avatar_url: string | null
           company_name: string | null
           created_at: string | null
@@ -160,12 +161,16 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          last_purchase_at: string | null
           log_retention_days: number
+          max_projects: number | null
           phone: string | null
+          plan_code: string | null
           siret: string | null
           updated_at: string | null
         }
         Insert: {
+          access_expires_at?: string | null
           avatar_url?: string | null
           company_name?: string | null
           created_at?: string | null
@@ -173,12 +178,16 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          last_purchase_at?: string | null
           log_retention_days?: number
+          max_projects?: number | null
           phone?: string | null
+          plan_code?: string | null
           siret?: string | null
           updated_at?: string | null
         }
         Update: {
+          access_expires_at?: string | null
           avatar_url?: string | null
           company_name?: string | null
           created_at?: string | null
@@ -186,10 +195,52 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          last_purchase_at?: string | null
           log_retention_days?: number
+          max_projects?: number | null
           phone?: string | null
+          plan_code?: string | null
           siret?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      purchases: {
+        Row: {
+          access_days: number
+          amount_ttc: number
+          created_at: string
+          currency: string
+          id: string
+          max_projects: number
+          plan_code: string
+          stripe_customer_id: string | null
+          stripe_session_id: string
+          user_id: string
+        }
+        Insert: {
+          access_days: number
+          amount_ttc: number
+          created_at?: string
+          currency?: string
+          id?: string
+          max_projects: number
+          plan_code: string
+          stripe_customer_id?: string | null
+          stripe_session_id: string
+          user_id: string
+        }
+        Update: {
+          access_days?: number
+          amount_ttc?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          max_projects?: number
+          plan_code?: string
+          stripe_customer_id?: string | null
+          stripe_session_id?: string
+          user_id?: string
         }
         Relationships: []
       }
