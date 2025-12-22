@@ -10,10 +10,13 @@ const corsHeaders = {
 };
 
 interface ContactRequest {
-  name: string;
+  topic: string;
+  topicValue: string;
   email: string;
   message: string;
   subject?: string;
+  phone?: string;
+  pageUrl?: string;
 }
 
 serve(async (req: Request): Promise<Response> => {
@@ -23,13 +26,13 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { name, email, message, subject }: ContactRequest = await req.json();
+    const { topic, topicValue, email, message, subject, phone, pageUrl }: ContactRequest = await req.json();
 
     // Validate required fields
-    if (!name || !email || !message) {
-      console.error("Missing required fields:", { name: !!name, email: !!email, message: !!message });
+    if (!topic || !email || !message) {
+      console.error("Missing required fields:", { topic: !!topic, email: !!email, message: !!message });
       return new Response(
-        JSON.stringify({ error: "Tous les champs sont requis" }),
+        JSON.stringify({ error: "Tous les champs obligatoires sont requis" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -53,14 +56,17 @@ serve(async (req: Request): Promise<Response> => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Build the full subject for storage
+    const fullSubject = subject ? `[${topic}] ${subject}` : `[${topic}]`;
+
     // Store message in database
     const { error: dbError } = await supabase
       .from("contact_messages")
       .insert({
-        name: name.trim(),
+        name: `${topic}${phone ? ` - ${phone}` : ''}`,
         email: email.trim().toLowerCase(),
         message: message.trim(),
-        subject: subject?.trim() || null,
+        subject: fullSubject,
         ip,
         user_agent: userAgent,
         status: "new"
@@ -75,11 +81,19 @@ serve(async (req: Request): Promise<Response> => {
     const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "onboarding@resend.dev";
     const toEmail = Deno.env.get("RESEND_TO_EMAIL") || "contact@lavcom.fr";
 
-    // Send email notification to admin
+    // Build email subject
     const emailSubject = subject 
-      ? `[Contact Lavcom] ${subject}` 
-      : `[Contact Lavcom] Nouveau message de ${name}`;
+      ? `[Contact Lavcom - ${topic}] ${subject}` 
+      : `[Contact Lavcom] ${topic}`;
 
+    // Build optional fields HTML
+    const optionalFieldsHtml = `
+      ${phone ? `<p style="margin: 0 0 12px 0;"><strong>Téléphone:</strong> <a href="tel:${phone}" style="color: #16a34a;">${phone}</a></p>` : ''}
+      ${pageUrl ? `<p style="margin: 0 0 12px 0;"><strong>Page concernée:</strong> ${pageUrl}</p>` : ''}
+      ${subject ? `<p style="margin: 0 0 12px 0;"><strong>Sujet:</strong> ${subject}</p>` : ''}
+    `;
+
+    // Send email notification to admin
     const adminEmailResponse = await resend.emails.send({
       from: `Lavcom Contact <${fromEmail}>`,
       to: [toEmail],
@@ -88,12 +102,12 @@ serve(async (req: Request): Promise<Response> => {
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0;">
             <h1 style="margin: 0; font-size: 20px;">Nouveau message de contact</h1>
+            <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 14px;">Thématique: ${topic}</p>
           </div>
           
           <div style="background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-top: none;">
-            <p style="margin: 0 0 12px 0;"><strong>Nom:</strong> ${name}</p>
             <p style="margin: 0 0 12px 0;"><strong>Email:</strong> <a href="mailto:${email}" style="color: #16a34a;">${email}</a></p>
-            ${subject ? `<p style="margin: 0 0 12px 0;"><strong>Sujet:</strong> ${subject}</p>` : ''}
+            ${optionalFieldsHtml}
             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
             <p style="margin: 0 0 8px 0;"><strong>Message:</strong></p>
             <div style="background: white; padding: 16px; border-radius: 6px; border: 1px solid #e5e7eb; white-space: pre-wrap;">${message}</div>
@@ -121,9 +135,9 @@ serve(async (req: Request): Promise<Response> => {
           </div>
           
           <div style="background: white; padding: 30px; border: 1px solid #e5e7eb; border-top: none;">
-            <h2 style="margin: 0 0 16px 0; color: #16a34a;">Bonjour ${name},</h2>
+            <h2 style="margin: 0 0 16px 0; color: #16a34a;">Bonjour,</h2>
             <p style="margin: 0 0 16px 0; color: #374151; line-height: 1.6;">
-              Merci de nous avoir contactés ! Nous avons bien reçu votre message et notre équipe vous répondra dans les meilleurs délais.
+              Merci de nous avoir contactés ! Nous avons bien reçu votre message concernant <strong>${topic}</strong> et notre équipe vous répondra dans les meilleurs délais.
             </p>
             <p style="margin: 0 0 16px 0; color: #374151; line-height: 1.6;">
               En attendant, n'hésitez pas à consulter notre <a href="https://lavcom.fr" style="color: #16a34a; text-decoration: none; font-weight: 500;">site web</a> pour découvrir toutes nos fonctionnalités.
