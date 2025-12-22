@@ -62,7 +62,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/mentions-legales#confidentialite" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/politique-confidentialite" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   {t('footer.privacyPolicy')}
                 </Link>
               </li>
