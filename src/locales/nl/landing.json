@@ -176,6 +176,12 @@
     "description": "Een concrete gids om uw wasseretteproject voor te bereiden: locatiekeuze, configuratie, leveranciers, fouten om te vermijden. De simulator geeft u de cijfers, de gids helpt u de juiste beslissingen te nemen.",
     "cta": "Gids ontdekken"
   },
+  "simulatorResource": {
+    "label": "Aanbevolen bron",
+    "text": "Gids \"Vóór opening\": checklist en kerncijfers om uw project te valideren.",
+    "cta": "Bekijk de gids",
+    "note": "(Verkrijgbaar voor aankoop)"
+  },
   "trialBanner": {
     "title": "Probeer Lavcom Performances 14 dagen gratis",
     "subtitle": "Zonder verplichtingen, u kunt op elk moment stoppen.",

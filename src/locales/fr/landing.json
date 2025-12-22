@@ -176,16 +176,11 @@
     "existing": "Je gère déjà une laverie",
     "future": "Je souhaite ouvrir une laverie"
   },
-  "comparison": {
-    "withoutTitle": "Sans Lavcom Performances",
-    "without1": "Je ne sais pas vraiment ce que me rapporte chaque machine.",
-    "without2": "J'ai du mal à comparer mes laveries entre elles.",
-    "without3": "Je découvre les problèmes quand il est trop tard.",
-    "withTitle": "Avec Lavcom Performances",
-    "with1": "Je connais les machines qui couvrent mes charges.",
-    "with2": "Je vois les créneaux saturés ou sous-utilisés.",
-    "with3": "Recommandations concrètes chaque mois.",
-    "with4": "Rapport PDF pour ma banque."
+  "simulatorResource": {
+    "label": "Ressource recommandée",
+    "text": "Guide \"Avant d'ouvrir\" : check-list et repères chiffrés pour valider votre projet.",
+    "cta": "Voir le guide",
+    "note": "(Disponible à l'achat)"
   },
   "contact": {
     "title": "Une question ?",
