@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.log-login]
 verify_jwt = true
+
+[functions.trial-reminder]
+verify_jwt = false
