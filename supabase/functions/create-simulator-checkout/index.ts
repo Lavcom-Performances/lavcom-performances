@@ -57,19 +57,26 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
-    // Check if customer exists
+    // Check if customer exists, create if not
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId: string | undefined;
+    let customerId: string;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
       logStep("Existing customer found", { customerId });
+    } else {
+      // Create new customer to enable saved_payment_method_options
+      const newCustomer = await stripe.customers.create({
+        email: user.email,
+        metadata: { user_id: user.id },
+      });
+      customerId = newCustomer.id;
+      logStep("New customer created", { customerId });
     }
 
     // Create checkout session (one-time payment, card only, no Link)
     const origin = req.headers.get("origin") || "https://lavcom.app";
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
       payment_method_types: ['card'],
       line_items: [
         {
