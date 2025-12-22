@@ -142,6 +142,8 @@
     "phonePlaceholder": "+49 123 456 789",
     "pageUrlLabel": "Betroffene Seite oder URL",
     "pageUrlPlaceholder": "https://lavcom.fr/... oder Seitenname",
+    "customTopicLabel": "Geben Sie Ihr Thema an",
+    "customTopicPlaceholder": "Beschreiben Sie kurz Ihre Anfrage...",
     "send": "Nachricht senden",
     "sending": "Wird gesendet...",
     "successTitle": "Nachricht gesendet!",

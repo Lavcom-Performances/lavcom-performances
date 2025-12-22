@@ -142,6 +142,8 @@
     "phonePlaceholder": "+34 612 345 678",
     "pageUrlLabel": "Página o URL afectada",
     "pageUrlPlaceholder": "https://lavcom.fr/... o nombre de la página",
+    "customTopicLabel": "Especifique su tema",
+    "customTopicPlaceholder": "Describa brevemente su solicitud...",
     "send": "Enviar mensaje",
     "sending": "Enviando...",
     "successTitle": "¡Mensaje enviado!",

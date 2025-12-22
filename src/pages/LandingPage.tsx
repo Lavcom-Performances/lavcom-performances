@@ -78,6 +78,7 @@ const LandingPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contactForm, setContactForm] = useState({ 
     topic: "", 
+    customTopic: "",
     email: "", 
     message: "", 
     phone: "",
@@ -85,6 +86,7 @@ const LandingPage = () => {
   });
   const [contactErrors, setContactErrors] = useState<{ 
     topic?: string; 
+    customTopic?: string;
     email?: string; 
     message?: string;
     phone?: string;
@@ -107,10 +109,20 @@ const LandingPage = () => {
   // Dynamic schema with translations
   const contactSchema = z.object({
     topic: z.string().min(1, t('errors:validation.topicRequired')),
+    customTopic: z.string().max(100, t('errors:validation.customTopicTooLong')).optional(),
     email: z.string().trim().email(t('errors:validation.invalidEmail')).max(255, t('errors:validation.emailTooLong')),
     message: z.string().trim().min(10, t('errors:validation.messageMinLength')).max(1000, t('errors:validation.messageMaxLength')),
     phone: z.string().max(20, t('errors:validation.phoneTooLong')).optional(),
     pageUrl: z.string().max(500).optional(),
+  }).refine((data) => {
+    // If "other" is selected, customTopic must be provided
+    if (data.topic === "other") {
+      return data.customTopic && data.customTopic.trim().length >= 3;
+    }
+    return true;
+  }, {
+    message: t('errors:validation.customTopicRequired'),
+    path: ["customTopic"],
   });
 
   const handleContactSubmit = async (e: React.FormEvent) => {
@@ -119,7 +131,7 @@ const LandingPage = () => {
 
     const result = contactSchema.safeParse(contactForm);
     if (!result.success) {
-      const errors: { topic?: string; email?: string; message?: string; phone?: string } = {};
+      const errors: { topic?: string; customTopic?: string; email?: string; message?: string; phone?: string } = {};
       result.error.errors.forEach((err) => {
         const field = err.path[0] as keyof typeof errors;
         errors[field] = err.message;
@@ -131,13 +143,16 @@ const LandingPage = () => {
     setIsSubmitting(true);
     
     try {
-      // Get topic label for the email
-      const topicLabel = contactTopics.find(t => t.value === contactForm.topic)?.label || contactForm.topic;
+      // Get topic label for the email (use custom topic if "other" selected)
+      const topicLabel = contactForm.topic === "other" 
+        ? `${t("landing:contact.topics.other")}: ${contactForm.customTopic}`
+        : contactTopics.find(t => t.value === contactForm.topic)?.label || contactForm.topic;
       
       const { data, error } = await supabase.functions.invoke('send-contact', {
         body: {
           topic: topicLabel,
           topicValue: contactForm.topic,
+          customTopic: contactForm.customTopic || undefined,
           email: contactForm.email,
           message: contactForm.message,
           phone: contactForm.phone || undefined,
@@ -153,7 +168,7 @@ const LandingPage = () => {
         title: t("landing:contact.successTitle"),
         description: t("landing:contact.successDescription"),
       });
-      setContactForm({ topic: "", email: "", message: "", phone: "", pageUrl: "" });
+      setContactForm({ topic: "", customTopic: "", email: "", message: "", phone: "", pageUrl: "" });
       trackContactSubmit();
     } catch (error) {
       console.error("Contact form error:", error);
@@ -1015,7 +1030,7 @@ const LandingPage = () => {
                   </Label>
                   <Select
                     value={contactForm.topic}
-                    onValueChange={(value) => setContactForm(prev => ({ ...prev, topic: value, pageUrl: "" }))}
+                    onValueChange={(value) => setContactForm(prev => ({ ...prev, topic: value, pageUrl: "", customTopic: "" }))}
                   >
                     <SelectTrigger id="contact-topic" className="w-full">
                       <SelectValue placeholder={t("landing:contact.topicPlaceholder")} />
@@ -1055,6 +1070,29 @@ const LandingPage = () => {
                   )}
                 </div>
               </div>
+
+              {/* Conditional custom topic field when "Other" is selected */}
+              {contactForm.topic === "other" && (
+                <div className="space-y-2 animate-fade-in">
+                  <Label htmlFor="contact-customTopic" className="text-foreground font-medium text-sm">
+                    {t("landing:contact.customTopicLabel")} <span className="text-destructive">*</span>
+                  </Label>
+                  <div className="relative">
+                    <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="contact-customTopic"
+                      placeholder={t("landing:contact.customTopicPlaceholder")}
+                      value={contactForm.customTopic}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, customTopic: e.target.value }))}
+                      className="pl-10"
+                      maxLength={100}
+                    />
+                  </div>
+                  {contactErrors.customTopic && (
+                    <p className="text-sm text-destructive">{contactErrors.customTopic}</p>
+                  )}
+                </div>
+              )}
 
               {/* Conditional URL field for Support/Bug */}
               {contactForm.topic === "support" && (

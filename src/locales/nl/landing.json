@@ -142,6 +142,8 @@
     "phonePlaceholder": "+31 6 12 34 56 78",
     "pageUrlLabel": "Betreffende pagina of URL",
     "pageUrlPlaceholder": "https://lavcom.fr/... of paginanaam",
+    "customTopicLabel": "Geef uw onderwerp aan",
+    "customTopicPlaceholder": "Beschrijf kort uw verzoek...",
     "send": "Bericht versturen",
     "sending": "Versturen...",
     "successTitle": "Bericht verzonden!",
