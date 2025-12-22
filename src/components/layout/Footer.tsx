@@ -103,7 +103,7 @@ export function Footer() {
               <p className="text-sm font-medium text-foreground mb-3">Suivez-nous</p>
               <div className="flex items-center gap-3">
                 <a 
-                  href="https://linkedin.com/company/lavcom" 
+                  href="https://www.linkedin.com/company/110107709" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
@@ -112,7 +112,7 @@ export function Footer() {
                   <Linkedin className="h-4 w-4" />
                 </a>
                 <a 
-                  href="https://instagram.com/lavcom" 
+                  href="https://www.instagram.com/lavcom_pourvotrelaverie/" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
@@ -121,7 +121,7 @@ export function Footer() {
                   <Instagram className="h-4 w-4" />
                 </a>
                 <a 
-                  href="https://facebook.com/lavcom" 
+                  href="https://www.facebook.com/LavComFR" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
