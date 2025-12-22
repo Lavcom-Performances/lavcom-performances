@@ -9,10 +9,10 @@ const corsHeaders = {
 
 // Mapping pack ID -> Stripe price ID
 const SIMULATOR_PRICES: Record<string, string> = {
-  essential: "price_...",
-  project: "price_...",
-  comparator: "price_...",
-  premium: "price_...",
+  essential: "price_prod_TeRGz196xsLhu8",
+  project: "price_prod_TeRHGKJ3RLZCx7",
+  comparator: "price_prod_TeRI4XlUIKnIai",
+  premium: "price_prod_TeRJaGfH9iKnCa",
 };
 
 const logStep = (step: string, details?: unknown) => {
