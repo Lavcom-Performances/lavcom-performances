@@ -55,7 +55,53 @@ export function getLaundromatPricing(count: number) {
   };
 }
 
-// Tarifs FUTURS EXPLOITANTS : packs simulateur
+// Tarifs FUTURS EXPLOITANTS : packs simulateur (accès limité dans le temps)
+export interface SimulatorPack {
+  id: string;
+  price: number;
+  accessDays: number;
+  projectsIncluded: number;
+  hasExpertCalls?: boolean;
+  expertCallsCount?: number;
+  isRecommended?: boolean;
+}
+
+export const SIMULATOR_PACKS: SimulatorPack[] = [
+  {
+    id: "essential",
+    price: 79,
+    accessDays: 30,
+    projectsIncluded: 1,
+  },
+  {
+    id: "project",
+    price: 149,
+    accessDays: 90,
+    projectsIncluded: 3,
+    isRecommended: true,
+  },
+  {
+    id: "comparator",
+    price: 229,
+    accessDays: 180,
+    projectsIncluded: 10,
+  },
+  {
+    id: "premium",
+    price: 279,
+    accessDays: 90,
+    projectsIncluded: 3,
+    hasExpertCalls: true,
+    expertCallsCount: 2,
+  },
+];
+
+// Helper pour obtenir un pack par son ID
+export function getSimulatorPackById(id: string): SimulatorPack | undefined {
+  return SIMULATOR_PACKS.find(pack => pack.id === id);
+}
+
+// Anciens packs (conservés pour compatibilité, mais dépréciés)
 export const SIMULATOR_PLANS = {
   simulator: {
     id: "simulator",
@@ -74,3 +120,4 @@ export const SIMULATOR_PLANS = {
 };
 
 export type SimulatorPlanId = keyof typeof SIMULATOR_PLANS;
+export type SimulatorPackId = SimulatorPack["id"];

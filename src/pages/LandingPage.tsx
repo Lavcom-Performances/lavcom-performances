@@ -378,15 +378,26 @@ const LandingPage = () => {
                     </div>
                   </div>
                   
-                  <div className="pt-3 md:pt-4 border-t border-border space-y-1.5 md:space-y-2">
+                  <div className="pt-3 md:pt-4 border-t border-border space-y-1 md:space-y-1.5">
                     <div className="flex justify-between text-xs md:text-sm">
-                      <span className="text-muted-foreground">Pack Simulateur</span>
-                      <span className="font-semibold">79 €/mois</span>
+                      <span className="text-muted-foreground">Pack Essentiel</span>
+                      <span className="font-semibold">79 € <span className="text-muted-foreground font-normal">TTC</span></span>
+                    </div>
+                    <div className="flex justify-between text-xs md:text-sm">
+                      <span className="text-muted-foreground">Pack Projet</span>
+                      <span className="font-semibold text-lavcom-orange">149 € <span className="text-muted-foreground font-normal">TTC</span></span>
+                    </div>
+                    <div className="flex justify-between text-xs md:text-sm">
+                      <span className="text-muted-foreground">Pack Comparateur</span>
+                      <span className="font-semibold">229 € <span className="text-muted-foreground font-normal">TTC</span></span>
                     </div>
                     <div className="flex justify-between text-xs md:text-sm">
                       <span className="text-muted-foreground">Pack Premium</span>
-                      <span className="font-semibold text-lavcom-orange">279 €</span>
+                      <span className="font-semibold">279 € <span className="text-muted-foreground font-normal">TTC</span></span>
                     </div>
+                    <p className="text-[10px] md:text-xs text-muted-foreground pt-1.5 text-center italic">
+                      Paiement unique — aucun renouvellement automatique
+                    </p>
                   </div>
                 </div>
               </Card>

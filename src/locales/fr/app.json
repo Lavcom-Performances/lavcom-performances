@@ -490,6 +490,35 @@
     "title": "Choisissez votre formule",
     "subtitle": "Accédez à notre outil de simulation pour évaluer la rentabilité de votre projet de laverie.",
     "backToSimulator": "Retour au simulateur",
+    "oneTimePayment": "Paiement unique — aucun renouvellement automatique",
+    "accessDays": "Accès {{days}} jours",
+    "projectsIncluded": "{{count}} projet enregistré",
+    "projectsIncluded_plural": "{{count}} projets enregistrés",
+    "unlimitedScenarios": "Scénarios illimités",
+    "unlimitedExports": "Exports illimités",
+    "expertCalls": "{{count}} visio expert (45 min)",
+    "expertCalls_plural": "{{count}} visios expert (45 min)",
+    "ttc": "TTC",
+    "packs": {
+      "essential": {
+        "title": "Pack Essentiel",
+        "cta": "Choisir ce pack"
+      },
+      "project": {
+        "badge": "Recommandé",
+        "title": "Pack Projet",
+        "cta": "Choisir ce pack"
+      },
+      "comparator": {
+        "title": "Pack Comparateur",
+        "cta": "Choisir ce pack"
+      },
+      "premium": {
+        "badge": "Bundle expert",
+        "title": "Pack Premium",
+        "cta": "Choisir ce pack"
+      }
+    },
     "plans": {
       "simulator": {
         "title": "Pack Simulateur",
