@@ -16,6 +16,14 @@
     "customTopicRequired": "Please specify your topic (min 3 characters)",
     "customTopicTooLong": "Custom topic is too long (max 100 characters)"
   },
+  "contact": {
+    "rateLimitExceeded": "Too many messages sent. Please try again in {{seconds}} seconds.",
+    "rateLimitWait": "Please wait {{seconds}} more seconds before sending again.",
+    "messageTooShort": "Message must be at least {{min}} characters.",
+    "messageTooLong": "Message cannot exceed {{max}} characters.",
+    "tooManyUrls": "Message contains too many links (max {{max}} allowed).",
+    "duplicateDetected": "This message has already been sent."
+  },
   "network": {
     "serviceUnavailable": "Service temporarily unavailable",
     "tryAgain": "Please try again",
@@ -31,5 +39,10 @@
   "generic": {
     "somethingWentWrong": "Something went wrong",
     "pleaseTryAgain": "Please try again later"
+  },
+  "payment": {
+    "checkoutFailed": "Error creating payment",
+    "noSessionUrl": "Unable to get payment link",
+    "unexpected": "An unexpected error occurred"
   }
 }

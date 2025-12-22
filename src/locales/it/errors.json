@@ -16,6 +16,14 @@
     "customTopicRequired": "Si prega di specificare l'argomento (min 3 caratteri)",
     "customTopicTooLong": "L'argomento personalizzato è troppo lungo (max 100 caratteri)"
   },
+  "contact": {
+    "rateLimitExceeded": "Troppi messaggi inviati. Riprova tra {{seconds}} secondi.",
+    "rateLimitWait": "Attendi ancora {{seconds}} secondi prima di inviare di nuovo.",
+    "messageTooShort": "Il messaggio deve contenere almeno {{min}} caratteri.",
+    "messageTooLong": "Il messaggio non può superare {{max}} caratteri.",
+    "tooManyUrls": "Il messaggio contiene troppi link (max {{max}} consentiti).",
+    "duplicateDetected": "Questo messaggio è già stato inviato."
+  },
   "network": {
     "serviceUnavailable": "Servizio temporaneamente non disponibile",
     "tryAgain": "Si prega di riprovare",
@@ -31,5 +39,10 @@
   "generic": {
     "somethingWentWrong": "Qualcosa è andato storto",
     "pleaseTryAgain": "Si prega di riprovare più tardi"
+  },
+  "payment": {
+    "checkoutFailed": "Errore durante la creazione del pagamento",
+    "noSessionUrl": "Impossibile ottenere il link di pagamento",
+    "unexpected": "Si è verificato un errore imprevisto"
   }
 }

@@ -16,6 +16,14 @@
     "customTopicRequired": "Geef uw onderwerp aan (min 3 tekens)",
     "customTopicTooLong": "Aangepast onderwerp is te lang (max 100 tekens)"
   },
+  "contact": {
+    "rateLimitExceeded": "Te veel berichten verzonden. Probeer het over {{seconds}} seconden opnieuw.",
+    "rateLimitWait": "Wacht nog {{seconds}} seconden voordat u opnieuw verzendt.",
+    "messageTooShort": "Bericht moet minimaal {{min}} tekens bevatten.",
+    "messageTooLong": "Bericht mag niet meer dan {{max}} tekens bevatten.",
+    "tooManyUrls": "Bericht bevat te veel links (max {{max}} toegestaan).",
+    "duplicateDetected": "Dit bericht is al verzonden."
+  },
   "network": {
     "serviceUnavailable": "Service tijdelijk niet beschikbaar",
     "tryAgain": "Probeer het opnieuw",
@@ -31,5 +39,10 @@
   "generic": {
     "somethingWentWrong": "Er is iets misgegaan",
     "pleaseTryAgain": "Probeer het later opnieuw"
+  },
+  "payment": {
+    "checkoutFailed": "Fout bij het aanmaken van betaling",
+    "noSessionUrl": "Kan betalingslink niet ophalen",
+    "unexpected": "Er is een onverwachte fout opgetreden"
   }
 }

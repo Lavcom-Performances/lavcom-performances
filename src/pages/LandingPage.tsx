@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -82,7 +82,8 @@ const LandingPage = () => {
     email: "", 
     message: "", 
     phone: "",
-    pageUrl: ""
+    pageUrl: "",
+    honeypot: "" // Anti-spam honeypot field (should remain empty)
   });
   const [contactErrors, setContactErrors] = useState<{ 
     topic?: string; 
@@ -90,7 +91,25 @@ const LandingPage = () => {
     email?: string; 
     message?: string;
     phone?: string;
+    general?: string;
   }>({});
+  const [formOpenedAt, setFormOpenedAt] = useState<number | null>(null);
+  const [rateLimitCooldown, setRateLimitCooldown] = useState<number>(0);
+
+  // Track when form is first interacted with (for min submission delay)
+  const handleFormInteraction = () => {
+    if (!formOpenedAt) {
+      setFormOpenedAt(Date.now());
+    }
+  };
+
+  // Countdown timer for rate limit cooldown
+  useEffect(() => {
+    if (rateLimitCooldown > 0) {
+      const timer = setTimeout(() => setRateLimitCooldown(rateLimitCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [rateLimitCooldown]);
   
   // Contact topic options
   const contactTopics = [
@@ -129,6 +148,25 @@ const LandingPage = () => {
     e.preventDefault();
     setContactErrors({});
 
+    // Check rate limit cooldown
+    if (rateLimitCooldown > 0) {
+      setContactErrors({ general: t("errors:contact.rateLimitWait", { seconds: rateLimitCooldown }) });
+      return;
+    }
+
+    // Anti-spam: Minimum submission delay (2 seconds from first interaction)
+    const MIN_SUBMISSION_DELAY = 2000;
+    if (formOpenedAt && Date.now() - formOpenedAt < MIN_SUBMISSION_DELAY) {
+      // Bot detected - submit silently as success
+      toast({
+        title: t("landing:contact.successTitle"),
+        description: t("landing:contact.successDescription"),
+      });
+      setContactForm({ topic: "", customTopic: "", email: "", message: "", phone: "", pageUrl: "", honeypot: "" });
+      setFormOpenedAt(null);
+      return;
+    }
+
     const result = contactSchema.safeParse(contactForm);
     if (!result.success) {
       const errors: { topic?: string; customTopic?: string; email?: string; message?: string; phone?: string } = {};
@@ -157,10 +195,31 @@ const LandingPage = () => {
           message: contactForm.message,
           phone: contactForm.phone || undefined,
           pageUrl: contactForm.pageUrl || undefined,
+          honeypot: contactForm.honeypot || undefined, // Send honeypot field
         },
       });
 
       if (error) {
+        // Check if it's a rate limit error
+        const errorBody = error.context?.body;
+        if (errorBody?.error === 'rate_limit_exceeded' && errorBody?.cooldown_seconds) {
+          setRateLimitCooldown(errorBody.cooldown_seconds);
+          setContactErrors({ general: t("errors:contact.rateLimitExceeded", { seconds: errorBody.cooldown_seconds }) });
+          return;
+        }
+        // Check for specific validation errors
+        if (errorBody?.error === 'message_too_short') {
+          setContactErrors({ message: t("errors:contact.messageTooShort", { min: 20 }) });
+          return;
+        }
+        if (errorBody?.error === 'message_too_long') {
+          setContactErrors({ message: t("errors:contact.messageTooLong", { max: 3000 }) });
+          return;
+        }
+        if (errorBody?.error === 'too_many_urls') {
+          setContactErrors({ message: t("errors:contact.tooManyUrls", { max: 2 }) });
+          return;
+        }
         throw error;
       }
 
@@ -168,9 +227,10 @@ const LandingPage = () => {
         title: t("landing:contact.successTitle"),
         description: t("landing:contact.successDescription"),
       });
-      setContactForm({ topic: "", customTopic: "", email: "", message: "", phone: "", pageUrl: "" });
+      setContactForm({ topic: "", customTopic: "", email: "", message: "", phone: "", pageUrl: "", honeypot: "" });
+      setFormOpenedAt(null);
       trackContactSubmit();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Contact form error:", error);
       toast({
         title: t("landing:contact.errorTitle"),
@@ -1020,7 +1080,36 @@ const LandingPage = () => {
           </div>
           
           <Card className="p-6 md:p-8 card-lavcom max-w-3xl mx-auto">
-            <form onSubmit={handleContactSubmit} className="space-y-6">
+            <form onSubmit={handleContactSubmit} className="space-y-6" onFocus={handleFormInteraction}>
+              {/* Honeypot field - invisible to users, catches bots */}
+              <div className="absolute -left-[9999px] opacity-0 pointer-events-none" aria-hidden="true">
+                <label htmlFor="contact-company-website">Company Website</label>
+                <input
+                  type="text"
+                  id="contact-company-website"
+                  name="company_website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={contactForm.honeypot}
+                  onChange={(e) => setContactForm(prev => ({ ...prev, honeypot: e.target.value }))}
+                />
+              </div>
+
+              {/* General error message (rate limit, etc) */}
+              {contactErrors.general && (
+                <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3 text-sm text-destructive">
+                  {contactErrors.general}
+                </div>
+              )}
+
+              {/* Rate limit cooldown display */}
+              {rateLimitCooldown > 0 && (
+                <div className="bg-muted border border-border rounded-md p-3 text-sm text-muted-foreground flex items-center gap-2">
+                  <span className="animate-pulse">⏳</span>
+                  {t("errors:contact.rateLimitWait", { seconds: rateLimitCooldown })}
+                </div>
+              )}
+
               {/* Row 1: Topic + Email */}
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Topic dropdown - REQUIRED */}
