@@ -41,10 +41,11 @@
     "expertCall": "Expertgesprek"
   },
   "ebook": {
-    "badge": "Gratis bron",
+    "badge": "Expertgids",
     "title": "Vóór opening: 10 vragen om uzelf te stellen",
-    "description": "De juiste locatie kiezen, kosten inschatten, regelgeving begrijpen… Download ons gratis e-book om veelvoorkomende fouten te vermijden.",
-    "cta": "PDF e-book downloaden",
+    "description": "De juiste locatie kiezen, kosten inschatten, regelgeving begrijpen… Onze uitgebreide gids om veelvoorkomende fouten te vermijden.",
+    "cta": "Ontdek de gids",
+    "ctaNote": "(Beschikbaar voor aankoop)",
     "pages": "pagina's"
   },
   "features": {
@@ -174,7 +175,8 @@
     "title": "Verder gaan vóór opening",
     "subtitle": "De praktische gids \"Vóór opening\"",
     "description": "Een concrete gids om uw wasseretteproject voor te bereiden: locatiekeuze, configuratie, leveranciers, fouten om te vermijden. De simulator geeft u de cijfers, de gids helpt u de juiste beslissingen te nemen.",
-    "cta": "Gids ontdekken"
+    "cta": "Gids ontdekken",
+    "ctaNote": "(Beschikbaar voor aankoop)"
   },
   "simulatorResource": {
     "label": "Aanbevolen bron",

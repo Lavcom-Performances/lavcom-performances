@@ -41,10 +41,11 @@
     "expertCall": "Expert call"
   },
   "ebook": {
-    "badge": "Free resource",
+    "badge": "Expert guide",
     "title": "Before opening: 10 questions to ask yourself",
-    "description": "Choosing the right location, estimating costs, understanding regulations… Download our free ebook to avoid common mistakes.",
-    "cta": "Download PDF ebook",
+    "description": "Choosing the right location, estimating costs, understanding regulations… Our comprehensive guide to avoid common mistakes.",
+    "cta": "Discover the guide",
+    "ctaNote": "(Available for purchase)",
     "pages": "pages"
   },
   "features": {
@@ -163,7 +164,8 @@
     "title": "Go further before opening",
     "subtitle": "The practical guide \"Before opening\"",
     "description": "A concrete guide to help you prepare your laundromat project: choosing the location, configuration, suppliers, mistakes to avoid. The simulator gives you the numbers, the guide helps you make the right decisions around them.",
-    "cta": "Discover the guide"
+    "cta": "Discover the guide",
+    "ctaNote": "(Available for purchase)"
   },
   "trialBanner": {
     "title": "Try Lavcom Performances free for 14 days",

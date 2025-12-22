@@ -41,10 +41,11 @@
     "expertCall": "Visio expert"
   },
   "ebook": {
-    "badge": "Ressource gratuite",
+    "badge": "Guide expert",
     "title": "Avant d'ouvrir : 10 questions à se poser",
-    "description": "Choisir le bon local, estimer les charges, comprendre la réglementation… Téléchargez notre ebook gratuit pour éviter les erreurs classiques.",
-    "cta": "Télécharger l'ebook PDF",
+    "description": "Choisir le bon local, estimer les charges, comprendre la réglementation… Notre guide complet pour éviter les erreurs classiques.",
+    "cta": "Découvrir le guide",
+    "ctaNote": "(Disponible à l'achat)",
     "pages": "pages"
   },
   "features": {
@@ -163,7 +164,8 @@
     "title": "Aller plus loin avant d'ouvrir",
     "subtitle": "Le guide pratique \"Avant d'ouvrir\"",
     "description": "Un guide concret pour vous aider à préparer votre projet de laverie : choix du local, configuration, fournisseurs, erreurs à éviter. Le simulateur vous donne les chiffres, le guide vous aide à poser les bonnes décisions autour.",
-    "cta": "Découvrir le guide"
+    "cta": "Découvrir le guide",
+    "ctaNote": "(Disponible à l'achat)"
   },
   "trialBanner": {
     "title": "Essayez Lavcom Performances gratuitement pendant 14 jours",
