@@ -9,7 +9,10 @@
     "invalidSiret": "SIRET inválido",
     "siretMust14": "El número SIRET debe contener 14 dígitos",
     "incompleteInfo": "Información incompleta",
-    "fillAllFields": "Por favor complete todos los campos obligatorios"
+    "fillAllFields": "Por favor complete todos los campos obligatorios",
+    "topicRequired": "Por favor seleccione un tema",
+    "subjectTooLong": "El asunto es demasiado largo (máx. 120 caracteres)",
+    "phoneTooLong": "El número de teléfono es demasiado largo"
   },
   "network": {
     "serviceUnavailable": "Servicio temporalmente no disponible",
