@@ -126,8 +126,8 @@ export default function PolitiqueConfidentialite() {
                   <ul className="text-muted-foreground space-y-2 list-none pl-0">
                     <li><strong>Raison sociale :</strong> My'Po SARL</li>
                     <li><strong>Marque commerciale :</strong> Lavcom Performances</li>
-                    <li><strong>Siège social :</strong> 15 rue des Lavandières, 75001 Paris, France</li>
-                    <li><strong>SIRET :</strong> 123 456 789 00012</li>
+                    <li><strong>Siège social :</strong> 88 avenue de Grammont, 37000 Tours, France</li>
+                    <li><strong>SIRET :</strong> 852 567 742 00022</li>
                     <li><strong>Email DPO :</strong> <a href="mailto:dpo@lavcom.fr" className="text-primary hover:underline">dpo@lavcom.fr</a></li>
                   </ul>
                 </div>
@@ -562,7 +562,7 @@ export default function PolitiqueConfidentialite() {
                     <li className="flex items-center gap-2">
                       <span className="text-lg">📮</span>
                       <span>
-                        <strong>Adresse postale :</strong> My'Po SARL - DPO, 15 rue des Lavandières, 75001 Paris
+                        <strong>Adresse postale :</strong> My'Po SARL - DPO, 88 avenue de Grammont, 37000 Tours
                       </span>
                     </li>
                   </ul>

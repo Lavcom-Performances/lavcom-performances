@@ -107,13 +107,9 @@ export default function CGV() {
                   <ul className="text-muted-foreground space-y-2 list-none pl-0">
                     <li><strong>Raison sociale :</strong> My'Po SARL</li>
                     <li><strong>Marque commerciale :</strong> Lavcom Performances</li>
-                    <li><strong>Siège social :</strong> 15 rue des Lavandières, 75001 Paris, France</li>
-                    <li><strong>SIRET :</strong> 123 456 789 00012</li>
-                    <li><strong>Capital social :</strong> 10 000 €</li>
-                    <li><strong>RCS :</strong> Paris B 123 456 789</li>
-                    <li><strong>TVA intracommunautaire :</strong> FR 12 123456789</li>
+                    <li><strong>Siège social :</strong> 88 avenue de Grammont, 37000 Tours, France</li>
+                    <li><strong>SIRET :</strong> 852 567 742 00022</li>
                     <li><strong>Email :</strong> <a href="mailto:contact@lavcom.fr" className="text-primary hover:underline">contact@lavcom.fr</a></li>
-                    <li><strong>Directeur de la publication :</strong> [Nom du gérant]</li>
                   </ul>
                 </div>
                 <p className="text-muted-foreground mt-4">
