@@ -168,7 +168,7 @@ export function CookieBanner() {
               </Button>
 
               <a 
-                href="/mentions-legales" 
+                href="/politique-confidentialite" 
                 className="order-4 text-xs text-muted-foreground hover:text-foreground transition-colors text-center sm:text-left sm:ml-auto"
               >
                 Politique de confidentialité

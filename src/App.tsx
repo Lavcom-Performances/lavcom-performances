@@ -30,6 +30,7 @@ import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
+import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite";
 import LaundromatSettings from "./pages/LaundromatSettings";
 import CompanySettings from "./pages/CompanySettings";
 import ProfilePage from "./pages/ProfilePage";
@@ -85,6 +86,7 @@ const App = () => (
           <Route path="/company-settings" element={<CompanySettings />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
           <Route path="/cgv" element={<CGV />} />
+          <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
           
           {/* Simulation routes with dedicated layout (no sidebar) */}
           <Route element={<SimulationLayout />}>
