@@ -9,7 +9,10 @@
     "invalidSiret": "Ongeldige SIRET",
     "siretMust14": "SIRET-nummer moet 14 cijfers bevatten",
     "incompleteInfo": "Onvolledige informatie",
-    "fillAllFields": "Vul alle verplichte velden in"
+    "fillAllFields": "Vul alle verplichte velden in",
+    "topicRequired": "Selecteer een onderwerp",
+    "subjectTooLong": "Onderwerp is te lang (max 120 tekens)",
+    "phoneTooLong": "Telefoonnummer is te lang"
   },
   "network": {
     "serviceUnavailable": "Service tijdelijk niet beschikbaar",
