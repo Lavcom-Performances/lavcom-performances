@@ -193,11 +193,11 @@
     "topicPlaceholder": "Choose a topic...",
     "topics": {
       "support": "Support / Bug / Access",
-      "billing": "Packs & billing",
+      "billing": "Packs & Payment",
       "simulator": "Simulator (pre-purchase questions)",
-      "demo": "Demo request / partnership",
+      "demo": "Demo request / Partnership",
       "press": "Press / Association / Institutional",
-      "other": "Other"
+      "free": "Free subject"
     },
     "namePlaceholder": "Your name",
     "nameLabel": "Full name",

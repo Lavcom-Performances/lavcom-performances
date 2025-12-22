@@ -80,7 +80,6 @@ const LandingPage = () => {
     topic: "", 
     email: "", 
     message: "", 
-    subject: "", 
     phone: "",
     pageUrl: ""
   });
@@ -88,7 +87,6 @@ const LandingPage = () => {
     topic?: string; 
     email?: string; 
     message?: string;
-    subject?: string;
     phone?: string;
   }>({});
   
@@ -99,7 +97,7 @@ const LandingPage = () => {
     { value: "simulator", label: t("landing:contact.topics.simulator") },
     { value: "demo", label: t("landing:contact.topics.demo") },
     { value: "press", label: t("landing:contact.topics.press") },
-    { value: "other", label: t("landing:contact.topics.other") },
+    { value: "free", label: t("landing:contact.topics.free") },
   ];
   
   // Track active section for nav highlighting
@@ -111,7 +109,6 @@ const LandingPage = () => {
     topic: z.string().min(1, t('errors:validation.topicRequired')),
     email: z.string().trim().email(t('errors:validation.invalidEmail')).max(255, t('errors:validation.emailTooLong')),
     message: z.string().trim().min(10, t('errors:validation.messageMinLength')).max(1000, t('errors:validation.messageMaxLength')),
-    subject: z.string().max(120, t('errors:validation.subjectTooLong')).optional(),
     phone: z.string().max(20, t('errors:validation.phoneTooLong')).optional(),
     pageUrl: z.string().max(500).optional(),
   });
@@ -122,7 +119,7 @@ const LandingPage = () => {
 
     const result = contactSchema.safeParse(contactForm);
     if (!result.success) {
-      const errors: { topic?: string; email?: string; message?: string; subject?: string; phone?: string } = {};
+      const errors: { topic?: string; email?: string; message?: string; phone?: string } = {};
       result.error.errors.forEach((err) => {
         const field = err.path[0] as keyof typeof errors;
         errors[field] = err.message;
@@ -143,7 +140,6 @@ const LandingPage = () => {
           topicValue: contactForm.topic,
           email: contactForm.email,
           message: contactForm.message,
-          subject: contactForm.subject || undefined,
           phone: contactForm.phone || undefined,
           pageUrl: contactForm.pageUrl || undefined,
         },
@@ -157,7 +153,7 @@ const LandingPage = () => {
         title: t("landing:contact.successTitle"),
         description: t("landing:contact.successDescription"),
       });
-      setContactForm({ topic: "", email: "", message: "", subject: "", phone: "", pageUrl: "" });
+      setContactForm({ topic: "", email: "", message: "", phone: "", pageUrl: "" });
       trackContactSubmit();
     } catch (error) {
       console.error("Contact form error:", error);
@@ -1134,23 +1130,6 @@ const LandingPage = () => {
                 {/* Optional fields section */}
                 <div className="border-t border-border pt-4 space-y-4">
                   <p className="text-sm text-muted-foreground">{t("landing:contact.optionalFields")}</p>
-                  
-                  {/* Subject - OPTIONAL */}
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-subject" className="text-foreground font-medium text-sm">
-                      {t("landing:contact.subjectLabel")}
-                    </Label>
-                    <Input
-                      id="contact-subject"
-                      placeholder={t("landing:contact.subjectPlaceholder")}
-                      value={contactForm.subject}
-                      onChange={(e) => setContactForm(prev => ({ ...prev, subject: e.target.value }))}
-                      maxLength={120}
-                    />
-                    <div className="flex justify-end text-xs text-muted-foreground">
-                      <span>{contactForm.subject.length}/120</span>
-                    </div>
-                  </div>
 
                   {/* Phone - OPTIONAL */}
                   <div className="space-y-2">

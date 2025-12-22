@@ -197,7 +197,7 @@
       "simulator": "Simulateur (questions avant achat)",
       "demo": "Demande de démo / partenariat",
       "press": "Presse / Association / Institutionnel",
-      "other": "Autre"
+      "free": "Sujet libre"
     },
     "namePlaceholder": "Votre nom",
     "nameLabel": "Nom complet",
