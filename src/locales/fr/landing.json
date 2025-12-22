@@ -213,6 +213,8 @@
     "phonePlaceholder": "+33 6 12 34 56 78",
     "pageUrlLabel": "Page ou URL concernée",
     "pageUrlPlaceholder": "https://lavcom.fr/... ou nom de la page",
+    "customTopicLabel": "Précisez votre sujet",
+    "customTopicPlaceholder": "Décrivez brièvement votre demande...",
     "send": "Envoyer le message",
     "sending": "Envoi en cours...",
     "successTitle": "Message envoyé !",

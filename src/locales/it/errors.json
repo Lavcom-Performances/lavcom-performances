@@ -12,7 +12,9 @@
     "fillAllFields": "Si prega di compilare tutti i campi obbligatori",
     "topicRequired": "Si prega di selezionare un argomento",
     "subjectTooLong": "L'oggetto è troppo lungo (max 120 caratteri)",
-    "phoneTooLong": "Il numero di telefono è troppo lungo"
+    "phoneTooLong": "Il numero di telefono è troppo lungo",
+    "customTopicRequired": "Si prega di specificare l'argomento (min 3 caratteri)",
+    "customTopicTooLong": "L'argomento personalizzato è troppo lungo (max 100 caratteri)"
   },
   "network": {
     "serviceUnavailable": "Servizio temporaneamente non disponibile",

@@ -12,7 +12,9 @@
     "fillAllFields": "Vul alle verplichte velden in",
     "topicRequired": "Selecteer een onderwerp",
     "subjectTooLong": "Onderwerp is te lang (max 120 tekens)",
-    "phoneTooLong": "Telefoonnummer is te lang"
+    "phoneTooLong": "Telefoonnummer is te lang",
+    "customTopicRequired": "Geef uw onderwerp aan (min 3 tekens)",
+    "customTopicTooLong": "Aangepast onderwerp is te lang (max 100 tekens)"
   },
   "network": {
     "serviceUnavailable": "Service tijdelijk niet beschikbaar",
