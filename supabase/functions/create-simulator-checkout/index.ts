@@ -7,12 +7,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Mapping pack ID -> Stripe price ID
-const SIMULATOR_PRICES: Record<string, string> = {
-  essential: "price_1Sh8OBB849ikvSjD4vraisPU",
-  project: "price_1Sh8P9B849ikvSjD2wT6zlUp",
-  comparator: "price_1Sh8Q0B849ikvSjDyDYUvewo",
-  premium: "price_1Sh8Q0B849ikvSjDyDYUvewo",
+// Mapping pack ID -> Stripe price ID + config
+const SIMULATOR_PACKS: Record<string, { priceId: string; accessDays: number; maxProjects: number; amountTtc: number }> = {
+  essential: { priceId: "price_1Sh8OBB849ikvSjD4vraisPU", accessDays: 30, maxProjects: 1, amountTtc: 79 },
+  project: { priceId: "price_1Sh8P9B849ikvSjD2wT6zlUp", accessDays: 90, maxProjects: 3, amountTtc: 149 },
+  comparator: { priceId: "price_1Sh8Q0B849ikvSjDyDYUvewo", accessDays: 180, maxProjects: 10, amountTtc: 229 },
+  premium: { priceId: "price_1Sh8Q0B849ikvSjDyDYUvewo", accessDays: 90, maxProjects: 3, amountTtc: 279 },
 };
 
 const logStep = (step: string, details?: unknown) => {
@@ -36,11 +36,11 @@ serve(async (req) => {
     const { packId } = await req.json();
     logStep("Pack requested", { packId });
 
-    const priceId = SIMULATOR_PRICES[packId];
-    if (!priceId) {
+    const pack = SIMULATOR_PACKS[packId];
+    if (!pack) {
       throw new Error(`Invalid pack ID: ${packId}`);
     }
-    logStep("Price ID found", { priceId });
+    logStep("Pack found", { priceId: pack.priceId, accessDays: pack.accessDays });
 
     // Authenticate user
     const authHeader = req.headers.get("Authorization");
@@ -64,7 +64,6 @@ serve(async (req) => {
       customerId = customers.data[0].id;
       logStep("Existing customer found", { customerId });
     } else {
-      // Create new customer to enable saved_payment_method_options
       const newCustomer = await stripe.customers.create({
         email: user.email,
         metadata: { user_id: user.id },
@@ -73,20 +72,23 @@ serve(async (req) => {
       logStep("New customer created", { customerId });
     }
 
-    // Create checkout session (one-time payment, card only, no Link)
-    const origin = req.headers.get("origin") || "https://lavcom.app";
+    // Use app.lavcom.fr as fixed domain for production
+    const successUrl = `https://app.lavcom.fr/billing/success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `https://app.lavcom.fr/billing/cancel`;
+
+    // Create checkout session (one-time payment)
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       line_items: [
         {
-          price: priceId,
+          price: pack.priceId,
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${origin}/simulator-payment-success?pack=${packId}`,
-      cancel_url: `${origin}/subscribe-simulator?cancelled=true`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: {
         user_id: user.id,
         pack_id: packId,

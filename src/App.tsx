@@ -20,6 +20,8 @@ import Subscribe from "./pages/Subscribe";
 import SimulateurPage from "./pages/SimulateurPage";
 import SubscribeSimulator from "./pages/SubscribeSimulator";
 import SimulatorPaymentSuccess from "./pages/SimulatorPaymentSuccess";
+import BillingSuccess from "./pages/BillingSuccess";
+import BillingCancel from "./pages/BillingCancel";
 import SelectLaundromat from "./pages/SelectLaundromat";
 import Dashboard from "./pages/Dashboard";
 import Operations from "./pages/Operations";
@@ -76,6 +78,8 @@ const App = () => (
           <Route path="/simulateur" element={<SimulateurPage />} />
           <Route path="/subscribe-simulator" element={<SubscribeSimulator />} />
           <Route path="/simulator-payment-success" element={<SimulatorPaymentSuccess />} />
+          <Route path="/billing/success" element={<BillingSuccess />} />
+          <Route path="/billing/cancel" element={<BillingCancel />} />
           <Route path="/select-laundromat" element={<SelectLaundromat />} />
           <Route path="/company-settings" element={<CompanySettings />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
