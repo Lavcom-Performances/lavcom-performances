@@ -1,4 +1,61 @@
 {
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Übersicht über die Leistung Ihrer Waschsalons",
+    "revenueChart": {
+      "title": "Umsatzentwicklung",
+      "total": "Gesamt",
+      "average": "Durchschnitt"
+    },
+    "kpis": {
+      "revenue": "Umsatz",
+      "transactions": "Transaktionen",
+      "averageBasket": "Durchschnittlicher Warenkorb",
+      "machines": "Maschinen"
+    },
+    "filters": {
+      "period": "Zeitraum",
+      "site": "Waschsalon",
+      "allSites": "Alle Waschsalons"
+    },
+    "emptyState": {
+      "title": "Keine Daten verfügbar",
+      "description": "Importieren Sie Ihre Daten, um die Analysen anzuzeigen"
+    }
+  },
+  "operations": {
+    "title": "Operationen",
+    "subtitle": "Sehen Sie die Details Ihrer Transaktionen ein",
+    "table": {
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "machine": "Maschine",
+      "program": "Programm",
+      "amount": "Betrag",
+      "paymentMode": "Zahlungsmethode"
+    },
+    "filters": {
+      "search": "Suchen...",
+      "dateRange": "Datumsbereich",
+      "machine": "Maschine",
+      "allMachines": "Alle Maschinen"
+    },
+    "import": {
+      "button": "CSV importieren",
+      "history": "Importverlauf"
+    },
+    "emptyState": {
+      "title": "Keine Operationen",
+      "description": "Importieren Sie eine CSV-Datei, um Ihre Operationen anzuzeigen"
+    },
+    "pagination": {
+      "showing": "Anzeige",
+      "of": "von",
+      "results": "Ergebnissen",
+      "previous": "Vorherige",
+      "next": "Nächste"
+    }
+  },
   "profile": {
     "avatar": {
       "rotateLeft": "Um -90° drehen",

@@ -1,4 +1,61 @@
 {
+  "dashboard": {
+    "title": "Panel de control",
+    "subtitle": "Resumen del rendimiento de sus lavanderías",
+    "revenueChart": {
+      "title": "Evolución de ingresos",
+      "total": "Total",
+      "average": "Promedio"
+    },
+    "kpis": {
+      "revenue": "Ingresos",
+      "transactions": "Transacciones",
+      "averageBasket": "Ticket promedio",
+      "machines": "Máquinas"
+    },
+    "filters": {
+      "period": "Período",
+      "site": "Lavandería",
+      "allSites": "Todas las lavanderías"
+    },
+    "emptyState": {
+      "title": "Sin datos disponibles",
+      "description": "Importe sus datos para ver los análisis"
+    }
+  },
+  "operations": {
+    "title": "Operaciones",
+    "subtitle": "Consulte el detalle de sus transacciones",
+    "table": {
+      "date": "Fecha",
+      "time": "Hora",
+      "machine": "Máquina",
+      "program": "Programa",
+      "amount": "Importe",
+      "paymentMode": "Modo de pago"
+    },
+    "filters": {
+      "search": "Buscar...",
+      "dateRange": "Rango de fechas",
+      "machine": "Máquina",
+      "allMachines": "Todas las máquinas"
+    },
+    "import": {
+      "button": "Importar CSV",
+      "history": "Historial de importaciones"
+    },
+    "emptyState": {
+      "title": "Sin operaciones",
+      "description": "Importe un archivo CSV para ver sus operaciones"
+    },
+    "pagination": {
+      "showing": "Mostrando",
+      "of": "de",
+      "results": "resultados",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    }
+  },
   "profile": {
     "avatar": {
       "rotateLeft": "Rotar -90°",

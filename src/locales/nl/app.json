@@ -1,4 +1,61 @@
 {
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overzicht van de prestaties van uw wasserettes",
+    "revenueChart": {
+      "title": "Omzetontwikkeling",
+      "total": "Totaal",
+      "average": "Gemiddelde"
+    },
+    "kpis": {
+      "revenue": "Omzet",
+      "transactions": "Transacties",
+      "averageBasket": "Gemiddelde bon",
+      "machines": "Machines"
+    },
+    "filters": {
+      "period": "Periode",
+      "site": "Wasserette",
+      "allSites": "Alle wasserettes"
+    },
+    "emptyState": {
+      "title": "Geen gegevens beschikbaar",
+      "description": "Importeer uw gegevens om de analyses te bekijken"
+    }
+  },
+  "operations": {
+    "title": "Operaties",
+    "subtitle": "Bekijk de details van uw transacties",
+    "table": {
+      "date": "Datum",
+      "time": "Tijd",
+      "machine": "Machine",
+      "program": "Programma",
+      "amount": "Bedrag",
+      "paymentMode": "Betaalmethode"
+    },
+    "filters": {
+      "search": "Zoeken...",
+      "dateRange": "Datumbereik",
+      "machine": "Machine",
+      "allMachines": "Alle machines"
+    },
+    "import": {
+      "button": "CSV importeren",
+      "history": "Importgeschiedenis"
+    },
+    "emptyState": {
+      "title": "Geen operaties",
+      "description": "Importeer een CSV-bestand om uw operaties te bekijken"
+    },
+    "pagination": {
+      "showing": "Weergave",
+      "of": "van",
+      "results": "resultaten",
+      "previous": "Vorige",
+      "next": "Volgende"
+    }
+  },
   "profile": {
     "avatar": {
       "rotateLeft": "Roteer -90°",
