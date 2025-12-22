@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,10 @@ import { useSimulatorCheckout } from "@/hooks/useSimulatorCheckout";
 export default function SubscribeSimulator() {
   const { t } = useTranslation(['app', 'common', 'errors']);
   const { checkout, isLoading } = useSimulatorCheckout();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleSubscribe = (packId: string) => {
     checkout(packId);
