@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 
 export function Footer() {
@@ -95,12 +95,6 @@ export function Footer() {
                 >
                   01 23 45 67 89
                 </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                <span className="text-sm text-muted-foreground">
-                  Paris, France
-                </span>
               </li>
             </ul>
           </div>
