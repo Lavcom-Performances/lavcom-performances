@@ -1,20 +1,23 @@
 import { Link } from "react-router-dom";
-import { Lock, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
+import { Lock, Sparkles, CheckCircle2, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
+import { useTranslation } from "react-i18next";
 
 interface TrialExpiredPaywallProps {
   onContactSupport?: () => void;
 }
 
 export function TrialExpiredPaywall({ onContactSupport }: TrialExpiredPaywallProps) {
+  const { t } = useTranslation(['app', 'common']);
+
   const features = [
-    "Tableau de bord multi-laveries illimité",
-    "Export PDF de tous vos rapports",
-    "Recommandations intelligentes IA",
-    "Maintenance prédictive",
-    "Support prioritaire",
+    t('app:trialExpired.features.dashboard'),
+    t('app:trialExpired.features.export'),
+    t('app:trialExpired.features.recommendations'),
+    t('app:trialExpired.features.maintenance'),
+    t('app:trialExpired.features.support'),
   ];
 
   return (
@@ -31,10 +34,10 @@ export function TrialExpiredPaywall({ onContactSupport }: TrialExpiredPaywallPro
             <Lock className="h-8 w-8 text-destructive" />
           </div>
           <CardTitle className="text-2xl font-display">
-            Votre essai gratuit est terminé
+            {t('app:trialExpired.title')}
           </CardTitle>
           <CardDescription className="text-base mt-2">
-            Continuez à optimiser vos laveries avec Lavcom Performances Pro
+            {t('app:trialExpired.subtitle')}
           </CardDescription>
         </CardHeader>
 
@@ -49,7 +52,7 @@ export function TrialExpiredPaywall({ onContactSupport }: TrialExpiredPaywallPro
 
           <div className="bg-muted/50 rounded-xl p-4 space-y-3">
             <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider">
-              Inclus dans le plan Pro
+              {t('app:trialExpired.featuresTitle')}
             </h4>
             <ul className="space-y-2">
               {features.map((feature, index) => (
@@ -62,26 +65,27 @@ export function TrialExpiredPaywall({ onContactSupport }: TrialExpiredPaywallPro
           </div>
 
           <div className="space-y-3">
-            <Link to="/pricing" className="block">
+            <Link to="/subscribe" className="block">
               <Button variant="lavcom" size="xl" className="w-full">
                 <Sparkles className="h-5 w-5 mr-2" />
-                Voir les plans et tarifs
+                {t('app:trialExpired.cta')}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </Link>
 
-            <p className="text-center text-sm text-muted-foreground">
-              À partir de 29€/mois par laverie
+            <p className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+              <Clock className="h-4 w-4" />
+              {t('app:trialExpired.priceInfo')}
             </p>
 
             <div className="pt-4 border-t border-border">
               <p className="text-center text-sm text-muted-foreground">
-                Une question ?{" "}
+                {t('app:trialExpired.question')}{" "}
                 <button 
                   onClick={onContactSupport}
                   className="text-primary hover:underline font-medium"
                 >
-                  Contactez notre équipe
+                  {t('app:trialExpired.contact')}
                 </button>
               </p>
             </div>

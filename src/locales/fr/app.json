@@ -369,8 +369,9 @@
   "pricing": {
     "badge": "Tarifs Exploitants – Prix dégressif selon le nombre de laveries",
     "title": "Choisissez votre abonnement",
-    "subtitle": "Plus vous avez de laveries, plus le prix par laverie diminue.",
+    "subtitle": "Commencez par 14 jours d'essai gratuit, puis choisissez votre formule.",
     "laundryCount": "Nombre de laveries",
+    "startTrial": "Essayer 14 jours gratuits",
     "plans": {
       "monthly": {
         "title": "Mensuel",
@@ -399,7 +400,7 @@
       "tier2": "3 à 5 laveries",
       "tier3": "6 laveries et +",
       "perMonthPerLaundry": "€/mois par laverie",
-      "note": "Le montant affiché s'adapte automatiquement lorsque vous modifiez le nombre de laveries. L'abonnement annuel vous offre 2 mois gratuits."
+      "note": "Essai gratuit de 14 jours sans carte bancaire. Le montant affiché s'adapte automatiquement selon le nombre de laveries. L'abonnement annuel vous offre 2 mois gratuits."
     }
   },
   "dropdown": {
@@ -928,5 +929,21 @@
       "amount": "Montant",
       "program": "Programme"
     }
+  },
+  "trialExpired": {
+    "title": "Votre essai gratuit est terminé",
+    "subtitle": "Continuez à optimiser vos laveries avec Lavcom Performances Pro",
+    "featuresTitle": "Inclus dans le plan Pro",
+    "features": {
+      "dashboard": "Tableau de bord multi-laveries illimité",
+      "export": "Export PDF de tous vos rapports",
+      "recommendations": "Recommandations intelligentes IA",
+      "maintenance": "Maintenance prédictive",
+      "support": "Support prioritaire"
+    },
+    "cta": "Souscrire maintenant",
+    "priceInfo": "À partir de 29€/mois par laverie",
+    "question": "Une question ?",
+    "contact": "Contactez notre équipe"
   }
 }

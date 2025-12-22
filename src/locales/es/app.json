@@ -358,8 +358,9 @@
   "pricing": {
     "badge": "Tarifas Operadores – Precio decreciente según número de lavanderías",
     "title": "Elija su suscripción",
-    "subtitle": "Cuantas más lavanderías tenga, menor será el precio por lavandería.",
+    "subtitle": "Comience con 14 días de prueba gratis, luego elija su plan.",
     "laundryCount": "Número de lavanderías",
+    "startTrial": "Probar 14 días gratis",
     "plans": {
       "monthly": {
         "title": "Mensual",
@@ -388,7 +389,7 @@
       "tier2": "3 a 5 lavanderías",
       "tier3": "6 lavanderías y +",
       "perMonthPerLaundry": "€/mes por lavandería",
-      "note": "El importe mostrado se ajusta automáticamente al modificar el número de lavanderías. La suscripción anual le ofrece 2 meses gratis."
+      "note": "14 días de prueba gratis, sin tarjeta de crédito. El importe se ajusta automáticamente según el número de lavanderías. La suscripción anual ofrece 2 meses gratis."
     }
   },
   "dropdown": {
@@ -685,5 +686,21 @@
       "signOutSuccessDescription": "Todas sus sesiones han sido cerradas con éxito",
       "signOutError": "Ocurrió un error durante la desconexión"
     }
+  },
+  "trialExpired": {
+    "title": "Su prueba gratuita ha terminado",
+    "subtitle": "Continúe optimizando sus lavanderías con Lavcom Performances Pro",
+    "featuresTitle": "Incluido en el plan Pro",
+    "features": {
+      "dashboard": "Panel multi-lavandería ilimitado",
+      "export": "Exportación PDF de todos los informes",
+      "recommendations": "Recomendaciones con IA",
+      "maintenance": "Mantenimiento predictivo",
+      "support": "Soporte prioritario"
+    },
+    "cta": "Suscribirse ahora",
+    "priceInfo": "Desde 29€/mes por lavandería",
+    "question": "¿Tiene preguntas?",
+    "contact": "Contacte nuestro equipo"
   }
 }

@@ -358,8 +358,9 @@
   "pricing": {
     "badge": "Exploitant tarieven – Korting op basis van aantal wasserettes",
     "title": "Kies uw abonnement",
-    "subtitle": "Hoe meer wasserettes u heeft, hoe lager de prijs per wasserette.",
+    "subtitle": "Begin met 14 dagen gratis proefperiode, kies daarna uw plan.",
     "laundryCount": "Aantal wasserettes",
+    "startTrial": "14 dagen gratis proberen",
     "plans": {
       "monthly": {
         "title": "Maandelijks",
@@ -388,7 +389,7 @@
       "tier2": "3 tot 5 wasserettes",
       "tier3": "6 wasserettes en meer",
       "perMonthPerLaundry": "€/maand per wasserette",
-      "note": "Het weergegeven bedrag past zich automatisch aan wanneer u het aantal wasserettes wijzigt. Het jaarabonnement geeft u 2 gratis maanden."
+      "note": "14 dagen gratis proberen, geen creditcard nodig. Het weergegeven bedrag past zich automatisch aan op basis van het aantal wasserettes. Het jaarabonnement geeft u 2 gratis maanden."
     }
   },
   "dropdown": {
@@ -685,5 +686,21 @@
       "signOutSuccessDescription": "Al uw sessies zijn succesvol gesloten",
       "signOutError": "Er is een fout opgetreden bij het uitloggen"
     }
+  },
+  "trialExpired": {
+    "title": "Uw gratis proefperiode is beëindigd",
+    "subtitle": "Blijf uw wasserettes optimaliseren met Lavcom Performances Pro",
+    "featuresTitle": "Inbegrepen in het Pro-plan",
+    "features": {
+      "dashboard": "Onbeperkt multi-wasserette dashboard",
+      "export": "PDF-export van alle rapporten",
+      "recommendations": "AI-gestuurde aanbevelingen",
+      "maintenance": "Voorspellend onderhoud",
+      "support": "Prioriteit ondersteuning"
+    },
+    "cta": "Nu abonneren",
+    "priceInfo": "Vanaf €29/maand per wasserette",
+    "question": "Heeft u vragen?",
+    "contact": "Neem contact op met ons team"
   }
 }
