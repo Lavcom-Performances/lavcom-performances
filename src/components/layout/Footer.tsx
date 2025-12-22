@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, Linkedin, Instagram, Facebook } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 
 export function Footer() {
@@ -97,6 +97,40 @@ export function Footer() {
                 </a>
               </li>
             </ul>
+            
+            {/* Social Media */}
+            <div className="mt-4 pt-4 border-t border-border/50">
+              <p className="text-sm font-medium text-foreground mb-3">Suivez-nous</p>
+              <div className="flex items-center gap-3">
+                <a 
+                  href="https://linkedin.com/company/lavcom" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin className="h-4 w-4" />
+                </a>
+                <a 
+                  href="https://instagram.com/lavcom" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="h-4 w-4" />
+                </a>
+                <a 
+                  href="https://facebook.com/lavcom" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
