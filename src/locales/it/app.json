@@ -473,7 +473,36 @@
     "success": {
       "title": "Registrazione completata!",
       "description": "Il tuo abbonamento è stato attivato. Benvenuto su Lavcom Analytics!"
+    },
+    "loginRequired": "Accesso richiesto",
+    "loginRequiredDesc": "Per favore accedi per abbonarti.",
+    "checkoutError": "Errore di pagamento",
+    "checkoutErrorDesc": "Si è verificato un errore durante la creazione della sessione di pagamento. Riprova.",
+    "features": {
+      "dashboard": "Dashboard interattive",
+      "analytics": "Analisi dettagliate in tempo reale",
+      "security": "Dati sicuri e salvati",
+      "recommendations": "Raccomandazioni personalizzate"
     }
+  },
+  "subscribeSimple": {
+    "title": "Passa a Lavcom Performances",
+    "subtitle": "Continua a ottimizzare le tue lavanderie con tutte le funzionalità",
+    "laundryCount": "Numero di lavanderie",
+    "laundryCountDesc": "Regola in base al tuo portfolio",
+    "choosePlan": "Scegli il tuo piano",
+    "annual": "Annuale",
+    "annualDesc": "2 mesi gratis — Pagamento unico",
+    "monthly": "Mensile",
+    "monthlyDesc": "Senza impegno — Annulla quando vuoi",
+    "summary": "Riepilogo",
+    "billing": "Fatturazione",
+    "savings": "Risparmio annuale",
+    "total": "Totale",
+    "subscribe": "Abbonati ora",
+    "processing": "Elaborazione...",
+    "loginFirst": "Accedi prima per abbonarti",
+    "securePayment": "Pagamento sicuro tramite Stripe"
   },
   "subscribeSimulator": {
     "badge": "Simulatore di redditività",

@@ -17,6 +17,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Pricing from "./pages/Pricing";
 import Subscribe from "./pages/Subscribe";
+import SubscribeSimple from "./pages/SubscribeSimple";
 import SimulateurPage from "./pages/SimulateurPage";
 import SubscribeSimulator from "./pages/SubscribeSimulator";
 import SimulatorPaymentSuccess from "./pages/SimulatorPaymentSuccess";
@@ -76,7 +77,8 @@ const App = () => (
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/subscribe" element={<Subscribe />} />
+          <Route path="/subscribe" element={<SubscribeSimple />} />
+          <Route path="/subscribe-full" element={<Subscribe />} />
           <Route path="/simulateur" element={<SimulateurPage />} />
           <Route path="/subscribe-simulator" element={<SubscribeSimulator />} />
           <Route path="/simulator-payment-success" element={<SimulatorPaymentSuccess />} />

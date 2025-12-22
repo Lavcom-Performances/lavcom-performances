@@ -473,7 +473,36 @@
     "success": {
       "title": "Registratie geslaagd!",
       "description": "Uw abonnement is geactiveerd. Welkom bij Lavcom Analytics!"
+    },
+    "loginRequired": "Inloggen vereist",
+    "loginRequiredDesc": "Log in om te abonneren.",
+    "checkoutError": "Betaalfout",
+    "checkoutErrorDesc": "Er is een fout opgetreden bij het aanmaken van de betaalsessie. Probeer het opnieuw.",
+    "features": {
+      "dashboard": "Interactieve dashboards",
+      "analytics": "Gedetailleerde realtime analyses",
+      "security": "Veilige en geback-upte gegevens",
+      "recommendations": "Gepersonaliseerde aanbevelingen"
     }
+  },
+  "subscribeSimple": {
+    "title": "Upgrade naar Lavcom Performances",
+    "subtitle": "Blijf uw wasserettes optimaliseren met alle functies",
+    "laundryCount": "Aantal wasserettes",
+    "laundryCountDesc": "Pas aan volgens uw portfolio",
+    "choosePlan": "Kies uw plan",
+    "annual": "Jaarlijks",
+    "annualDesc": "2 maanden gratis — Eenmalige betaling",
+    "monthly": "Maandelijks",
+    "monthlyDesc": "Geen verplichting — Altijd opzegbaar",
+    "summary": "Samenvatting",
+    "billing": "Facturering",
+    "savings": "Jaarlijkse besparing",
+    "total": "Totaal",
+    "subscribe": "Nu abonneren",
+    "processing": "Verwerking...",
+    "loginFirst": "Log eerst in om te abonneren",
+    "securePayment": "Veilige betaling via Stripe"
   },
   "subscribeSimulator": {
     "badge": "Winstgevendheidssimulator",

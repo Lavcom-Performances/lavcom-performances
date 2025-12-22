@@ -484,7 +484,36 @@
     "success": {
       "title": "Registration successful!",
       "description": "Your subscription has been activated. Welcome to Lavcom Analytics!"
+    },
+    "loginRequired": "Login required",
+    "loginRequiredDesc": "Please log in to subscribe.",
+    "checkoutError": "Payment error",
+    "checkoutErrorDesc": "An error occurred while creating the payment session. Please try again.",
+    "features": {
+      "dashboard": "Interactive dashboards",
+      "analytics": "Detailed real-time analytics",
+      "security": "Secure and backed up data",
+      "recommendations": "Personalized recommendations"
     }
+  },
+  "subscribeSimple": {
+    "title": "Upgrade to Lavcom Performances",
+    "subtitle": "Continue optimizing your laundromats with all features",
+    "laundryCount": "Number of laundromats",
+    "laundryCountDesc": "Adjust according to your portfolio",
+    "choosePlan": "Choose your plan",
+    "annual": "Annual",
+    "annualDesc": "2 months free — One-time payment",
+    "monthly": "Monthly",
+    "monthlyDesc": "No commitment — Cancel anytime",
+    "summary": "Summary",
+    "billing": "Billing",
+    "savings": "Annual savings",
+    "total": "Total",
+    "subscribe": "Subscribe now",
+    "processing": "Processing...",
+    "loginFirst": "Log in first to subscribe",
+    "securePayment": "Secure payment via Stripe"
   },
   "subscribeSimulator": {
     "badge": "Profitability Simulator",
