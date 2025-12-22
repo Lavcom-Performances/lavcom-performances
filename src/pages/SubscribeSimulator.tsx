@@ -1,4 +1,4 @@
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,19 +14,19 @@ import {
   Layers,
   Clock,
   FolderOpen,
-  Infinity
+  Loader2
 } from "lucide-react";
 import { SIMULATOR_PACKS, SimulatorPack } from "@/config/pricingConfig";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { Footer } from "@/components/layout/Footer";
+import { useSimulatorCheckout } from "@/hooks/useSimulatorCheckout";
 
 export default function SubscribeSimulator() {
-  const { t } = useTranslation(['app', 'common']);
-  const navigate = useNavigate();
+  const { t } = useTranslation(['app', 'common', 'errors']);
+  const { checkout, isLoading } = useSimulatorCheckout();
 
   const handleSubscribe = (packId: string) => {
-    console.log("Subscribe to pack:", packId);
-    navigate("/simulation");
+    checkout(packId);
   };
 
   const getPackIcon = (packId: string) => {
@@ -172,8 +172,13 @@ export default function SubscribeSimulator() {
                   }`}
                   variant={pack.isRecommended ? 'default' : undefined}
                   onClick={() => handleSubscribe(pack.id)}
+                  disabled={isLoading}
                 >
-                  {pack.hasExpertCalls && <Sparkles className="mr-2 h-4 w-4" />}
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : pack.hasExpertCalls ? (
+                    <Sparkles className="mr-2 h-4 w-4" />
+                  ) : null}
                   {t(`app:subscribeSimulator.packs.${pack.id}.cta`)}
                 </Button>
               </CardContent>
