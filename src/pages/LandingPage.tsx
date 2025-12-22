@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -98,29 +99,26 @@ const LandingPage = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch("https://formspree.io/f/YOUR_FORM_ID", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('send-contact', {
+        body: {
           name: contactForm.name,
           email: contactForm.email,
           message: contactForm.message,
-        }),
+        },
       });
 
-      if (response.ok) {
-        toast({
-          title: t("landing:contact.successTitle"),
-          description: t("landing:contact.successDescription"),
-        });
-        setContactForm({ name: "", email: "", message: "" });
-      } else {
-        throw new Error("Erreur lors de l'envoi");
+      if (error) {
+        throw error;
       }
+
+      toast({
+        title: t("landing:contact.successTitle"),
+        description: t("landing:contact.successDescription"),
+      });
+      setContactForm({ name: "", email: "", message: "" });
+      trackContactSubmit();
     } catch (error) {
-      console.error("Formspree error:", error);
+      console.error("Contact form error:", error);
       toast({
         title: t("landing:contact.errorTitle"),
         description: t("landing:contact.errorDescription"),
