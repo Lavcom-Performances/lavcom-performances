@@ -8,6 +8,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Offset for fixed header when navigating to anchor sections */
+[id] {
+  scroll-margin-top: 5rem; /* 80px = header height (64px) + extra padding */
+}
+
 @layer base {
   :root {
     /* Lavcom brand colors - converted to HSL */
