@@ -450,50 +450,50 @@ const LandingPage = () => {
                   <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-lavcom-orange/20 flex items-center justify-center mx-auto">
                     <Calculator className="h-7 w-7 md:h-10 md:w-10 text-lavcom-orange" />
                   </div>
-                  <div>
-                    <p className="text-2xl md:text-3xl font-bold text-foreground">Simulateur</p>
-                    <p className="text-sm md:text-base text-muted-foreground">de rentabilité</p>
+                <div>
+                    <p className="text-2xl md:text-3xl font-bold text-foreground">{t("landing:futursExploitants.simulator")}</p>
+                    <p className="text-sm md:text-base text-muted-foreground">{t("landing:futursExploitants.profitability")}</p>
                   </div>
                   
                   {/* Mini-aperçu des fonctionnalités */}
                   <div className="grid grid-cols-2 gap-2 md:gap-3 pt-3 md:pt-4 border-t border-border">
                     <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
                       <Target className="h-3 w-3 md:h-4 md:w-4 text-lavcom-orange shrink-0" />
-                      <span>Seuil rentabilité</span>
+                      <span>{t("landing:futursExploitants.profitabilityThreshold")}</span>
                     </div>
                     <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
                       <PieChart className="h-3 w-3 md:h-4 md:w-4 text-lavcom-orange shrink-0" />
-                      <span>Analyse charges</span>
+                      <span>{t("landing:futursExploitants.chargeAnalysis")}</span>
                     </div>
                     <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
                       <FileText className="h-3 w-3 md:h-4 md:w-4 text-lavcom-orange shrink-0" />
-                      <span>Rapport PDF</span>
+                      <span>{t("landing:futursExploitants.pdfReport")}</span>
                     </div>
                     <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
                       <BarChart3 className="h-3 w-3 md:h-4 md:w-4 text-lavcom-orange shrink-0" />
-                      <span>Scénarios</span>
+                      <span>{t("landing:futursExploitants.scenarios")}</span>
                     </div>
                   </div>
                   
                   <div className="pt-3 md:pt-4 border-t border-border space-y-1 md:space-y-1.5">
                     <div className="flex justify-between text-xs md:text-sm">
-                      <span className="text-muted-foreground">Pack Essentiel</span>
-                      <span className="font-semibold">79 € <span className="text-muted-foreground font-normal">TTC</span></span>
+                      <span className="text-muted-foreground">{t("landing:futursExploitants.packEssentiel")}</span>
+                      <span className="font-semibold">79 € <span className="text-muted-foreground font-normal">{t("common:ttc")}</span></span>
                     </div>
                     <div className="flex justify-between text-xs md:text-sm">
-                      <span className="text-muted-foreground">Pack Projet</span>
-                      <span className="font-semibold text-lavcom-orange">149 € <span className="text-muted-foreground font-normal">TTC</span></span>
+                      <span className="text-muted-foreground">{t("landing:futursExploitants.packProjet")}</span>
+                      <span className="font-semibold text-lavcom-orange">149 € <span className="text-muted-foreground font-normal">{t("common:ttc")}</span></span>
                     </div>
                     <div className="flex justify-between text-xs md:text-sm">
-                      <span className="text-muted-foreground">Pack Comparateur</span>
-                      <span className="font-semibold">229 € <span className="text-muted-foreground font-normal">TTC</span></span>
+                      <span className="text-muted-foreground">{t("landing:futursExploitants.packComparateur")}</span>
+                      <span className="font-semibold">229 € <span className="text-muted-foreground font-normal">{t("common:ttc")}</span></span>
                     </div>
                     <div className="flex justify-between text-xs md:text-sm">
-                      <span className="text-muted-foreground">Pack Premium</span>
-                      <span className="font-semibold">279 € <span className="text-muted-foreground font-normal">TTC</span></span>
+                      <span className="text-muted-foreground">{t("landing:futursExploitants.packPremium")}</span>
+                      <span className="font-semibold">279 € <span className="text-muted-foreground font-normal">{t("common:ttc")}</span></span>
                     </div>
                     <p className="text-[10px] md:text-xs text-muted-foreground pt-1.5 text-center italic">
-                      Paiement unique — aucun renouvellement automatique
+                      {t("landing:futursExploitants.singlePayment")}
                     </p>
                   </div>
                 </div>
@@ -504,34 +504,34 @@ const LandingPage = () => {
             <ScrollReveal direction="right" delay={0.15} className="order-1 lg:order-2 text-left">
               <div className="inline-flex items-center gap-2 bg-lavcom-orange/20 text-lavcom-orange-dark dark:text-lavcom-orange px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium mb-3 md:mb-4">
                 <Rocket className="h-3 w-3 md:h-4 md:w-4" />
-                Pour les futurs exploitants
+                {t("landing:futursExploitants.badge")}
               </div>
               
               <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px]">
-                Pour ceux qui veulent ouvrir une laverie avec des chiffres réalistes
+                {t("landing:futursExploitants.title2")}
               </h2>
               
               <p className="text-muted-foreground text-sm md:text-lg mb-4 md:mb-6">
-                Le simulateur Lavcom Performances vous aide à estimer :
+                {t("landing:futursExploitants.description")}
               </p>
               
               <ul className="space-y-2 md:space-y-3 mb-4 md:mb-6 text-left">
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Vos charges principales (loyer, prêts, énergie, eau, etc.)</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:futursExploitants.benefit1Long")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Vos recettes possibles selon la fréquentation</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:futursExploitants.benefit2Long")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-lavcom-orange shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Votre seuil de rentabilité</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:futursExploitants.benefit3Long")}</span>
                 </li>
               </ul>
               
               <p className="text-muted-foreground text-sm md:text-base mb-6 md:mb-8 italic">
-                Vous ne devinez pas. Vous partez avec des ordres de grandeur clairs.
+                {t("landing:futursExploitants.noGuessing2")}
               </p>
               
               {/* CTAs */}
@@ -539,12 +539,12 @@ const LandingPage = () => {
                 <Link to="/simulateur">
                   <Button size="default" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-sm md:text-base w-full sm:w-auto">
                     <Calculator className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                    Essayer le simulateur
+                    {t("landing:futursExploitants.trySimulator")}
                   </Button>
                 </Link>
                 <Link to="/subscribe-simulator">
                   <Button size="default" variant="outline" className="btn-bounce border-lavcom-orange/50 text-lavcom-orange-dark dark:text-lavcom-orange hover:bg-lavcom-orange/10 text-sm md:text-base w-full sm:w-auto">
-                    Découvrir les packs
+                    {t("landing:futursExploitants.discoverPacks")}
                   </Button>
                 </Link>
               </div>
@@ -580,7 +580,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <ScrollReveal className="text-left md:text-center mb-8 md:mb-12">
             <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4 leading-tight max-w-[500px] md:max-w-none md:mx-auto">
-              À quoi ressemble un rapport Lavcom Performances ?
+              {t("landing:reportDemo.title")}
             </h2>
           </ScrollReveal>
           
@@ -595,7 +595,7 @@ const LandingPage = () => {
                 />
                 <div className="mt-3 md:mt-4 text-center">
                   <span className="bg-primary text-primary-foreground px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-medium">
-                    Exemple de rapport PDF
+                    {t("landing:reportDemo.badge")}
                   </span>
                 </div>
               </Card>
@@ -604,30 +604,30 @@ const LandingPage = () => {
             {/* Texte descriptif */}
             <ScrollReveal direction="right" delay={0.2} className="order-1 lg:order-2 text-left">
               <p className="text-muted-foreground text-sm md:text-lg mb-4 md:mb-6">
-                Chaque mois, vous recevez un rapport d'analyse des performances de votre laverie :
+                {t("landing:reportDemo.description")}
               </p>
               
               <ul className="space-y-2 md:space-y-3 mb-6 md:mb-8 text-left">
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Synthèse du mois</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:reportDemo.item1")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Chiffres clés (CA, fréquentation, occupation)</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:reportDemo.item2")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Focus machine par machine</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:reportDemo.item3")}</span>
                 </li>
                 <li className="flex items-start gap-2 md:gap-3">
                   <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground text-sm md:text-base">Recommandations concrètes</span>
+                  <span className="text-foreground text-sm md:text-base">{t("landing:reportDemo.item4")}</span>
                 </li>
               </ul>
               
               <p className="text-muted-foreground text-sm md:text-base mb-6 md:mb-8">
-                Un document lisible, à partager avec votre banque ou expert-comptable.
+                {t("landing:reportDemo.footer")}
               </p>
               
               <a 

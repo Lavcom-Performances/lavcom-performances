@@ -38,7 +38,22 @@
     "profitabilityThreshold": "Break-even-Punkt",
     "unlimitedScenarios": "Unbegrenzte Szenarien",
     "pdfReport": "PDF-Bericht",
-    "expertCall": "Expertenanruf"
+    "expertCall": "Expertenanruf",
+    "title2": "Für alle, die einen Waschsalon mit realistischen Zahlen eröffnen wollen",
+    "description": "Der Lavcom Performances Simulator hilft Ihnen bei der Schätzung:",
+    "benefit1Long": "Ihre Hauptkosten (Miete, Kredite, Energie, Wasser usw.)",
+    "benefit2Long": "Ihre möglichen Einnahmen je nach Besucheraufkommen",
+    "benefit3Long": "Ihr Break-even-Punkt",
+    "noGuessing2": "Kein Raten mehr. Sie starten mit klaren Schätzungen.",
+    "trySimulator": "Simulator ausprobieren",
+    "discoverPacks": "Pakete entdecken",
+    "chargeAnalysis": "Kostenanalyse",
+    "scenarios": "Szenarien",
+    "packEssentiel": "Essential-Paket",
+    "packProjet": "Projekt-Paket",
+    "packComparateur": "Vergleichs-Paket",
+    "packPremium": "Premium-Paket",
+    "singlePayment": "Einmalzahlung — keine automatische Verlängerung"
   },
   "ebook": {
     "badge": "Expertenratgeber",
@@ -112,6 +127,16 @@
   },
   "pdfExample": {
     "cta": "Beispiel ansehen (PDF)"
+  },
+  "reportDemo": {
+    "title": "Wie sieht ein Lavcom Performances Bericht aus?",
+    "description": "Jeden Monat erhalten Sie einen Leistungsanalysebericht für Ihren Waschsalon:",
+    "item1": "Monatliche Zusammenfassung",
+    "item2": "Wichtige Kennzahlen (Umsatz, Besucherzahl, Auslastung)",
+    "item3": "Maschine-für-Maschine-Fokus",
+    "item4": "Konkrete Empfehlungen",
+    "footer": "Ein lesbares Dokument zum Teilen mit Ihrer Bank oder Ihrem Buchhalter.",
+    "badge": "Beispiel PDF-Bericht"
   },
   "contact": {
     "title": "Haben Sie eine Frage?",

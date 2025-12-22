@@ -38,7 +38,22 @@
     "profitabilityThreshold": "Break-even",
     "unlimitedScenarios": "Unlimited scenarios",
     "pdfReport": "PDF report",
-    "expertCall": "Expert call"
+    "expertCall": "Expert call",
+    "title2": "For those who want to open a laundry with realistic figures",
+    "description": "Lavcom Performances simulator helps you estimate:",
+    "benefit1Long": "Your main expenses (rent, loans, energy, water, etc.)",
+    "benefit2Long": "Your potential revenue based on footfall",
+    "benefit3Long": "Your break-even point",
+    "noGuessing2": "No more guessing. You start with clear estimates.",
+    "trySimulator": "Try the simulator",
+    "discoverPacks": "Discover the packs",
+    "chargeAnalysis": "Cost analysis",
+    "scenarios": "Scenarios",
+    "packEssentiel": "Essential Pack",
+    "packProjet": "Project Pack",
+    "packComparateur": "Comparator Pack",
+    "packPremium": "Premium Pack",
+    "singlePayment": "One-time payment — no automatic renewal"
   },
   "ebook": {
     "badge": "Expert guide",
@@ -112,6 +127,16 @@
   },
   "pdfExample": {
     "cta": "See an example (PDF)"
+  },
+  "reportDemo": {
+    "title": "What does a Lavcom Performances report look like?",
+    "description": "Each month, you receive a performance analysis report for your laundry:",
+    "item1": "Monthly summary",
+    "item2": "Key figures (revenue, footfall, occupancy)",
+    "item3": "Machine-by-machine focus",
+    "item4": "Concrete recommendations",
+    "footer": "A readable document to share with your bank or accountant.",
+    "badge": "Example PDF report"
   },
   "contact": {
     "title": "Have a question?",

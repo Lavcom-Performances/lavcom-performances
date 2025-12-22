@@ -38,7 +38,22 @@
     "profitabilityThreshold": "Break-even punt",
     "unlimitedScenarios": "Onbeperkte scenario's",
     "pdfReport": "PDF-rapport",
-    "expertCall": "Expertgesprek"
+    "expertCall": "Expertgesprek",
+    "title2": "Voor wie een wasserette wil openen met realistische cijfers",
+    "description": "De Lavcom Performances simulator helpt u bij het inschatten van:",
+    "benefit1Long": "Uw belangrijkste kosten (huur, leningen, energie, water, enz.)",
+    "benefit2Long": "Uw mogelijke inkomsten op basis van bezoekersaantallen",
+    "benefit3Long": "Uw break-even punt",
+    "noGuessing2": "Niet meer gissen. U begint met duidelijke schattingen.",
+    "trySimulator": "Simulator uitproberen",
+    "discoverPacks": "Pakketten ontdekken",
+    "chargeAnalysis": "Kostenanalyse",
+    "scenarios": "Scenario's",
+    "packEssentiel": "Essentieel Pakket",
+    "packProjet": "Project Pakket",
+    "packComparateur": "Vergelijker Pakket",
+    "packPremium": "Premium Pakket",
+    "singlePayment": "Eenmalige betaling — geen automatische verlenging"
   },
   "ebook": {
     "badge": "Expertgids",
@@ -112,6 +127,16 @@
   },
   "pdfExample": {
     "cta": "Voorbeeld bekijken (PDF)"
+  },
+  "reportDemo": {
+    "title": "Hoe ziet een Lavcom Performances rapport eruit?",
+    "description": "Elke maand ontvangt u een prestatie-analyserapport voor uw wasserette:",
+    "item1": "Maandelijkse samenvatting",
+    "item2": "Belangrijke cijfers (omzet, bezoekersaantal, bezetting)",
+    "item3": "Machine-voor-machine focus",
+    "item4": "Concrete aanbevelingen",
+    "footer": "Een leesbaar document om te delen met uw bank of accountant.",
+    "badge": "Voorbeeld PDF-rapport"
   },
   "contact": {
     "title": "Heeft u een vraag?",
