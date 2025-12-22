@@ -77,8 +77,8 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `${origin}/simulation?payment=success&pack=${packId}`,
-      cancel_url: `${origin}/subscribe-simulator?payment=cancelled`,
+      success_url: `${origin}/simulator-payment-success?pack=${packId}`,
+      cancel_url: `${origin}/subscribe-simulator?cancelled=true`,
       metadata: {
         user_id: user.id,
         pack_id: packId,
