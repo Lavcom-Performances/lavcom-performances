@@ -196,7 +196,8 @@
       "billing": "Packs & Payment",
       "simulator": "Simulator (pre-purchase questions)",
       "demo": "Demo request / Partnership",
-      "press": "Press / Association / Institutional"
+      "press": "Press / Association / Institutional",
+      "other": "Other"
     },
     "namePlaceholder": "Your name",
     "nameLabel": "Full name",
