@@ -65,11 +65,12 @@ serve(async (req) => {
       logStep("Existing customer found", { customerId });
     }
 
-    // Create checkout session (one-time payment)
+    // Create checkout session (one-time payment, card only)
     const origin = req.headers.get("origin") || "https://lavcom.app";
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
+      payment_method_types: ['card'],
       line_items: [
         {
           price: priceId,
