@@ -427,6 +427,7 @@ export type Database = {
           subscription_end_date: string | null
           subscription_start_date: string | null
           trial_end_date: string | null
+          trial_reminder_sent: boolean | null
           trial_start_date: string | null
           updated_at: string | null
           user_id: string
@@ -440,6 +441,7 @@ export type Database = {
           subscription_end_date?: string | null
           subscription_start_date?: string | null
           trial_end_date?: string | null
+          trial_reminder_sent?: boolean | null
           trial_start_date?: string | null
           updated_at?: string | null
           user_id: string
@@ -453,6 +455,7 @@ export type Database = {
           subscription_end_date?: string | null
           subscription_start_date?: string | null
           trial_end_date?: string | null
+          trial_reminder_sent?: boolean | null
           trial_start_date?: string | null
           updated_at?: string | null
           user_id?: string
