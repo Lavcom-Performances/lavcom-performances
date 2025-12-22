@@ -839,5 +839,94 @@
       "saveSuccessDescription": "Vos logs seront conservés pendant {{days}} jours"
     },
     "openBackend": "Ouvrir le backend"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Vue d'ensemble complète de vos performances",
+    "loading": "Chargement du tableau de bord...",
+    "siteNotFound": "Site non trouvé : affichage de votre laverie par défaut.",
+    "siteSelected": "Laverie \"{{name}}\" sélectionnée",
+    "multiSiteView": "Vue multi-sites",
+    "objectives": "Objectifs",
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "financial": "Financier",
+      "operations": "Opérations",
+      "comparison": "Comparatifs"
+    },
+    "kpi": {
+      "totalRevenue": "CA Total",
+      "revenueCard": "CA CB",
+      "revenueCash": "CA Espèces",
+      "transactions": "Transactions",
+      "avgBasket": "Panier moyen",
+      "occupancyRate": "Taux occupation",
+      "ofRevenue": "du CA",
+      "insufficientData": "Données insuffisantes",
+      "revenuePerMachine": "CA/Machine",
+      "revenuePerDay": "CA/Jour",
+      "avgMachines": "Moy. {{count}} machines",
+      "average": "Moyenne",
+      "grossMargin": "Marge brute"
+    },
+    "goals": {
+      "monthlyGoal": "Objectif mensuel",
+      "annualGoal": "Objectif CA annuel",
+      "cyclesCompleted": "Cycles réalisés",
+      "periodRevenue": "CA Période",
+      "current": "Actuel",
+      "previous": "Précédent"
+    },
+    "sections": {
+      "financialPerformance": "Performance financière",
+      "operationalPerformance": "Performance opérationnelle",
+      "maintenanceAlerts": "Alertes maintenance"
+    }
+  },
+  "operations": {
+    "title": "Opérations",
+    "subtitle": "Journal chronologique des transactions",
+    "loading": "Chargement des opérations...",
+    "siteNotFound": "Site non trouvé",
+    "siteNotFoundDesc": "Affichage de votre laverie par défaut.",
+    "importCsv": "Importer CSV",
+    "history": "Historique",
+    "export": "Exporter",
+    "exporting": "Export...",
+    "selectPeriod": "Sélectionnez une période",
+    "selectPeriodDesc": "Veuillez définir une plage de dates pour l'export.",
+    "exportSuccess": "Export réussi",
+    "exportSuccessDesc": "{{count}} opérations exportées en PDF.",
+    "exportError": "Impossible de générer le PDF.",
+    "filters": {
+      "searchMachine": "Rechercher une machine...",
+      "category": "Catégorie",
+      "allCategories": "Toutes catégories",
+      "washingMachine": "Lave-linge",
+      "dryer": "Sèche-linge",
+      "detergent": "Lessive",
+      "payment": "Paiement",
+      "allPayments": "Tous paiements",
+      "creditCard": "Carte bancaire",
+      "cash": "Espèces",
+      "loyalty": "Fidélité"
+    },
+    "kpi": {
+      "day": "JOUR",
+      "month": "MOIS",
+      "year": "ANNÉE"
+    },
+    "chart": {
+      "revenuePerHour": "CA par heure",
+      "machinesUsed": "Machines utilisées"
+    },
+    "table": {
+      "date": "Date",
+      "time": "Heure",
+      "machine": "Machine",
+      "mode": "Mode",
+      "amount": "Montant",
+      "program": "Programme"
+    }
   }
 }
