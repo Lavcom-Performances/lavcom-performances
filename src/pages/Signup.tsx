@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/auth/PasswordStrengthIndicator";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCooldown } from "@/lib/rateLimiter";
+import { SEOHead } from "@/components/seo/SEOHead";
 export default function Signup() {
   const { t } = useTranslation(['app', 'common']);
   const [email, setEmail] = useState("");
@@ -165,7 +166,14 @@ export default function Signup() {
   ];
 
   return (
-    <div className="min-h-screen flex bg-background relative">
+    <>
+      <SEOHead 
+        title="Inscription - Essai gratuit"
+        description="Créez votre compte Lavcom Performances et profitez de 14 jours d'essai gratuit pour gérer vos laveries automatiques."
+        url="/signup"
+        noindex={true}
+      />
+      <div className="min-h-screen flex bg-background relative">
       {/* Back to home button */}
       <Link 
         to="/" 
@@ -474,5 +482,6 @@ export default function Signup() {
         </div>
       </div>
     </div>
+    </>
   );
 }

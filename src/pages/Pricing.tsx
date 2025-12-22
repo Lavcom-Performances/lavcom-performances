@@ -11,6 +11,7 @@ import {
 } from "@/config/pricingConfig";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { useTranslation } from "react-i18next";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 export default function Pricing() {
   const { t } = useTranslation(['app', 'common']);
@@ -29,7 +30,14 @@ export default function Pricing() {
   const features = t('app:pricing.features', { returnObjects: true }) as string[];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
+    <>
+      <SEOHead 
+        title="Tarifs"
+        description="Découvrez les tarifs de Lavcom Performances. Abonnements flexibles pour la gestion de vos laveries automatiques à partir de 29€/mois."
+        url="/pricing"
+        keywords="tarif laverie, prix logiciel laverie, abonnement gestion laverie, lavcom prix"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       {/* Header */}
       <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -242,5 +250,6 @@ export default function Pricing() {
       
       <Footer />
     </div>
+    </>
   );
 }
