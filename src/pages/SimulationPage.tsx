@@ -14,6 +14,7 @@ import {
   defaultSimulationProject, 
   calculateSimulationResults 
 } from "@/types/simulation";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const steps = [
   { id: 0, name: "Local", description: "Contraintes & configuration" },
@@ -68,7 +69,14 @@ export default function SimulationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead 
+        title="Simulation de rentabilité"
+        description="Simulez la rentabilité de votre projet de laverie automatique avec notre outil complet."
+        url="/simulation"
+        noindex={true}
+      />
+      <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -155,5 +163,6 @@ export default function SimulationPage() {
         )}
       </div>
     </div>
+    </>
   );
 }

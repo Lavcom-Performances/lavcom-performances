@@ -3,10 +3,17 @@ import { ArrowLeft, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/layout/Footer";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 export default function MentionsLegales() {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <>
+      <SEOHead 
+        title="Mentions légales"
+        description="Mentions légales de Lavcom Performances - Informations sur l'éditeur, l'hébergement et la propriété intellectuelle."
+        url="/mentions-legales"
+      />
+      <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -186,5 +193,6 @@ export default function MentionsLegales() {
 
       <Footer />
     </div>
+    </>
   );
 }

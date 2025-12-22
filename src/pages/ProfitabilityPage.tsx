@@ -37,6 +37,7 @@ import {
   Legend,
 } from "recharts";
 import { useViewMode } from "@/hooks/useViewMode";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 // Mock data - CA perdu estimé par machine
 const lostRevenueData = [
@@ -117,7 +118,14 @@ export default function ProfitabilityPage() {
   const potentialGain = underperformingMachines.reduce((acc, d) => acc + d.potentialGain, 0);
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+    <>
+      <SEOHead 
+        title="Analyse de rentabilité"
+        description="Analysez la rentabilité de votre laverie automatique et identifiez les leviers d'optimisation."
+        url="/profitability"
+        noindex={true}
+      />
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
@@ -472,5 +480,6 @@ export default function ProfitabilityPage() {
         </TabsContent>}
       </Tabs>
     </div>
+    </>
   );
 }

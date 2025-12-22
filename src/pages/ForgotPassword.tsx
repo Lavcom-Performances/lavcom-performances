@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const RATE_LIMIT_SECONDS = 60;
 const STORAGE_KEY = "forgot_password_last_request";
@@ -96,7 +97,14 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex bg-background relative">
+    <>
+      <SEOHead 
+        title="Mot de passe oublié"
+        description="Réinitialisez votre mot de passe Lavcom Performances."
+        url="/forgot-password"
+        noindex={true}
+      />
+      <div className="min-h-screen flex bg-background relative">
       {/* Back to home button */}
       <Link 
         to="/" 
@@ -239,5 +247,6 @@ export default function ForgotPassword() {
         </div>
       </div>
     </div>
+    </>
   );
 }

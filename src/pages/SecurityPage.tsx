@@ -3,13 +3,21 @@ import { ArrowLeft, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { SecurityCenter } from "@/components/security/SecurityCenter";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 export default function SecurityPage() {
   const { t } = useTranslation(['app', 'common']);
   const navigate = useNavigate();
 
   return (
-    <div className="container max-w-4xl py-6 space-y-6">
+    <>
+      <SEOHead 
+        title="Centre de sécurité"
+        description="Gérez la sécurité de votre compte Lavcom Performances."
+        url="/security"
+        noindex={true}
+      />
+      <div className="container max-w-4xl py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -38,5 +46,6 @@ export default function SecurityPage() {
       {/* Security Center */}
       <SecurityCenter />
     </div>
+    </>
   );
 }
