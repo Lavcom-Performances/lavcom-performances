@@ -67,7 +67,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/mentions-legales#cgv" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/cgv" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   {t('footer.termsOfService')}
                 </Link>
               </li>

@@ -192,9 +192,16 @@ export default function SubscribeSimulator() {
         </div>
 
         {/* One-time payment notice */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-8 space-y-2">
           <p className="text-sm text-muted-foreground italic">
             {t('app:subscribeSimulator.oneTimePayment')}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            En cliquant sur « Choisir », vous acceptez nos{" "}
+            <Link to="/cgv" className="text-primary hover:underline">
+              Conditions Générales de Vente et d'Utilisation
+            </Link>
+            .
           </p>
         </div>
 
