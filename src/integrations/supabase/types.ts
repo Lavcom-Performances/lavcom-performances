@@ -17,10 +17,13 @@ export type Database = {
       contact_messages: {
         Row: {
           created_at: string
+          duplicate_ignored: boolean | null
           email: string
+          honeypot_triggered: boolean | null
           id: string
           ip: string | null
           message: string
+          message_hash: string | null
           name: string
           status: string
           subject: string | null
@@ -28,10 +31,13 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          duplicate_ignored?: boolean | null
           email: string
+          honeypot_triggered?: boolean | null
           id?: string
           ip?: string | null
           message: string
+          message_hash?: string | null
           name: string
           status?: string
           subject?: string | null
@@ -39,10 +45,13 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          duplicate_ignored?: boolean | null
           email?: string
+          honeypot_triggered?: boolean | null
           id?: string
           ip?: string | null
           message?: string
+          message_hash?: string | null
           name?: string
           status?: string
           subject?: string | null
