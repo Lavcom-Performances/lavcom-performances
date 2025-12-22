@@ -839,5 +839,94 @@
       "saveSuccessDescription": "Your logs will be kept for {{days}} days"
     },
     "openBackend": "Open backend"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Complete overview of your performance",
+    "loading": "Loading dashboard...",
+    "siteNotFound": "Site not found: displaying your default laundry.",
+    "siteSelected": "Laundry \"{{name}}\" selected",
+    "multiSiteView": "Multi-site view",
+    "objectives": "Objectives",
+    "tabs": {
+      "overview": "Overview",
+      "financial": "Financial",
+      "operations": "Operations",
+      "comparison": "Comparisons"
+    },
+    "kpi": {
+      "totalRevenue": "Total Revenue",
+      "revenueCard": "Card Revenue",
+      "revenueCash": "Cash Revenue",
+      "transactions": "Transactions",
+      "avgBasket": "Avg. Basket",
+      "occupancyRate": "Occupancy Rate",
+      "ofRevenue": "of revenue",
+      "insufficientData": "Insufficient data",
+      "revenuePerMachine": "Revenue/Machine",
+      "revenuePerDay": "Revenue/Day",
+      "avgMachines": "Avg. {{count}} machines",
+      "average": "Average",
+      "grossMargin": "Gross Margin"
+    },
+    "goals": {
+      "monthlyGoal": "Monthly goal",
+      "annualGoal": "Annual revenue goal",
+      "cyclesCompleted": "Cycles completed",
+      "periodRevenue": "Period Revenue",
+      "current": "Current",
+      "previous": "Previous"
+    },
+    "sections": {
+      "financialPerformance": "Financial Performance",
+      "operationalPerformance": "Operational Performance",
+      "maintenanceAlerts": "Maintenance Alerts"
+    }
+  },
+  "operations": {
+    "title": "Operations",
+    "subtitle": "Chronological transaction log",
+    "loading": "Loading operations...",
+    "siteNotFound": "Site not found",
+    "siteNotFoundDesc": "Displaying your default laundry.",
+    "importCsv": "Import CSV",
+    "history": "History",
+    "export": "Export",
+    "exporting": "Exporting...",
+    "selectPeriod": "Select a period",
+    "selectPeriodDesc": "Please define a date range for the export.",
+    "exportSuccess": "Export successful",
+    "exportSuccessDesc": "{{count}} operations exported to PDF.",
+    "exportError": "Unable to generate PDF.",
+    "filters": {
+      "searchMachine": "Search for a machine...",
+      "category": "Category",
+      "allCategories": "All categories",
+      "washingMachine": "Washing machine",
+      "dryer": "Dryer",
+      "detergent": "Detergent",
+      "payment": "Payment",
+      "allPayments": "All payments",
+      "creditCard": "Credit card",
+      "cash": "Cash",
+      "loyalty": "Loyalty"
+    },
+    "kpi": {
+      "day": "DAY",
+      "month": "MONTH",
+      "year": "YEAR"
+    },
+    "chart": {
+      "revenuePerHour": "Revenue per hour",
+      "machinesUsed": "Machines used"
+    },
+    "table": {
+      "date": "Date",
+      "time": "Time",
+      "machine": "Machine",
+      "mode": "Mode",
+      "amount": "Amount",
+      "program": "Program"
+    }
   }
 }

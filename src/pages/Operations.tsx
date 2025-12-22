@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 import { Search, Download, Upload, Loader2, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +55,7 @@ const paymentModeBadge = (mode: string | null) => {
 };
 
 export default function Operations() {
+  const { t } = useTranslation(['app', 'common']);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isExpert } = useViewMode();
   const { toast } = useToast();
@@ -83,12 +85,12 @@ export default function Operations() {
   useEffect(() => {
     if (siteWasInvalid && sites.length > 0) {
       toast({
-        title: "Site non trouvé",
-        description: "Affichage de votre laverie par défaut.",
+        title: t('app:operations.siteNotFound'),
+        description: t('app:operations.siteNotFoundDesc'),
         variant: "default",
       });
     }
-  }, [siteWasInvalid, sites.length, toast]);
+  }, [siteWasInvalid, sites.length, toast, t]);
   
   // Initialize date range from URL or defaults
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
@@ -209,8 +211,8 @@ export default function Operations() {
   const handleExportPdf = async () => {
     if (!dateRange?.from || !dateRange?.to) {
       toast({
-        title: "Sélectionnez une période",
-        description: "Veuillez définir une plage de dates pour l'export.",
+        title: t('app:operations.selectPeriod'),
+        description: t('app:operations.selectPeriodDesc'),
         variant: "destructive",
       });
       return;
@@ -242,13 +244,13 @@ export default function Operations() {
 
       trackPdfDownload('operations');
       toast({
-        title: "Export réussi",
-        description: `${operations.length} opérations exportées en PDF.`,
+        title: t('app:operations.exportSuccess'),
+        description: t('app:operations.exportSuccessDesc', { count: operations.length }),
       });
     } catch (error) {
       toast({
-        title: "Erreur",
-        description: "Impossible de générer le PDF.",
+        title: t('common:error'),
+        description: t('app:operations.exportError'),
         variant: "destructive",
       });
     } finally {
@@ -270,7 +272,7 @@ export default function Operations() {
       <div className="p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-lavcom-green mx-auto mb-4" />
-          <p className="text-muted-foreground">Chargement des opérations...</p>
+          <p className="text-muted-foreground">{t('app:operations.loading')}</p>
         </div>
       </div>
     );
@@ -283,10 +285,10 @@ export default function Operations() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-              Opérations{selectedSite ? ` — ${selectedSite.name}` : ''}
+              {t('app:operations.title')}{selectedSite ? ` — ${selectedSite.name}` : ''}
             </h1>
             <p className="text-muted-foreground">
-              Journal chronologique des transactions
+              {t('app:operations.subtitle')}
             </p>
           </div>
         </div>
@@ -317,10 +319,10 @@ export default function Operations() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-            Opérations{selectedSite ? ` — ${selectedSite.name}` : ''}
+            {t('app:operations.title')}{selectedSite ? ` — ${selectedSite.name}` : ''}
           </h1>
           <p className="text-muted-foreground">
-            Journal chronologique des transactions
+            {t('app:operations.subtitle')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -329,14 +331,14 @@ export default function Operations() {
             className="bg-lavcom-green hover:bg-lavcom-green-dark text-white"
           >
             <Upload className="h-4 w-4 mr-2" />
-            Importer CSV
+            {t('app:operations.importCsv')}
           </Button>
           <Button 
             variant="outline"
             onClick={() => setIsHistoryDialogOpen(true)}
           >
             <History className="h-4 w-4 mr-2" />
-            Historique
+            {t('app:operations.history')}
           </Button>
           <Button 
             variant="outline"
@@ -344,7 +346,7 @@ export default function Operations() {
             disabled={isExporting || operations.length === 0}
           >
             <Download className="h-4 w-4 mr-2" />
-            {isExporting ? "Export..." : "Exporter"}
+            {isExporting ? t('app:operations.exporting') : t('app:operations.export')}
           </Button>
         </div>
       </div>

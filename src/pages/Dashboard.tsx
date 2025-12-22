@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { subDays, parseISO } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { 
   Euro, 
   CreditCard, 
@@ -54,6 +55,7 @@ const defaultCosts: LaundryCosts = {
 };
 
 export default function Dashboard() {
+  const { t } = useTranslation(['app', 'common']);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isExpert } = useViewMode();
@@ -83,16 +85,16 @@ export default function Dashboard() {
   // Show toast for invalid site (only once)
   useEffect(() => {
     if (siteWasInvalid && sites.length > 0) {
-      toast.warning("Site non trouvé : affichage de votre laverie par défaut.");
+      toast.warning(t('app:dashboard.siteNotFound'));
     }
-  }, [siteWasInvalid, sites.length]);
+  }, [siteWasInvalid, sites.length, t]);
   
   // Show toast for valid drill-down (only on Dashboard)
   useEffect(() => {
     if (isFromDrillDown && selectedSite && !siteWasInvalid && sites.length > 0) {
-      toast.success(`Laverie "${selectedSite.name}" sélectionnée`);
+      toast.success(t('app:dashboard.siteSelected', { name: selectedSite.name }));
     }
-  }, [isFromDrillDown, selectedSite?.id, siteWasInvalid, sites.length]);
+  }, [isFromDrillDown, selectedSite?.id, siteWasInvalid, sites.length, t]);
   
   // Initialize date range from URL or defaults
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
@@ -158,7 +160,7 @@ export default function Dashboard() {
       <div className="p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-lavcom-green mx-auto mb-4" />
-          <p className="text-muted-foreground">Chargement du tableau de bord...</p>
+          <p className="text-muted-foreground">{t('app:dashboard.loading')}</p>
         </div>
       </div>
     );
@@ -171,10 +173,10 @@ export default function Dashboard() {
         <div className="flex flex-col gap-4 mb-8">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
-              Tableau de bord
+              {t('app:dashboard.title')}
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Vue d'ensemble complète de vos performances
+              {t('app:dashboard.subtitle')}
             </p>
           </div>
         </div>
@@ -228,15 +230,15 @@ export default function Dashboard() {
                 className="gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Vue multi-sites</span>
+                <span className="hidden sm:inline">{t('app:dashboard.multiSiteView')}</span>
               </Button>
             )}
             <div>
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
-                Tableau de bord
+                {t('app:dashboard.title')}
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground">
-                Vue d'ensemble complète de vos performances
+                {t('app:dashboard.subtitle')}
                 {selectedSite && <span className="ml-1">• {selectedSite.name}</span>}
               </p>
             </div>
@@ -248,7 +250,7 @@ export default function Dashboard() {
             className="gap-2"
           >
             <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Objectifs</span>
+            <span className="hidden sm:inline">{t('app:dashboard.objectives')}</span>
           </Button>
         </div>
         <DateRangePicker 
@@ -265,10 +267,10 @@ export default function Dashboard() {
 
       <Tabs defaultValue={defaultTab === 'comparatifs' ? 'comparison' : 'overview'} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
-          <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
-          <TabsTrigger value="financial">Financier</TabsTrigger>
-          <TabsTrigger value="operations">Opérations</TabsTrigger>
-          <TabsTrigger value="comparison">Comparatifs</TabsTrigger>
+          <TabsTrigger value="overview">{t('app:dashboard.tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="financial">{t('app:dashboard.tabs.financial')}</TabsTrigger>
+          <TabsTrigger value="operations">{t('app:dashboard.tabs.operations')}</TabsTrigger>
+          <TabsTrigger value="comparison">{t('app:dashboard.tabs.comparison')}</TabsTrigger>
         </TabsList>
 
         {/* Vue d'ensemble */}
