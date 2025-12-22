@@ -29,6 +29,7 @@ import { generateRecommendationsReport, getRecommendationsData } from "@/utils/r
 import { generateMarketingRecommendations, getMockAnalyticsData } from "@/utils/marketingRecommendations";
 import { trackPdfDownload } from "@/lib/analytics";
 import type { Recommendation } from "@/types/recommendations";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 // Map recommendation IDs to specific icons
 const getMarketingIcon = (recoId: string): LucideIcon => {
@@ -287,7 +288,14 @@ export default function RecommendationsPage() {
   }));
 
   return (
-    <div className="p-6 lg:p-8 space-y-8">
+    <>
+      <SEOHead 
+        title="Recommandations"
+        description="Recommandations et actions pour optimiser votre laverie automatique."
+        url="/recommendations"
+        noindex={true}
+      />
+      <div className="p-6 lg:p-8 space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
@@ -416,5 +424,6 @@ export default function RecommendationsPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }

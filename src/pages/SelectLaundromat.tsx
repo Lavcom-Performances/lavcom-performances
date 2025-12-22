@@ -14,6 +14,7 @@ import { useSites } from "@/hooks/useSites";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { MultiCSVImportWizard } from "@/components/operations/multi-csv/MultiCSVImportWizard";
+import { SEOHead } from "@/components/seo/SEOHead";
 export default function SelectLaundromat() {
   const navigate = useNavigate();
   const { sites, isLoading, createSite, fetchSites } = useSites();
@@ -170,7 +171,14 @@ export default function SelectLaundromat() {
   const hasSites = sites.length > 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col relative">
+    <>
+      <SEOHead 
+        title="Sélection de laverie"
+        description="Sélectionnez ou ajoutez une laverie à gérer."
+        url="/select-laundromat"
+        noindex={true}
+      />
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 flex flex-col relative">
       {/* Header */}
       <header className="w-full border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
@@ -418,5 +426,6 @@ export default function SelectLaundromat() {
         onOpenChange={setIsMultiImportOpen} 
       />
     </div>
+    </>
   );
 }

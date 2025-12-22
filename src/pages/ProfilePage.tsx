@@ -14,6 +14,7 @@ import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/aut
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { MFASetup } from "@/components/auth/MFASetup";
 import { ReAuthDialog } from "@/components/auth/ReAuthDialog";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 export default function ProfilePage() {
   const { t } = useTranslation(['app', 'common']);
@@ -177,7 +178,14 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container max-w-2xl py-6 space-y-6">
+    <>
+      <SEOHead 
+        title="Mon profil"
+        description="Gérez votre profil et vos paramètres de compte Lavcom Performances."
+        url="/profile"
+        noindex={true}
+      />
+      <div className="container max-w-2xl py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -510,5 +518,6 @@ export default function ProfilePage() {
         description={t('app:profile.password.reAuthDescription')}
       />
     </div>
+    </>
   );
 }
