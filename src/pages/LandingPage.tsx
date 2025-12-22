@@ -741,13 +741,18 @@ const LandingPage = () => {
                   <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
                     {t("landing:guide.description")}
                   </p>
-                  <a href="https://lavcom.fr/nos-ebooks-2/" target="_blank" rel="noopener noreferrer">
-                    <Button className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white w-full sm:w-auto">
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      {t("landing:guide.cta")}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </a>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <a href="https://lavcom.fr/nos-ebooks-2/" target="_blank" rel="noopener noreferrer">
+                      <Button className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white w-full sm:w-auto">
+                        <BookOpen className="mr-2 h-4 w-4" />
+                        {t("landing:guide.cta")}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </a>
+                    <span className="text-xs text-muted-foreground">
+                      {t("landing:guide.ctaNote")}
+                    </span>
+                  </div>
                 </div>
               </div>
             </Card>

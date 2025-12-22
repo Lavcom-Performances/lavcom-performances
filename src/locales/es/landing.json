@@ -41,10 +41,11 @@
     "expertCall": "Llamada con experto"
   },
   "ebook": {
-    "badge": "Recurso gratuito",
+    "badge": "Guía experta",
     "title": "Antes de abrir: 10 preguntas que hacerse",
-    "description": "Elegir el local adecuado, estimar los gastos, entender la normativa… Descarga nuestro ebook gratuito para evitar errores comunes.",
-    "cta": "Descargar ebook PDF",
+    "description": "Elegir el local adecuado, estimar los gastos, entender la normativa… Nuestra guía completa para evitar errores comunes.",
+    "cta": "Descubrir la guía",
+    "ctaNote": "(Disponible para compra)",
     "pages": "páginas"
   },
   "features": {
@@ -174,7 +175,8 @@
     "title": "Ir más lejos antes de abrir",
     "subtitle": "La guía práctica \"Antes de abrir\"",
     "description": "Una guía concreta para ayudarte a preparar tu proyecto de lavandería: elección del local, configuración, proveedores, errores a evitar. El simulador te da los números, la guía te ayuda a tomar las decisiones correctas.",
-    "cta": "Descubrir la guía"
+    "cta": "Descubrir la guía",
+    "ctaNote": "(Disponible para compra)"
   },
   "simulatorResource": {
     "label": "Recurso recomendado",
