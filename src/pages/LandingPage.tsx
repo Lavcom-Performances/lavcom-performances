@@ -148,13 +148,34 @@ const LandingPage = () => {
             <Link to="/simulateur" className="text-lavcom-orange hover:text-lavcom-orange-dark font-medium transition-colors">
               {t("landing:futursExploitants.simulator")}
             </Link>
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a 
+              href="#features" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('features')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               {t("common:features")}
             </a>
-            <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a 
+              href="#testimonials" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               {t("common:testimonials")}
             </a>
-            <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a 
+              href="#faq" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               {t("common:faq")}
             </a>
           </nav>
