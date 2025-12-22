@@ -176,6 +176,12 @@
     "description": "Ein konkreter Leitfaden, um Ihr Waschsalon-Projekt vorzubereiten: Standortwahl, Konfiguration, Lieferanten, Fehler, die vermieden werden sollten. Der Simulator gibt Ihnen die Zahlen, der Leitfaden hilft Ihnen, die richtigen Entscheidungen zu treffen.",
     "cta": "Leitfaden entdecken"
   },
+  "simulatorResource": {
+    "label": "Empfohlene Ressource",
+    "text": "Leitfaden \"Vor der Eröffnung\": Checkliste und Kennzahlen zur Validierung Ihres Projekts.",
+    "cta": "Leitfaden ansehen",
+    "note": "(Zum Kauf verfügbar)"
+  },
   "trialBanner": {
     "title": "Testen Sie Lavcom Performances 14 Tage kostenlos",
     "subtitle": "Ohne Verpflichtung, Sie können jederzeit aufhören.",

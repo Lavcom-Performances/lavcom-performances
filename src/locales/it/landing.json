@@ -176,6 +176,12 @@
     "description": "Una guida concreta per aiutarti a preparare il tuo progetto di lavanderia: scelta del locale, configurazione, fornitori, errori da evitare. Il simulatore ti dà i numeri, la guida ti aiuta a prendere le decisioni giuste.",
     "cta": "Scopri la guida"
   },
+  "simulatorResource": {
+    "label": "Risorsa consigliata",
+    "text": "Guida \"Prima di aprire\": checklist e dati chiave per validare il tuo progetto.",
+    "cta": "Vedi la guida",
+    "note": "(Disponibile per l'acquisto)"
+  },
   "trialBanner": {
     "title": "Prova Lavcom Performances gratis per 14 giorni",
     "subtitle": "Senza impegno, puoi smettere quando vuoi.",

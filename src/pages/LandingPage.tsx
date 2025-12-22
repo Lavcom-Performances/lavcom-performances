@@ -441,20 +441,23 @@ const LandingPage = () => {
                 </Link>
               </div>
               
-              {/* Mention discrète du guide */}
+              {/* Ressource recommandée - lien vers ebooks */}
               <div className="mt-4 md:mt-6 pt-4 border-t border-lavcom-orange/20">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs md:text-sm">
+                  <span className="text-muted-foreground font-medium">{t("landing:simulatorResource.label")} :</span>
+                  <span className="text-foreground">{t("landing:simulatorResource.text")}</span>
+                </div>
                 <a 
                   href="https://lavcom.fr/nos-ebooks-2/" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-lavcom-orange transition-colors group"
+                  className="inline-flex items-center gap-1.5 mt-2 text-xs md:text-sm text-lavcom-orange hover:text-lavcom-orange-dark transition-colors group"
                   onClick={() => trackEbookClick('landing_simulator_block')}
                 >
                   <BookOpen className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                  <span>
-                    <span className="font-medium text-foreground group-hover:text-lavcom-orange">Guide offert :</span> "Avant d'ouvrir" – validez votre projet avec notre check-list complète
-                  </span>
+                  <span className="font-medium">{t("landing:simulatorResource.cta")}</span>
                   <ExternalLink className="h-3 w-3 opacity-50 group-hover:opacity-100" />
+                  <span className="text-muted-foreground ml-1">{t("landing:simulatorResource.note")}</span>
                 </a>
               </div>
             </ScrollReveal>

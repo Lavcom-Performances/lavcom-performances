@@ -176,16 +176,11 @@
     "existing": "I already manage a laundromat",
     "future": "I want to open a laundromat"
   },
-  "comparison": {
-    "withoutTitle": "Without Lavcom Performances",
-    "without1": "I don't really know what each machine brings in.",
-    "without2": "I have trouble comparing my laundromats to each other.",
-    "without3": "I discover problems when it's too late.",
-    "withTitle": "With Lavcom Performances",
-    "with1": "I know which machines cover my costs.",
-    "with2": "I see saturated or underused time slots.",
-    "with3": "Concrete recommendations every month.",
-    "with4": "PDF report for my bank."
+  "simulatorResource": {
+    "label": "Recommended resource",
+    "text": "Guide \"Before opening\": checklist and key figures to validate your project.",
+    "cta": "View the guide",
+    "note": "(Available for purchase)"
   },
   "contact": {
     "title": "Have a question?",
