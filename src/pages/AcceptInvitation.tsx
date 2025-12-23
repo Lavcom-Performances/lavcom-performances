@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Loader2, CheckCircle2, XCircle, Users, Mail, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
+import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
+import { usePasswordBreachCheck } from "@/hooks/usePasswordBreachCheck";
 
 interface InvitationData {
   id: string;
@@ -40,6 +42,9 @@ export default function AcceptInvitation() {
   const [lastName, setLastName] = useState('');
   const [isSigningUp, setIsSigningUp] = useState(false);
 
+  // Password breach check
+  const { checkPassword, isChecking: isCheckingBreach, isBreached, breachCount, reset: resetBreachCheck } = usePasswordBreachCheck();
+
   useEffect(() => {
     if (token) {
       validateInvitation(token);
@@ -47,6 +52,20 @@ export default function AcceptInvitation() {
       setStatus('not_found');
     }
   }, [token]);
+
+  // Debounced password breach check
+  useEffect(() => {
+    if (password.length < 8) {
+      resetBreachCheck();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      checkPassword(password);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [password, checkPassword, resetBreachCheck]);
 
   const validateInvitation = async (inviteToken: string) => {
     try {
@@ -143,6 +162,18 @@ export default function AcceptInvitation() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!invitation) return;
+
+    // Check if password is breached
+    if (isBreached) {
+      toast.error('Ce mot de passe a été exposé dans des fuites de données. Veuillez en choisir un autre.');
+      return;
+    }
+
+    // Check password length
+    if (password.length < 8) {
+      toast.error('Le mot de passe doit contenir au moins 8 caractères.');
+      return;
+    }
 
     setIsSigningUp(true);
     try {
@@ -395,7 +426,13 @@ export default function AcceptInvitation() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={8}
+                />
+                <PasswordStrengthIndicator 
+                  password={password}
+                  isBreached={isBreached}
+                  breachCount={breachCount}
+                  isCheckingBreach={isCheckingBreach}
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isSigningUp}>
