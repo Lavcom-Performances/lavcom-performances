@@ -22,7 +22,8 @@ import {
   Wrench,
   DollarSign,
   Calculator,
-  Shield
+  Shield,
+  CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -354,6 +355,16 @@ export function AppSidebar({
             </AvatarFallback>
           </Avatar>
           {!collapsed && <span>{t('app:nav.profile')}</span>}
+        </NavLink>
+        <NavLink
+          to="/subscription"
+          className={cn(
+            "sidebar-item",
+            location.pathname === "/subscription" && "sidebar-item-active"
+          )}
+        >
+          <CreditCard className="h-5 w-5 shrink-0" />
+          {!collapsed && <span>{t('app:nav.subscription')}</span>}
         </NavLink>
         <ThemeToggle collapsed={collapsed} className="sidebar-item" />
         <LanguageSelector variant="sidebar" collapsed={collapsed} />
