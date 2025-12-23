@@ -145,6 +145,8 @@ export async function generateDashboardPdf(data: DashboardExportData): Promise<v
   const chartConfigs: ChartCapture[] = [
     { selector: '[data-pdf-chart="monthly-revenue"]', title: "Évolution mensuelle du CA" },
     { selector: '[data-pdf-chart="payment-pie"]', title: "Répartition par mode de paiement" },
+    { selector: '[data-pdf-chart="weekday-performance"]', title: "CA par jour de la semaine" },
+    { selector: '[data-pdf-chart="sales-heatmap"]', title: "Heatmap des cycles (jour × heure)" },
   ];
 
   for (const chartConfig of chartConfigs) {

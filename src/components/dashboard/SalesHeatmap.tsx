@@ -38,7 +38,7 @@ export function SalesHeatmap({ data }: SalesHeatmapProps) {
   }, [data]);
 
   return (
-    <div className="kpi-card h-[400px]">
+    <div data-pdf-chart="sales-heatmap" className="kpi-card h-[400px]">
       <h3 className="font-display font-semibold text-lg mb-4">Heatmap des cycles (jour × heure)</h3>
       
       <div className="overflow-x-auto">

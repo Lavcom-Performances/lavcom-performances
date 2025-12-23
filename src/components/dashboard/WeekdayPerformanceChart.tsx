@@ -18,7 +18,7 @@ export function WeekdayPerformanceChart({ data, className }: WeekdayPerformanceC
   const maxRevenue = Math.max(...data.map(d => d.revenue));
   
   return (
-    <Card className={cn("", className)}>
+    <Card data-pdf-chart="weekday-performance" className={cn("", className)}>
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <Calendar className="h-5 w-5 text-primary" />
