@@ -278,41 +278,47 @@ export default function Dashboard() {
           {/* KPI Cards principales */}
           <div data-tutorial="kpis" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             <KPICard
-              title="CA Total"
+              title={t('app:dashboard.kpi.totalRevenue')}
               value={formatCurrency(stats.totalRevenue)}
               icon={Euro}
               variant="primary"
               trend={stats.revenueTrend !== 0 ? { value: Math.abs(stats.revenueTrend), isPositive: stats.revenueTrend > 0 } : undefined}
+              helpText={t('app:dashboard.help.totalRevenue')}
             />
             <KPICard
-              title="CA CB"
+              title={t('app:dashboard.kpi.revenueCard')}
               value={formatCurrency(stats.revenueByCard)}
               icon={CreditCard}
               variant="success"
-              subtitle={`${cardPercentage}% du CA`}
+              subtitle={`${cardPercentage}% ${t('app:dashboard.kpi.ofRevenue')}`}
+              helpText={t('app:dashboard.help.revenueCard')}
             />
             <KPICard
-              title="CA Espèces"
+              title={t('app:dashboard.kpi.revenueCash')}
               value={formatCurrency(stats.revenueByCash)}
               icon={Banknote}
-              subtitle={`${cashPercentage}% du CA`}
+              subtitle={`${cashPercentage}% ${t('app:dashboard.kpi.ofRevenue')}`}
+              helpText={t('app:dashboard.help.revenueCash')}
             />
             <KPICard
-              title="Transactions"
+              title={t('app:dashboard.kpi.transactions')}
               value={stats.totalTransactions.toString()}
               icon={ShoppingCart}
               trend={stats.transactionsTrend !== 0 ? { value: Math.abs(stats.transactionsTrend), isPositive: stats.transactionsTrend > 0 } : undefined}
+              helpText={t('app:dashboard.help.transactions')}
             />
             <KPICard
-              title="Panier moyen"
+              title={t('app:dashboard.kpi.avgBasket')}
               value={`${stats.averageBasket.toFixed(2)} €`}
               icon={TrendingUp}
+              helpText={t('app:dashboard.help.avgBasket')}
             />
             <KPICard
-              title="Taux occupation"
+              title={t('app:dashboard.kpi.occupancyRate')}
               value="—"
               icon={Percent}
-              subtitle="Données insuffisantes"
+              subtitle={t('app:dashboard.kpi.insufficientData')}
+              helpText={t('app:dashboard.help.occupancyRate')}
             />
           </div>
 

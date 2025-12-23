@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 import { useViewMode } from "@/hooks/useViewMode";
+import { HelpTooltip } from "@/components/ui/help-tooltip";
 
 interface KPICardProps {
   title: string;
@@ -13,6 +14,7 @@ interface KPICardProps {
   };
   className?: string;
   variant?: "default" | "primary" | "success" | "warning";
+  helpText?: string;
 }
 
 // Format trend value to reasonable precision
@@ -33,7 +35,8 @@ export function KPICard({
   icon: Icon,
   trend,
   className,
-  variant = "default"
+  variant = "default",
+  helpText
 }: KPICardProps) {
   const { isExpert } = useViewMode();
 
@@ -44,9 +47,14 @@ export function KPICard({
     )}>
       <div className="flex items-start justify-between gap-2">
         <div className="space-y-1 min-w-0 flex-1">
-          <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
-            {title}
-          </p>
+          <div className="flex items-center gap-1">
+            <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
+              {title}
+            </p>
+            {helpText && (
+              <HelpTooltip content={helpText} side="top" />
+            )}
+          </div>
           <p className={cn(
             "text-lg sm:text-xl lg:text-2xl font-display font-bold tracking-tight truncate",
             variant === "primary" && "text-primary",

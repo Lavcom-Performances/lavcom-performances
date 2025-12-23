@@ -900,6 +900,15 @@
       "average": "Moyenne",
       "grossMargin": "Marge brute"
     },
+    "help": {
+      "totalRevenue": "Chiffre d'affaires total sur la période sélectionnée, tous modes de paiement confondus.",
+      "revenueCard": "Montant encaissé par carte bancaire. Inclut les paiements sans contact et par puce.",
+      "revenueCash": "Montant encaissé en espèces via le monnayeur.",
+      "transactions": "Nombre total de cycles machines effectués sur la période.",
+      "avgBasket": "Montant moyen dépensé par transaction. Calculé en divisant le CA par le nombre de transactions.",
+      "occupancyRate": "Pourcentage d'utilisation des machines par rapport à leur capacité maximale théorique.",
+      "trend": "Évolution par rapport à la période précédente de même durée."
+    },
     "goals": {
       "monthlyGoal": "Objectif mensuel",
       "annualGoal": "Objectif CA annuel",
