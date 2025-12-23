@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Home, CheckCircle2, Gift, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,11 @@ import { z } from "zod";
 import { formatFirstName, formatLastName } from "@/lib/textUtils";
 import { useTranslation } from "react-i18next";
 import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/auth/PasswordStrengthIndicator";
+import { usePasswordBreachCheck } from "@/hooks/usePasswordBreachCheck";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCooldown } from "@/lib/rateLimiter";
 import { SEOHead } from "@/components/seo/SEOHead";
+
 export default function Signup() {
   const { t } = useTranslation(['app', 'common']);
   const [email, setEmail] = useState("");
@@ -34,6 +36,7 @@ export default function Signup() {
   const { signInWithGoogle } = useAuth();
 
   const { strength: passwordStrength } = usePasswordStrength(password);
+  const { checkPassword, isChecking: isCheckingBreach, isBreached, breachCount, reset: resetBreachCheck } = usePasswordBreachCheck();
 
   const isRateLimited = cooldownSeconds > 0;
 
@@ -44,6 +47,20 @@ export default function Signup() {
       return () => clearTimeout(timer);
     }
   }, [cooldownSeconds]);
+
+  // Debounced password breach check
+  useEffect(() => {
+    if (password.length < 8) {
+      resetBreachCheck();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      checkPassword(password);
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [password, checkPassword, resetBreachCheck]);
 
   const signupSchema = z.object({
     email: z.string().email(t('app:signup.validation.invalidEmail')),
@@ -65,6 +82,16 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+
+    // Check if password is breached
+    if (isBreached) {
+      toast({
+        title: "Mot de passe compromis",
+        description: "Ce mot de passe a été exposé dans des fuites de données. Veuillez en choisir un autre.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Validate
     const result = signupSchema.safeParse({
@@ -347,7 +374,12 @@ export default function Signup() {
                 </button>
               </div>
               <div id="password-strength">
-                <PasswordStrengthIndicator password={password} />
+                <PasswordStrengthIndicator 
+                  password={password} 
+                  isBreached={isBreached}
+                  breachCount={breachCount}
+                  isCheckingBreach={isCheckingBreach}
+                />
               </div>
               {errors.password && (
                 <p id="password-error" className="text-xs text-destructive" role="alert">{errors.password}</p>

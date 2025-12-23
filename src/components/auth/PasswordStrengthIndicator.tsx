@@ -1,11 +1,14 @@
 import { useMemo } from "react";
-import { Check, X } from "lucide-react";
+import { Check, X, AlertTriangle, Loader2, ShieldCheck, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 interface PasswordStrengthIndicatorProps {
   password: string;
   className?: string;
+  isBreached?: boolean | null;
+  breachCount?: number;
+  isCheckingBreach?: boolean;
 }
 
 interface PasswordCriteria {
@@ -34,7 +37,13 @@ export function usePasswordStrength(password: string) {
   }, [password]);
 }
 
-export function PasswordStrengthIndicator({ password, className }: PasswordStrengthIndicatorProps) {
+export function PasswordStrengthIndicator({ 
+  password, 
+  className, 
+  isBreached, 
+  breachCount = 0,
+  isCheckingBreach = false 
+}: PasswordStrengthIndicatorProps) {
   const { t } = useTranslation(['app']);
   const { criteria, strength, metCount } = usePasswordStrength(password);
 
@@ -62,8 +71,42 @@ export function PasswordStrengthIndicator({ password, className }: PasswordStren
 
   if (!password) return null;
 
+  const formatBreachCount = (count: number) => {
+    if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+    if (count >= 1000) return `${(count / 1000).toFixed(0)}K`;
+    return count.toString();
+  };
+
   return (
     <div className={cn("space-y-3", className)}>
+      {/* Breach warning */}
+      {isCheckingBreach && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 p-2 rounded-md">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          <span>Vérification de la sécurité du mot de passe...</span>
+        </div>
+      )}
+      
+      {isBreached === true && (
+        <div className="flex items-start gap-2 text-xs text-destructive bg-destructive/10 p-3 rounded-md border border-destructive/20">
+          <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-medium">Mot de passe compromis !</p>
+            <p className="text-destructive/80 mt-0.5">
+              Ce mot de passe a été exposé {formatBreachCount(breachCount)} fois dans des fuites de données. 
+              Choisissez un mot de passe différent.
+            </p>
+          </div>
+        </div>
+      )}
+      
+      {isBreached === false && password.length >= 8 && (
+        <div className="flex items-center gap-2 text-xs text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 p-2 rounded-md">
+          <ShieldCheck className="h-3.5 w-3.5" />
+          <span>Ce mot de passe n'apparaît pas dans les fuites connues</span>
+        </div>
+      )}
+
       {/* Strength bar */}
       <div className="space-y-1.5">
         <div className="flex justify-between items-center">
