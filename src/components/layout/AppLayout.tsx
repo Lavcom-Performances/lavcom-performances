@@ -4,6 +4,7 @@ import { AppSidebar } from "./AppSidebar";
 import { MobileHeader } from "./MobileHeader";
 import { TrialBanner } from "@/components/trial/TrialBanner";
 import { DemoBanner } from "@/components/demo/DemoBanner";
+import { DemoTutorial } from "@/components/demo/DemoTutorial";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
@@ -28,6 +29,9 @@ export function AppLayout({
     <div className="flex flex-col h-screen w-full bg-background">
       {/* Demo Banner - visible on all pages when demo site is selected */}
       {isDemo && <DemoBanner />}
+
+      {/* Demo Tutorial - shown for demo mode users */}
+      {isDemo && <DemoTutorial />}
 
       {/* Mobile Header */}
       <MobileHeader 

@@ -982,6 +982,36 @@
       "description": "You are exploring sample data to discover the platform",
       "delete": "Exit demo",
       "deleting": "Deleting..."
+    },
+    "tutorial": {
+      "restart": "Replay tutorial",
+      "skip": "Skip tutorial",
+      "previous": "Previous",
+      "next": "Next",
+      "finish": "Get started",
+      "stepOf": "Step {{current}} of {{total}}",
+      "steps": {
+        "welcome": {
+          "title": "Welcome to the demo!",
+          "description": "Discover Lavcom Performances with realistic sample data. This tutorial guides you through the main features."
+        },
+        "kpis": {
+          "title": "Your key metrics",
+          "description": "At the top of the dashboard, see at a glance your revenue, number of transactions, average basket and trends."
+        },
+        "charts": {
+          "title": "Visual analytics",
+          "description": "Charts show you revenue trends, payment distribution and performance by machine."
+        },
+        "dateRange": {
+          "title": "Filter by period",
+          "description": "Use the date picker to analyze a specific period: week, month, quarter or custom dates."
+        },
+        "explore": {
+          "title": "Explore freely!",
+          "description": "Navigate the menu to discover all features: operations, profitability, recommendations and more."
+        }
+      }
     }
   }
 }

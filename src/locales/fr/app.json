@@ -982,6 +982,36 @@
       "description": "Vous explorez des données fictives pour découvrir la plateforme",
       "delete": "Quitter la démo",
       "deleting": "Suppression..."
+    },
+    "tutorial": {
+      "restart": "Revoir le tutoriel",
+      "skip": "Passer le tutoriel",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "finish": "Commencer",
+      "stepOf": "Étape {{current}} sur {{total}}",
+      "steps": {
+        "welcome": {
+          "title": "Bienvenue dans la démo !",
+          "description": "Découvrez Lavcom Performances avec des données d'exemple réalistes. Ce tutoriel vous guide à travers les fonctionnalités principales."
+        },
+        "kpis": {
+          "title": "Vos indicateurs clés",
+          "description": "En haut du tableau de bord, visualisez en un coup d'œil votre chiffre d'affaires, nombre de transactions, panier moyen et tendances."
+        },
+        "charts": {
+          "title": "Analyses graphiques",
+          "description": "Les graphiques vous montrent l'évolution de vos revenus, la répartition des paiements et les performances par machine."
+        },
+        "dateRange": {
+          "title": "Filtrez par période",
+          "description": "Utilisez le sélecteur de dates pour analyser une période spécifique : semaine, mois, trimestre ou dates personnalisées."
+        },
+        "explore": {
+          "title": "Explorez librement !",
+          "description": "Naviguez dans le menu pour découvrir toutes les fonctionnalités : opérations, rentabilité, recommandations et plus encore."
+        }
+      }
     }
   }
 }
