@@ -211,37 +211,44 @@ export default function Dashboard() {
   const defaultTab = urlTab === 'comparatifs' ? 'comparatifs' : 'analyses';
 
   // Export PDF handler
-  const handleExportPdf = () => {
+  const handleExportPdf = async () => {
     if (!dateRange?.from || !dateRange?.to) {
       toast.error(t('app:dashboard.export.noDateRange'));
       return;
     }
 
-    generateDashboardPdf({
-      siteName: selectedSite?.name || t('app:dashboard.allSites'),
-      dateRange: {
-        from: dateRange.from,
-        to: dateRange.to,
-      },
-      kpis: {
-        totalRevenue: stats.totalRevenue,
-        revenueByCard: stats.revenueByCard,
-        revenueByCash: stats.revenueByCash,
-        totalTransactions: stats.totalTransactions,
-        averageBasket: stats.averageBasket,
-        cardPercentage,
-        cashPercentage,
-      },
-      monthlyData: stats.monthlyData,
-      paymentData: stats.paymentData,
-      machinePerformance: stats.machinePerformance.map(m => ({
-        machine: m.name,
-        revenue: m.revenue,
-        transactions: m.cycles,
-      })),
-    });
+    toast.info(t('app:dashboard.export.generating'));
 
-    toast.success(t('app:dashboard.export.success'));
+    try {
+      await generateDashboardPdf({
+        siteName: selectedSite?.name || t('app:dashboard.allSites'),
+        dateRange: {
+          from: dateRange.from,
+          to: dateRange.to,
+        },
+        kpis: {
+          totalRevenue: stats.totalRevenue,
+          revenueByCard: stats.revenueByCard,
+          revenueByCash: stats.revenueByCash,
+          totalTransactions: stats.totalTransactions,
+          averageBasket: stats.averageBasket,
+          cardPercentage,
+          cashPercentage,
+        },
+        monthlyData: stats.monthlyData,
+        paymentData: stats.paymentData,
+        machinePerformance: stats.machinePerformance.map(m => ({
+          machine: m.name,
+          revenue: m.revenue,
+          transactions: m.cycles,
+        })),
+      });
+
+      toast.success(t('app:dashboard.export.success'));
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast.error(t('app:dashboard.export.error'));
+    }
   };
 
   return (

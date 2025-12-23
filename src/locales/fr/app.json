@@ -925,7 +925,9 @@
     "export": {
       "button": "Export PDF",
       "success": "Rapport PDF généré avec succès",
-      "noDateRange": "Veuillez sélectionner une période"
+      "noDateRange": "Veuillez sélectionner une période",
+      "generating": "Génération du PDF en cours...",
+      "error": "Erreur lors de la génération du PDF"
     },
     "allSites": "Toutes les laveries"
   },

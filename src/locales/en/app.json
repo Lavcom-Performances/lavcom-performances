@@ -925,7 +925,9 @@
     "export": {
       "button": "Export PDF",
       "success": "PDF report generated successfully",
-      "noDateRange": "Please select a period"
+      "noDateRange": "Please select a period",
+      "generating": "Generating PDF...",
+      "error": "Error generating PDF"
     },
     "allSites": "All laundries"
   },
