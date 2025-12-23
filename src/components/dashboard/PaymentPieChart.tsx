@@ -26,7 +26,7 @@ export function PaymentPieChart({ data }: PaymentPieChartProps) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <div className="kpi-card h-[400px]">
+    <div data-pdf-chart="payment-pie" className="kpi-card h-[400px]">
       <h3 className="font-display font-semibold text-lg mb-4">Répartition des paiements</h3>
       <ResponsiveContainer width="100%" height="90%">
         <PieChart>

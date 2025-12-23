@@ -17,7 +17,7 @@ interface MonthlyRevenueChartProps {
 
 export function MonthlyRevenueChart({ data }: MonthlyRevenueChartProps) {
   return (
-    <div className="kpi-card h-[400px]">
+    <div data-pdf-chart="monthly-revenue" className="kpi-card h-[400px]">
       <h3 className="font-display font-semibold text-lg mb-4">CA par mois</h3>
       <ResponsiveContainer width="100%" height="90%">
         <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>

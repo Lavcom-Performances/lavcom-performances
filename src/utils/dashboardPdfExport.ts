@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import html2canvas from "html2canvas";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -43,7 +44,30 @@ const COLORS = {
   white: [255, 255, 255] as [number, number, number],
 };
 
-export function generateDashboardPdf(data: DashboardExportData): void {
+interface ChartCapture {
+  selector: string;
+  title: string;
+}
+
+async function captureChartAsImage(selector: string): Promise<string | null> {
+  const element = document.querySelector(selector) as HTMLElement;
+  if (!element) return null;
+
+  try {
+    const canvas = await html2canvas(element, {
+      backgroundColor: "#ffffff",
+      scale: 2,
+      logging: false,
+      useCORS: true,
+    });
+    return canvas.toDataURL("image/png");
+  } catch (error) {
+    console.error(`Failed to capture chart ${selector}:`, error);
+    return null;
+  }
+}
+
+export async function generateDashboardPdf(data: DashboardExportData): Promise<void> {
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
@@ -51,6 +75,7 @@ export function generateDashboardPdf(data: DashboardExportData): void {
   });
 
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 15;
   let currentY = 0;
 
@@ -116,12 +141,50 @@ export function generateDashboardPdf(data: DashboardExportData): void {
 
   currentY += (kpiBoxHeight + 5) * 2 + 15;
 
-  // Section: Évolution mensuelle
+  // Capture charts
+  const chartConfigs: ChartCapture[] = [
+    { selector: '[data-pdf-chart="monthly-revenue"]', title: "Évolution mensuelle du CA" },
+    { selector: '[data-pdf-chart="payment-pie"]', title: "Répartition par mode de paiement" },
+  ];
+
+  for (const chartConfig of chartConfigs) {
+    const chartImage = await captureChartAsImage(chartConfig.selector);
+    
+    if (chartImage) {
+      // Check if we need a new page
+      if (currentY > pageHeight - 100) {
+        doc.addPage();
+        currentY = 20;
+      }
+
+      // Chart title
+      doc.setTextColor(...COLORS.darkGray);
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text(chartConfig.title, margin, currentY);
+      currentY += 5;
+
+      // Calculate image dimensions to fit page width
+      const imgWidth = pageWidth - margin * 2;
+      const imgHeight = 70; // Fixed height for charts
+
+      doc.addImage(chartImage, "PNG", margin, currentY, imgWidth, imgHeight);
+      currentY += imgHeight + 15;
+    }
+  }
+
+  // Section: Évolution mensuelle (table as fallback or complement)
   if (data.monthlyData.length > 0) {
+    // Check if we need a new page
+    if (currentY > pageHeight - 80) {
+      doc.addPage();
+      currentY = 20;
+    }
+
     doc.setTextColor(...COLORS.darkGray);
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text("Évolution mensuelle du CA", margin, currentY);
+    doc.text("Données mensuelles détaillées", margin, currentY);
     currentY += 5;
 
     autoTable(doc, {
@@ -151,10 +214,16 @@ export function generateDashboardPdf(data: DashboardExportData): void {
 
   // Section: Répartition par mode de paiement
   if (data.paymentData.length > 0) {
+    // Check if we need a new page
+    if (currentY > pageHeight - 60) {
+      doc.addPage();
+      currentY = 20;
+    }
+
     doc.setTextColor(...COLORS.darkGray);
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text("Répartition par mode de paiement", margin, currentY);
+    doc.text("Détail des paiements", margin, currentY);
     currentY += 5;
 
     autoTable(doc, {
@@ -183,8 +252,8 @@ export function generateDashboardPdf(data: DashboardExportData): void {
     currentY = (doc as any).lastAutoTable.finalY + 15;
   }
 
-  // Check if we need a new page
-  if (currentY > 230 && data.machinePerformance.length > 0) {
+  // Check if we need a new page for machine performance
+  if (currentY > pageHeight - 80 && data.machinePerformance.length > 0) {
     doc.addPage();
     currentY = 20;
   }
@@ -234,7 +303,7 @@ export function generateDashboardPdf(data: DashboardExportData): void {
     doc.text(
       `${data.siteName} • Généré le ${format(new Date(), "dd/MM/yyyy à HH:mm", { locale: fr })} | Page ${i}/${totalPages}`,
       pageWidth / 2,
-      doc.internal.pageSize.getHeight() - 10,
+      pageHeight - 10,
       { align: "center" }
     );
   }
