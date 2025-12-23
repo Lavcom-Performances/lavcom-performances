@@ -130,6 +130,7 @@ export function AppSidebar({
 
   return (
     <aside 
+      data-tutorial="sidebar"
       className={cn(
         "flex flex-col bg-sidebar h-screen transition-all duration-300 border-r border-sidebar-border",
         collapsed ? "w-16" : "w-64"
