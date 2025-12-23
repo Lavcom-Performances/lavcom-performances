@@ -15,7 +15,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2, AlertCircle, AlertTriangle } from "lucide-react";
 
 interface CSVPreviewTableProps {
   columns: CSVColumn[];
@@ -68,11 +69,34 @@ export function CSVPreviewTable({
 
   const status = getMappingStatus();
 
+  // Check if the data looks like it has valid date/amount values
+  const hasValidLookingData = previewRows.slice(0, 5).some(row => {
+    return row.some(cell => {
+      // Check for date-like patterns
+      const isDateLike = /^\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}$/.test(cell) || 
+                         /^\d{4}-\d{2}-\d{2}$/.test(cell);
+      // Check for amount-like patterns
+      const isAmountLike = /^\d+([.,]\d{1,2})?(\s*€)?$/.test(cell.replace(/\s/g, ''));
+      return isDateLike || isAmountLike;
+    });
+  });
+
   return (
     <div className="space-y-3">
+      {/* Warning if no valid data detected */}
+      {!hasValidLookingData && previewRows.length > 0 && (
+        <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="text-sm">
+            <strong>Format non reconnu</strong> — Les données ne semblent pas contenir de dates ou montants valides. 
+            Vérifiez que votre fichier CSV contient bien des colonnes avec des dates (ex: 18/03/2025) et des montants (ex: 5,50 ou 5.50€).
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Mapping status */}
       <div className="flex items-center gap-4 text-sm">
-        <div className={`flex items-center gap-1.5 ${status.hasDate ? "text-lavcom-green" : "text-muted-foreground"}`}>
+        <div className={`flex items-center gap-1.5 ${status.hasDate ? "text-lavcom-green" : "text-destructive"}`}>
           {status.hasDate ? (
             <CheckCircle2 className="h-4 w-4" />
           ) : (
@@ -80,7 +104,7 @@ export function CSVPreviewTable({
           )}
           <span>Date</span>
         </div>
-        <div className={`flex items-center gap-1.5 ${status.hasAmount ? "text-lavcom-green" : "text-muted-foreground"}`}>
+        <div className={`flex items-center gap-1.5 ${status.hasAmount ? "text-lavcom-green" : "text-destructive"}`}>
           {status.hasAmount ? (
             <CheckCircle2 className="h-4 w-4" />
           ) : (
@@ -97,7 +121,7 @@ export function CSVPreviewTable({
       </div>
 
       {/* Preview table */}
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border border-border rounded-lg overflow-hidden">
         <div className="overflow-x-auto max-h-[300px]">
           <Table>
             <TableHeader className="sticky top-0 bg-muted z-10">
@@ -154,7 +178,9 @@ export function CSVPreviewTable({
 
       {/* Helper text */}
       <p className="text-xs text-muted-foreground">
-        Aucun souci : vous pouvez ajuster le mapping avant de valider.
+        {!status.isValid 
+          ? "Sélectionnez les colonnes Date et Montant pour pouvoir importer les données."
+          : "Aucun souci : vous pouvez ajuster le mapping avant de valider."}
       </p>
     </div>
   );
