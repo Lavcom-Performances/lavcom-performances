@@ -2,7 +2,8 @@
   "hero": {
     "badge": "The performance dashboard for laundromats",
     "optimizeLaundries": "I want to optimize my laundries",
-    "openLaundry": "I want to open a laundry"
+    "openLaundry": "I want to open a laundry",
+    "viewDemo": "See an interactive demo • 2 min"
   },
   "twoProfiles": {
     "title": "Two profiles, two solutions",

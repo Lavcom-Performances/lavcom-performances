@@ -381,6 +381,16 @@ const LandingPage = () => {
             </a>
           </div>
           
+          {/* Bouton démo */}
+          <div className="mt-4 animate-fade-in">
+            <Link to="/signup?demo=true">
+              <Button variant="outline" size="sm" className="btn-bounce border-lavcom-green/50 text-lavcom-green hover:bg-lavcom-green/10">
+                <Eye className="mr-2 h-4 w-4" />
+                {t("landing:hero.viewDemo")}
+              </Button>
+            </Link>
+          </div>
+          
           {/* Ligne de réassurance essai gratuit */}
           <div className="mt-4 md:mt-6 flex flex-wrap items-center justify-center gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground animate-fade-in">
             <span className="flex items-center gap-1.5">
