@@ -732,5 +732,13 @@
     "priceInfo": "Ab 29€/Monat pro Waschsalon",
     "question": "Haben Sie Fragen?",
     "contact": "Kontaktieren Sie unser Team"
+  },
+  "demo": {
+    "banner": {
+      "title": "Demo-Modus",
+      "description": "Sie erkunden Beispieldaten, um die Plattform kennenzulernen",
+      "delete": "Demo beenden",
+      "deleting": "Wird gelöscht..."
+    }
   }
 }

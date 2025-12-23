@@ -732,5 +732,13 @@
     "priceInfo": "Vanaf €29/maand per wasserette",
     "question": "Heeft u vragen?",
     "contact": "Neem contact op met ons team"
+  },
+  "demo": {
+    "banner": {
+      "title": "Demo-modus",
+      "description": "U verkent voorbeeldgegevens om het platform te ontdekken",
+      "delete": "Demo verlaten",
+      "deleting": "Verwijderen..."
+    }
   }
 }

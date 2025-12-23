@@ -732,5 +732,13 @@
     "priceInfo": "Desde 29€/mes por lavandería",
     "question": "¿Tiene preguntas?",
     "contact": "Contacte nuestro equipo"
+  },
+  "demo": {
+    "banner": {
+      "title": "Modo demostración",
+      "description": "Estás explorando datos de ejemplo para descubrir la plataforma",
+      "delete": "Salir de la demo",
+      "deleting": "Eliminando..."
+    }
   }
 }

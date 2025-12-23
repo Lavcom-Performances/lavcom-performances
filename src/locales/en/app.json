@@ -975,5 +975,13 @@
     "priceInfo": "Starting at €29/month per laundry",
     "question": "Have a question?",
     "contact": "Contact our team"
+  },
+  "demo": {
+    "banner": {
+      "title": "Demo mode",
+      "description": "You are exploring sample data to discover the platform",
+      "delete": "Exit demo",
+      "deleting": "Deleting..."
+    }
   }
 }
