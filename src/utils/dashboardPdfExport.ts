@@ -67,9 +67,14 @@ async function captureChartAsImage(selector: string): Promise<string | null> {
   }
 }
 
-export async function generateDashboardPdf(data: DashboardExportData, selectedCharts?: string[], selectedTables?: string[]): Promise<void> {
+export async function generateDashboardPdf(
+  data: DashboardExportData, 
+  selectedCharts?: string[], 
+  selectedTables?: string[],
+  orientation: "portrait" | "landscape" = "portrait"
+): Promise<void> {
   const doc = new jsPDF({
-    orientation: "portrait",
+    orientation,
     unit: "mm",
     format: "a4",
   });
