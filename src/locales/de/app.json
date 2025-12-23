@@ -21,6 +21,12 @@
     "emptyState": {
       "title": "Keine Daten verfügbar",
       "description": "Importieren Sie Ihre Daten, um die Analysen anzuzeigen"
+    },
+    "help": {
+      "revenue": "Gesamtumsatz im ausgewählten Zeitraum. Dieser Indikator spiegelt die Gesamtaktivität Ihrer Waschsalons wider.",
+      "transactions": "Anzahl der im Zeitraum getätigten Zahlungen. Eine hohe Frequenz zeigt einen starken Kundenverkehr an.",
+      "averageBasket": "Durchschnittlicher Betrag pro Transaktion. Ermöglicht die Bewertung des Ausgabeverhaltens pro Besuch.",
+      "machines": "Gesamtzahl der in Ihren Waschsalons aktiven Maschinen während des Zeitraums."
     }
   },
   "operations": {

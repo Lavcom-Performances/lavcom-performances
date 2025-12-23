@@ -21,6 +21,12 @@
     "emptyState": {
       "title": "Nessun dato disponibile",
       "description": "Importa i tuoi dati per visualizzare le analisi"
+    },
+    "help": {
+      "revenue": "Fatturato totale nel periodo selezionato. Questo indicatore riflette l'attività globale delle tue lavanderie.",
+      "transactions": "Numero di pagamenti effettuati durante il periodo. Un'alta frequenza indica un buon flusso di clienti.",
+      "averageBasket": "Importo medio per transazione. Permette di valutare il comportamento di spesa per visita.",
+      "machines": "Numero totale di macchine attive nelle tue lavanderie durante il periodo."
     }
   },
   "operations": {

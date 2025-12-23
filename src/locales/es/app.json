@@ -21,6 +21,12 @@
     "emptyState": {
       "title": "Sin datos disponibles",
       "description": "Importe sus datos para ver los análisis"
+    },
+    "help": {
+      "revenue": "Ingresos totales en el período seleccionado. Este indicador refleja la actividad global de sus lavanderías.",
+      "transactions": "Número de pagos realizados durante el período. Una alta frecuencia indica un buen flujo de clientes.",
+      "averageBasket": "Importe promedio por transacción. Permite evaluar el comportamiento de gasto por visita.",
+      "machines": "Número total de máquinas activas en sus lavanderías durante el período."
     }
   },
   "operations": {
