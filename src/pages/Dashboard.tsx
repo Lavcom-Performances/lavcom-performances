@@ -276,7 +276,7 @@ export default function Dashboard() {
         {/* Vue d'ensemble */}
         <TabsContent value="overview" className="space-y-6">
           {/* KPI Cards principales */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          <div data-tutorial="kpis" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             <KPICard
               title="CA Total"
               value={formatCurrency(stats.totalRevenue)}
@@ -360,7 +360,7 @@ export default function Dashboard() {
           )}
 
           {/* Charts Row 1 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div data-tutorial="charts" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <MonthlyRevenueChart data={stats.monthlyData} />
             {isExpert && stats.dailyData.length > 0 && <DailyRevenueChart data={stats.dailyData} />}
           </div>
