@@ -41,3 +41,6 @@ verify_jwt = true
 
 [functions.send-team-invitation]
 verify_jwt = true
+
+[functions.create-addon-checkout]
+verify_jwt = true

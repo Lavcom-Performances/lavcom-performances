@@ -205,6 +205,62 @@ export default function SubscribeSimulator() {
           </p>
         </div>
 
+        {/* Add-ons Section */}
+        <div className="max-w-3xl mx-auto mt-12">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold mb-2">Options ponctuelles</h2>
+            <p className="text-muted-foreground">
+              Prolongez votre accès ou ajoutez des projets à tout moment.
+            </p>
+          </div>
+          <div className="bg-muted/30 rounded-xl p-6 border border-dashed border-border">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Extension 30 jours */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-500/20 rounded-lg">
+                    <Clock className="h-5 w-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Extension 30 jours</h3>
+                    <p className="text-sm text-muted-foreground">Prolonge votre accès simulateur</p>
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-2 text-sm text-muted-foreground">
+                  <span>Essential: <strong className="text-foreground">39€</strong></span>
+                  <span>•</span>
+                  <span>Projet: <strong className="text-foreground">59€</strong></span>
+                  <span>•</span>
+                  <span>Comparateur: <strong className="text-foreground">79€</strong></span>
+                </div>
+              </div>
+              
+              {/* +1 Projet */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <FolderOpen className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">+1 Projet supplémentaire</h3>
+                    <p className="text-sm text-muted-foreground">Ajoute un emplacement de projet</p>
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-2 text-sm text-muted-foreground">
+                  <span>Essential: <strong className="text-foreground">29€</strong></span>
+                  <span>•</span>
+                  <span>Projet: <strong className="text-foreground">39€</strong></span>
+                  <span>•</span>
+                  <span>Comparateur: <strong className="text-muted-foreground">Inclus</strong></span>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-center text-muted-foreground mt-4 italic">
+              Paiement unique, sans renouvellement automatique. Disponible après achat d'un pack.
+            </p>
+          </div>
+        </div>
+
         {/* Features comparison */}
         <div className="max-w-3xl mx-auto mt-16">
           <Card className="bg-muted/30">
