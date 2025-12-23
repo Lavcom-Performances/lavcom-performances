@@ -35,6 +35,8 @@ const CHART_CONFIGS = [
   { id: "sales-heatmap", selector: '[data-pdf-chart="sales-heatmap"]', title: "Heatmap des cycles" },
 ];
 
+const STORAGE_KEY = "pdf-export-chart-preferences";
+
 export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDialogProps) {
   const { t } = useTranslation(['app']);
   const [previews, setPreviews] = useState<ChartPreview[]>([]);
@@ -42,13 +44,31 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   const [isExporting, setIsExporting] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
 
+  // Load saved preferences from localStorage
+  const loadSavedPreferences = (): string[] | null => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Save preferences to localStorage
+  const savePreferences = (chartIds: string[]) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(chartIds));
+    } catch {
+      // Silently fail if localStorage is not available
+    }
+  };
+
   useEffect(() => {
     if (open) {
       captureCharts();
     } else {
       setPreviews([]);
       setIsLoading(true);
-      setSelectedCharts([]);
     }
   }, [open]);
 
@@ -85,7 +105,17 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
     }
 
     setPreviews(newPreviews);
-    setSelectedCharts(availableIds); // Select all available charts by default
+    
+    // Use saved preferences if available, otherwise select all available charts
+    const savedPreferences = loadSavedPreferences();
+    if (savedPreferences) {
+      // Only keep saved preferences that are actually available
+      const validSavedPrefs = savedPreferences.filter(id => availableIds.includes(id));
+      setSelectedCharts(validSavedPrefs.length > 0 ? validSavedPrefs : availableIds);
+    } else {
+      setSelectedCharts(availableIds);
+    }
+    
     setIsLoading(false);
   };
 
@@ -109,6 +139,8 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   const handleConfirm = async () => {
     setIsExporting(true);
     try {
+      // Save preferences before exporting
+      savePreferences(selectedCharts);
       await onConfirm(selectedCharts);
     } finally {
       setIsExporting(false);
