@@ -2,7 +2,8 @@
   "hero": {
     "badge": "Le tableau de bord performance des laveries automatiques",
     "optimizeLaundries": "Je veux optimiser mes laveries",
-    "openLaundry": "Je veux ouvrir une laverie"
+    "openLaundry": "Je veux ouvrir une laverie",
+    "viewDemo": "Voir une démo interactive • 2 min"
   },
   "twoProfiles": {
     "title": "Deux profils, deux solutions",

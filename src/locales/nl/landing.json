@@ -2,7 +2,8 @@
   "hero": {
     "badge": "Het prestatie-dashboard voor wasserettes",
     "optimizeLaundries": "Ik wil mijn wasserettes optimaliseren",
-    "openLaundry": "Ik wil een wasserette openen"
+    "openLaundry": "Ik wil een wasserette openen",
+    "viewDemo": "Bekijk interactieve demo • 2 min"
   },
   "twoProfiles": {
     "title": "Twee profielen, twee oplossingen",
