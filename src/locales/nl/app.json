@@ -739,6 +739,36 @@
       "description": "U verkent voorbeeldgegevens om het platform te ontdekken",
       "delete": "Demo verlaten",
       "deleting": "Verwijderen..."
+    },
+    "tutorial": {
+      "restart": "Tutorial opnieuw bekijken",
+      "skip": "Tutorial overslaan",
+      "previous": "Vorige",
+      "next": "Volgende",
+      "finish": "Beginnen",
+      "stepOf": "Stap {{current}} van {{total}}",
+      "steps": {
+        "welcome": {
+          "title": "Welkom bij de demo!",
+          "description": "Ontdek Lavcom Performances met realistische voorbeeldgegevens. Deze tutorial leidt u door de belangrijkste functies."
+        },
+        "kpis": {
+          "title": "Uw belangrijkste cijfers",
+          "description": "Bovenaan het dashboard ziet u in één oogopslag uw omzet, aantal transacties, gemiddelde bon en trends."
+        },
+        "charts": {
+          "title": "Visuele analyses",
+          "description": "Grafieken tonen u omzettrends, betalingsverdeling en prestaties per machine."
+        },
+        "dateRange": {
+          "title": "Filter op periode",
+          "description": "Gebruik de datumkiezer om een specifieke periode te analyseren: week, maand, kwartaal of aangepaste datums."
+        },
+        "explore": {
+          "title": "Ontdek vrij!",
+          "description": "Navigeer door het menu om alle functies te ontdekken: operaties, winstgevendheid, aanbevelingen en meer."
+        }
+      }
     }
   }
 }

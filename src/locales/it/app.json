@@ -739,6 +739,36 @@
       "description": "Stai esplorando dati di esempio per scoprire la piattaforma",
       "delete": "Esci dalla demo",
       "deleting": "Eliminazione..."
+    },
+    "tutorial": {
+      "restart": "Rivedi tutorial",
+      "skip": "Salta tutorial",
+      "previous": "Precedente",
+      "next": "Avanti",
+      "finish": "Inizia",
+      "stepOf": "Passo {{current}} di {{total}}",
+      "steps": {
+        "welcome": {
+          "title": "Benvenuto nella demo!",
+          "description": "Scopri Lavcom Performances con dati di esempio realistici. Questo tutorial ti guida attraverso le funzionalità principali."
+        },
+        "kpis": {
+          "title": "Le tue metriche chiave",
+          "description": "In cima alla dashboard, visualizza a colpo d'occhio i tuoi ricavi, numero di transazioni, scontrino medio e tendenze."
+        },
+        "charts": {
+          "title": "Analisi visiva",
+          "description": "I grafici ti mostrano l'andamento dei ricavi, la distribuzione dei pagamenti e le prestazioni per macchina."
+        },
+        "dateRange": {
+          "title": "Filtra per periodo",
+          "description": "Usa il selettore date per analizzare un periodo specifico: settimana, mese, trimestre o date personalizzate."
+        },
+        "explore": {
+          "title": "Esplora liberamente!",
+          "description": "Naviga nel menu per scoprire tutte le funzionalità: operazioni, redditività, raccomandazioni e altro."
+        }
+      }
     }
   }
 }
