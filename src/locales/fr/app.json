@@ -975,5 +975,13 @@
     "priceInfo": "À partir de 29€/mois par laverie",
     "question": "Une question ?",
     "contact": "Contactez notre équipe"
+  },
+  "demo": {
+    "banner": {
+      "title": "Mode démonstration",
+      "description": "Vous explorez des données fictives pour découvrir la plateforme",
+      "delete": "Quitter la démo",
+      "deleting": "Suppression..."
+    }
   }
 }
