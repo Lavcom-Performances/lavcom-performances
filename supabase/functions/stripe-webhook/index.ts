@@ -15,6 +15,19 @@ const SIMULATOR_PACKS: Record<string, { accessDays: number; maxProjects: number;
   premium: { accessDays: 90, maxProjects: 3, amountTtc: 279 },
 };
 
+// Add-on pricing configuration by tier
+const ADDON_PRICES: Record<string, Record<string, number>> = {
+  extension_30d: {
+    essential: 39,
+    project: 59,
+    comparator: 79,
+  },
+  project_plus1: {
+    essential: 29,
+    project: 39,
+  },
+};
+
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
@@ -109,7 +122,116 @@ async function handleSimulatorPurchase(
   logStep("Simulator purchase applied successfully", { userId, packId });
 }
 
-// Helper to handle subscription checkout
+// Helper to handle add-on purchase (extension_30d or project_plus1)
+async function handleAddonPurchase(
+  session: Stripe.Checkout.Session,
+  supabaseAdmin: SupabaseClient
+) {
+  const userId = session.metadata?.user_id;
+  const addonKind = session.metadata?.addon_kind;
+  const tier = session.metadata?.tier;
+  const days = session.metadata?.days ? parseInt(session.metadata.days, 10) : null;
+  const projectsDelta = session.metadata?.projects_delta ? parseInt(session.metadata.projects_delta, 10) : null;
+  const sessionId = session.id;
+  const customerId = session.customer as string | null;
+
+  logStep("Processing add-on purchase", { userId, addonKind, tier, days, projectsDelta });
+
+  if (!userId || !addonKind || !tier) {
+    logStep("Missing metadata for add-on purchase", { userId, addonKind, tier });
+    return;
+  }
+
+  // Get amount from config
+  const tierPricing = ADDON_PRICES[addonKind]?.[tier];
+  if (tierPricing === undefined) {
+    logStep("Invalid add-on or tier", { addonKind, tier });
+    return;
+  }
+
+  // Idempotence check
+  const { data: existingPurchase } = await supabaseAdmin
+    .from("purchases")
+    .select("id")
+    .eq("stripe_session_id", sessionId)
+    .maybeSingle();
+
+  if (existingPurchase) {
+    logStep("Add-on purchase already processed (idempotent)", { sessionId });
+    return;
+  }
+
+  // Get current profile
+  const { data: profile, error: profileError } = await supabaseAdmin
+    .from("profiles")
+    .select("access_expires_at, max_projects")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (profileError) {
+    throw new Error(`Failed to fetch profile: ${profileError.message}`);
+  }
+
+  const now = new Date();
+  let newExpiresAt = profile?.access_expires_at ? new Date(profile.access_expires_at) : null;
+  let newMaxProjects = profile?.max_projects || 0;
+
+  // Apply best-of stacking rules
+  if (addonKind === "extension_30d" && days) {
+    // expires_at = GREATEST(current_expires_at, now) + 30 days
+    const baseDate = newExpiresAt && newExpiresAt > now ? newExpiresAt : now;
+    newExpiresAt = new Date(baseDate.getTime() + days * 24 * 60 * 60 * 1000);
+    logStep("Extension applied", { baseDate, newExpiresAt });
+  }
+
+  if (addonKind === "project_plus1" && projectsDelta) {
+    // projects_limit = current_projects_limit + 1
+    newMaxProjects = newMaxProjects + projectsDelta;
+    logStep("Project delta applied", { oldMaxProjects: profile?.max_projects, newMaxProjects });
+  }
+
+  // Insert purchase record
+  const { error: purchaseError } = await supabaseAdmin
+    .from("purchases")
+    .insert({
+      user_id: userId,
+      plan_code: `addon_${addonKind}_${tier}`,
+      stripe_session_id: sessionId,
+      stripe_customer_id: customerId,
+      amount_ttc: tierPricing,
+      currency: "eur",
+      access_days: days || 0,
+      max_projects: projectsDelta || 0,
+    });
+
+  if (purchaseError) {
+    throw new Error(`Failed to insert add-on purchase: ${purchaseError.message}`);
+  }
+
+  // Update profile entitlements
+  const updateData: Record<string, unknown> = {
+    last_purchase_at: now.toISOString(),
+  };
+  
+  if (newExpiresAt) {
+    updateData.access_expires_at = newExpiresAt.toISOString();
+  }
+  if (newMaxProjects !== profile?.max_projects) {
+    updateData.max_projects = newMaxProjects;
+  }
+
+  const { error: updateError } = await supabaseAdmin
+    .from("profiles")
+    .update(updateData)
+    .eq("id", userId);
+
+  if (updateError) {
+    throw new Error(`Failed to update profile for add-on: ${updateError.message}`);
+  }
+
+  logStep("Add-on purchase applied successfully", { userId, addonKind, tier, newExpiresAt, newMaxProjects });
+}
+
 async function handleSubscriptionCheckout(
   session: Stripe.Checkout.Session,
   supabaseAdmin: SupabaseClient
@@ -354,11 +476,16 @@ serve(async (req) => {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         
-        // Determine if this is a subscription or one-time purchase
+        // Determine if this is a subscription, add-on, or pack purchase
         if (session.mode === "subscription") {
           await handleSubscriptionCheckout(session, supabaseAdmin);
         } else if (session.mode === "payment") {
-          await handleSimulatorPurchase(session, supabaseAdmin);
+          // Check if this is an add-on or a pack purchase
+          if (session.metadata?.type === "addon") {
+            await handleAddonPurchase(session, supabaseAdmin);
+          } else {
+            await handleSimulatorPurchase(session, supabaseAdmin);
+          }
         }
         break;
       }

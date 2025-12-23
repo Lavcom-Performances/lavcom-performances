@@ -101,6 +101,65 @@ export function getSimulatorPackById(id: string): SimulatorPack | undefined {
   return SIMULATOR_PACKS.find(pack => pack.id === id);
 }
 
+// ============================================
+// ADD-ONS SIMULATEUR (Options ponctuelles)
+// ============================================
+
+export interface SimulatorAddon {
+  id: string;
+  kind: "extension_30d" | "project_plus1";
+  days?: number;
+  projectsDelta?: number;
+}
+
+export interface SimulatorAddonPricing {
+  tier: string;
+  price: number;
+  disabled?: boolean;
+  disabledReason?: string;
+}
+
+// Configuration des add-ons
+export const SIMULATOR_ADDONS: SimulatorAddon[] = [
+  {
+    id: "extension_30d",
+    kind: "extension_30d",
+    days: 30,
+  },
+  {
+    id: "project_plus1",
+    kind: "project_plus1",
+    projectsDelta: 1,
+  },
+];
+
+// Pricing différencié par tier pour les add-ons
+export const ADDON_PRICING: Record<string, SimulatorAddonPricing[]> = {
+  extension_30d: [
+    { tier: "essential", price: 39 },
+    { tier: "project", price: 59 },
+    { tier: "comparator", price: 79 },
+  ],
+  project_plus1: [
+    { tier: "essential", price: 29 },
+    { tier: "project", price: 39 },
+    { tier: "comparator", price: 0, disabled: true, disabledReason: "Déjà inclus (10 projets)" },
+  ],
+};
+
+// Helper pour obtenir le prix d'un add-on pour un tier donné
+export function getAddonPrice(addonKind: string, tier: string): SimulatorAddonPricing | undefined {
+  return ADDON_PRICING[addonKind]?.find(p => p.tier === tier);
+}
+
+// Helper pour déterminer le tier à partir du plan_code actuel
+export function getTierFromPlanCode(planCode: string | null): string {
+  if (!planCode) return "essential";
+  if (planCode.includes("comparator")) return "comparator";
+  if (planCode.includes("project") || planCode.includes("premium")) return "project";
+  return "essential";
+}
+
 // Anciens packs (conservés pour compatibilité, mais dépréciés)
 export const SIMULATOR_PLANS = {
   simulator: {
@@ -121,3 +180,4 @@ export const SIMULATOR_PLANS = {
 
 export type SimulatorPlanId = keyof typeof SIMULATOR_PLANS;
 export type SimulatorPackId = SimulatorPack["id"];
+export type SimulatorAddonKind = SimulatorAddon["kind"];
