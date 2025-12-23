@@ -900,6 +900,15 @@
       "average": "Average",
       "grossMargin": "Gross Margin"
     },
+    "help": {
+      "totalRevenue": "Total revenue for the selected period, all payment methods combined.",
+      "revenueCard": "Amount collected by card. Includes contactless and chip payments.",
+      "revenueCash": "Amount collected in cash via the coin acceptor.",
+      "transactions": "Total number of machine cycles performed during the period.",
+      "avgBasket": "Average amount spent per transaction. Calculated by dividing revenue by number of transactions.",
+      "occupancyRate": "Percentage of machine usage compared to theoretical maximum capacity.",
+      "trend": "Change compared to the previous period of the same duration."
+    },
     "goals": {
       "monthlyGoal": "Monthly goal",
       "annualGoal": "Annual revenue goal",
