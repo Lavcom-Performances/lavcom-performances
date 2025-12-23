@@ -213,7 +213,7 @@ export default function Dashboard() {
   const defaultTab = urlTab === 'comparatifs' ? 'comparatifs' : 'analyses';
 
   // Export PDF handler
-  const handleExportPdf = async (selectedCharts: string[]) => {
+  const handleExportPdf = async (options: { selectedCharts: string[]; selectedTables: string[] }) => {
     if (!dateRange?.from || !dateRange?.to) {
       toast.error(t('app:dashboard.export.noDateRange'));
       return;
@@ -244,7 +244,7 @@ export default function Dashboard() {
           revenue: m.revenue,
           transactions: m.cycles,
         })),
-      }, selectedCharts);
+      }, options.selectedCharts, options.selectedTables);
 
       toast.success(t('app:dashboard.export.success'));
     } catch (error) {

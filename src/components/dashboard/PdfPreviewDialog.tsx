@@ -22,10 +22,15 @@ interface ChartPreview {
   imageData: string | null;
 }
 
+export interface PdfExportOptions {
+  selectedCharts: string[];
+  selectedTables: string[];
+}
+
 interface PdfPreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (selectedCharts: string[]) => void;
+  onConfirm: (options: PdfExportOptions) => void;
 }
 
 const CHART_CONFIGS = [
@@ -35,7 +40,14 @@ const CHART_CONFIGS = [
   { id: "sales-heatmap", selector: '[data-pdf-chart="sales-heatmap"]', title: "Heatmap des cycles" },
 ];
 
-const STORAGE_KEY = "pdf-export-chart-preferences";
+const TABLE_CONFIGS = [
+  { id: "monthly-data", title: "Données mensuelles détaillées" },
+  { id: "payment-details", title: "Détail des paiements" },
+  { id: "machine-performance", title: "Performance par machine" },
+];
+
+const STORAGE_KEY_CHARTS = "pdf-export-chart-preferences";
+const STORAGE_KEY_TABLES = "pdf-export-table-preferences";
 
 export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDialogProps) {
   const { t } = useTranslation(['app']);
@@ -43,11 +55,21 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
+  const [selectedTables, setSelectedTables] = useState<string[]>([]);
 
   // Load saved preferences from localStorage
-  const loadSavedPreferences = (): string[] | null => {
+  const loadSavedChartPreferences = (): string[] | null => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(STORAGE_KEY_CHARTS);
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const loadSavedTablePreferences = (): string[] | null => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_TABLES);
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -55,9 +77,10 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   };
 
   // Save preferences to localStorage
-  const savePreferences = (chartIds: string[]) => {
+  const savePreferences = (chartIds: string[], tableIds: string[]) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(chartIds));
+      localStorage.setItem(STORAGE_KEY_CHARTS, JSON.stringify(chartIds));
+      localStorage.setItem(STORAGE_KEY_TABLES, JSON.stringify(tableIds));
     } catch {
       // Silently fail if localStorage is not available
     }
@@ -66,6 +89,9 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   useEffect(() => {
     if (open) {
       captureCharts();
+      // Load table preferences
+      const savedTablePrefs = loadSavedTablePreferences();
+      setSelectedTables(savedTablePrefs || TABLE_CONFIGS.map(t => t.id));
     } else {
       setPreviews([]);
       setIsLoading(true);
@@ -107,7 +133,7 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
     setPreviews(newPreviews);
     
     // Use saved preferences if available, otherwise select all available charts
-    const savedPreferences = loadSavedPreferences();
+    const savedPreferences = loadSavedChartPreferences();
     if (savedPreferences) {
       // Only keep saved preferences that are actually available
       const validSavedPrefs = savedPreferences.filter(id => availableIds.includes(id));
@@ -127,6 +153,14 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
     );
   };
 
+  const handleToggleTable = (tableId: string) => {
+    setSelectedTables(prev => 
+      prev.includes(tableId)
+        ? prev.filter(id => id !== tableId)
+        : [...prev, tableId]
+    );
+  };
+
   const handleSelectAll = () => {
     const availableIds = previews.filter(p => p.imageData !== null).map(p => p.id);
     setSelectedCharts(availableIds);
@@ -136,12 +170,20 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
     setSelectedCharts([]);
   };
 
+  const handleSelectAllTables = () => {
+    setSelectedTables(TABLE_CONFIGS.map(t => t.id));
+  };
+
+  const handleDeselectAllTables = () => {
+    setSelectedTables([]);
+  };
+
   const handleConfirm = async () => {
     setIsExporting(true);
     try {
       // Save preferences before exporting
-      savePreferences(selectedCharts);
-      await onConfirm(selectedCharts);
+      savePreferences(selectedCharts, selectedTables);
+      await onConfirm({ selectedCharts, selectedTables });
     } finally {
       setIsExporting(false);
       onOpenChange(false);
@@ -149,7 +191,8 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   };
 
   const availableCharts = previews.filter(p => p.imageData !== null);
-  const selectedCount = selectedCharts.length;
+  const selectedChartCount = selectedCharts.length;
+  const selectedTableCount = selectedTables.length;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -181,7 +224,7 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-sm">
                   {t('app:dashboard.export.chartsIncluded', 'Graphiques')} 
-                  {!isLoading && ` (${selectedCount}/${availableCharts.length} ${t('app:dashboard.export.selected', 'sélectionnés')})`}
+                  {!isLoading && ` (${selectedChartCount}/${availableCharts.length} ${t('app:dashboard.export.selected', 'sélectionnés')})`}
                 </h4>
                 {!isLoading && availableCharts.length > 0 && (
                   <div className="flex gap-2">
@@ -191,7 +234,7 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
                       onClick={handleSelectAll}
                       className="text-xs h-7"
                     >
-                      {t('app:dashboard.export.selectAll', 'Tout sélectionner')}
+                      {t('app:dashboard.export.selectAll', 'Tout')}
                     </Button>
                     <Button 
                       variant="ghost" 
@@ -199,7 +242,7 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
                       onClick={handleDeselectAll}
                       className="text-xs h-7"
                     >
-                      {t('app:dashboard.export.deselectAll', 'Tout désélectionner')}
+                      {t('app:dashboard.export.deselectAll', 'Aucun')}
                     </Button>
                   </div>
                 )}
@@ -257,14 +300,56 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
               </div>
             </div>
 
-            {/* Tables info */}
-            <div className="p-4 rounded-lg bg-muted/50 border">
-              <h4 className="font-semibold text-sm mb-2">
-                {t('app:dashboard.export.tablesIncluded', 'Tableaux inclus')}
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                {t('app:dashboard.export.tablesDescription', 'Données mensuelles, Détail des paiements, Performance par machine')}
-              </p>
+            {/* Tables selection */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-sm">
+                  {t('app:dashboard.export.tablesIncluded', 'Tableaux')} 
+                  {` (${selectedTableCount}/${TABLE_CONFIGS.length} ${t('app:dashboard.export.selected', 'sélectionnés')})`}
+                </h4>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={handleSelectAllTables}
+                    className="text-xs h-7"
+                  >
+                    {t('app:dashboard.export.selectAll', 'Tout')}
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={handleDeselectAllTables}
+                    className="text-xs h-7"
+                  >
+                    {t('app:dashboard.export.deselectAll', 'Aucun')}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-2">
+                {TABLE_CONFIGS.map((table) => (
+                  <div 
+                    key={table.id} 
+                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-opacity ${
+                      selectedTables.includes(table.id) ? 'bg-muted/50 opacity-100' : 'opacity-50'
+                    }`}
+                    onClick={() => handleToggleTable(table.id)}
+                  >
+                    <Checkbox
+                      id={`table-${table.id}`}
+                      checked={selectedTables.includes(table.id)}
+                      onCheckedChange={() => handleToggleTable(table.id)}
+                    />
+                    <label 
+                      htmlFor={`table-${table.id}`}
+                      className="text-sm font-medium cursor-pointer flex-1"
+                    >
+                      {table.title}
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </ScrollArea>
