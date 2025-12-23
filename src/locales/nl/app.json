@@ -21,6 +21,12 @@
     "emptyState": {
       "title": "Geen gegevens beschikbaar",
       "description": "Importeer uw gegevens om de analyses te bekijken"
+    },
+    "help": {
+      "revenue": "Totale omzet in de geselecteerde periode. Deze indicator weerspiegelt de globale activiteit van uw wasserettes.",
+      "transactions": "Aantal betalingen gedaan tijdens de periode. Een hoge frequentie duidt op een goede klantenstroom.",
+      "averageBasket": "Gemiddeld bedrag per transactie. Maakt het mogelijk om het bestedingsgedrag per bezoek te evalueren.",
+      "machines": "Totaal aantal actieve machines in uw wasserettes tijdens de periode."
     }
   },
   "operations": {
