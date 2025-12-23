@@ -13,25 +13,22 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   console.log(`[CREATE-SUBSCRIPTION-CHECKOUT] ${step}${detailsStr}`);
 };
 
-// Price IDs for subscription plans - TO BE CONFIGURED
-// You need to create these products/prices in your Stripe dashboard
-// Monthly: 29€/month for 1-2 laundries, 25€ for 3-5, 21€ for 6+
-// Annual: 10 months paid (2 months free)
+// Price IDs for subscription plans
 const SUBSCRIPTION_PRICES = {
   // 1-2 laundries
   tier1: {
-    monthly: "price_MONTHLY_TIER1", // 29€/month - REPLACE WITH YOUR PRICE ID
-    annual: "price_ANNUAL_TIER1",   // 290€/year - REPLACE WITH YOUR PRICE ID
+    monthly: "price_1ShGd1B849ikvSjDddCJJA4c", // 29€/month
+    annual: "price_1ShGinB849ikvSjDbjYUTkdw",  // 290€/year
   },
   // 3-5 laundries  
   tier2: {
-    monthly: "price_MONTHLY_TIER2", // 25€/month per laundry - REPLACE WITH YOUR PRICE ID
-    annual: "price_ANNUAL_TIER2",   // 250€/year per laundry - REPLACE WITH YOUR PRICE ID
+    monthly: "price_1ShGeVB849ikvSjD3LIR8UtE", // 25€/month per laundry
+    annual: "price_1ShGjEB849ikvSjD4VnQGXQO",  // 250€/year per laundry
   },
   // 6+ laundries
   tier3: {
-    monthly: "price_MONTHLY_TIER3", // 21€/month per laundry - REPLACE WITH YOUR PRICE ID
-    annual: "price_ANNUAL_TIER3",   // 210€/year per laundry - REPLACE WITH YOUR PRICE ID
+    monthly: "price_1ShGetB849ikvSjDs2aIkeYS", // 21€/month per laundry
+    annual: "price_1ShGjaB849ikvSjDIWARPdI2",  // 210€/year per laundry
   },
 };
 
