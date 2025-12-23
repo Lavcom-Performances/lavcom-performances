@@ -67,7 +67,7 @@ async function captureChartAsImage(selector: string): Promise<string | null> {
   }
 }
 
-export async function generateDashboardPdf(data: DashboardExportData, selectedCharts?: string[]): Promise<void> {
+export async function generateDashboardPdf(data: DashboardExportData, selectedCharts?: string[], selectedTables?: string[]): Promise<void> {
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
@@ -178,7 +178,8 @@ export async function generateDashboardPdf(data: DashboardExportData, selectedCh
   }
 
   // Section: Évolution mensuelle (table as fallback or complement)
-  if (data.monthlyData.length > 0) {
+  const includeMonthlyTable = !selectedTables || selectedTables.includes("monthly-data");
+  if (data.monthlyData.length > 0 && includeMonthlyTable) {
     // Check if we need a new page
     if (currentY > pageHeight - 80) {
       doc.addPage();
@@ -217,7 +218,8 @@ export async function generateDashboardPdf(data: DashboardExportData, selectedCh
   }
 
   // Section: Répartition par mode de paiement
-  if (data.paymentData.length > 0) {
+  const includePaymentTable = !selectedTables || selectedTables.includes("payment-details");
+  if (data.paymentData.length > 0 && includePaymentTable) {
     // Check if we need a new page
     if (currentY > pageHeight - 60) {
       doc.addPage();
@@ -257,13 +259,14 @@ export async function generateDashboardPdf(data: DashboardExportData, selectedCh
   }
 
   // Check if we need a new page for machine performance
-  if (currentY > pageHeight - 80 && data.machinePerformance.length > 0) {
+  const includeMachineTable = !selectedTables || selectedTables.includes("machine-performance");
+  if (currentY > pageHeight - 80 && data.machinePerformance.length > 0 && includeMachineTable) {
     doc.addPage();
     currentY = 20;
   }
 
   // Section: Performance par machine
-  if (data.machinePerformance.length > 0) {
+  if (data.machinePerformance.length > 0 && includeMachineTable) {
     doc.setTextColor(...COLORS.darkGray);
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
