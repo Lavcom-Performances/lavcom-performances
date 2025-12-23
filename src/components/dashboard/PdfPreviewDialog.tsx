@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import html2canvas from "html2canvas";
-import { FileDown, Loader2, Eye } from "lucide-react";
+import { FileDown, Loader2, Eye, FileText } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 
 interface ChartPreview {
   id: string;
@@ -194,6 +195,25 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   const selectedChartCount = selectedCharts.length;
   const selectedTableCount = selectedTables.length;
 
+  // Estimate PDF size based on selected elements
+  // Base: ~50KB for header/KPIs, ~150KB per chart image, ~20KB per table
+  const estimatePdfSize = () => {
+    const baseSize = 50; // KB - header, KPIs, footer
+    const chartSize = selectedChartCount * 150; // KB per chart
+    const tableSize = selectedTableCount * 20; // KB per table
+    return baseSize + chartSize + tableSize;
+  };
+
+  const estimatedSize = estimatePdfSize();
+  const maxEstimatedSize = 50 + (4 * 150) + (3 * 20); // Max possible size
+  const sizePercentage = (estimatedSize / maxEstimatedSize) * 100;
+
+  const formatFileSize = (kb: number) => {
+    if (kb >= 1024) {
+      return `~${(kb / 1024).toFixed(1)} Mo`;
+    }
+    return `~${kb} Ko`;
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh]">
@@ -354,7 +374,20 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
           </div>
         </ScrollArea>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        {/* Size estimate */}
+        {!isLoading && (
+          <div className="flex items-center gap-3 flex-1 mr-4">
+            <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="flex-1 max-w-[200px]">
+              <Progress value={sizePercentage} className="h-2" />
+            </div>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {formatFileSize(estimatedSize)}
+            </span>
+          </div>
+        )}
+
+        <DialogFooter className="gap-2 sm:gap-0 shrink-0">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isExporting}>
             {t('common:cancel', 'Annuler')}
           </Button>
