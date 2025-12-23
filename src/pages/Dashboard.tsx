@@ -15,6 +15,7 @@ import {
   Loader2,
   Settings,
   ArrowLeft,
+  FileDown,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { toast } from "sonner";
@@ -41,6 +42,7 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useSites } from "@/hooks/useSites";
 import { useUserGoals } from "@/hooks/useUserGoals";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { generateDashboardPdf } from "@/utils/dashboardPdfExport";
 
 // Default costs for profitability calculation (user can configure these later)
 const defaultCosts: LaundryCosts = {
@@ -208,6 +210,40 @@ export default function Dashboard() {
   const urlTab = searchParams.get('tab');
   const defaultTab = urlTab === 'comparatifs' ? 'comparatifs' : 'analyses';
 
+  // Export PDF handler
+  const handleExportPdf = () => {
+    if (!dateRange?.from || !dateRange?.to) {
+      toast.error(t('app:dashboard.export.noDateRange'));
+      return;
+    }
+
+    generateDashboardPdf({
+      siteName: selectedSite?.name || t('app:dashboard.allSites'),
+      dateRange: {
+        from: dateRange.from,
+        to: dateRange.to,
+      },
+      kpis: {
+        totalRevenue: stats.totalRevenue,
+        revenueByCard: stats.revenueByCard,
+        revenueByCash: stats.revenueByCash,
+        totalTransactions: stats.totalTransactions,
+        averageBasket: stats.averageBasket,
+        cardPercentage,
+        cashPercentage,
+      },
+      monthlyData: stats.monthlyData,
+      paymentData: stats.paymentData,
+      machinePerformance: stats.machinePerformance.map(m => ({
+        machine: m.name,
+        revenue: m.revenue,
+        transactions: m.cycles,
+      })),
+    });
+
+    toast.success(t('app:dashboard.export.success'));
+  };
+
   return (
     <>
       <SEOHead 
@@ -243,15 +279,26 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setGoalsDialogOpen(true)}
-            className="gap-2"
-          >
-            <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">{t('app:dashboard.objectives')}</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleExportPdf}
+              className="gap-2"
+            >
+              <FileDown className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('app:dashboard.export.button')}</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setGoalsDialogOpen(true)}
+              className="gap-2"
+            >
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('app:dashboard.objectives')}</span>
+            </Button>
+          </div>
         </div>
         <DateRangePicker 
           dateRange={dateRange}
