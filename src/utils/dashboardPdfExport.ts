@@ -67,13 +67,12 @@ async function captureChartAsImage(selector: string): Promise<string | null> {
   }
 }
 
-export async function generateDashboardPdf(data: DashboardExportData): Promise<void> {
+export async function generateDashboardPdf(data: DashboardExportData, selectedCharts?: string[]): Promise<void> {
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
     format: "a4",
   });
-
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 15;
@@ -141,14 +140,17 @@ export async function generateDashboardPdf(data: DashboardExportData): Promise<v
 
   currentY += (kpiBoxHeight + 5) * 2 + 15;
 
-  // Capture charts
-  const chartConfigs: ChartCapture[] = [
-    { selector: '[data-pdf-chart="monthly-revenue"]', title: "Évolution mensuelle du CA" },
-    { selector: '[data-pdf-chart="payment-pie"]', title: "Répartition par mode de paiement" },
-    { selector: '[data-pdf-chart="weekday-performance"]', title: "CA par jour de la semaine" },
-    { selector: '[data-pdf-chart="sales-heatmap"]', title: "Heatmap des cycles (jour × heure)" },
+  // Capture charts - filter by selectedCharts if provided
+  const allChartConfigs: (ChartCapture & { id: string })[] = [
+    { id: "monthly-revenue", selector: '[data-pdf-chart="monthly-revenue"]', title: "Évolution mensuelle du CA" },
+    { id: "payment-pie", selector: '[data-pdf-chart="payment-pie"]', title: "Répartition par mode de paiement" },
+    { id: "weekday-performance", selector: '[data-pdf-chart="weekday-performance"]', title: "CA par jour de la semaine" },
+    { id: "sales-heatmap", selector: '[data-pdf-chart="sales-heatmap"]', title: "Heatmap des cycles (jour × heure)" },
   ];
 
+  const chartConfigs = selectedCharts 
+    ? allChartConfigs.filter(c => selectedCharts.includes(c.id))
+    : allChartConfigs;
   for (const chartConfig of chartConfigs) {
     const chartImage = await captureChartAsImage(chartConfig.selector);
     

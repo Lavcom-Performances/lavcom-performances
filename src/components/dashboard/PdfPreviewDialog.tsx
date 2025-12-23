@@ -13,8 +13,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ChartPreview {
+  id: string;
   selector: string;
   title: string;
   imageData: string | null;
@@ -23,14 +25,14 @@ interface ChartPreview {
 interface PdfPreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
+  onConfirm: (selectedCharts: string[]) => void;
 }
 
 const CHART_CONFIGS = [
-  { selector: '[data-pdf-chart="monthly-revenue"]', title: "Évolution mensuelle du CA" },
-  { selector: '[data-pdf-chart="payment-pie"]', title: "Répartition par mode de paiement" },
-  { selector: '[data-pdf-chart="weekday-performance"]', title: "CA par jour de la semaine" },
-  { selector: '[data-pdf-chart="sales-heatmap"]', title: "Heatmap des cycles" },
+  { id: "monthly-revenue", selector: '[data-pdf-chart="monthly-revenue"]', title: "Évolution mensuelle du CA" },
+  { id: "payment-pie", selector: '[data-pdf-chart="payment-pie"]', title: "Répartition par mode de paiement" },
+  { id: "weekday-performance", selector: '[data-pdf-chart="weekday-performance"]', title: "CA par jour de la semaine" },
+  { id: "sales-heatmap", selector: '[data-pdf-chart="sales-heatmap"]', title: "Heatmap des cycles" },
 ];
 
 export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDialogProps) {
@@ -38,6 +40,7 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   const [previews, setPreviews] = useState<ChartPreview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
 
   useEffect(() => {
     if (open) {
@@ -45,12 +48,14 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
     } else {
       setPreviews([]);
       setIsLoading(true);
+      setSelectedCharts([]);
     }
   }, [open]);
 
   const captureCharts = async () => {
     setIsLoading(true);
     const newPreviews: ChartPreview[] = [];
+    const availableIds: string[] = [];
 
     for (const config of CHART_CONFIGS) {
       const element = document.querySelector(config.selector) as HTMLElement;
@@ -65,12 +70,14 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
             useCORS: true,
           });
           imageData = canvas.toDataURL("image/png");
+          availableIds.push(config.id);
         } catch (error) {
           console.error(`Failed to capture ${config.selector}:`, error);
         }
       }
 
       newPreviews.push({
+        id: config.id,
         selector: config.selector,
         title: config.title,
         imageData,
@@ -78,13 +85,31 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
     }
 
     setPreviews(newPreviews);
+    setSelectedCharts(availableIds); // Select all available charts by default
     setIsLoading(false);
+  };
+
+  const handleToggleChart = (chartId: string) => {
+    setSelectedCharts(prev => 
+      prev.includes(chartId)
+        ? prev.filter(id => id !== chartId)
+        : [...prev, chartId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const availableIds = previews.filter(p => p.imageData !== null).map(p => p.id);
+    setSelectedCharts(availableIds);
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedCharts([]);
   };
 
   const handleConfirm = async () => {
     setIsExporting(true);
     try {
-      await onConfirm();
+      await onConfirm(selectedCharts);
     } finally {
       setIsExporting(false);
       onOpenChange(false);
@@ -92,6 +117,7 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   };
 
   const availableCharts = previews.filter(p => p.imageData !== null);
+  const selectedCount = selectedCharts.length;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -102,7 +128,7 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
             {t('app:dashboard.export.previewTitle', 'Aperçu du rapport PDF')}
           </DialogTitle>
           <DialogDescription>
-            {t('app:dashboard.export.previewDescription', 'Vérifiez les graphiques qui seront inclus dans le rapport.')}
+            {t('app:dashboard.export.previewDescription', 'Sélectionnez les graphiques à inclure dans le rapport.')}
           </DialogDescription>
         </DialogHeader>
 
@@ -118,12 +144,34 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
               </p>
             </div>
 
-            {/* Charts previews */}
+            {/* Charts selection */}
             <div className="space-y-3">
-              <h4 className="font-semibold text-sm">
-                {t('app:dashboard.export.chartsIncluded', 'Graphiques inclus')} 
-                {!isLoading && ` (${availableCharts.length}/${CHART_CONFIGS.length})`}
-              </h4>
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-sm">
+                  {t('app:dashboard.export.chartsIncluded', 'Graphiques')} 
+                  {!isLoading && ` (${selectedCount}/${availableCharts.length} ${t('app:dashboard.export.selected', 'sélectionnés')})`}
+                </h4>
+                {!isLoading && availableCharts.length > 0 && (
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={handleSelectAll}
+                      className="text-xs h-7"
+                    >
+                      {t('app:dashboard.export.selectAll', 'Tout sélectionner')}
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={handleDeselectAll}
+                      className="text-xs h-7"
+                    >
+                      {t('app:dashboard.export.deselectAll', 'Tout désélectionner')}
+                    </Button>
+                  </div>
+                )}
+              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 {isLoading ? (
@@ -134,13 +182,30 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
                     </div>
                   ))
                 ) : (
-                  previews.map((preview, index) => (
-                    <div key={index} className="space-y-2">
-                      <p className="text-xs font-medium text-muted-foreground truncate">
-                        {preview.title}
-                      </p>
+                  previews.map((preview) => (
+                    <div key={preview.id} className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        {preview.imageData && (
+                          <Checkbox
+                            id={`chart-${preview.id}`}
+                            checked={selectedCharts.includes(preview.id)}
+                            onCheckedChange={() => handleToggleChart(preview.id)}
+                          />
+                        )}
+                        <label 
+                          htmlFor={`chart-${preview.id}`}
+                          className="text-xs font-medium text-muted-foreground truncate cursor-pointer"
+                        >
+                          {preview.title}
+                        </label>
+                      </div>
                       {preview.imageData ? (
-                        <div className="relative rounded-lg border overflow-hidden bg-white">
+                        <div 
+                          className={`relative rounded-lg border overflow-hidden bg-white transition-opacity cursor-pointer ${
+                            selectedCharts.includes(preview.id) ? 'opacity-100' : 'opacity-40'
+                          }`}
+                          onClick={() => handleToggleChart(preview.id)}
+                        >
                           <img
                             src={preview.imageData}
                             alt={preview.title}
