@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { HorizontalScrollTable } from "@/components/ui/horizontal-scroll-table";
 import { Building2, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
@@ -42,9 +43,9 @@ export function LaundryComparisonTable({ laundries, className }: LaundryComparis
           Comparaison des laveries de votre entreprise uniquement
         </p>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
+      <CardContent className="p-0 px-1">
+        <HorizontalScrollTable>
+          <Table className="min-w-[700px]">
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead className="font-medium text-muted-foreground">Laverie</TableHead>
@@ -150,7 +151,7 @@ export function LaundryComparisonTable({ laundries, className }: LaundryComparis
               })}
             </TableBody>
           </Table>
-        </div>
+        </HorizontalScrollTable>
       </CardContent>
     </Card>
   );

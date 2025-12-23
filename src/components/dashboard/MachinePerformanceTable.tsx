@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { HorizontalScrollTable } from "@/components/ui/horizontal-scroll-table";
 import { WashingMachine, Wind } from "lucide-react";
 
 interface MachineData {
@@ -37,9 +38,9 @@ export function MachinePerformanceTable({ machines, className }: MachinePerforma
           Performance par machine
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
+      <CardContent className="p-0 px-1">
+        <HorizontalScrollTable>
+          <Table className="min-w-[500px]">
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead className="font-medium text-muted-foreground">Machine</TableHead>
@@ -94,7 +95,7 @@ export function MachinePerformanceTable({ machines, className }: MachinePerforma
               ))}
             </TableBody>
           </Table>
-        </div>
+        </HorizontalScrollTable>
       </CardContent>
     </Card>
   );

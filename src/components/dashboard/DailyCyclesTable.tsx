@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { HorizontalScrollTable } from "@/components/ui/horizontal-scroll-table";
 
 interface DailyCyclesData {
   day: number;
@@ -84,8 +85,8 @@ export function DailyCyclesTable({ data, monthTotals }: DailyCyclesTableProps) {
   return (
     <div className="kpi-card">
       <h3 className="font-display font-semibold text-lg mb-4">Nombre de cycles par jour</h3>
-      <div className="overflow-x-auto">
-        <Table>
+      <HorizontalScrollTable>
+        <Table className="min-w-[800px]">
           <TableHeader>
             <TableRow>
               <TableHead className="w-[60px] text-center font-semibold">JOUR</TableHead>
@@ -132,7 +133,7 @@ export function DailyCyclesTable({ data, monthTotals }: DailyCyclesTableProps) {
             </TableRow>
           </TableBody>
         </Table>
-      </div>
+      </HorizontalScrollTable>
     </div>
   );
 }
