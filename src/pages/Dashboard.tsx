@@ -34,6 +34,7 @@ import { ProfitabilitySection } from "@/components/dashboard/ProfitabilitySectio
 import { DashboardEmptyState } from "@/components/dashboard/DashboardEmptyState";
 import { GoalsConfigDialog } from "@/components/dashboard/GoalsConfigDialog";
 import { SiteComparisonSection } from "@/components/dashboard/SiteComparisonSection";
+import { PdfPreviewDialog } from "@/components/dashboard/PdfPreviewDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { calculateProfitabilityMetrics, LaundryCosts } from "@/types/costs";
@@ -113,6 +114,7 @@ export default function Dashboard() {
   });
   
   const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
+  const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
 
   // Handle return to multi-site view
   const handleReturnToMultiSites = () => {
@@ -290,7 +292,7 @@ export default function Dashboard() {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={handleExportPdf}
+              onClick={() => setPdfPreviewOpen(true)}
               className="gap-2"
             >
               <FileDown className="h-4 w-4" />
@@ -317,6 +319,12 @@ export default function Dashboard() {
         open={goalsDialogOpen} 
         onOpenChange={setGoalsDialogOpen}
         siteId={selectedSite?.id}
+      />
+
+      <PdfPreviewDialog
+        open={pdfPreviewOpen}
+        onOpenChange={setPdfPreviewOpen}
+        onConfirm={handleExportPdf}
       />
 
       <Tabs defaultValue={defaultTab === 'comparatifs' ? 'comparison' : 'overview'} className="space-y-6">
