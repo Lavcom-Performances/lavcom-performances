@@ -16,7 +16,8 @@ import {
   Mail,
   Clock,
   X,
-  Loader2
+  Loader2,
+  MapPin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,7 @@ import { PermissionsTable } from "@/components/admin/PermissionsTable";
 import { RolesInfoCard } from "@/components/admin/RolesInfoCard";
 import { InviteUserDialog } from "@/components/admin/InviteUserDialog";
 import { CreateOrganizationDialog } from "@/components/admin/CreateOrganizationDialog";
+import { SiteAccessManager } from "@/components/admin/SiteAccessManager";
 import { useOrganization, TeamMember, TeamInvitation } from "@/hooks/useOrganization";
 import { 
   ROLE_DESCRIPTIONS,
@@ -233,6 +235,10 @@ export default function AdminUsers() {
                 <Badge variant="secondary" className="ml-1">{invitations.length}</Badge>
               </TabsTrigger>
             )}
+            <TabsTrigger value="sites" className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-initial">
+              <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Laveries</span>
+            </TabsTrigger>
             <TabsTrigger value="permissions" className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-initial">
               <Table2 className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Permissions</span>
@@ -440,6 +446,15 @@ export default function AdminUsers() {
               </Table>
             </div>
           </div>
+        </TabsContent>
+
+        {/* Sites Access Tab */}
+        <TabsContent value="sites" className="space-y-4">
+          <SiteAccessManager 
+            organizationId={organization.id}
+            teamMembers={teamMembers}
+            isAdmin={isAdmin}
+          />
         </TabsContent>
 
         {/* Permissions Tab */}
