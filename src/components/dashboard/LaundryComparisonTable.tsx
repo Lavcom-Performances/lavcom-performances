@@ -1,4 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Building2, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
@@ -36,70 +44,69 @@ export function LaundryComparisonTable({ laundries, className }: LaundryComparis
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="text-left p-3 font-medium text-muted-foreground">Laverie</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">CA</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">% Total</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">Trans.</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">Occup.</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">Seuil rent.</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">Résultat</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">Évol.</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead className="font-medium text-muted-foreground">Laverie</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">CA</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">% Total</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">Trans.</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">Occup.</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">Seuil rent.</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">Résultat</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">Évol.</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {sortedLaundries.map((laundry, index) => {
                 const revenueShare = (laundry.revenue / totalRevenue) * 100;
                 const isProfitable = laundry.estimatedProfit !== null && laundry.estimatedProfit !== undefined && laundry.estimatedProfit >= 0;
                 
                 return (
-                  <tr key={laundry.id} className={cn(
-                    "border-b border-border/50 hover:bg-muted/30 transition-colors",
-                    index === 0 && "bg-lime-50/50"
+                  <TableRow key={laundry.id} className={cn(
+                    index === 0 && "bg-lavcom-green/5"
                   )}>
-                    <td className="p-3">
+                    <TableCell className="py-3">
                       <div className="flex items-center gap-2">
                         <span className={cn(
-                          "w-2 h-2 rounded-full",
-                          index === 0 ? "bg-lime-500" : "bg-primary"
+                          "w-2 h-2 rounded-full shrink-0",
+                          index === 0 ? "bg-lavcom-green" : "bg-primary"
                         )} />
                         <span className="font-medium">{laundry.name}</span>
                         {index === 0 && (
-                          <span className="text-xs bg-lime-100 text-lime-700 px-1.5 py-0.5 rounded">
+                          <span className="text-xs bg-lavcom-green/20 text-lavcom-green px-1.5 py-0.5 rounded">
                             #1
                           </span>
                         )}
                       </div>
-                    </td>
-                    <td className="p-3 text-right font-semibold">
+                    </TableCell>
+                    <TableCell className="text-right font-semibold tabular-nums">
                       {laundry.revenue.toLocaleString('fr-FR')} €
-                    </td>
-                    <td className="p-3 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       <div className="flex items-center gap-2 justify-end">
                         <Progress 
                           value={revenueShare} 
                           className="h-1.5 w-12 [&>div]:bg-primary" 
                         />
-                        <span className="text-muted-foreground w-10">
+                        <span className="text-muted-foreground tabular-nums w-10">
                           {revenueShare.toFixed(1)}%
                         </span>
                       </div>
-                    </td>
-                    <td className="p-3 text-right text-muted-foreground">
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground tabular-nums">
                       {laundry.transactions}
-                    </td>
-                    <td className="p-3 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       <span className={cn(
-                        "font-medium",
-                        laundry.occupancyRate >= 70 ? "text-lime-600" :
-                        laundry.occupancyRate >= 50 ? "text-amber-500" : "text-red-500"
+                        "font-medium tabular-nums",
+                        laundry.occupancyRate >= 70 ? "text-lavcom-green" :
+                        laundry.occupancyRate >= 50 ? "text-amber-500" : "text-destructive"
                       )}>
                         {laundry.occupancyRate}%
                       </span>
-                    </td>
-                    <td className="p-3 text-right">
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
                       {laundry.breakEvenRevenue !== null && laundry.breakEvenRevenue !== undefined ? (
                         <span className="text-muted-foreground">
                           {laundry.breakEvenRevenue.toLocaleString('fr-FR')} €
@@ -107,24 +114,24 @@ export function LaundryComparisonTable({ laundries, className }: LaundryComparis
                       ) : (
                         <span className="text-muted-foreground/50">N/A</span>
                       )}
-                    </td>
-                    <td className="p-3 text-right">
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
                       {laundry.estimatedProfit !== null && laundry.estimatedProfit !== undefined ? (
                         <span className={cn(
                           "font-semibold",
-                          isProfitable ? "text-[#A5C800]" : "text-red-500"
+                          isProfitable ? "text-lavcom-green" : "text-destructive"
                         )}>
                           {isProfitable ? '+' : ''}{laundry.estimatedProfit.toLocaleString('fr-FR')} €
                         </span>
                       ) : (
                         <span className="text-muted-foreground/50">N/A</span>
                       )}
-                    </td>
-                    <td className="p-3 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       <div className={cn(
                         "flex items-center gap-1 justify-end",
-                        laundry.trend > 0 ? "text-lime-600" :
-                        laundry.trend < 0 ? "text-red-500" : "text-muted-foreground"
+                        laundry.trend > 0 ? "text-lavcom-green" :
+                        laundry.trend < 0 ? "text-destructive" : "text-muted-foreground"
                       )}>
                         {laundry.trend > 0 ? (
                           <TrendingUp className="h-4 w-4" />
@@ -133,16 +140,16 @@ export function LaundryComparisonTable({ laundries, className }: LaundryComparis
                         ) : (
                           <Minus className="h-4 w-4" />
                         )}
-                        <span className="text-sm font-medium">
+                        <span className="text-sm font-medium tabular-nums">
                           {laundry.trend > 0 ? "+" : ""}{laundry.trend}%
                         </span>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>

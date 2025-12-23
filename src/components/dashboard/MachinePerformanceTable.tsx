@@ -1,6 +1,14 @@
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { WashingMachine, Wind } from "lucide-react";
 
 interface MachineData {
@@ -31,23 +39,22 @@ export function MachinePerformanceTable({ machines, className }: MachinePerforma
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="text-left p-3 font-medium text-muted-foreground">Machine</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">CA</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">Cycles</th>
-                <th className="text-right p-3 font-medium text-muted-foreground">Occupation</th>
-                <th className="p-3 font-medium text-muted-foreground w-32">Perf.</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead className="font-medium text-muted-foreground">Machine</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">CA</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">Cycles</TableHead>
+                <TableHead className="text-right font-medium text-muted-foreground">Occupation</TableHead>
+                <TableHead className="font-medium text-muted-foreground w-32">Perf.</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {sortedMachines.map((machine, index) => (
-                <tr key={machine.id} className={cn(
-                  "border-b border-border/50 hover:bg-muted/30 transition-colors",
-                  index === 0 && "bg-lime-50/50"
+                <TableRow key={machine.id} className={cn(
+                  index === 0 && "bg-lavcom-green/5"
                 )}>
-                  <td className="p-3">
+                  <TableCell className="py-3">
                     <div className="flex items-center gap-2">
                       {machine.type === "washer" ? (
                         <WashingMachine className="h-4 w-4 text-blue-500" />
@@ -56,37 +63,37 @@ export function MachinePerformanceTable({ machines, className }: MachinePerforma
                       )}
                       <span className="font-medium">{machine.name}</span>
                       {index === 0 && (
-                        <span className="text-xs bg-lime-100 text-lime-700 px-1.5 py-0.5 rounded">
+                        <span className="text-xs bg-lavcom-green/20 text-lavcom-green px-1.5 py-0.5 rounded">
                           Top
                         </span>
                       )}
                     </div>
-                  </td>
-                  <td className="p-3 text-right font-semibold">
+                  </TableCell>
+                  <TableCell className="text-right font-semibold tabular-nums">
                     {machine.revenue.toLocaleString('fr-FR')} €
-                  </td>
-                  <td className="p-3 text-right text-muted-foreground">
+                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground tabular-nums">
                     {machine.cycles}
-                  </td>
-                  <td className="p-3 text-right">
+                  </TableCell>
+                  <TableCell className="text-right">
                     <span className={cn(
-                      "font-medium",
-                      machine.occupancyRate >= 70 ? "text-lime-600" :
-                      machine.occupancyRate >= 50 ? "text-amber-500" : "text-red-500"
+                      "font-medium tabular-nums",
+                      machine.occupancyRate >= 70 ? "text-lavcom-green" :
+                      machine.occupancyRate >= 50 ? "text-amber-500" : "text-destructive"
                     )}>
                       {machine.occupancyRate}%
                     </span>
-                  </td>
-                  <td className="p-3">
+                  </TableCell>
+                  <TableCell>
                     <Progress 
                       value={(machine.revenue / maxRevenue) * 100} 
                       className="h-2 [&>div]:bg-primary" 
                     />
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>
