@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import html2canvas from "html2canvas";
-import { FileDown, Loader2, Eye, FileText } from "lucide-react";
+import { FileDown, Loader2, Eye, FileText, RectangleVertical, RectangleHorizontal } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
+export type PdfOrientation = "portrait" | "landscape";
 
 interface ChartPreview {
   id: string;
@@ -26,6 +29,7 @@ interface ChartPreview {
 export interface PdfExportOptions {
   selectedCharts: string[];
   selectedTables: string[];
+  orientation: PdfOrientation;
 }
 
 interface PdfPreviewDialogProps {
@@ -49,6 +53,7 @@ const TABLE_CONFIGS = [
 
 const STORAGE_KEY_CHARTS = "pdf-export-chart-preferences";
 const STORAGE_KEY_TABLES = "pdf-export-table-preferences";
+const STORAGE_KEY_ORIENTATION = "pdf-export-orientation";
 
 export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDialogProps) {
   const { t } = useTranslation(['app']);
@@ -57,6 +62,7 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
   const [isExporting, setIsExporting] = useState(false);
   const [selectedCharts, setSelectedCharts] = useState<string[]>([]);
   const [selectedTables, setSelectedTables] = useState<string[]>([]);
+  const [orientation, setOrientation] = useState<PdfOrientation>("portrait");
 
   // Load saved preferences from localStorage
   const loadSavedChartPreferences = (): string[] | null => {
@@ -77,11 +83,21 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
     }
   };
 
+  const loadSavedOrientation = (): PdfOrientation | null => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_ORIENTATION);
+      return saved as PdfOrientation | null;
+    } catch {
+      return null;
+    }
+  };
+
   // Save preferences to localStorage
-  const savePreferences = (chartIds: string[], tableIds: string[]) => {
+  const savePreferences = (chartIds: string[], tableIds: string[], orient: PdfOrientation) => {
     try {
       localStorage.setItem(STORAGE_KEY_CHARTS, JSON.stringify(chartIds));
       localStorage.setItem(STORAGE_KEY_TABLES, JSON.stringify(tableIds));
+      localStorage.setItem(STORAGE_KEY_ORIENTATION, orient);
     } catch {
       // Silently fail if localStorage is not available
     }
@@ -93,6 +109,9 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
       // Load table preferences
       const savedTablePrefs = loadSavedTablePreferences();
       setSelectedTables(savedTablePrefs || TABLE_CONFIGS.map(t => t.id));
+      // Load orientation preference
+      const savedOrientation = loadSavedOrientation();
+      setOrientation(savedOrientation || "portrait");
     } else {
       setPreviews([]);
       setIsLoading(true);
@@ -183,8 +202,8 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
     setIsExporting(true);
     try {
       // Save preferences before exporting
-      savePreferences(selectedCharts, selectedTables);
-      await onConfirm({ selectedCharts, selectedTables });
+      savePreferences(selectedCharts, selectedTables, orientation);
+      await onConfirm({ selectedCharts, selectedTables, orientation });
     } finally {
       setIsExporting(false);
       onOpenChange(false);
@@ -229,6 +248,38 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
 
         <ScrollArea className="max-h-[60vh] pr-4">
           <div className="space-y-4">
+            {/* Orientation selection */}
+            <div className="p-4 rounded-lg bg-muted/50 border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold text-sm mb-1">
+                    {t('app:dashboard.export.orientation', 'Orientation')}
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    {orientation === "portrait" 
+                      ? t('app:dashboard.export.portraitDesc', 'Format vertical, idéal pour les tableaux')
+                      : t('app:dashboard.export.landscapeDesc', 'Format horizontal, idéal pour les graphiques')
+                    }
+                  </p>
+                </div>
+                <ToggleGroup 
+                  type="single" 
+                  value={orientation} 
+                  onValueChange={(value) => value && setOrientation(value as PdfOrientation)}
+                  className="border rounded-lg"
+                >
+                  <ToggleGroupItem value="portrait" aria-label="Portrait" className="gap-1.5 px-3">
+                    <RectangleVertical className="h-4 w-4" />
+                    <span className="text-xs hidden sm:inline">Portrait</span>
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="landscape" aria-label="Paysage" className="gap-1.5 px-3">
+                    <RectangleHorizontal className="h-4 w-4" />
+                    <span className="text-xs hidden sm:inline">Paysage</span>
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            </div>
+
             {/* KPIs info */}
             <div className="p-4 rounded-lg bg-muted/50 border">
               <h4 className="font-semibold text-sm mb-2">
