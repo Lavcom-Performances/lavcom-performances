@@ -921,7 +921,13 @@
       "financialPerformance": "Financial Performance",
       "operationalPerformance": "Operational Performance",
       "maintenanceAlerts": "Maintenance Alerts"
-    }
+    },
+    "export": {
+      "button": "Export PDF",
+      "success": "PDF report generated successfully",
+      "noDateRange": "Please select a period"
+    },
+    "allSites": "All laundries"
   },
   "operations": {
     "title": "Operations",

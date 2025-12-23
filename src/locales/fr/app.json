@@ -921,7 +921,13 @@
       "financialPerformance": "Performance financière",
       "operationalPerformance": "Performance opérationnelle",
       "maintenanceAlerts": "Alertes maintenance"
-    }
+    },
+    "export": {
+      "button": "Export PDF",
+      "success": "Rapport PDF généré avec succès",
+      "noDateRange": "Veuillez sélectionner une période"
+    },
+    "allSites": "Toutes les laveries"
   },
   "operations": {
     "title": "Opérations",
