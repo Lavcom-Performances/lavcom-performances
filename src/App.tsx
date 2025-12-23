@@ -37,6 +37,7 @@ import CompanySettings from "./pages/CompanySettings";
 import ProfilePage from "./pages/ProfilePage";
 import SecurityPage from "./pages/SecurityPage";
 import SubscriptionManagement from "./pages/SubscriptionManagement";
+import AcceptInvitation from "./pages/AcceptInvitation";
 
 // Simulation pages (new layout)
 import SimulationProjectPage from "./pages/simulation/SimulationProjectPage";
@@ -85,6 +86,7 @@ const App = () => (
           <Route path="/simulator-payment-success" element={<SimulatorPaymentSuccess />} />
           <Route path="/billing/success" element={<BillingSuccess />} />
           <Route path="/billing/cancel" element={<BillingCancel />} />
+          <Route path="/invitation" element={<AcceptInvitation />} />
           <Route path="/select-laundromat" element={<SelectLaundromat />} />
           <Route path="/company-settings" element={<CompanySettings />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
