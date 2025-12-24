@@ -49,7 +49,152 @@ function parseLine(line: string, separator: string): string[] {
 }
 
 /**
- * Auto-detect column mapping based on header names and sample data
+ * Score a column for being a date column (0-100)
+ */
+function scoreDateColumn(col: CSVColumn): number {
+  let score = 0;
+  const headerLower = col.header.toLowerCase();
+  const samples = col.samples.filter(s => s.trim() !== "");
+
+  // Header-based scoring
+  if (headerLower === "date") score += 50;
+  else if (headerLower.includes("date")) score += 40;
+  else if (headerLower === "jour" || headerLower === "day") score += 35;
+
+  // Data pattern scoring - check all samples
+  if (samples.length > 0) {
+    const dateMatches = samples.filter(s => isDateLike(s)).length;
+    const matchRatio = dateMatches / samples.length;
+    score += Math.round(matchRatio * 50);
+  }
+
+  return Math.min(score, 100);
+}
+
+/**
+ * Score a column for being a time column (0-100)
+ */
+function scoreTimeColumn(col: CSVColumn): number {
+  let score = 0;
+  const headerLower = col.header.toLowerCase();
+  const samples = col.samples.filter(s => s.trim() !== "");
+
+  // Header-based scoring
+  if (headerLower === "heure" || headerLower === "time") score += 50;
+  else if (headerLower.includes("heure") || headerLower.includes("time")) score += 40;
+  else if (headerLower === "horaire" || headerLower === "hour") score += 35;
+
+  // Data pattern scoring
+  if (samples.length > 0) {
+    const timeMatches = samples.filter(s => isTimeLike(s)).length;
+    const matchRatio = timeMatches / samples.length;
+    score += Math.round(matchRatio * 50);
+  }
+
+  return Math.min(score, 100);
+}
+
+/**
+ * Score a column for being an amount column (0-100)
+ */
+function scoreAmountColumn(col: CSVColumn): number {
+  let score = 0;
+  const headerLower = col.header.toLowerCase();
+  const samples = col.samples.filter(s => s.trim() !== "");
+
+  // Header-based scoring
+  if (headerLower.includes("montant") || headerLower.includes("amount")) score += 50;
+  else if (headerLower.includes("prix") || headerLower.includes("price")) score += 45;
+  else if (headerLower.includes("total") || headerLower === "€" || headerLower === "eur") score += 40;
+  else if (headerLower.includes("somme") || headerLower.includes("sum")) score += 35;
+
+  // Data pattern scoring
+  if (samples.length > 0) {
+    const amountMatches = samples.filter(s => isAmountLike(s)).length;
+    const matchRatio = amountMatches / samples.length;
+    score += Math.round(matchRatio * 50);
+  }
+
+  return Math.min(score, 100);
+}
+
+/**
+ * Score a column for being a machine column (0-100)
+ */
+function scoreMachineColumn(col: CSVColumn): number {
+  let score = 0;
+  const headerLower = col.header.toLowerCase();
+  const samples = col.samples.filter(s => s.trim() !== "");
+
+  // Header-based scoring
+  if (headerLower.includes("machine")) score += 50;
+  else if (headerLower.includes("équipement") || headerLower.includes("equipement")) score += 45;
+  else if (headerLower.includes("sélection") || headerLower.includes("selection")) score += 40;
+  else if (headerLower.includes("appareil") || headerLower.includes("device")) score += 35;
+  else if (headerLower.includes("lave") || headerLower.includes("sèche") || headerLower.includes("seche")) score += 30;
+
+  // Data pattern scoring - look for machine-like values
+  if (samples.length > 0) {
+    const machinePatterns = [
+      /^(lave|sèche|seche|machine|m|l|s|lv|sl)/i,
+      /\d+\s*(kg|KG)/,
+      /(lavante|séchante|sechante)/i,
+      /^[A-Z]?\d{1,3}$/,
+    ];
+    const machineMatches = samples.filter(s => 
+      machinePatterns.some(p => p.test(s.trim()))
+    ).length;
+    score += Math.round((machineMatches / samples.length) * 30);
+  }
+
+  return Math.min(score, 100);
+}
+
+/**
+ * Score a column for being a program column (0-100)
+ */
+function scoreProgramColumn(col: CSVColumn): number {
+  let score = 0;
+  const headerLower = col.header.toLowerCase();
+
+  if (headerLower.includes("programme") || headerLower.includes("program")) score += 50;
+  else if (headerLower.includes("cycle")) score += 45;
+  else if (headerLower.includes("type") || headerLower.includes("mode")) score += 25;
+
+  return Math.min(score, 100);
+}
+
+/**
+ * Score a column for being a payment mode column (0-100)
+ */
+function scorePaymentModeColumn(col: CSVColumn): number {
+  let score = 0;
+  const headerLower = col.header.toLowerCase();
+  const samples = col.samples.filter(s => s.trim() !== "");
+
+  // Header-based scoring
+  if (headerLower.includes("paiement") || headerLower.includes("payment")) score += 50;
+  else if (headerLower === "mode" && !headerLower.includes("programme")) score += 30;
+  else if (headerLower === "cb" || headerLower === "esp" || headerLower === "carte") score += 45;
+
+  // Data pattern scoring - look for payment-like values
+  if (samples.length > 0) {
+    const paymentPatterns = [
+      /^(cb|carte|card|esp|espèce|espece|cash|liquide|jetons?|token)/i,
+      /^(visa|mastercard|mc|amex)/i,
+      /^(sans.?contact|contactless|nfc)/i,
+    ];
+    const paymentMatches = samples.filter(s => 
+      paymentPatterns.some(p => p.test(s.trim()))
+    ).length;
+    score += Math.round((paymentMatches / samples.length) * 40);
+  }
+
+  return Math.min(score, 100);
+}
+
+/**
+ * Auto-detect column mapping based on header names and sample data with scoring
  */
 export function autoDetectMapping(columns: CSVColumn[]): ColumnMapping {
   const mapping: ColumnMapping = {
@@ -61,93 +206,110 @@ export function autoDetectMapping(columns: CSVColumn[]): ColumnMapping {
     paymentMode: null,
   };
 
-  columns.forEach((col, index) => {
-    const headerLower = col.header.toLowerCase();
-    const samples = col.samples.filter(s => s.trim() !== "");
+  // Score all columns for each type
+  const scores = columns.map((col, index) => ({
+    index,
+    date: scoreDateColumn(col),
+    time: scoreTimeColumn(col),
+    amount: scoreAmountColumn(col),
+    machine: scoreMachineColumn(col),
+    program: scoreProgramColumn(col),
+    paymentMode: scorePaymentModeColumn(col),
+  }));
 
-    // Date detection
-    if (mapping.date === null && (
-      headerLower.includes("date") ||
-      headerLower === "jour" ||
-      samples.some(s => isDateLike(s))
-    )) {
-      mapping.date = index;
-    }
+  // Minimum threshold for detection
+  const MIN_SCORE = 25;
 
-    // Time detection
-    if (mapping.time === null && (
-      headerLower.includes("heure") ||
-      headerLower === "time" ||
-      headerLower === "horaire" ||
-      samples.some(s => isTimeLike(s))
-    )) {
-      mapping.time = index;
-    }
+  // Find best match for each type (prioritize: date, amount, time, then others)
+  const usedIndices = new Set<number>();
 
-    // Amount detection
-    if (mapping.amount === null && (
-      headerLower.includes("montant") ||
-      headerLower.includes("prix") ||
-      headerLower.includes("amount") ||
-      headerLower.includes("total") ||
-      headerLower === "€" ||
-      samples.some(s => isAmountLike(s))
-    )) {
-      mapping.amount = index;
-    }
+  // Date (required)
+  const bestDate = scores
+    .filter(s => !usedIndices.has(s.index) && s.date >= MIN_SCORE)
+    .sort((a, b) => b.date - a.date)[0];
+  if (bestDate) {
+    mapping.date = bestDate.index;
+    usedIndices.add(bestDate.index);
+  }
 
-    // Machine detection
-    if (mapping.machine === null && (
-      headerLower.includes("machine") ||
-      headerLower.includes("sélection") ||
-      headerLower.includes("selection") ||
-      headerLower.includes("equipement") ||
-      headerLower.includes("équipement")
-    )) {
-      mapping.machine = index;
-    }
+  // Amount (required)
+  const bestAmount = scores
+    .filter(s => !usedIndices.has(s.index) && s.amount >= MIN_SCORE)
+    .sort((a, b) => b.amount - a.amount)[0];
+  if (bestAmount) {
+    mapping.amount = bestAmount.index;
+    usedIndices.add(bestAmount.index);
+  }
 
-    // Program/cycle detection
-    if (mapping.program === null && (
-      headerLower.includes("programme") ||
-      headerLower.includes("cycle") ||
-      headerLower.includes("program")
-    )) {
-      mapping.program = index;
-    }
+  // Time (optional)
+  const bestTime = scores
+    .filter(s => !usedIndices.has(s.index) && s.time >= MIN_SCORE)
+    .sort((a, b) => b.time - a.time)[0];
+  if (bestTime) {
+    mapping.time = bestTime.index;
+    usedIndices.add(bestTime.index);
+  }
 
-    // Payment mode detection
-    if (mapping.paymentMode === null && (
-      headerLower.includes("paiement") ||
-      headerLower.includes("payment") ||
-      headerLower.includes("mode") ||
-      headerLower === "cb" ||
-      headerLower === "esp"
-    )) {
-      mapping.paymentMode = index;
-    }
-  });
+  // Machine (optional)
+  const bestMachine = scores
+    .filter(s => !usedIndices.has(s.index) && s.machine >= MIN_SCORE)
+    .sort((a, b) => b.machine - a.machine)[0];
+  if (bestMachine) {
+    mapping.machine = bestMachine.index;
+    usedIndices.add(bestMachine.index);
+  }
+
+  // Program (optional)
+  const bestProgram = scores
+    .filter(s => !usedIndices.has(s.index) && s.program >= MIN_SCORE)
+    .sort((a, b) => b.program - a.program)[0];
+  if (bestProgram) {
+    mapping.program = bestProgram.index;
+    usedIndices.add(bestProgram.index);
+  }
+
+  // Payment mode (optional)
+  const bestPayment = scores
+    .filter(s => !usedIndices.has(s.index) && s.paymentMode >= MIN_SCORE)
+    .sort((a, b) => b.paymentMode - a.paymentMode)[0];
+  if (bestPayment) {
+    mapping.paymentMode = bestPayment.index;
+  }
 
   return mapping;
 }
 
 function isDateLike(value: string): boolean {
-  // French date format DD/MM/YYYY or DD-MM-YYYY
-  if (/^\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}$/.test(value)) return true;
+  const v = value.trim();
+  // French date format DD/MM/YYYY or DD-MM-YYYY or DD.MM.YYYY
+  if (/^\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}$/.test(v)) return true;
   // ISO format YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return true;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return true;
+  // European format with time: DD/MM/YYYY HH:MM
+  if (/^\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}\s+\d{1,2}:\d{2}/.test(v)) return true;
+  // ISO with time: YYYY-MM-DDTHH:MM
+  if (/^\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}/.test(v)) return true;
   return false;
 }
 
 function isTimeLike(value: string): boolean {
+  const v = value.trim();
   // HH:MM or HH:MM:SS
-  return /^\d{1,2}:\d{2}(:\d{2})?$/.test(value);
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(v)) return true;
+  // HHhMM format (French)
+  if (/^\d{1,2}h\d{2}$/i.test(v)) return true;
+  return false;
 }
 
 function isAmountLike(value: string): boolean {
-  // Numbers with comma or point as decimal separator
-  const cleaned = value.replace(/[€\s]/g, "").replace(",", ".");
-  return !isNaN(parseFloat(cleaned)) && parseFloat(cleaned) > 0;
+  const v = value.trim();
+  // Skip if looks like a date or time
+  if (isDateLike(v) || isTimeLike(v)) return false;
+  // Remove currency symbols and spaces
+  const cleaned = v.replace(/[€$£\s]/g, "").replace(",", ".");
+  const num = parseFloat(cleaned);
+  // Valid amount: positive number, typically between 0.01 and 10000
+  return !isNaN(num) && num > 0 && num < 10000;
 }
 
 /**
