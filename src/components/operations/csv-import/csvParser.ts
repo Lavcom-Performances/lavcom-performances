@@ -402,6 +402,28 @@ export function calculateSummary(parsedRows: ParsedRow[]): ImportSummary {
   const dates = validRows.map((r) => r.date).filter((d): d is Date => d !== undefined);
   const amounts = validRows.map((r) => r.amount).filter((a): a is number => a !== undefined);
 
+  // Calculate daily breakdown
+  const dailyMap = new Map<string, { amount: number; count: number }>();
+  validRows.forEach((row) => {
+    if (row.date && row.amount) {
+      const dateKey = row.date.toISOString().split('T')[0];
+      const existing = dailyMap.get(dateKey) || { amount: 0, count: 0 };
+      dailyMap.set(dateKey, {
+        amount: existing.amount + row.amount,
+        count: existing.count + 1,
+      });
+    }
+  });
+
+  // Convert to sorted array
+  const dailyBreakdown = Array.from(dailyMap.entries())
+    .map(([date, data]) => ({
+      date,
+      amount: Math.round(data.amount * 100) / 100,
+      count: data.count,
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
   return {
     totalRows: parsedRows.length,
     validRows: validRows.length,
@@ -409,5 +431,6 @@ export function calculateSummary(parsedRows: ParsedRow[]): ImportSummary {
     minDate: dates.length > 0 ? new Date(Math.min(...dates.map((d) => d.getTime()))) : null,
     maxDate: dates.length > 0 ? new Date(Math.max(...dates.map((d) => d.getTime()))) : null,
     totalAmount: amounts.reduce((sum, a) => sum + a, 0),
+    dailyBreakdown,
   };
 }
