@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
+import { ParsedDataPreview } from "./ParsedDataPreview";
 
 interface CSVPreviewTableProps {
   columns: CSVColumn[];
@@ -207,6 +208,11 @@ export function CSVPreviewTable({
           </Table>
         </div>
       </div>
+
+      {/* Parsed data preview - shows after mapping is complete */}
+      {status.isValid && (
+        <ParsedDataPreview mapping={mapping} rows={previewRows} />
+      )}
 
       {/* Helper text */}
       <p className="text-xs text-muted-foreground">
