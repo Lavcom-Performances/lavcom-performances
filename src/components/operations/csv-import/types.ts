@@ -25,6 +25,12 @@ export interface ParsedRow {
   rawData: string[];
 }
 
+export interface DailyAmount {
+  date: string;
+  amount: number;
+  count: number;
+}
+
 export interface ImportSummary {
   totalRows: number;
   validRows: number;
@@ -32,6 +38,7 @@ export interface ImportSummary {
   minDate: Date | null;
   maxDate: Date | null;
   totalAmount: number;
+  dailyBreakdown: DailyAmount[];
 }
 
 export interface ImportResult {
