@@ -11,14 +11,14 @@ const corsHeaders = {
 // addon_kind -> tier -> { priceId, amount }
 const ADDON_PRICES: Record<string, Record<string, { priceId: string; amountTtc: number }>> = {
   extension_30d: {
-    essential: { priceId: "price_1Sh8SIB849ikvSjD6XKmxDUP", amountTtc: 39 }, // TODO: Update with tier-specific price
-    project: { priceId: "price_1Sh8SIB849ikvSjD6XKmxDUP", amountTtc: 59 },   // TODO: Update with tier-specific price
-    comparator: { priceId: "price_1Sh8SIB849ikvSjD6XKmxDUP", amountTtc: 79 }, // TODO: Update with tier-specific price
+    essential: { priceId: "price_1Sh8SIB849ikvSjD6XKmxDUP", amountTtc: 39 },
+    project: { priceId: "price_1ShdNZB849ikvSjDFNIwsP7W", amountTtc: 59 },
+    comparator: { priceId: "price_1ShdPqB849ikvSjDqaT6HxEK", amountTtc: 79 },
   },
   project_plus1: {
-    essential: { priceId: "price_1Sh8RcB849ikvSjDFSw33u5y", amountTtc: 29 }, // TODO: Update with tier-specific price
-    project: { priceId: "price_1Sh8RcB849ikvSjDFSw33u5y", amountTtc: 39 },   // TODO: Update with tier-specific price
-    // comparator has unlimited projects, no add-on available
+    essential: { priceId: "price_1Sh8RcB849ikvSjDFSw33u5y", amountTtc: 29 },
+    project: { priceId: "price_1ShdWYB849ikvSjDxfYSBpi8", amountTtc: 39 },
+    comparator: { priceId: "price_1ShdXNB849ikvSjDXhk7fmE5", amountTtc: 49 },
   },
 };
 
