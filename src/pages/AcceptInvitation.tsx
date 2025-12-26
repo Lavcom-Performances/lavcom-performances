@@ -69,43 +69,38 @@ export default function AcceptInvitation() {
 
   const validateInvitation = async (inviteToken: string) => {
     try {
-      // Query invitation by token - we need to use service role or make token column accessible
-      const { data, error } = await supabase
-        .from('team_invitations')
-        .select('id, email, role, organization_id, expires_at, accepted_at')
-        .eq('token', inviteToken)
-        .maybeSingle();
+      // Use Edge Function to validate token securely (bypasses RLS, no token exposure)
+      const { data, error } = await supabase.functions.invoke('validate-invitation', {
+        body: { token: inviteToken }
+      });
 
       if (error) throw error;
 
-      if (!data) {
+      if (!data || data.status === 'error') {
+        setStatus('error');
+        return;
+      }
+
+      if (data.status === 'not_found') {
         setStatus('not_found');
         return;
       }
 
-      if (data.accepted_at) {
+      if (data.status === 'already_accepted') {
         setStatus('already_accepted');
         return;
       }
 
-      if (new Date(data.expires_at) < new Date()) {
+      if (data.status === 'expired') {
         setStatus('expired');
         return;
       }
 
-      // Get organization name
-      const { data: orgData } = await supabase
-        .from('organizations')
-        .select('name')
-        .eq('id', data.organization_id)
-        .single();
-
-      setInvitation({
-        ...data,
-        organization_name: orgData?.name || 'Organisation'
-      });
-      setEmail(data.email);
-      setStatus('valid');
+      if (data.status === 'valid' && data.invitation) {
+        setInvitation(data.invitation);
+        setEmail(data.invitation.email);
+        setStatus('valid');
+      }
     } catch (error) {
       console.error('Error validating invitation:', error);
       setStatus('error');
