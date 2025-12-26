@@ -12,7 +12,7 @@ const SIMULATOR_PACKS: Record<string, { priceId: string; accessDays: number; max
   essential: { priceId: "price_1Sh8OBB849ikvSjD4vraisPU", accessDays: 30, maxProjects: 1, amountTtc: 79 },
   project: { priceId: "price_1Sh8P9B849ikvSjD2wT6zlUp", accessDays: 90, maxProjects: 3, amountTtc: 149 },
   comparator: { priceId: "price_1Sh8Q0B849ikvSjDyDYUvewo", accessDays: 180, maxProjects: 10, amountTtc: 229 },
-  premium: { priceId: "price_1Sh8Q0B849ikvSjDyDYUvewo", accessDays: 90, maxProjects: 3, amountTtc: 279 },
+  premium: { priceId: "price_1Sh8QjB849ikvSjDvYjSHo57", accessDays: 90, maxProjects: 3, amountTtc: 279 },
 };
 
 const logStep = (step: string, details?: unknown) => {
