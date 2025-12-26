@@ -20,6 +20,7 @@ import { CSVPreviewTable } from "./csv-import/CSVPreviewTable";
 import { CSVImportSummary } from "./csv-import/CSVImportSummary";
 import { CSVImportResult } from "./csv-import/CSVImportResult";
 import { SiteSelector } from "./csv-import/SiteSelector";
+import { ErrorRowsEditor } from "./csv-import/ErrorRowsEditor";
 import {
   CSVColumn,
   ColumnMapping,
@@ -213,6 +214,10 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
     }));
   }, []);
 
+  const handleRowsChange = useCallback((updatedRows: string[][]) => {
+    setRows(updatedRows);
+  }, []);
+
   const handleImport = useCallback(async () => {
     if (!canImport || !selectedSiteId || !selectedFile) {
       if (mapping.date === null) {
@@ -380,6 +385,16 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
                 onMappingChange={handleMappingChange}
                 previewRows={rows}
               />
+
+              {/* Error rows editor */}
+              {summary.invalidRows > 0 && (
+                <ErrorRowsEditor
+                  rows={rows}
+                  mapping={mapping}
+                  parsedRows={parsedRows}
+                  onRowsChange={handleRowsChange}
+                />
+              )}
 
               {summary.validRows > 0 && (
                 <CSVImportSummary summary={summary} />
