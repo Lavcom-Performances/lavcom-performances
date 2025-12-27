@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { Upload, ArrowLeft, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { Upload, ArrowLeft, ArrowRight, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Dialog,
@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useSites } from "@/hooks/useSites";
 import { useOperationsImport } from "@/hooks/useOperationsImport";
@@ -33,8 +34,15 @@ import {
   parseRows,
   calculateSummary,
 } from "./csv-import/csvParser";
+import {
+  detectEventsFormat,
+  parseEventsCSV,
+  calculateEventsSummary,
+  EventsParsedRow,
+} from "./csv-import/eventsParser";
 
 type ImportStep = "upload" | "preview" | "result";
+type CSVFormat = "standard" | "events";
 
 interface CSVImportDialogProps {
   open: boolean;
@@ -56,6 +64,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
+  const [detectedFormat, setDetectedFormat] = useState<CSVFormat>("standard");
   
   // CSV parsing state
   const [columns, setColumns] = useState<CSVColumn[]>([]);
@@ -68,6 +77,9 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
     program: null,
     paymentMode: null,
   });
+  
+  // Events format parsed rows (bypasses standard mapping)
+  const [eventsParsedRows, setEventsParsedRows] = useState<EventsParsedRow[]>([]);
   
   // Import state
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
@@ -83,20 +95,30 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
     }
   }, [sites, selectedSiteId, getDefaultSite]);
 
-  // Computed values
+  // Computed values - use Events rows if format is Events, otherwise standard parsing
   const parsedRows = useMemo(() => {
+    if (detectedFormat === "events") {
+      return eventsParsedRows;
+    }
     if (rows.length === 0 || (mapping.date === null && mapping.amount === null)) {
       return [];
     }
     return parseRows(rows, mapping);
-  }, [rows, mapping]);
+  }, [rows, mapping, detectedFormat, eventsParsedRows]);
 
   const summary = useMemo(() => {
+    if (detectedFormat === "events") {
+      return calculateEventsSummary(eventsParsedRows);
+    }
     return calculateSummary(parsedRows);
-  }, [parsedRows]);
+  }, [parsedRows, detectedFormat, eventsParsedRows]);
 
   const canProceedToPreview = selectedFile !== null && selectedSiteId !== null;
-  const canImport = mapping.date !== null && mapping.amount !== null && summary.validRows > 0;
+  
+  // For Events format, we can import as soon as there are valid rows (no manual mapping needed)
+  const canImport = detectedFormat === "events" 
+    ? summary.validRows > 0 
+    : mapping.date !== null && mapping.amount !== null && summary.validRows > 0;
 
   // Event handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -150,6 +172,8 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
     setSelectedFile(null);
     setColumns([]);
     setRows([]);
+    setEventsParsedRows([]);
+    setDetectedFormat("standard");
     setMapping({
       date: null,
       time: null,
@@ -172,6 +196,35 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
 
     try {
       const text = await selectedFile.text();
+      
+      // First, check if this is an Events format CSV
+      if (detectEventsFormat(text)) {
+        console.log("Detected Events CSV format");
+        const eventsRows = parseEventsCSV(text);
+        
+        if (eventsRows.length === 0) {
+          toast({
+            title: "Fichier vide",
+            description: "Le fichier ne contient aucune transaction de vente (type 'vend').",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        // Validate line count
+        const lineValidation = validateLines(eventsRows.length);
+        if (!lineValidation.valid && lineValidation.errorKey) {
+          setValidationError(showFileError(lineValidation.errorKey));
+          return;
+        }
+        
+        setDetectedFormat("events");
+        setEventsParsedRows(eventsRows);
+        setCurrentStep("preview");
+        return;
+      }
+      
+      // Standard CSV parsing
       const { columns: parsedColumns, rows: parsedRows } = parseCSVToColumns(text);
       
       if (parsedColumns.length === 0) {
@@ -190,6 +243,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
         return;
       }
 
+      setDetectedFormat("standard");
       setColumns(parsedColumns);
       setRows(parsedRows);
       
@@ -277,6 +331,8 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
     setSelectedFile(null);
     setColumns([]);
     setRows([]);
+    setEventsParsedRows([]);
+    setDetectedFormat("standard");
     setMapping({
       date: null,
       time: null,
@@ -301,7 +357,9 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
       case "upload":
         return "Importer un fichier CSV";
       case "preview":
-        return "Vérifiez le mapping";
+        return detectedFormat === "events" 
+          ? "Format Events détecté" 
+          : "Vérifiez le mapping";
       case "result":
         return "Résultat de l'import";
     }
@@ -310,9 +368,11 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
   const getStepDescription = () => {
     switch (currentStep) {
       case "upload":
-        return "Importez les fichiers CSV exportés depuis votre centrale de paiement. Format actuel : export LM Control.";
+        return "Importez les fichiers CSV exportés depuis votre centrale de paiement. Formats supportés : Events, LM Control.";
       case "preview":
-        return "Vérifiez que les colonnes sont bien associées aux bons champs. Ajustez si nécessaire.";
+        return detectedFormat === "events"
+          ? "Le format Events a été automatiquement reconnu. Les montants sont convertis de centimes en euros."
+          : "Vérifiez que les colonnes sont bien associées aux bons champs. Ajustez si nécessaire.";
       case "result":
         return "";
     }
@@ -379,15 +439,74 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
           {/* Step: Preview & Mapping */}
           {currentStep === "preview" && (
             <>
-              <CSVPreviewTable
-                columns={columns}
-                mapping={mapping}
-                onMappingChange={handleMappingChange}
-                previewRows={rows}
-              />
+              {/* Events format auto-detected banner */}
+              {detectedFormat === "events" && (
+                <Alert className="border-lavcom-green/50 bg-lavcom-green/10">
+                  <CheckCircle className="h-4 w-4 text-lavcom-green" />
+                  <AlertDescription className="text-foreground">
+                    <span className="font-medium">Format Events détecté automatiquement</span>
+                    <span className="mx-2">•</span>
+                    <Badge variant="secondary" className="mr-2">CB / ESP</Badge>
+                    <Badge variant="secondary">Centimes → Euros</Badge>
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              {/* Standard format: show mapping table */}
+              {detectedFormat === "standard" && (
+                <CSVPreviewTable
+                  columns={columns}
+                  mapping={mapping}
+                  onMappingChange={handleMappingChange}
+                  previewRows={rows}
+                />
+              )}
+              
+              {/* Events format: show preview of parsed data */}
+              {detectedFormat === "events" && eventsParsedRows.length > 0 && (
+                <div className="space-y-4">
+                  <div className="text-sm text-muted-foreground">
+                    Aperçu des {Math.min(5, eventsParsedRows.length)} premières lignes :
+                  </div>
+                  <div className="border rounded-lg overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-muted">
+                          <tr>
+                            <th className="px-3 py-2 text-left font-medium">Date</th>
+                            <th className="px-3 py-2 text-left font-medium">Heure</th>
+                            <th className="px-3 py-2 text-left font-medium">Machine</th>
+                            <th className="px-3 py-2 text-left font-medium">Mode</th>
+                            <th className="px-3 py-2 text-right font-medium">Prix €</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {eventsParsedRows.slice(0, 5).map((row, idx) => (
+                            <tr key={idx} className="border-t">
+                              <td className="px-3 py-2">
+                                {row.date ? row.date.toLocaleDateString('fr-FR') : '-'}
+                              </td>
+                              <td className="px-3 py-2">{row.time || '-'}</td>
+                              <td className="px-3 py-2">{row.machine || '-'}</td>
+                              <td className="px-3 py-2">
+                                <Badge variant={row.paymentMode === 'CB' ? 'default' : 'secondary'}>
+                                  {row.paymentMode || '-'}
+                                </Badge>
+                              </td>
+                              <td className="px-3 py-2 text-right font-medium">
+                                {row.amount?.toFixed(2)} €
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-              {/* Error rows editor */}
-              {summary.invalidRows > 0 && (
+              {/* Error rows editor - only for standard format */}
+              {detectedFormat === "standard" && summary.invalidRows > 0 && (
                 <ErrorRowsEditor
                   rows={rows}
                   mapping={mapping}

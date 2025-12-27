@@ -139,44 +139,62 @@ export type Database = {
       operations: {
         Row: {
           amount: number
+          change_eur: number | null
           created_at: string
           id: string
           import_batch_id: string | null
+          inserted_eur: number | null
           machine: string | null
+          machine_name: string | null
           operation_date: string
           operation_time: string | null
           payment_mode: string | null
+          price_eur: number | null
           program: string | null
+          raw: Json | null
           raw_data: Json | null
           site_id: string
+          source: string
           user_id: string
         }
         Insert: {
           amount: number
+          change_eur?: number | null
           created_at?: string
           id?: string
           import_batch_id?: string | null
+          inserted_eur?: number | null
           machine?: string | null
+          machine_name?: string | null
           operation_date: string
           operation_time?: string | null
           payment_mode?: string | null
+          price_eur?: number | null
           program?: string | null
+          raw?: Json | null
           raw_data?: Json | null
           site_id: string
+          source?: string
           user_id: string
         }
         Update: {
           amount?: number
+          change_eur?: number | null
           created_at?: string
           id?: string
           import_batch_id?: string | null
+          inserted_eur?: number | null
           machine?: string | null
+          machine_name?: string | null
           operation_date?: string
           operation_time?: string | null
           payment_mode?: string | null
+          price_eur?: number | null
           program?: string | null
+          raw?: Json | null
           raw_data?: Json | null
           site_id?: string
+          source?: string
           user_id?: string
         }
         Relationships: [
