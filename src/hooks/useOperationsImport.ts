@@ -2,7 +2,13 @@ import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ParsedRow, ImportResult } from "@/components/operations/csv-import/types";
+import { EventsParsedRow } from "@/components/operations/csv-import/eventsParser";
 import { format } from "date-fns";
+
+// Type guard to check if row is EventsParsedRow
+function isEventsParsedRow(row: ParsedRow): row is EventsParsedRow {
+  return 'source' in row && (row as EventsParsedRow).source === 'events_csv';
+}
 
 export function useOperationsImport() {
   const { user } = useAuth();
@@ -58,18 +64,39 @@ export function useOperationsImport() {
         }
 
         // Prepare operations for insert
-        const operations = validRows.map((row) => ({
-          user_id: user.id,
-          site_id: siteId,
-          operation_date: row.date ? format(row.date, "yyyy-MM-dd") : null,
-          operation_time: row.time || null,
-          amount: row.amount,
-          machine: row.machine || null,
-          program: row.program || null,
-          payment_mode: row.paymentMode || null,
-          raw_data: { original: row.rawData },
-          import_batch_id: batch.id,
-        }));
+        const operations = validRows.map((row) => {
+          // Base operation data
+          const baseOperation = {
+            user_id: user.id,
+            site_id: siteId,
+            operation_date: row.date ? format(row.date, "yyyy-MM-dd") : null,
+            operation_time: row.time || null,
+            amount: row.amount,
+            machine: row.machine || null,
+            program: row.program || null,
+            payment_mode: row.paymentMode || null,
+            raw_data: { original: row.rawData },
+            import_batch_id: batch.id,
+          };
+          
+          // Extended fields for Events format
+          if (isEventsParsedRow(row)) {
+            return {
+              ...baseOperation,
+              inserted_eur: row.insertedEur || null,
+              price_eur: row.priceEur || null,
+              change_eur: row.changeEur || null,
+              machine_name: row.machineName || null,
+              source: 'events_csv',
+              raw: row.rawData ? { original: row.rawData } : null,
+            };
+          }
+          
+          return {
+            ...baseOperation,
+            source: 'manual',
+          };
+        });
 
         // Insert operations in batches of 500
         const BATCH_SIZE = 500;

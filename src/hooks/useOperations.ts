@@ -14,6 +14,12 @@ export interface Operation {
   payment_mode: string | null;
   site_id: string;
   created_at: string;
+  // Extended fields for Events format
+  inserted_eur?: number | null;
+  price_eur?: number | null;
+  change_eur?: number | null;
+  machine_name?: string | null;
+  source?: string | null;
 }
 
 export interface OperationsFilters {
