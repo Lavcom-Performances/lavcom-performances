@@ -39,7 +39,7 @@ import { useSites } from "@/hooks/useSites";
 import { SEOHead } from "@/components/seo/SEOHead";
 
 const paymentModeBadge = (mode: string | null) => {
-  if (!mode) return <span className="text-muted-foreground">-</span>;
+  if (!mode) return <span className="text-muted-foreground">—</span>;
   
   const modeUpper = mode.toUpperCase();
   switch (modeUpper) {
@@ -50,8 +50,18 @@ const paymentModeBadge = (mode: string | null) => {
     case "FI":
       return <span className="badge-fi">FI</span>;
     default:
-      return <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded-full text-xs">{mode}</span>;
+      return <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded-full text-xs font-medium">{mode}</span>;
   }
+};
+
+const formatCurrency = (value: number | null | undefined) => {
+  if (value === null || value === undefined || value === 0) return <span className="text-muted-foreground">—</span>;
+  return <span className="font-medium">{value.toFixed(2)} €</span>;
+};
+
+const formatRendu = (value: number | null | undefined) => {
+  if (value === null || value === undefined || value === 0) return <span className="text-muted-foreground">—</span>;
+  return <span className="badge-rendu">{value.toFixed(2)} €</span>;
 };
 
 export default function Operations() {
@@ -466,38 +476,59 @@ export default function Operations() {
 
       {/* Table */}
       <div className="card-lavcom overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead>Date</TableHead>
-              <TableHead>Heure</TableHead>
-              <TableHead>Machine</TableHead>
-              <TableHead>Mode</TableHead>
-              <TableHead className="text-right">Montant</TableHead>
-              <TableHead>Programme</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {operations.slice(0, 100).map((op) => (
-              <TableRow key={op.id} className="hover:bg-muted/30">
-                <TableCell className="font-medium">
-                  {format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr })}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {op.operation_time || "-"}
-                </TableCell>
-                <TableCell className="font-medium">{op.machine || "-"}</TableCell>
-                <TableCell>{paymentModeBadge(op.payment_mode)}</TableCell>
-                <TableCell className="text-right font-medium">
-                  {Number(op.amount).toFixed(2)} €
-                </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
-                  {op.program || "-"}
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50">
+                <TableHead>Date</TableHead>
+                <TableHead>Heure</TableHead>
+                <TableHead>Machine</TableHead>
+                <TableHead>Mode</TableHead>
+                <TableHead className="text-right">Inséré</TableHead>
+                <TableHead className="text-right">Prix</TableHead>
+                <TableHead className="text-right">Rendu</TableHead>
+                <TableHead className="text-right">Prix CB</TableHead>
+                <TableHead className="text-right">Prix ESP</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {operations.slice(0, 100).map((op) => {
+                const modeUpper = op.payment_mode?.toUpperCase();
+                const isCB = modeUpper === "CB";
+                const isESP = modeUpper === "ESP";
+                const price = op.price_eur ?? Number(op.amount);
+                
+                return (
+                  <TableRow key={op.id} className="hover:bg-muted/30">
+                    <TableCell className="font-medium whitespace-nowrap">
+                      {format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr })}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {op.operation_time?.slice(0, 5) || "—"}
+                    </TableCell>
+                    <TableCell className="font-medium">{op.machine_name || op.machine || "—"}</TableCell>
+                    <TableCell>{paymentModeBadge(op.payment_mode)}</TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(isESP ? op.inserted_eur : null)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(price)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatRendu(isESP ? op.change_eur : null)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(isCB ? price : null)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(isESP ? price : null)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
         
         {operations.length === 0 && (
           <div className="p-12 text-center text-muted-foreground">
