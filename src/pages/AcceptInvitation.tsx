@@ -108,7 +108,7 @@ export default function AcceptInvitation() {
   };
 
   const acceptInvitation = async () => {
-    if (!invitation || !user) return;
+    if (!invitation || !user || !token) return;
 
     // Check if the user email matches the invitation email
     if (user.email?.toLowerCase() !== invitation.email.toLowerCase()) {
@@ -118,33 +118,19 @@ export default function AcceptInvitation() {
 
     setIsAccepting(true);
     try {
-      // Create user role in the organization
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: user.id,
-          organization_id: invitation.organization_id,
-          role: invitation.role as 'super_admin' | 'admin' | 'checker' | 'user' | 'guest'
-        });
+      // Use Edge Function to accept invitation securely
+      const { data, error } = await supabase.functions.invoke('accept-invitation', {
+        body: { token }
+      });
 
-      if (roleError) {
-        if (roleError.code === '23505') {
-          toast.error('Vous êtes déjà membre de cette organisation');
-        } else {
-          throw roleError;
-        }
+      if (error) throw error;
+
+      if (!data?.success) {
+        toast.error(data?.error || 'Erreur lors de l\'acceptation');
         return;
       }
 
-      // Mark invitation as accepted
-      const { error: updateError } = await supabase
-        .from('team_invitations')
-        .update({ accepted_at: new Date().toISOString() })
-        .eq('id', invitation.id);
-
-      if (updateError) throw updateError;
-
-      toast.success('Invitation acceptée ! Bienvenue dans l\'équipe.');
+      toast.success(data.message || 'Invitation acceptée ! Bienvenue dans l\'équipe.');
       navigate('/dashboard');
     } catch (error: any) {
       console.error('Error accepting invitation:', error);
