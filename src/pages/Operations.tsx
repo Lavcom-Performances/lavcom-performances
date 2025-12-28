@@ -4,7 +4,7 @@ import { DateRange } from "react-day-picker";
 import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
-import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -272,6 +272,83 @@ export default function Operations() {
     }
   };
 
+  const handleExportCsv = () => {
+    if (!dateRange?.from || !dateRange?.to) {
+      toast({
+        title: t('app:operations.selectPeriod'),
+        description: t('app:operations.selectPeriodDesc'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // CSV headers
+      const headers = [
+        'Date',
+        'Heure',
+        'Machine',
+        'Mode',
+        'Inséré (€)',
+        'Prix (€)',
+        'Rendu (€)',
+        'Prix CB (€)',
+        'Prix ESP (€)'
+      ];
+
+      // Transform operations to CSV rows
+      const rows = operations.map(op => {
+        const modeUpper = op.payment_mode?.toUpperCase();
+        const isCB = modeUpper === "CB";
+        const isESP = modeUpper === "ESP";
+        const price = op.price_eur ?? Number(op.amount);
+
+        return [
+          format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr }),
+          op.operation_time?.slice(0, 5) || "",
+          op.machine_name || op.machine || "",
+          op.payment_mode?.toUpperCase() || "",
+          isESP && op.inserted_eur ? op.inserted_eur.toFixed(2) : "",
+          price.toFixed(2),
+          isESP && op.change_eur ? op.change_eur.toFixed(2) : "",
+          isCB ? price.toFixed(2) : "",
+          isESP ? price.toFixed(2) : ""
+        ];
+      });
+
+      // Build CSV content with BOM for Excel compatibility
+      const BOM = '\uFEFF';
+      const csvContent = BOM + [
+        headers.join(';'),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(';'))
+      ].join('\n');
+
+      // Create and download the file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const dateFromStr = format(dateRange.from, 'yyyy-MM-dd');
+      const dateToStr = format(dateRange.to, 'yyyy-MM-dd');
+      link.href = url;
+      link.download = `operations_${selectedSite?.name || 'laverie'}_${dateFromStr}_${dateToStr}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Export CSV réussi",
+        description: `${operations.length} opérations exportées`,
+      });
+    } catch (error) {
+      toast({
+        title: t('common:error'),
+        description: "Erreur lors de l'export CSV",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleImportComplete = (count: number) => {
     // Refresh operations after import
     refetch();
@@ -356,11 +433,19 @@ export default function Operations() {
           </Button>
           <Button 
             variant="outline"
+            onClick={handleExportCsv}
+            disabled={operations.length === 0}
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            CSV
+          </Button>
+          <Button 
+            variant="outline"
             onClick={handleExportPdf}
             disabled={isExporting || operations.length === 0}
           >
             <Download className="h-4 w-4 mr-2" />
-            {isExporting ? t('app:operations.exporting') : t('app:operations.export')}
+            {isExporting ? t('app:operations.exporting') : "PDF"}
           </Button>
         </div>
       </div>
