@@ -4,7 +4,7 @@ import { DateRange } from "react-day-picker";
 import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
-import { Search, Download, Upload, Loader2, History } from "lucide-react";
+import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -122,6 +122,10 @@ export default function Operations() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 50;
 
   // Sync date range changes to URL
   const handleDateChange = (range: DateRange | undefined) => {
@@ -492,40 +496,47 @@ export default function Operations() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {operations.slice(0, 100).map((op) => {
-                const modeUpper = op.payment_mode?.toUpperCase();
-                const isCB = modeUpper === "CB";
-                const isESP = modeUpper === "ESP";
-                const price = op.price_eur ?? Number(op.amount);
+              {(() => {
+                const totalPages = Math.ceil(operations.length / pageSize);
+                const startIndex = (currentPage - 1) * pageSize;
+                const endIndex = startIndex + pageSize;
+                const paginatedOps = operations.slice(startIndex, endIndex);
                 
-                return (
-                  <TableRow key={op.id} className="hover:bg-muted/30">
-                    <TableCell className="font-medium whitespace-nowrap">
-                      {format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr })}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {op.operation_time?.slice(0, 5) || "—"}
-                    </TableCell>
-                    <TableCell className="font-medium">{op.machine_name || op.machine || "—"}</TableCell>
-                    <TableCell>{paymentModeBadge(op.payment_mode)}</TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(isESP ? op.inserted_eur : null)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(price)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatRendu(isESP ? op.change_eur : null)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(isCB ? price : null)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(isESP ? price : null)}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                return paginatedOps.map((op) => {
+                  const modeUpper = op.payment_mode?.toUpperCase();
+                  const isCB = modeUpper === "CB";
+                  const isESP = modeUpper === "ESP";
+                  const price = op.price_eur ?? Number(op.amount);
+                  
+                  return (
+                    <TableRow key={op.id} className="hover:bg-muted/30">
+                      <TableCell className="font-medium whitespace-nowrap">
+                        {format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr })}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {op.operation_time?.slice(0, 5) || "—"}
+                      </TableCell>
+                      <TableCell className="font-medium">{op.machine_name || op.machine || "—"}</TableCell>
+                      <TableCell>{paymentModeBadge(op.payment_mode)}</TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(isESP ? op.inserted_eur : null)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(price)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatRendu(isESP ? op.change_eur : null)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(isCB ? price : null)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrency(isESP ? price : null)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                });
+              })()}
             </TableBody>
           </Table>
         </div>
@@ -538,9 +549,60 @@ export default function Operations() {
           </div>
         )}
         
-        {operations.length > 100 && (
-          <div className="p-4 text-center text-sm text-muted-foreground border-t">
-            Affichage limité aux 100 premières opérations. Affinez vos filtres pour voir plus de détails.
+        {/* Pagination */}
+        {operations.length > pageSize && (
+          <div className="p-4 border-t flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, operations.length)} sur {operations.length} opérations
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Précédent
+              </Button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, Math.ceil(operations.length / pageSize)) }, (_, i) => {
+                  const totalPages = Math.ceil(operations.length / pageSize);
+                  let pageNum: number;
+                  
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      className="w-9"
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.min(Math.ceil(operations.length / pageSize), p + 1))}
+                disabled={currentPage >= Math.ceil(operations.length / pageSize)}
+              >
+                Suivant
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         )}
       </div>
