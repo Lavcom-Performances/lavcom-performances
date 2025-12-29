@@ -706,6 +706,23 @@ export default function Operations() {
             </Button>
           )}
         </div>
+        
+        {/* Results counter */}
+        <div className="flex items-center justify-between pt-2 border-t border-border/50">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">{operations.length}</span>
+            {operations.length !== rawOperations.length && (
+              <span> sur <span className="font-medium">{rawOperations.length}</span></span>
+            )}
+            {" "}opération{operations.length > 1 ? "s" : ""}
+            {operations.length !== rawOperations.length && " (filtrées)"}
+          </p>
+          {operations.length > 0 && (
+            <p className="text-sm text-muted-foreground">
+              Total : <span className="font-semibold text-foreground">{operations.reduce((sum, op) => sum + Number(op.amount), 0).toFixed(2)} €</span>
+            </p>
+          )}
+        </div>
       </div>
 
       {/* KPIs + Chart + Machine counts */}
