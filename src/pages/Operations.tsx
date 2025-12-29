@@ -4,7 +4,7 @@ import { DateRange } from "react-day-picker";
 import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
-import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet } from "lucide-react";
+import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -24,6 +24,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { OperationsKPIRow } from "@/components/operations/OperationsKPIRow";
 import { HourlyBarChart } from "@/components/operations/HourlyBarChart";
 import { MachineCountList } from "@/components/operations/MachineCountList";
@@ -349,6 +355,99 @@ export default function Operations() {
     }
   };
 
+  const handleExportExcel = () => {
+    if (!dateRange?.from || !dateRange?.to) {
+      toast({
+        title: t('app:operations.selectPeriod'),
+        description: t('app:operations.selectPeriodDesc'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Excel XML headers
+      const headers = [
+        'Date',
+        'Heure',
+        'Machine',
+        'Mode',
+        'Inséré (€)',
+        'Prix (€)',
+        'Rendu (€)',
+        'Prix CB (€)',
+        'Prix ESP (€)'
+      ];
+
+      // Transform operations to rows
+      const rows = operations.map(op => {
+        const modeUpper = op.payment_mode?.toUpperCase();
+        const isCB = modeUpper === "CB";
+        const isESP = modeUpper === "ESP";
+        const price = op.price_eur ?? Number(op.amount);
+
+        return [
+          format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr }),
+          op.operation_time?.slice(0, 5) || "",
+          op.machine_name || op.machine || "",
+          op.payment_mode?.toUpperCase() || "",
+          isESP && op.inserted_eur ? op.inserted_eur.toFixed(2) : "",
+          price.toFixed(2),
+          isESP && op.change_eur ? op.change_eur.toFixed(2) : "",
+          isCB ? price.toFixed(2) : "",
+          isESP ? price.toFixed(2) : ""
+        ];
+      });
+
+      // Build Excel XML content
+      const escapeXml = (str: string) => str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      
+      const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Styles>
+    <Style ss:ID="header">
+      <Font ss:Bold="1"/>
+      <Interior ss:Color="#E0E0E0" ss:Pattern="Solid"/>
+    </Style>
+  </Styles>
+  <Worksheet ss:Name="Opérations">
+    <Table>
+      <Row>
+        ${headers.map(h => `<Cell ss:StyleID="header"><Data ss:Type="String">${escapeXml(h)}</Data></Cell>`).join('')}
+      </Row>
+      ${rows.map(row => `<Row>${row.map(cell => `<Cell><Data ss:Type="String">${escapeXml(String(cell))}</Data></Cell>`).join('')}</Row>`).join('\n      ')}
+    </Table>
+  </Worksheet>
+</Workbook>`;
+
+      // Create and download the file
+      const blob = new Blob([xmlContent], { type: 'application/vnd.ms-excel' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const dateFromStr = format(dateRange.from, 'yyyy-MM-dd');
+      const dateToStr = format(dateRange.to, 'yyyy-MM-dd');
+      link.href = url;
+      link.download = `operations_${selectedSite?.name || 'laverie'}_${dateFromStr}_${dateToStr}.xls`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Export Excel réussi",
+        description: `${operations.length} opérations exportées`,
+      });
+    } catch (error) {
+      toast({
+        title: t('common:error'),
+        description: "Erreur lors de l'export Excel",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleImportComplete = (count: number) => {
     // Refresh operations after import
     refetch();
@@ -431,22 +530,32 @@ export default function Operations() {
             <History className="h-4 w-4 mr-2" />
             {t('app:operations.history')}
           </Button>
-          <Button 
-            variant="outline"
-            onClick={handleExportCsv}
-            disabled={operations.length === 0}
-          >
-            <FileSpreadsheet className="h-4 w-4 mr-2" />
-            CSV
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={handleExportPdf}
-            disabled={isExporting || operations.length === 0}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            {isExporting ? t('app:operations.exporting') : "PDF"}
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline"
+                disabled={operations.length === 0 || isExporting}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                {isExporting ? t('app:operations.exporting') : "Exporter"}
+                <ChevronDown className="h-4 w-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-background">
+              <DropdownMenuItem onClick={handleExportCsv}>
+                <FileSpreadsheet className="h-4 w-4 mr-2" />
+                CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportExcel}>
+                <FileText className="h-4 w-4 mr-2" />
+                Excel
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportPdf}>
+                <FileText className="h-4 w-4 mr-2" />
+                PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
