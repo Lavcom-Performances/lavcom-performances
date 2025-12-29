@@ -4,7 +4,7 @@ import { DateRange } from "react-day-picker";
 import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO, getDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
-import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown } from "lucide-react";
+import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -135,6 +135,28 @@ export default function Operations() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
 
+  // Sorting
+  type SortColumn = "date" | "time" | "machine" | "mode" | "price" | null;
+  type SortDirection = "asc" | "desc";
+  const [sortColumn, setSortColumn] = useState<SortColumn>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+
+  const handleSort = (column: SortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection(prev => prev === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("desc");
+    }
+  };
+
+  const SortIcon = ({ column }: { column: SortColumn }) => {
+    if (sortColumn !== column) return <ArrowUpDown className="h-3 w-3 ml-1 opacity-50" />;
+    return sortDirection === "asc" 
+      ? <ArrowUp className="h-3 w-3 ml-1" /> 
+      : <ArrowDown className="h-3 w-3 ml-1" />;
+  };
+
   // Day names in French
   const dayNames: Record<number, string> = {
     0: "Dimanche",
@@ -175,9 +197,9 @@ export default function Operations() {
     return Array.from(machines).sort();
   }, [rawOperations]);
 
-  // Apply additional filters (machine, day of week)
+  // Apply additional filters (machine, day of week) and sorting
   const operations = useMemo(() => {
-    return rawOperations.filter(op => {
+    let filtered = rawOperations.filter(op => {
       // Machine filter
       if (machineFilter !== "all") {
         const machineName = op.machine_name || op.machine;
@@ -193,7 +215,42 @@ export default function Operations() {
       
       return true;
     });
-  }, [rawOperations, machineFilter, dayFilter]);
+
+    // Apply sorting
+    if (sortColumn) {
+      filtered = [...filtered].sort((a, b) => {
+        let comparison = 0;
+        
+        switch (sortColumn) {
+          case "date":
+            const dateA = `${a.operation_date} ${a.operation_time || "00:00"}`;
+            const dateB = `${b.operation_date} ${b.operation_time || "00:00"}`;
+            comparison = dateA.localeCompare(dateB);
+            break;
+          case "time":
+            comparison = (a.operation_time || "").localeCompare(b.operation_time || "");
+            break;
+          case "machine":
+            const machineA = a.machine_name || a.machine || "";
+            const machineB = b.machine_name || b.machine || "";
+            comparison = machineA.localeCompare(machineB);
+            break;
+          case "mode":
+            comparison = (a.payment_mode || "").localeCompare(b.payment_mode || "");
+            break;
+          case "price":
+            const priceA = a.price_eur ?? Number(a.amount);
+            const priceB = b.price_eur ?? Number(b.amount);
+            comparison = priceA - priceB;
+            break;
+        }
+        
+        return sortDirection === "asc" ? comparison : -comparison;
+      });
+    }
+
+    return filtered;
+  }, [rawOperations, machineFilter, dayFilter, sortColumn, sortDirection]);
 
   // Calculate KPIs
   const kpis = useMemo(() => {
@@ -789,12 +846,52 @@ export default function Operations() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
-                <TableHead>Date</TableHead>
-                <TableHead>Heure</TableHead>
-                <TableHead>Machine</TableHead>
-                <TableHead>Mode</TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/80 select-none"
+                  onClick={() => handleSort("date")}
+                >
+                  <div className="flex items-center">
+                    Date
+                    <SortIcon column="date" />
+                  </div>
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/80 select-none"
+                  onClick={() => handleSort("time")}
+                >
+                  <div className="flex items-center">
+                    Heure
+                    <SortIcon column="time" />
+                  </div>
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/80 select-none"
+                  onClick={() => handleSort("machine")}
+                >
+                  <div className="flex items-center">
+                    Machine
+                    <SortIcon column="machine" />
+                  </div>
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/80 select-none"
+                  onClick={() => handleSort("mode")}
+                >
+                  <div className="flex items-center">
+                    Mode
+                    <SortIcon column="mode" />
+                  </div>
+                </TableHead>
                 <TableHead className="text-right">Inséré</TableHead>
-                <TableHead className="text-right">Prix</TableHead>
+                <TableHead 
+                  className="text-right cursor-pointer hover:bg-muted/80 select-none"
+                  onClick={() => handleSort("price")}
+                >
+                  <div className="flex items-center justify-end">
+                    Prix
+                    <SortIcon column="price" />
+                  </div>
+                </TableHead>
                 <TableHead className="text-right">Rendu</TableHead>
                 <TableHead className="text-right">Prix CB</TableHead>
                 <TableHead className="text-right">Prix ESP</TableHead>
