@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { DateRange } from "react-day-picker";
-import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO } from "date-fns";
+import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO, getDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown } from "lucide-react";
@@ -125,6 +125,8 @@ export default function Operations() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
+  const [machineFilter, setMachineFilter] = useState<string>("all");
+  const [dayFilter, setDayFilter] = useState<string>("all");
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -132,6 +134,17 @@ export default function Operations() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
+
+  // Day names in French
+  const dayNames: Record<number, string> = {
+    0: "Dimanche",
+    1: "Lundi", 
+    2: "Mardi",
+    3: "Mercredi",
+    4: "Jeudi",
+    5: "Vendredi",
+    6: "Samedi"
+  };
 
   // Sync date range changes to URL
   const handleDateChange = (range: DateRange | undefined) => {
@@ -144,13 +157,43 @@ export default function Operations() {
     }
   };
 
-  const { operations, isLoading, isEmpty, refetch } = useOperations({
+  const { operations: rawOperations, isLoading, isEmpty, refetch } = useOperations({
     dateRange,
     searchQuery,
     category: categoryFilter,
     paymentMode: paymentFilter,
     siteId: selectedSite?.id,
   });
+
+  // Get unique machines from operations for filter dropdown
+  const uniqueMachines = useMemo(() => {
+    const machines = new Set<string>();
+    rawOperations.forEach(op => {
+      const machineName = op.machine_name || op.machine;
+      if (machineName) machines.add(machineName);
+    });
+    return Array.from(machines).sort();
+  }, [rawOperations]);
+
+  // Apply additional filters (machine, day of week)
+  const operations = useMemo(() => {
+    return rawOperations.filter(op => {
+      // Machine filter
+      if (machineFilter !== "all") {
+        const machineName = op.machine_name || op.machine;
+        if (machineName !== machineFilter) return false;
+      }
+      
+      // Day of week filter
+      if (dayFilter !== "all") {
+        const opDate = parseISO(op.operation_date);
+        const dayOfWeek = getDay(opDate);
+        if (dayOfWeek.toString() !== dayFilter) return false;
+      }
+      
+      return true;
+    });
+  }, [rawOperations, machineFilter, dayFilter]);
 
   // Calculate KPIs
   const kpis = useMemo(() => {
@@ -574,7 +617,8 @@ export default function Operations() {
       />
 
       {/* Filters */}
-      <div className="card-lavcom p-4">
+      <div className="card-lavcom p-4 space-y-4">
+        {/* Row 1: Date + Search */}
         <div className="flex flex-col lg:flex-row gap-4">
           <DateRangePicker 
             dateRange={dateRange}
@@ -589,8 +633,12 @@ export default function Operations() {
               className="pl-9"
             />
           </div>
+        </div>
+        
+        {/* Row 2: Filters */}
+        <div className="flex flex-wrap gap-3">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-full lg:w-[180px]">
+            <SelectTrigger className="w-full sm:w-[160px]">
               <SelectValue placeholder="Catégorie" />
             </SelectTrigger>
             <SelectContent>
@@ -600,8 +648,9 @@ export default function Operations() {
               <SelectItem value="LESSIVE">Lessive</SelectItem>
             </SelectContent>
           </Select>
+          
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-            <SelectTrigger className="w-full lg:w-[180px]">
+            <SelectTrigger className="w-full sm:w-[160px]">
               <SelectValue placeholder="Paiement" />
             </SelectTrigger>
             <SelectContent>
@@ -611,6 +660,51 @@ export default function Operations() {
               <SelectItem value="FI">Fidélité</SelectItem>
             </SelectContent>
           </Select>
+          
+          <Select value={machineFilter} onValueChange={setMachineFilter}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Machine" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes machines</SelectItem>
+              {uniqueMachines.map(machine => (
+                <SelectItem key={machine} value={machine}>{machine}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Select value={dayFilter} onValueChange={setDayFilter}>
+            <SelectTrigger className="w-full sm:w-[140px]">
+              <SelectValue placeholder="Jour" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les jours</SelectItem>
+              <SelectItem value="1">Lundi</SelectItem>
+              <SelectItem value="2">Mardi</SelectItem>
+              <SelectItem value="3">Mercredi</SelectItem>
+              <SelectItem value="4">Jeudi</SelectItem>
+              <SelectItem value="5">Vendredi</SelectItem>
+              <SelectItem value="6">Samedi</SelectItem>
+              <SelectItem value="0">Dimanche</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          {/* Reset filters button */}
+          {(categoryFilter !== "all" || paymentFilter !== "all" || machineFilter !== "all" || dayFilter !== "all") && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => {
+                setCategoryFilter("all");
+                setPaymentFilter("all");
+                setMachineFilter("all");
+                setDayFilter("all");
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Réinitialiser filtres
+            </Button>
+          )}
         </div>
       </div>
 
