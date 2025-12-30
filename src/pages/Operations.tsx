@@ -36,6 +36,7 @@ import { MachineCountList } from "@/components/operations/MachineCountList";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
 import { ImportHistoryDialog } from "@/components/operations/ImportHistoryDialog";
 import { OperationsEmptyState } from "@/components/operations/OperationsEmptyState";
+import { YearComparisonSection } from "@/components/operations/YearComparisonSection";
 import { generateOperationsPdf } from "@/utils/operationsPdfExport";
 import { trackPdfDownload } from "@/lib/analytics";
 import { useToast } from "@/hooks/use-toast";
@@ -837,6 +838,11 @@ export default function Operations() {
           </div>
         )}
       </div>
+
+      {/* Year Comparison Section - only in expert mode */}
+      {isExpert && rawOperations.length > 0 && (
+        <YearComparisonSection operations={rawOperations} />
+      )}
 
       {/* Table */}
       <div className="card-lavcom overflow-hidden">
