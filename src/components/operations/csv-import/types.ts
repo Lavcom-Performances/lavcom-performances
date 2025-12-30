@@ -49,6 +49,8 @@ export interface ImportResult {
   errors: string[];
   /** Count of ESP top-up lines fixed by business rules (TAEX-145) */
   rechEspFixed?: number;
+  /** Whether amounts were converted from centimes to euros */
+  centimesConverted?: boolean;
 }
 
 export const COLUMN_OPTIONS = [

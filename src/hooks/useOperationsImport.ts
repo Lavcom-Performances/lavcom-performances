@@ -5,7 +5,12 @@ import { ParsedRow, ImportResult } from "@/components/operations/csv-import/type
 import { EventsParsedRow } from "@/components/operations/csv-import/eventsParser";
 import { format } from "date-fns";
 import { buildDedupeKeyHashed } from "@/lib/csv/buildDedupeKey";
-import { applyBusinessRules } from "@/lib/csv/businessRules";
+import { 
+  processOperationForImport, 
+  normMode, 
+  round2,
+  centsToEurosValue 
+} from "@/lib/csv/businessRules";
 
 // Type guard to check if row is EventsParsedRow
 function isEventsParsedRow(row: ParsedRow): row is EventsParsedRow {
@@ -40,6 +45,8 @@ export function useOperationsImport() {
           ignored: 0,
           duplicates: 0,
           errors: ["Utilisateur non connecté"],
+          rechEspFixed: 0,
+          centimesConverted: false,
         };
       }
 
@@ -56,6 +63,8 @@ export function useOperationsImport() {
             ignored: invalidRows.length,
             duplicates: 0,
             errors: ["Aucune ligne valide à importer"],
+            rechEspFixed: 0,
+            centimesConverted: false,
           };
         }
 
@@ -79,79 +88,78 @@ export function useOperationsImport() {
         }
 
         // Prepare operations for insert with dedupe_key
+        // TAEX-145: Convert centimes to euros BEFORE dedupe and insertion
         let rechEspFixedCount = 0;
         
         const operations = validRows.map((row) => {
           const dateStr = row.date ? format(row.date, "yyyy-MM-dd") : "";
-          const mode = row.paymentMode?.toUpperCase() || null;
+          const mode = normMode(row.paymentMode);
           const machine = row.machine || null;
           const time = row.time || null;
-          
-          // Determine source/type based on row source field
           const rowSource = (row as any).source || 'manual';
           
-          // Get amount - check if it's already in euros or in centimes
-          // If amount > 20, it's likely in centimes and needs to be divided by 100
-          // (typical laundry prices range from 0.60€ to 20€)
-          let amountEur = row.amount || 0;
-          if (amountEur > 20) {
-            // Amount is in centimes, convert to euros
-            amountEur = amountEur / 100;
-          }
+          // Get raw amounts (in centimes from CSV)
+          // The parsedRow.amount is already parsed but may be in centimes
+          const rawAmount = row.amount ?? 0;
+          const rawInserted = isEventsParsedRow(row) ? (row.insertedEur ?? 0) : 0;
+          const rawPrice = isEventsParsedRow(row) ? (row.priceEur ?? 0) : rawAmount;
+          const rawChange = isEventsParsedRow(row) ? (row.changeEur ?? 0) : 0;
           
-          // Get extended fields for Events format
-          const insertedEur = isEventsParsedRow(row) ? (row.insertedEur || null) : null;
-          const priceEur = isEventsParsedRow(row) ? (row.priceEur || null) : null;
-          const changeEur = isEventsParsedRow(row) ? (row.changeEur || null) : null;
+          // Determine if values are in centimes (> 100 typically means centimes)
+          // A typical laundry transaction is 0.60€ - 20€, so if > 100, likely centimes
+          const isCentimes = rawAmount > 100 || rawInserted > 100 || rawPrice > 100;
           
-          // Determine price_cb and price_esp based on payment mode
-          let priceCb: number | null = null;
-          let priceEsp: number | null = null;
-          
-          if (mode === 'CB' || mode === 'CARTE') {
-            priceCb = amountEur;
-          } else if (mode === 'ESP' || mode === 'ESPECES' || mode === 'CASH') {
-            priceEsp = amountEur;
-          }
-          
-          // Build initial operation object
-          let operationType: string | null = null;
-          
-          // Prepare operation for business rules
-          const opForRules = {
-            payment_mode: mode,
-            type: operationType,
-            inserted_eur: insertedEur,
-            price_eur: priceEur,
-            price_esp: priceEsp,
-            price_cb: priceCb,
-            amount: amountEur,
-            change_eur: changeEur,
+          // Build raw operation for business rules pipeline
+          const rawOp = {
+            mode: mode,
+            type: null as string | null,
+            // If values look like centimes, pass them directly; otherwise convert to centimes first
+            insere: isCentimes ? rawInserted : rawInserted * 100,
+            prix: isCentimes ? rawPrice : rawPrice * 100,
+            rendu: isCentimes ? rawChange : rawChange * 100,
+            prix_cb: 0,
+            prix_esp: 0,
           };
           
-          // Apply business rules (TAEX-145: Fix ESP top-ups)
-          const rulesResult = applyBusinessRules(opForRules);
-          if (rulesResult.rechEspFixed) {
-            rechEspFixedCount++;
-            // Update values from rules result
-            operationType = opForRules.type ?? null;
-            priceEsp = opForRules.price_esp ?? null;
-            amountEur = opForRules.amount ?? amountEur;
+          // Set initial prix_cb or prix_esp based on payment mode (in centimes)
+          const amountCentimes = isCentimes ? rawAmount : rawAmount * 100;
+          if (mode === 'CB') {
+            rawOp.prix_cb = amountCentimes;
+          } else if (mode === 'ESP') {
+            rawOp.prix_esp = amountCentimes;
           }
           
-          // Generate dedupe_key using MD5 hash
+          // Process: convert centimes to euros AND apply business rules
+          const result = processOperationForImport(rawOp);
+          
+          if (result.rechEspFixed) {
+            rechEspFixedCount++;
+          }
+          
+          const op = result.operation;
+          
+          // Final euro values
+          const amountEur = round2(op.prix_eur > 0 ? op.prix_eur : (op.prix_cb_eur + op.prix_esp_eur));
+          const insertedEur = op.insere_eur;
+          const priceEur = op.prix_eur;
+          const changeEur = op.rendu_eur;
+          const priceCb = op.prix_cb_eur > 0 ? op.prix_cb_eur : null;
+          const priceEsp = op.prix_esp_eur > 0 ? op.prix_esp_eur : null;
+          const operationType = op.type || null;
+          
+          // Generate dedupe_key using EURO values (after conversion)
           const dedupeKey = buildDedupeKeyHashed({
             siteId,
             operationDate: dateStr,
             operationTime: time,
-            paymentMode: mode,
+            paymentMode: mode || null,
             type: operationType,
             priceCb,
             priceEsp,
             amount: amountEur,
           });
 
-          // Base operation data
+          // Base operation data (all amounts in EUROS)
           const baseOperation = {
             user_id: user.id,
             site_id: siteId,
@@ -160,7 +168,7 @@ export function useOperationsImport() {
             amount: amountEur,
             machine: machine,
             program: row.program || null,
-            payment_mode: mode,
+            payment_mode: mode || null,
             raw_data: { original: row.rawData },
             import_batch_id: batch.id,
             dedupe_key: dedupeKey,
@@ -174,7 +182,7 @@ export function useOperationsImport() {
             return {
               ...baseOperation,
               inserted_eur: insertedEur,
-              price_eur: opForRules.price_eur ?? null,
+              price_eur: priceEur,
               change_eur: changeEur,
               machine_name: row.machineName || null,
               source: 'events_csv',
@@ -255,6 +263,7 @@ export function useOperationsImport() {
           duplicates: duplicatesIgnored,
           errors: resultMessages.length > 0 ? resultMessages : [],
           rechEspFixed: rechEspFixedCount,
+          centimesConverted: true,
         };
       } catch (err) {
         console.error("Import error:", err);
@@ -265,6 +274,7 @@ export function useOperationsImport() {
           duplicates: 0,
           errors: [err instanceof Error ? err.message : "Erreur inconnue"],
           rechEspFixed: 0,
+          centimesConverted: false,
         };
       } finally {
         setIsImporting(false);
