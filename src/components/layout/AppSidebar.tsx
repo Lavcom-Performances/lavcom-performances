@@ -103,11 +103,14 @@ export function AppSidebar({
   const navigation = [
     { name: t('app:nav.dashboard'), href: "/dashboard", icon: LayoutDashboard, permission: "READ_VIEWS" },
     { name: t('app:nav.profitability'), href: "/profitability", icon: DollarSign, permission: "READ_VIEWS" },
-    { name: t('app:nav.simulation'), href: "/simulation", icon: Calculator, permission: "READ_VIEWS" },
     { name: t('app:nav.recommendations'), href: "/recommendations", icon: Lightbulb, permission: "READ_VIEWS" },
     { name: t('app:nav.maintenance'), href: "/maintenance", icon: Wrench, permission: "READ_VIEWS" },
     { name: t('app:nav.operations'), href: "/operations", icon: Receipt, permission: "READ_VIEWS" },
     { name: t('app:nav.importExport'), href: "/import-export", icon: ArrowDownUp, permission: "IMPORT_DATA" },
+  ];
+
+  const bottomNavigation = [
+    { name: t('app:nav.simulation'), href: "/simulation", icon: Calculator, permission: "READ_VIEWS" },
   ];
 
   const adminNavigation = [
@@ -348,6 +351,43 @@ export function AppSidebar({
             </CollapsibleContent>
           </Collapsible>
         )}
+
+        {/* Simulator Section - at bottom before admin */}
+        {!collapsed && (
+          <div className="pt-6 pb-2">
+            <span className="px-3 text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
+              Outils
+            </span>
+          </div>
+        )}
+        {bottomNavigation.map((item, index) => {
+          if (!hasPermission(item.permission)) return null;
+          const isActive = location.pathname === item.href;
+          
+          return (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              className={cn(
+                "sidebar-item",
+                isActive && "sidebar-item-active",
+                mounted && "animate-nav-item-in"
+              )}
+              style={{ 
+                animationDelay: mounted ? `${(navigation.length + chartsNavigation.length + index) * 50}ms` : '0ms',
+                animationFillMode: 'forwards'
+              }}
+            >
+              <item.icon className="h-5 w-5 shrink-0" />
+              <span className={cn(
+                "transition-all duration-300 ease-out whitespace-nowrap",
+                collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
+              )}>
+                {item.name}
+              </span>
+            </NavLink>
+          );
+        })}
 
         {/* Super Admin Section - Only for platform admins */}
         {isAdmin && (

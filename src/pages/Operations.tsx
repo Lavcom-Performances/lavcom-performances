@@ -30,13 +30,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { OperationsKPIRow } from "@/components/operations/OperationsKPIRow";
-import { HourlyBarChart } from "@/components/operations/HourlyBarChart";
-import { MachineCountList } from "@/components/operations/MachineCountList";
+import { OperationsStatsGrid } from "@/components/operations/OperationsStatsGrid";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
 import { ImportHistoryDialog } from "@/components/operations/ImportHistoryDialog";
 import { OperationsEmptyState } from "@/components/operations/OperationsEmptyState";
 import { YearComparisonSection } from "@/components/operations/YearComparisonSection";
+import { FiltersCard } from "@/components/ui/filters-card";
 import { generateOperationsPdf } from "@/utils/operationsPdfExport";
 import { trackPdfDownload } from "@/lib/analytics";
 import { useToast } from "@/hooks/use-toast";
@@ -687,7 +686,18 @@ export default function Operations() {
       />
 
       {/* Filters */}
-      <div className="card-lavcom p-4 space-y-4">
+      <FiltersCard
+        resultCount={operations.length}
+        totalCount={rawOperations.length}
+        totalAmount={operations.reduce((sum, op) => sum + Number(op.amount), 0)}
+        hasActiveFilters={categoryFilter !== "all" || paymentFilter !== "all" || machineFilter !== "all" || dayFilter !== "all"}
+        onReset={() => {
+          setCategoryFilter("all");
+          setPaymentFilter("all");
+          setMachineFilter("all");
+          setDayFilter("all");
+        }}
+      >
         {/* Row 1: Date + Search */}
         <div className="flex flex-col lg:flex-row gap-4">
           <DateRangePicker 
@@ -708,7 +718,7 @@ export default function Operations() {
         {/* Row 2: Filters */}
         <div className="flex flex-wrap gap-3">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-full sm:w-[160px]">
+            <SelectTrigger className="w-full sm:w-[160px] bg-background">
               <SelectValue placeholder="Catégorie" />
             </SelectTrigger>
             <SelectContent>
@@ -720,7 +730,7 @@ export default function Operations() {
           </Select>
           
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-            <SelectTrigger className="w-full sm:w-[160px]">
+            <SelectTrigger className="w-full sm:w-[160px] bg-background">
               <SelectValue placeholder="Paiement" />
             </SelectTrigger>
             <SelectContent>
@@ -732,7 +742,7 @@ export default function Operations() {
           </Select>
           
           <Select value={machineFilter} onValueChange={setMachineFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px] bg-background">
               <SelectValue placeholder="Machine" />
             </SelectTrigger>
             <SelectContent>
@@ -744,7 +754,7 @@ export default function Operations() {
           </Select>
           
           <Select value={dayFilter} onValueChange={setDayFilter}>
-            <SelectTrigger className="w-full sm:w-[140px]">
+            <SelectTrigger className="w-full sm:w-[140px] bg-background">
               <SelectValue placeholder="Jour" />
             </SelectTrigger>
             <SelectContent>
@@ -758,100 +768,15 @@ export default function Operations() {
               <SelectItem value="0">Dimanche</SelectItem>
             </SelectContent>
           </Select>
-          
-          {/* Reset filters button */}
-          {(categoryFilter !== "all" || paymentFilter !== "all" || machineFilter !== "all" || dayFilter !== "all") && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => {
-                setCategoryFilter("all");
-                setPaymentFilter("all");
-                setMachineFilter("all");
-                setDayFilter("all");
-              }}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Réinitialiser filtres
-            </Button>
-          )}
         </div>
-        
-        {/* Results counter */}
-        <div className="flex items-center justify-between pt-2 border-t border-border/50">
-          <p className="text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">{operations.length}</span>
-            {operations.length !== rawOperations.length && (
-              <span> sur <span className="font-medium">{rawOperations.length}</span></span>
-            )}
-            {" "}opération{operations.length > 1 ? "s" : ""}
-            {operations.length !== rawOperations.length && " (filtrées)"}
-          </p>
-          {operations.length > 0 && (
-            <p className="text-sm text-muted-foreground">
-              Total : <span className="font-semibold text-foreground">{operations.reduce((sum, op) => sum + Number(op.amount), 0).toFixed(2)} €</span>
-            </p>
-          )}
-        </div>
-      </div>
+      </FiltersCard>
 
-      {/* KPIs + Chart + Machine counts */}
-      <div className={cn(
-        "grid gap-4",
-        isExpert ? "grid-cols-1 lg:grid-cols-12" : "grid-cols-1"
-      )}>
-        {/* KPIs Column */}
-        <div className={cn(
-          "card-lavcom p-4 space-y-3",
-          isExpert ? "lg:col-span-4" : ""
-        )}>
-          <OperationsKPIRow 
-            label="JOUR" 
-            total={kpis.day.total} 
-            cb={kpis.day.cb} 
-            esp={kpis.day.esp}
-          />
-          <OperationsKPIRow 
-            label="MOIS" 
-            total={kpis.month.total} 
-            cb={kpis.month.cb} 
-            esp={kpis.month.esp}
-            isHighlighted
-          />
-          <OperationsKPIRow 
-            label="ANNÉE" 
-            total={kpis.year.total} 
-            cb={kpis.year.cb} 
-            esp={kpis.year.esp}
-          />
-        </div>
-
-        {/* Expert: Hourly Chart */}
-        {isExpert && (
-          <div className="lg:col-span-5 card-lavcom p-4">
-            <h3 className="text-sm font-semibold text-muted-foreground mb-2">CA par heure</h3>
-            <div className="flex items-center gap-4 mb-2 text-xs">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded" style={{ backgroundColor: 'hsl(var(--chart-cb))' }}></div>
-                <span>CB</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded" style={{ backgroundColor: 'hsl(var(--chart-esp))' }}></div>
-                <span>ESP</span>
-              </div>
-            </div>
-            <HourlyBarChart data={hourlyData} />
-          </div>
-        )}
-
-        {/* Expert: Machine counts */}
-        {isExpert && (
-          <div className="lg:col-span-3 card-lavcom p-4">
-            <h3 className="text-sm font-semibold text-muted-foreground mb-2">Machines utilisées</h3>
-            <MachineCountList machines={machineCounts} />
-          </div>
-        )}
-      </div>
+      {/* Stats Grid - 3 blocs always visible */}
+      <OperationsStatsGrid 
+        kpis={kpis}
+        hourlyData={hourlyData}
+        machineCounts={machineCounts}
+      />
 
       {/* Year Comparison Section - only in expert mode */}
       {isExpert && rawOperations.length > 0 && (
