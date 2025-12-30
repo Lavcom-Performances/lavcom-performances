@@ -6,8 +6,10 @@ import { TrialBanner } from "@/components/trial/TrialBanner";
 import { DemoBanner } from "@/components/demo/DemoBanner";
 import { DemoTutorial } from "@/components/demo/DemoTutorial";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 interface AppLayoutProps {
   userRole?: string;
@@ -21,12 +23,20 @@ export function AppLayout({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { daysRemaining, trialStatus, planType } = useSubscription();
   const { isDemo, siteName } = useCurrentSite();
+  const { showOnboarding, completeOnboarding, skipOnboarding } = useOnboarding();
 
   const showTrialWarning = planType === 'trial' && (trialStatus === 'warning' || trialStatus === 'critical');
   const displayName = siteName || currentLaundromat;
 
   return (
     <div className="flex flex-col h-screen w-full bg-background">
+      {/* Onboarding Wizard for new users */}
+      <OnboardingWizard 
+        open={showOnboarding} 
+        onComplete={completeOnboarding} 
+        onSkip={skipOnboarding} 
+      />
+
       {/* Demo Banner - visible on all pages when demo site is selected */}
       {isDemo && <DemoBanner />}
 
