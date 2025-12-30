@@ -788,13 +788,41 @@ export type Database = {
           },
         ]
       }
+      stripe_events: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          event_type: string
+          payload: Json | null
+          processed_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          event_type: string
+          payload?: Json | null
+          processed_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          event_type?: string
+          payload?: Json | null
+          processed_at?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string | null
+          current_period_end: string | null
           id: string
+          last_invoice_url: string | null
           laundry_count: number | null
           plan_type: string
           status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
           subscription_end_date: string | null
           subscription_start_date: string | null
           trial_end_date: string | null
@@ -805,10 +833,14 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          current_period_end?: string | null
           id?: string
+          last_invoice_url?: string | null
           laundry_count?: number | null
           plan_type?: string
           status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_end_date?: string | null
           subscription_start_date?: string | null
           trial_end_date?: string | null
@@ -819,10 +851,14 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          current_period_end?: string | null
           id?: string
+          last_invoice_url?: string | null
           laundry_count?: number | null
           plan_type?: string
           status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           subscription_end_date?: string | null
           subscription_start_date?: string | null
           trial_end_date?: string | null

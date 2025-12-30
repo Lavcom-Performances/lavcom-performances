@@ -19,7 +19,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Clock,
-  Loader2
+  Loader2,
+  FileText
 } from "lucide-react";
 import { format, Locale } from "date-fns";
 import { fr, enUS, de, es, it, nl } from "date-fns/locale";
@@ -31,7 +32,7 @@ export default function SubscriptionManagement() {
   const { t, i18n } = useTranslation(["app", "common"]);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { subscription, loading, isSubscriptionActive, isTrialActive, daysRemaining, planType } = useSubscription();
+  const { subscription, loading, isSubscriptionActive, isTrialActive, daysRemaining, planType, lastInvoiceUrl } = useSubscription();
   const [portalLoading, setPortalLoading] = useState(false);
 
   const locale = localeMap[i18n.language] || fr;
@@ -265,6 +266,35 @@ export default function SubscriptionManagement() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Invoice Link - shown only if available */}
+            {lastInvoiceUrl && !isTrialActive && (
+              <Card className="border-emerald-500/20 bg-emerald-500/5">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-emerald-500/20 rounded-lg">
+                        <FileText className="h-6 w-6 text-emerald-500" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Dernière facture TTC</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Consultez et téléchargez votre facture
+                        </p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => window.open(lastInvoiceUrl, "_blank")}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Voir la facture
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Features included */}
             <Card>

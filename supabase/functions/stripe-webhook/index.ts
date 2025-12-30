@@ -240,24 +240,23 @@ async function handleSubscriptionCheckout(
   const laundryCount = parseInt(session.metadata?.laundry_count || "1", 10);
   const tier = session.metadata?.tier || "tier1";
   const interval = session.metadata?.interval as "month" | "year" || "month";
+  const subscriptionId = session.subscription as string;
+  const customerId = session.customer as string;
 
-  logStep("Processing subscription checkout", { userId, laundryCount, tier, interval });
+  logStep("Processing subscription checkout", { userId, laundryCount, tier, interval, subscriptionId });
 
   if (!userId) {
     logStep("Missing user_id in metadata");
     return;
   }
 
-  // Get subscription details from Stripe session
-  const subscriptionId = session.subscription as string;
-  
   // Calculate subscription dates based on interval
   const now = new Date();
   const subscriptionEndDate = interval === "year" 
     ? new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)
     : new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-  // Update subscription table with tier info
+  // Update subscription table with Stripe IDs and tier info
   const { error: subscriptionError } = await supabaseAdmin
     .from("subscriptions")
     .update({
@@ -265,8 +264,11 @@ async function handleSubscriptionCheckout(
       status: "active",
       subscription_start_date: now.toISOString(),
       subscription_end_date: subscriptionEndDate.toISOString(),
+      current_period_end: subscriptionEndDate.toISOString(),
       laundry_count: laundryCount,
       trial_end_date: null, // Clear trial when paid subscription starts
+      stripe_subscription_id: subscriptionId,
+      stripe_customer_id: customerId,
       updated_at: now.toISOString(),
     })
     .eq("user_id", userId);
@@ -276,12 +278,19 @@ async function handleSubscriptionCheckout(
     throw new Error(`Failed to update subscription: ${subscriptionError.message}`);
   }
 
+  // Also store customer ID in profile for faster lookups
+  await supabaseAdmin
+    .from("profiles")
+    .update({ stripe_customer_id: customerId })
+    .eq("id", userId);
+
   logStep("Subscription activated successfully", {
     userId,
     tier,
     interval,
     laundryCount,
     subscriptionId,
+    customerId,
     endDate: subscriptionEndDate.toISOString(),
   });
 }
@@ -360,6 +369,7 @@ async function handleSubscriptionRenewal(
   supabaseAdmin: SupabaseClient
 ) {
   const subscriptionId = invoice.subscription as string;
+  const invoiceUrl = invoice.hosted_invoice_url || invoice.invoice_pdf || null;
   
   // Get the subscription to access metadata
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -381,7 +391,9 @@ async function handleSubscriptionRenewal(
       plan_type: planType,
       status: "active",
       subscription_end_date: currentPeriodEnd.toISOString(),
+      current_period_end: currentPeriodEnd.toISOString(),
       laundry_count: laundryCount,
+      last_invoice_url: invoiceUrl,
       updated_at: new Date().toISOString(),
     })
     .eq("user_id", userId);
@@ -391,7 +403,7 @@ async function handleSubscriptionRenewal(
     throw new Error(`Failed to update subscription after renewal: ${error.message}`);
   }
 
-  logStep("Subscription renewed", { userId, endDate: currentPeriodEnd.toISOString() });
+  logStep("Subscription renewed", { userId, endDate: currentPeriodEnd.toISOString(), invoiceUrl });
 }
 
 // Helper to handle invoice payment failed
@@ -477,6 +489,32 @@ serve(async (req) => {
 
     logStep("Event verified", { type: event.type, id: event.id });
 
+    // Idempotence check: skip if event already processed
+    const { data: existingEvent } = await supabaseAdmin
+      .from("stripe_events")
+      .select("event_id")
+      .eq("event_id", event.id)
+      .maybeSingle();
+
+    if (existingEvent) {
+      logStep("Event already processed (idempotent)", { eventId: event.id });
+      return new Response(JSON.stringify({ received: true, skipped: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
+    // Record event for idempotence before processing
+    await supabaseAdmin
+      .from("stripe_events")
+      .insert({
+        event_id: event.id,
+        event_type: event.type,
+        payload: event.data.object,
+      });
+
+    logStep("Event recorded for idempotence", { eventId: event.id });
+
     // Handle different event types
     switch (event.type) {
       case "checkout.session.completed": {
@@ -517,6 +555,15 @@ serve(async (req) => {
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
         // Handle subscription renewal
+        if (invoice.subscription) {
+          await handleSubscriptionRenewal(invoice, stripe, supabaseAdmin);
+        }
+        break;
+      }
+
+      case "invoice.paid": {
+        // Also handle invoice.paid for invoice URL storage
+        const invoice = event.data.object as Stripe.Invoice;
         if (invoice.subscription) {
           await handleSubscriptionRenewal(invoice, stripe, supabaseAdmin);
         }
