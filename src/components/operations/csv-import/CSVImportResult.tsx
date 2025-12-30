@@ -53,7 +53,7 @@ export function CSVImportResult({ result, onClose }: CSVImportResultProps) {
               {result.centimesConverted && (
                 <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
                   <Euro className="h-3 w-3 mr-1" />
-                  Centimes → Euros
+                  Centimes détectés → Euros
                 </Badge>
               )}
             </div>
