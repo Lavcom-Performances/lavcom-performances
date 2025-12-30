@@ -173,9 +173,9 @@
     "step1Title": "Importez vos données",
     "step1Desc": "Importez vos fichiers d'encaissements en quelques clics.",
     "step2Title": "Visualisez vos résultats",
-    "step2Desc": "Vous voyez vos recettes par laverie, par machine, par créneau horaire, ainsi que vos périodes plus calmes.",
+    "step2Desc": "Recettes par laverie, par machine et par créneau horaire.",
     "step3Title": "Passez à l'action",
-    "step3Desc": "La plateforme vous suggère des pistes : où ajuster un prix, quels créneaux renforcer, quelles machines surveiller davantage."
+    "step3Desc": "Recevez des suggestions concrètes pour optimiser vos laveries."
   },
   "whyUse": {
     "title": "Pourquoi utiliser Lavcom Performances ?",
