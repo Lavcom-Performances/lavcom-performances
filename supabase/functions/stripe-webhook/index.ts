@@ -238,26 +238,30 @@ async function handleSubscriptionCheckout(
 ) {
   const userId = session.metadata?.user_id;
   const laundryCount = parseInt(session.metadata?.laundry_count || "1", 10);
-  const plan = session.metadata?.plan as "monthly" | "annual";
+  const tier = session.metadata?.tier || "tier1";
+  const interval = session.metadata?.interval as "month" | "year" || "month";
 
-  logStep("Processing subscription checkout", { userId, laundryCount, plan });
+  logStep("Processing subscription checkout", { userId, laundryCount, tier, interval });
 
   if (!userId) {
     logStep("Missing user_id in metadata");
     return;
   }
 
-  // Calculate subscription dates
+  // Get subscription details from Stripe session
+  const subscriptionId = session.subscription as string;
+  
+  // Calculate subscription dates based on interval
   const now = new Date();
-  const subscriptionEndDate = plan === "annual" 
+  const subscriptionEndDate = interval === "year" 
     ? new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)
     : new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-  // Update subscription table
+  // Update subscription table with tier info
   const { error: subscriptionError } = await supabaseAdmin
     .from("subscriptions")
     .update({
-      plan_type: plan,
+      plan_type: interval === "year" ? "annual" : "monthly",
       status: "active",
       subscription_start_date: now.toISOString(),
       subscription_end_date: subscriptionEndDate.toISOString(),
@@ -274,8 +278,10 @@ async function handleSubscriptionCheckout(
 
   logStep("Subscription activated successfully", {
     userId,
-    plan,
+    tier,
+    interval,
     laundryCount,
+    subscriptionId,
     endDate: subscriptionEndDate.toISOString(),
   });
 }
