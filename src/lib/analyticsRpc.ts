@@ -20,6 +20,16 @@ export async function fetchMonthlyRevenue(siteId: string, year: number) {
   return data ?? [];
 }
 
+export async function fetchMonthlyRevenueRange(siteId: string, startDate: string, endDate: string) {
+  const { data, error } = await supabase.rpc("rpc_monthly_revenue_range" as any, {
+    p_site_id: siteId,
+    p_start_date: startDate,
+    p_end_date: endDate,
+  });
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function fetchRecommendations(siteId: string, startDate: string, endDate: string) {
   const { data, error } = await supabase.rpc("rpc_recommendations_v1", {
     p_site_id: siteId,
