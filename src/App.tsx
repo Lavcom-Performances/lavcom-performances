@@ -29,6 +29,7 @@ import Operations from "./pages/Operations";
 import ImportExport from "./pages/ImportExport";
 import AdminUsers from "./pages/AdminUsers";
 import AdminExpertRequests from "./pages/AdminExpertRequests";
+import AdminCronLogs from "./pages/AdminCronLogs";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
@@ -117,6 +118,7 @@ const App = () => (
             <Route path="/import-export" element={<ImportExport />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/expert-requests" element={<AdminExpertRequests />} />
+            <Route path="/admin/cron-logs" element={<AdminCronLogs />} />
             
             {/* Chart pages */}
             <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />
