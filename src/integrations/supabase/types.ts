@@ -954,6 +954,7 @@ export type Database = {
           title: string
         }[]
       }
+      trigger_compute_analytics_cron: { Args: never; Returns: undefined }
       user_belongs_to_org: {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
