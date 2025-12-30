@@ -71,3 +71,50 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Edge Functions
+
+### compute-analytics-cron
+
+This endpoint triggers the nightly analytics computation for all active sites. It is protected by a secret header and rate-limited.
+
+**Security:**
+- Requires `x-cron-secret` header matching the `CRON_SECRET` environment variable
+- Only accepts `POST` requests
+- Rate limited: 2 requests per 5 minutes
+
+**Example curl:**
+
+```bash
+curl -X POST \
+  "https://betvwipgtcrhmludzgxw.supabase.co/functions/v1/compute-analytics-cron" \
+  -H "Content-Type: application/json" \
+  -H "x-cron-secret: YOUR_CRON_SECRET_VALUE"
+```
+
+**Response (success):**
+```json
+{
+  "success": true,
+  "sites_processed": 5,
+  "sites_failed": 0,
+  "duration_ms": 1234
+}
+```
+
+**Response (rate limited - 429):**
+```json
+{
+  "error": "rate_limit_exceeded",
+  "scope": "edge/compute-analytics-cron",
+  "cooldown_seconds": 300,
+  "retry_after": 300
+}
+```
+
+**Response (unauthorized - 401):**
+```json
+{
+  "error": "Unauthorized"
+}
+```
