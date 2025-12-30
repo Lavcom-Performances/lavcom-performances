@@ -42,6 +42,7 @@ import CompanySettings from "./pages/CompanySettings";
 import ProfilePage from "./pages/ProfilePage";
 import SecurityPage from "./pages/SecurityPage";
 import SubscriptionManagement from "./pages/SubscriptionManagement";
+import BillingHistory from "./pages/BillingHistory";
 import AcceptInvitation from "./pages/AcceptInvitation";
 
 // Simulation pages (new layout)
@@ -118,6 +119,7 @@ const App = () => (
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/security" element={<SecurityPage />} />
             <Route path="/subscription" element={<SubscriptionManagement />} />
+            <Route path="/billing-history" element={<BillingHistory />} />
             <Route path="/laundromat-settings" element={<LaundromatSettings />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
