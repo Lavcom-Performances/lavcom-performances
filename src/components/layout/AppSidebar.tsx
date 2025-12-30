@@ -296,12 +296,15 @@ export function AppSidebar({
           })
         ) : (
           <Collapsible open={chartsOpen} onOpenChange={setChartsOpen}>
-            <CollapsibleTrigger className="sidebar-item w-full justify-between">
+            <CollapsibleTrigger className="sidebar-item w-full justify-between group">
               <div className="flex items-center gap-3">
-                <BarChart3 className="h-5 w-5 shrink-0" />
+                <BarChart3 className="h-5 w-5 shrink-0 transition-transform duration-200 group-hover:scale-110" />
                 <span>{t('app:nav.analyses')}</span>
               </div>
-              <ChevronLeft className={cn("h-4 w-4 transition-transform", chartsOpen && "-rotate-90")} />
+              <ChevronLeft className={cn(
+                "h-4 w-4 transition-transform duration-300 ease-out",
+                chartsOpen && "-rotate-90"
+              )} />
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-4 space-y-1">
               {chartsNavigation.map((item) => {
