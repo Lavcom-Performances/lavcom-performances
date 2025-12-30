@@ -14,6 +14,121 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_daily: {
+        Row: {
+          average_basket: number | null
+          created_at: string | null
+          date: string
+          hourly_breakdown: Json | null
+          id: string
+          machine_stats: Json | null
+          revenue: number | null
+          revenue_card: number | null
+          revenue_cash: number | null
+          site_id: string
+          transactions: number | null
+          user_id: string
+        }
+        Insert: {
+          average_basket?: number | null
+          created_at?: string | null
+          date: string
+          hourly_breakdown?: Json | null
+          id?: string
+          machine_stats?: Json | null
+          revenue?: number | null
+          revenue_card?: number | null
+          revenue_cash?: number | null
+          site_id: string
+          transactions?: number | null
+          user_id: string
+        }
+        Update: {
+          average_basket?: number | null
+          created_at?: string | null
+          date?: string
+          hourly_breakdown?: Json | null
+          id?: string
+          machine_stats?: Json | null
+          revenue?: number | null
+          revenue_card?: number | null
+          revenue_cash?: number | null
+          site_id?: string
+          transactions?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_daily_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_kpis: {
+        Row: {
+          average_basket: number | null
+          created_at: string | null
+          id: string
+          peak_hour: number | null
+          period_end: string
+          period_start: string
+          period_type: string
+          revenue_card: number | null
+          revenue_cash: number | null
+          site_id: string
+          total_revenue: number | null
+          total_transactions: number | null
+          unique_machines: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          average_basket?: number | null
+          created_at?: string | null
+          id?: string
+          peak_hour?: number | null
+          period_end: string
+          period_start: string
+          period_type: string
+          revenue_card?: number | null
+          revenue_cash?: number | null
+          site_id: string
+          total_revenue?: number | null
+          total_transactions?: number | null
+          unique_machines?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          average_basket?: number | null
+          created_at?: string | null
+          id?: string
+          peak_hour?: number | null
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          revenue_card?: number | null
+          revenue_cash?: number | null
+          site_id?: string
+          total_revenue?: number | null
+          total_transactions?: number | null
+          unique_machines?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_kpis_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           created_at: string
