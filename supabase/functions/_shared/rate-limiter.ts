@@ -9,6 +9,7 @@ export const RATE_LIMITS = {
   // Edge Functions
   'edge/fetch-from-siret': { maxRequests: 10, windowSeconds: 300 },  // 10 per 5 min
   'edge/create-demo': { maxRequests: 1, windowSeconds: 86400 },      // 1 per 24h
+  'edge/compute-analytics-cron': { maxRequests: 2, windowSeconds: 300 }, // 2 per 5 min
   
   // Import/Export
   'import/csv-site': { maxRequests: 1, windowSeconds: 120 },    // 1 per 2 min per site
