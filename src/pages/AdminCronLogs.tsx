@@ -12,7 +12,8 @@ import {
   ChevronUp,
   Timer,
   Server,
-  AlertTriangle
+  AlertTriangle,
+  BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -41,6 +43,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { DateRange } from "react-day-picker";
+import { ManualCronTrigger } from "@/components/admin/ManualCronTrigger";
+import { CronMonitoringDashboard } from "@/components/admin/CronMonitoringDashboard";
 
 type CronLog = {
   id: string;
@@ -83,7 +87,7 @@ export default function AdminCronLogs() {
   });
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
-  // Fetch cron logs
+  // Fetch cron logs for table view
   const { data: logs, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['cron-logs', dateRange, statusFilter, searchQuery],
     queryFn: async () => {
@@ -104,6 +108,21 @@ export default function AdminCronLogs() {
       }
 
       const { data, error } = await query;
+      if (error) throw error;
+      return data as CronLog[];
+    },
+  });
+
+  // Fetch 30 days logs for monitoring dashboard
+  const { data: monitoringLogs } = useQuery({
+    queryKey: ['cron-logs-monitoring'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('cron_logs')
+        .select('*')
+        .gte('started_at', subDays(new Date(), 30).toISOString())
+        .order('started_at', { ascending: false });
+
       if (error) throw error;
       return data as CronLog[];
     },
@@ -164,69 +183,89 @@ export default function AdminCronLogs() {
             </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => refetch()}
-          disabled={isFetching}
-          className="w-fit"
-        >
-          <RefreshCw className={cn("h-4 w-4 mr-2", isFetching && "animate-spin")} />
-          Actualiser
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <ManualCronTrigger onSuccess={() => refetch()} />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isFetching}
+          >
+            <RefreshCw className={cn("h-4 w-4 mr-2", isFetching && "animate-spin")} />
+            Actualiser
+          </Button>
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Server className="h-4 w-4" />
-              Total exécutions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-emerald-500" />
-              Taux de succès
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{stats.successRate}%</div>
-            <p className="text-xs text-muted-foreground">{stats.success} réussis, {stats.failed} échoués</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Timer className="h-4 w-4" />
-              Durée moyenne
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatDuration(stats.avgDuration)}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <RefreshCw className="h-4 w-4 text-primary" />
-              En cours
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">{stats.running}</div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Tabs for Monitoring vs Logs */}
+      <Tabs defaultValue="monitoring" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="monitoring" className="gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Monitoring (30j)
+          </TabsTrigger>
+          <TabsTrigger value="logs" className="gap-2">
+            <Activity className="h-4 w-4" />
+            Logs détaillés
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="monitoring">
+          <CronMonitoringDashboard logs={monitoringLogs || []} />
+        </TabsContent>
+
+        <TabsContent value="logs" className="space-y-4">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <Server className="h-4 w-4" />
+                  Total exécutions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.total}</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-emerald-500" />
+                  Taux de succès
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-emerald-600">{stats.successRate}%</div>
+                <p className="text-xs text-muted-foreground">{stats.success} réussis, {stats.failed} échoués</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <Timer className="h-4 w-4" />
+                  Durée moyenne
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatDuration(stats.avgDuration)}</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4 text-primary" />
+                  En cours
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-primary">{stats.running}</div>
+              </CardContent>
+            </Card>
+          </div>
 
       {/* Filters */}
       <div className="card-lavcom p-4">
@@ -390,6 +429,8 @@ export default function AdminCronLogs() {
           </Table>
         </div>
       </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
