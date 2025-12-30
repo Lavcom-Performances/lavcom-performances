@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { subDays, parseISO } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import { 
   Euro, 
   CreditCard, 
@@ -44,6 +45,29 @@ import { useSites } from "@/hooks/useSites";
 import { useUserGoals } from "@/hooks/useUserGoals";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { generateDashboardPdf } from "@/utils/dashboardPdfExport";
+
+// Animation variants for staggered cards
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10, scale: 0.98 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: {
+      duration: 0.3,
+    }
+  },
+};
 
 // Default costs for profitability calculation (user can configure these later)
 const defaultCosts: LaundryCosts = {
@@ -338,51 +362,69 @@ export default function Dashboard() {
         {/* Vue d'ensemble */}
         <TabsContent value="overview" className="space-y-6">
           {/* KPI Cards principales */}
-          <div data-tutorial="kpis" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            <KPICard
-              title={t('app:dashboard.kpi.totalRevenue')}
-              value={formatCurrency(stats.totalRevenue)}
-              icon={Euro}
-              variant="primary"
-              trend={stats.revenueTrend !== 0 ? { value: Math.abs(stats.revenueTrend), isPositive: stats.revenueTrend > 0 } : undefined}
-              helpText={t('app:dashboard.help.totalRevenue')}
-            />
-            <KPICard
-              title={t('app:dashboard.kpi.revenueCard')}
-              value={formatCurrency(stats.revenueByCard)}
-              icon={CreditCard}
-              variant="success"
-              subtitle={`${cardPercentage}% ${t('app:dashboard.kpi.ofRevenue')}`}
-              helpText={t('app:dashboard.help.revenueCard')}
-            />
-            <KPICard
-              title={t('app:dashboard.kpi.revenueCash')}
-              value={formatCurrency(stats.revenueByCash)}
-              icon={Banknote}
-              subtitle={`${cashPercentage}% ${t('app:dashboard.kpi.ofRevenue')}`}
-              helpText={t('app:dashboard.help.revenueCash')}
-            />
-            <KPICard
-              title={t('app:dashboard.kpi.transactions')}
-              value={stats.totalTransactions.toString()}
-              icon={ShoppingCart}
-              trend={stats.transactionsTrend !== 0 ? { value: Math.abs(stats.transactionsTrend), isPositive: stats.transactionsTrend > 0 } : undefined}
-              helpText={t('app:dashboard.help.transactions')}
-            />
-            <KPICard
-              title={t('app:dashboard.kpi.avgBasket')}
-              value={`${stats.averageBasket.toFixed(2)} €`}
-              icon={TrendingUp}
-              helpText={t('app:dashboard.help.avgBasket')}
-            />
-            <KPICard
-              title={t('app:dashboard.kpi.occupancyRate')}
-              value="—"
-              icon={Percent}
-              subtitle={t('app:dashboard.kpi.insufficientData')}
-              helpText={t('app:dashboard.help.occupancyRate')}
-            />
-          </div>
+          <motion.div 
+            data-tutorial="kpis" 
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div variants={itemVariants}>
+              <KPICard
+                title={t('app:dashboard.kpi.totalRevenue')}
+                value={formatCurrency(stats.totalRevenue)}
+                icon={Euro}
+                variant="primary"
+                trend={stats.revenueTrend !== 0 ? { value: Math.abs(stats.revenueTrend), isPositive: stats.revenueTrend > 0 } : undefined}
+                helpText={t('app:dashboard.help.totalRevenue')}
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KPICard
+                title={t('app:dashboard.kpi.revenueCard')}
+                value={formatCurrency(stats.revenueByCard)}
+                icon={CreditCard}
+                variant="success"
+                subtitle={`${cardPercentage}% ${t('app:dashboard.kpi.ofRevenue')}`}
+                helpText={t('app:dashboard.help.revenueCard')}
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KPICard
+                title={t('app:dashboard.kpi.revenueCash')}
+                value={formatCurrency(stats.revenueByCash)}
+                icon={Banknote}
+                subtitle={`${cashPercentage}% ${t('app:dashboard.kpi.ofRevenue')}`}
+                helpText={t('app:dashboard.help.revenueCash')}
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KPICard
+                title={t('app:dashboard.kpi.transactions')}
+                value={stats.totalTransactions.toString()}
+                icon={ShoppingCart}
+                trend={stats.transactionsTrend !== 0 ? { value: Math.abs(stats.transactionsTrend), isPositive: stats.transactionsTrend > 0 } : undefined}
+                helpText={t('app:dashboard.help.transactions')}
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KPICard
+                title={t('app:dashboard.kpi.avgBasket')}
+                value={`${stats.averageBasket.toFixed(2)} €`}
+                icon={TrendingUp}
+                helpText={t('app:dashboard.help.avgBasket')}
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <KPICard
+                title={t('app:dashboard.kpi.occupancyRate')}
+                value="—"
+                icon={Percent}
+                subtitle={t('app:dashboard.kpi.insufficientData')}
+                helpText={t('app:dashboard.help.occupancyRate')}
+              />
+            </motion.div>
+          </motion.div>
 
           {/* Expert: Nouveaux KPIs Rentabilité */}
           {isExpert && stats.totalRevenue > 0 && (
@@ -396,51 +438,83 @@ export default function Dashboard() {
 
           {/* Expert: Objectifs et comparaisons rapides */}
           {isExpert && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <MiniProgressCard 
-                title="Objectif mensuel" 
-                current={stats.totalRevenue} 
-                target={goals.monthly_revenue_goal} 
-              />
-              <MiniProgressCard 
-                title="Cycles réalisés" 
-                current={stats.totalTransactions} 
-                target={goals.monthly_transactions_goal} 
-                unit="cycles"
-              />
-              <ComparisonCard 
-                title="CA Période" 
-                current={formatCurrency(stats.totalRevenue)} 
-                previous={formatCurrency(previousRevenue)}
-                currentLabel="Actuel"
-                previousLabel="Précédent"
-                percentageChange={stats.revenueTrend}
-              />
-              <ComparisonCard 
-                title="Transactions" 
-                current={stats.totalTransactions.toString()} 
-                previous={Math.round(previousTransactions).toString()}
-                currentLabel="Actuel"
-                previousLabel="Précédent"
-                percentageChange={stats.transactionsTrend}
-              />
-            </div>
+            <motion.div 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div variants={itemVariants}>
+                <MiniProgressCard 
+                  title="Objectif mensuel" 
+                  current={stats.totalRevenue} 
+                  target={goals.monthly_revenue_goal} 
+                />
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <MiniProgressCard 
+                  title="Cycles réalisés" 
+                  current={stats.totalTransactions} 
+                  target={goals.monthly_transactions_goal} 
+                  unit="cycles"
+                />
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <ComparisonCard 
+                  title="CA Période" 
+                  current={formatCurrency(stats.totalRevenue)} 
+                  previous={formatCurrency(previousRevenue)}
+                  currentLabel="Actuel"
+                  previousLabel="Précédent"
+                  percentageChange={stats.revenueTrend}
+                />
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <ComparisonCard 
+                  title="Transactions" 
+                  current={stats.totalTransactions.toString()} 
+                  previous={Math.round(previousTransactions).toString()}
+                  currentLabel="Actuel"
+                  previousLabel="Précédent"
+                  percentageChange={stats.transactionsTrend}
+                />
+              </motion.div>
+            </motion.div>
           )}
 
           {/* Charts Row 1 */}
-          <div data-tutorial="charts" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <motion.div 
+            data-tutorial="charts" 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
+          >
             <MonthlyRevenueChart data={stats.monthlyData} />
             {isExpert && stats.dailyData.length > 0 && <DailyRevenueChart data={stats.dailyData} />}
-          </div>
+          </motion.div>
 
           {/* Charts Row 2 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
+          >
             <PaymentPieChart data={stats.paymentData} />
             {isExpert && <WeekdayPerformanceChart data={stats.weekdayData} />}
-          </div>
+          </motion.div>
 
           {/* Expert: Heatmap */}
-          {isExpert && <SalesHeatmap data={stats.heatmapData} />}
+          {isExpert && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.4, ease: "easeOut" }}
+            >
+              <SalesHeatmap data={stats.heatmapData} />
+            </motion.div>
+          )}
         </TabsContent>
 
         {/* Financier */}
