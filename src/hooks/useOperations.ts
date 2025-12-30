@@ -65,10 +65,12 @@ export function useOperations(filters: OperationsFilters = {}) {
         query = query.eq("site_id", filters.siteId);
       }
 
-      const { data, error: fetchError } = await query.limit(1000);
+      // Increase limit for better data coverage
+      const { data, error: fetchError } = await query.limit(5000);
 
       if (fetchError) throw fetchError;
 
+      console.log(`[useOperations] Fetched ${data?.length || 0} operations for site ${filters.siteId}`);
       setOperations(data || []);
     } catch (err) {
       console.error("Error fetching operations:", err);
