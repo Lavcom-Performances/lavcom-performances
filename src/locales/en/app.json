@@ -703,7 +703,38 @@
     "frequencyErrorSite": "An import is already in progress for this laundry. Try again in {{time}}.",
     "frequencyErrorUser": "You have reached the import limit. Try again in {{time}}.",
     "validating": "Validating...",
-    "suggestion": "You can import your data by period (e.g. month by month) for better results."
+    "suggestion": "You can import your data by period (e.g. month by month) for better results.",
+    "multi": {
+      "maxFiles": "Maximum 10 files per import.",
+      "filesSelected": "{{count}} file(s) selected",
+      "dropzone": "Drop your CSV files here or click to select (max 10)"
+    },
+    "summary": {
+      "totalCbEsp": "Total amounts (CB + ESP)",
+      "totalFi": "Total FI",
+      "totalLines": "Total file lines",
+      "transactions": "Number of transactions",
+      "period": "Period"
+    },
+    "lines": {
+      "toReview": "To review",
+      "invalid": "Invalid",
+      "importable": "Importable",
+      "selectToImport": "Select to import",
+      "file": "File",
+      "row": "Row",
+      "reason": "Reason"
+    },
+    "amount": {
+      "missing": "Missing amount",
+      "invalid": "Invalid amount"
+    },
+    "tabs": {
+      "importable": "Importable",
+      "toReview": "To review",
+      "invalid": "Invalid"
+    },
+    "launchImport": "Launch import ({{count}} lines)"
   },
   "security": {
     "accountTitle": "Account Security",

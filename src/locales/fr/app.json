@@ -703,7 +703,38 @@
     "frequencyErrorSite": "Un import est déjà en cours sur cette laverie. Réessayez dans {{time}}.",
     "frequencyErrorUser": "Vous avez atteint la limite d'imports. Réessayez dans {{time}}.",
     "validating": "Validation en cours...",
-    "suggestion": "Vous pouvez importer vos données par période (ex : mois par mois) pour de meilleurs résultats."
+    "suggestion": "Vous pouvez importer vos données par période (ex : mois par mois) pour de meilleurs résultats.",
+    "multi": {
+      "maxFiles": "Maximum 10 fichiers par import.",
+      "filesSelected": "{{count}} fichier(s) sélectionné(s)",
+      "dropzone": "Glissez vos fichiers CSV ici ou cliquez pour sélectionner (max 10)"
+    },
+    "summary": {
+      "totalCbEsp": "Total des montants (CB + ESP)",
+      "totalFi": "Total FI",
+      "totalLines": "Total lignes fichiers",
+      "transactions": "Nombre de transactions",
+      "period": "Période"
+    },
+    "lines": {
+      "toReview": "À vérifier",
+      "invalid": "Invalides",
+      "importable": "Importables",
+      "selectToImport": "Sélectionner pour import",
+      "file": "Fichier",
+      "row": "Ligne",
+      "reason": "Raison"
+    },
+    "amount": {
+      "missing": "Montant manquant",
+      "invalid": "Montant invalide"
+    },
+    "tabs": {
+      "importable": "Importables",
+      "toReview": "À vérifier",
+      "invalid": "Invalides"
+    },
+    "launchImport": "Lancer l'import ({{count}} lignes)"
   },
   "security": {
     "accountTitle": "Sécurité du compte",
