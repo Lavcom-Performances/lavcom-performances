@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, ChevronRight, X, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, Upload } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,10 @@ import { Button } from "@/components/ui/button";
 import { FileWithMeta, WIZARD_STEPS } from "./types";
 import { MultiCSVUploadStep } from "./MultiCSVUploadStep";
 import { MultiCSVAssociationStep } from "./MultiCSVAssociationStep";
+import { MultiCSVReviewStep } from "./MultiCSVReviewStep";
 import { MultiCSVImportStep } from "./MultiCSVImportStep";
+import { parseMultiCsvFile } from "@/lib/csv/parseMultiCsv";
+import { MultiCsvParsedRow, MAX_FILES_PER_IMPORT } from "@/lib/csv/multiCsvTypes";
 import { parseCSVToColumns, autoDetectMapping, parseRows, calculateSummary } from "../csv-import/csvParser";
 import { useOperationsImport } from "@/hooks/useOperationsImport";
 import { useImportRateLimit } from "@/hooks/useImportRateLimit";
@@ -36,11 +39,12 @@ export function MultiCSVImportWizard({
   const { t } = useTranslation("app");
   const { user } = useAuth();
   const { sites, createSite, fetchSites } = useSites();
-  const { importOperations, isImporting: isImportingOne } = useOperationsImport();
-  const { validateFile, validateLines, checkRateLimit, showFileError, limits } = useImportRateLimit();
+  const { importOperations } = useOperationsImport();
+  const { validateFile, validateLines } = useImportRateLimit();
 
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [files, setFiles] = useState<FileWithMeta[]>([]);
+  const [allRows, setAllRows] = useState<MultiCsvParsedRow[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCreatingSite, setIsCreatingSite] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -54,15 +58,11 @@ export function MultiCSVImportWizard({
   const checkDuplicate = useCallback(
     async (
       filename: string,
-      lineCount: number,
-      minDate: Date | null,
-      maxDate: Date | null,
-      totalAmount: number
+      lineCount: number
     ): Promise<string | null> => {
       if (!user) return null;
 
       try {
-        // Query recent imports with similar characteristics
         const { data: recentBatches } = await supabase
           .from("import_batches")
           .select("filename, imported_rows, created_at")
@@ -94,13 +94,23 @@ export function MultiCSVImportWizard({
     [user]
   );
 
-  // Process files (parse CSV)
+  // Process files with new multi-CSV parser
   const processFiles = useCallback(
     async (newFiles: File[]) => {
+      // Check max files limit
+      const totalFiles = files.length + newFiles.length;
+      if (totalFiles > MAX_FILES_PER_IMPORT) {
+        toast({
+          title: "Limite atteinte",
+          description: `Maximum ${MAX_FILES_PER_IMPORT} fichiers par import`,
+          variant: "destructive",
+        });
+        return;
+      }
+
       setIsProcessing(true);
 
       const fileItems: FileWithMeta[] = newFiles.map((file) => {
-        // Validate file size immediately
         const validation = validateFile(file);
         if (!validation.valid) {
           return {
@@ -110,6 +120,7 @@ export function MultiCSVImportWizard({
             siteId: null,
             summary: null,
             parsedRows: [],
+            multiCsvRows: [],
             error: t(`csvImport.${validation.errorKey}`),
             duplicateWarning: null,
           };
@@ -121,6 +132,7 @@ export function MultiCSVImportWizard({
           siteId: null,
           summary: null,
           parsedRows: [],
+          multiCsvRows: [],
           error: null,
           duplicateWarning: null,
         };
@@ -128,15 +140,17 @@ export function MultiCSVImportWizard({
 
       setFiles((prev) => [...prev, ...fileItems]);
 
-      // Process each file that passed initial validation
+      // Process each file
       for (const fileItem of fileItems) {
         if (fileItem.status === "error") continue;
         
         try {
           const text = await fileItem.file.text();
-          const { columns, rows } = parseCSVToColumns(text);
-
-          if (columns.length === 0 || rows.length === 0) {
+          
+          // Use new multi-CSV parser
+          const multiCsvRows = parseMultiCsvFile(fileItem.file.name, text);
+          
+          if (multiCsvRows.length === 0) {
             setFiles((prev) =>
               prev.map((f) =>
                 f.id === fileItem.id
@@ -147,19 +161,8 @@ export function MultiCSVImportWizard({
             continue;
           }
 
-          // Validate line count
-          const lineValidation = validateLines(rows.length);
-          if (!lineValidation.valid) {
-            setFiles((prev) =>
-              prev.map((f) =>
-                f.id === fileItem.id
-                  ? { ...f, status: "error" as const, error: t(`csvImport.${lineValidation.errorKey}`) }
-                  : f
-              )
-            );
-            continue;
-          }
-
+          // Also parse with legacy parser for backward compatibility
+          const { columns, rows } = parseCSVToColumns(text);
           const mapping = autoDetectMapping(columns);
           const parsedRows = parseRows(rows, mapping);
           const summary = calculateSummary(parsedRows);
@@ -167,10 +170,7 @@ export function MultiCSVImportWizard({
           // Check for duplicates
           const duplicateWarning = await checkDuplicate(
             fileItem.file.name,
-            summary.validRows,
-            summary.minDate,
-            summary.maxDate,
-            summary.totalAmount
+            multiCsvRows.filter(r => r.status === 'importable').length
           );
 
           setFiles((prev) =>
@@ -181,6 +181,7 @@ export function MultiCSVImportWizard({
                     status: "ready" as const,
                     summary,
                     parsedRows,
+                    multiCsvRows,
                     duplicateWarning,
                   }
                 : f
@@ -200,8 +201,36 @@ export function MultiCSVImportWizard({
 
       setIsProcessing(false);
     },
-    [checkDuplicate, validateFile, validateLines, t]
+    [files.length, checkDuplicate, validateFile, t]
   );
+
+  // Aggregate all rows from all ready files
+  useEffect(() => {
+    const readyFiles = files.filter(f => f.status === "ready" && f.multiCsvRows);
+    const aggregated: MultiCsvParsedRow[] = [];
+    
+    readyFiles.forEach(f => {
+      if (f.multiCsvRows) {
+        aggregated.push(...f.multiCsvRows);
+      }
+    });
+    
+    setAllRows(aggregated);
+  }, [files]);
+
+  // Handle row selection change
+  const handleRowSelectionChange = useCallback((rowIndex: number, selected: boolean) => {
+    setAllRows(prev => prev.map((row, idx) => 
+      idx === rowIndex ? { ...row, selected } : row
+    ));
+  }, []);
+
+  // Handle select all by status
+  const handleSelectAllByStatus = useCallback((status: 'importable' | 'to_review', selected: boolean) => {
+    setAllRows(prev => prev.map(row => 
+      row.status === status ? { ...row, selected } : row
+    ));
+  }, []);
 
   // Remove file
   const removeFile = useCallback((fileId: string) => {
@@ -241,10 +270,20 @@ export function MultiCSVImportWizard({
     [createSite, fetchSites]
   );
 
-  // Import all files
+  // Import all files with selected rows
   const importAllFiles = useCallback(async () => {
     const readyFiles = files.filter((f) => f.status === "ready" && f.siteId);
     if (readyFiles.length === 0) return;
+
+    const selectedRows = allRows.filter(r => r.selected);
+    if (selectedRows.length === 0) {
+      toast({
+        title: "Aucune ligne sélectionnée",
+        description: "Sélectionnez au moins une ligne à importer",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsImporting(true);
     setImportProgress(0);
@@ -255,6 +294,24 @@ export function MultiCSVImportWizard({
       setCurrentFileIndex(i);
       setImportProgress(((i + 0.5) / readyFiles.length) * 100);
 
+      // Get selected rows for this file
+      const fileSelectedRows = selectedRows.filter(r => r.source_file_name === fileItem.file.name);
+      
+      if (fileSelectedRows.length === 0) {
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.id === fileItem.id
+              ? {
+                  ...f,
+                  status: "success" as const,
+                  importResult: { imported: 0, ignored: 0, errors: [] },
+                }
+              : f
+          )
+        );
+        continue;
+      }
+
       // Update status to importing
       setFiles((prev) =>
         prev.map((f) =>
@@ -263,10 +320,26 @@ export function MultiCSVImportWizard({
       );
 
       try {
+        // Convert MultiCsvParsedRow to ParsedRow format for import
+        const parsedRowsForImport = fileSelectedRows.map(row => ({
+          date: row.date_iso ? new Date(row.date_iso) : null,
+          time: row.time || null,
+          amount: row.amount_cents ? row.amount_cents / 100 : 0,
+          paymentMode: row.normalized_mode || null,
+          machine: row.machine || null,
+          program: row.program || null,
+          rawData: row.raw_data,
+          isValid: row.status === 'importable',
+          errors: row.errors,
+          inserted_eur: row.inserted_cents ? row.inserted_cents / 100 : null,
+          price_eur: row.price_cents ? row.price_cents / 100 : null,
+          change_eur: row.change_cents ? row.change_cents / 100 : null,
+        }));
+
         const result = await importOperations(
           fileItem.siteId!,
           fileItem.file.name,
-          fileItem.parsedRows
+          parsedRowsForImport
         );
 
         setFiles((prev) =>
@@ -304,7 +377,7 @@ export function MultiCSVImportWizard({
     }
 
     setIsImporting(false);
-  }, [files, importOperations]);
+  }, [files, allRows, importOperations]);
 
   // Retry file
   const retryFile = useCallback(
@@ -362,11 +435,14 @@ export function MultiCSVImportWizard({
     if (currentStep === 1) {
       return files.filter((f) => f.status === "ready").every((f) => f.siteId);
     }
+    if (currentStep === 2) {
+      return allRows.filter(r => r.selected).length > 0;
+    }
     return false;
-  }, [currentStep, files]);
+  }, [currentStep, files, allRows]);
 
   const handleNext = useCallback(() => {
-    if (currentStep === 1) {
+    if (currentStep === 2) {
       // Start import
       importAllFiles();
     }
@@ -394,6 +470,7 @@ export function MultiCSVImportWizard({
     if (!open) {
       setCurrentStep(0);
       setFiles([]);
+      setAllRows([]);
       setIsProcessing(false);
       setIsImporting(false);
       setImportProgress(0);
@@ -402,15 +479,16 @@ export function MultiCSVImportWizard({
   }, [open]);
 
   const isComplete =
-    currentStep === 2 &&
+    currentStep === 3 &&
     !isImporting &&
     files.every((f) => f.status === "success" || f.status === "error");
 
   const successCount = files.filter((f) => f.status === "success").length;
+  const selectedRowsCount = allRows.filter(r => r.selected).length;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col p-0">
         {/* Header */}
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-border shrink-0">
           <div className="flex items-center justify-between">
@@ -471,6 +549,14 @@ export function MultiCSVImportWizard({
             />
           )}
           {currentStep === 2 && (
+            <MultiCSVReviewStep
+              files={files.filter((f) => f.status === "ready")}
+              allRows={allRows}
+              onRowSelectionChange={handleRowSelectionChange}
+              onSelectAllByStatus={handleSelectAllByStatus}
+            />
+          )}
+          {currentStep === 3 && (
             <MultiCSVImportStep
               files={files.filter((f) => f.status !== "pending" && f.status !== "parsing")}
               isImporting={isImporting}
@@ -506,12 +592,14 @@ export function MultiCSVImportWizard({
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </>
-            ) : currentStep < 2 ? (
+            ) : currentStep < 3 ? (
               <Button
                 onClick={handleNext}
                 disabled={!canGoNext() || isProcessing}
               >
-                {currentStep === 1 ? "Lancer l'import" : "Continuer"}
+                {currentStep === 2 
+                  ? `Lancer l'import (${selectedRowsCount} lignes)` 
+                  : "Continuer"}
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             ) : null}

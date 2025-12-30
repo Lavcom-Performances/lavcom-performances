@@ -1,4 +1,5 @@
 import { ImportSummary, ParsedRow } from "../csv-import/types";
+import { MultiCsvParsedRow } from "@/lib/csv/multiCsvTypes";
 
 export interface FileWithMeta {
   id: string;
@@ -8,6 +9,8 @@ export interface FileWithMeta {
   siteName?: string;
   summary: ImportSummary | null;
   parsedRows: ParsedRow[];
+  // New multi-csv parsed rows with enhanced parsing
+  multiCsvRows?: MultiCsvParsedRow[];
   error: string | null;
   duplicateWarning: string | null;
   importResult?: {
@@ -23,7 +26,7 @@ export interface DuplicateCheckResult {
 }
 
 export interface WizardStep {
-  id: "upload" | "associate" | "import";
+  id: "upload" | "associate" | "review" | "import";
   title: string;
   description: string;
 }
@@ -32,12 +35,17 @@ export const WIZARD_STEPS: WizardStep[] = [
   {
     id: "upload",
     title: "Upload",
-    description: "Sélectionnez vos fichiers CSV",
+    description: "Sélectionnez vos fichiers CSV (max 10)",
   },
   {
     id: "associate",
     title: "Association",
     description: "Associez chaque fichier à une laverie",
+  },
+  {
+    id: "review",
+    title: "Vérification",
+    description: "Vérifiez les lignes et totaux avant import",
   },
   {
     id: "import",

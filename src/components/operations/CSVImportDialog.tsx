@@ -550,7 +550,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
               <MultiCsvLinesPreview
                 rows={allRows}
                 onRowSelectionChange={handleRowSelectionChange}
-                onSelectAll={handleSelectAll}
+                onSelectAllByStatus={handleSelectAll}
               />
 
               {/* Validation error inline */}
