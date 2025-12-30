@@ -46,7 +46,7 @@ import { CompanyLogoUpload } from "./CompanyLogoUpload";
 import { TrialBanner } from "@/components/trial/TrialBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 interface AppSidebarProps {
   collapsed?: boolean;
@@ -66,6 +66,13 @@ export function AppSidebar({
   const { t } = useTranslation(['app', 'common']);
   const [chartsOpen, setChartsOpen] = useState(true);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  
+  // Trigger stagger animation on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
   
   const { signOut, profile } = useAuth();
   const { daysRemaining, trialStatus, planType } = useSubscription();
@@ -245,9 +252,10 @@ export function AppSidebar({
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navigation.map((item) => {
+        {navigation.map((item, index) => {
           if (!hasPermission(item.permission)) return null;
           const isActive = location.pathname === item.href;
+          const visibleIndex = navigation.slice(0, index).filter(n => hasPermission(n.permission)).length;
           
           return (
             <NavLink
@@ -255,8 +263,14 @@ export function AppSidebar({
               to={item.href}
               className={cn(
                 "sidebar-item",
-                isActive && "sidebar-item-active"
+                isActive && "sidebar-item-active",
+                "opacity-0 translate-x-[-10px]",
+                mounted && "animate-nav-item-in"
               )}
+              style={{ 
+                animationDelay: mounted ? `${visibleIndex * 50}ms` : '0ms',
+                animationFillMode: 'forwards'
+              }}
             >
               <item.icon className="h-5 w-5 shrink-0 transition-transform duration-200" />
               <span className={cn(
@@ -307,7 +321,7 @@ export function AppSidebar({
               )} />
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-4 space-y-1">
-              {chartsNavigation.map((item) => {
+              {chartsNavigation.map((item, index) => {
                 const isActive = location.pathname === item.href;
                 return (
                   <NavLink
@@ -315,8 +329,13 @@ export function AppSidebar({
                     to={item.href}
                     className={cn(
                       "sidebar-item text-sm",
-                      isActive && "sidebar-item-active"
+                      isActive && "sidebar-item-active",
+                      chartsOpen && "animate-nav-item-in"
                     )}
+                    style={{ 
+                      animationDelay: `${index * 30}ms`,
+                      animationFillMode: 'forwards'
+                    }}
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
                     <span>{item.name}</span>
@@ -337,9 +356,10 @@ export function AppSidebar({
                 </span>
               </div>
             )}
-            {adminNavigation.map((item) => {
+            {adminNavigation.map((item, index) => {
               if (!hasPermission(item.permission)) return null;
               const isActive = location.pathname === item.href;
+              const visibleIndex = adminNavigation.slice(0, index).filter(n => hasPermission(n.permission)).length;
               
               return (
                 <NavLink
@@ -347,8 +367,13 @@ export function AppSidebar({
                   to={item.href}
                   className={cn(
                     "sidebar-item",
-                    isActive && "sidebar-item-active"
+                    isActive && "sidebar-item-active",
+                    mounted && "animate-nav-item-in"
                   )}
+                  style={{ 
+                    animationDelay: mounted ? `${(navigation.length + visibleIndex) * 50}ms` : '0ms',
+                    animationFillMode: 'forwards'
+                  }}
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
                   {!collapsed && <span>{item.name}</span>}
