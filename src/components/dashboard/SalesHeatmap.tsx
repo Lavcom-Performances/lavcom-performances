@@ -12,39 +12,62 @@ const DAYS_ORDER = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 const DAYS_FULL = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 const HOURS = Array.from({ length: 15 }, (_, i) => i + 7); // 7h to 21h
 
+// Exact gradient from the uploaded image: green → yellow-green → yellow → orange → salmon red
+const GRADIENT_COLORS = [
+  "rgb(99, 190, 123)",   // Green (low)
+  "rgb(139, 199, 99)",   // Light green
+  "rgb(172, 208, 85)",   // Yellow-green
+  "rgb(205, 217, 71)",   // Yellow-green brighter
+  "rgb(227, 221, 74)",   // Yellow
+  "rgb(248, 222, 77)",   // Light yellow
+  "rgb(254, 210, 79)",   // Yellow-orange
+  "rgb(251, 186, 77)",   // Orange-yellow
+  "rgb(249, 165, 77)",   // Orange
+  "rgb(248, 140, 80)",   // Orange-red
+  "rgb(244, 109, 85)",   // Light red
+  "rgb(241, 89, 90)",    // Salmon red
+  "rgb(245, 95, 93)",    // Red (high)
+];
+
 function getIntensityColor(value: number, maxValue: number): string {
-  if (value === 0 || maxValue === 0) return "hsl(120, 50%, 85%)"; // Very light green for zero
+  if (value === 0 || maxValue === 0) return "rgb(198, 224, 180)"; // Very light green for zero
   
   const intensity = value / maxValue;
+  const colorIndex = Math.min(Math.floor(intensity * GRADIENT_COLORS.length), GRADIENT_COLORS.length - 1);
   
-  // Gradient from green (low) → yellow → orange → red (high) - like Excel
-  if (intensity < 0.2) return "hsl(120, 60%, 75%)"; // Light green
-  if (intensity < 0.35) return "hsl(100, 60%, 70%)"; // Yellow-green
-  if (intensity < 0.5) return "hsl(60, 70%, 65%)";  // Yellow
-  if (intensity < 0.65) return "hsl(45, 80%, 60%)"; // Yellow-orange
-  if (intensity < 0.8) return "hsl(30, 85%, 55%)";  // Orange
-  if (intensity < 0.9) return "hsl(15, 85%, 50%)";  // Orange-red
-  return "hsl(0, 80%, 50%)"; // Red
+  return GRADIENT_COLORS[colorIndex];
 }
 
 function getTextColor(value: number, maxValue: number): string {
-  if (maxValue === 0) return "hsl(0, 0%, 30%)";
+  if (maxValue === 0) return "rgb(50, 50, 50)";
   const intensity = value / maxValue;
-  return intensity > 0.6 ? "hsl(0, 0%, 100%)" : "hsl(0, 0%, 20%)";
+  // Dark text for light backgrounds, white for dark backgrounds
+  return intensity > 0.6 ? "rgb(255, 255, 255)" : "rgb(50, 50, 50)";
 }
 
 export function SalesHeatmap({ data }: SalesHeatmapProps) {
-  const { gridMap, maxValue } = useMemo(() => {
+  const { gridMap, maxValue, dayTotals, hourTotals, grandTotal } = useMemo(() => {
     const gridMap = new Map<string, number>();
     let max = 0;
+    const dayTotals: Record<string, number> = {};
+    const hourTotals: Record<number, number> = {};
+    let grandTotal = 0;
+    
+    // Initialize totals
+    DAYS_ORDER.forEach(day => dayTotals[day] = 0);
+    HOURS.forEach(hour => hourTotals[hour] = 0);
     
     data.forEach(({ day, hour, cycles }) => {
       const key = `${hour}-${day}`;
       gridMap.set(key, cycles);
       if (cycles > max) max = cycles;
+      
+      dayTotals[day] = (dayTotals[day] || 0) + cycles;
+      hourTotals[hour] = (hourTotals[hour] || 0) + cycles;
+      grandTotal += cycles;
     });
     
-    return { gridMap, maxValue: max };
+    return { gridMap, maxValue: max, dayTotals, hourTotals, grandTotal };
   }, [data]);
 
   return (
@@ -94,20 +117,34 @@ export function SalesHeatmap({ data }: SalesHeatmapProps) {
               })}
             </tr>
           ))}
+          {/* Totals row */}
+          <tr className="font-semibold">
+            <td className="p-2 text-left text-sm font-semibold text-foreground border border-border bg-muted/50">
+              Total
+            </td>
+            {DAYS_ORDER.map((day) => (
+              <td
+                key={`total-${day}`}
+                className="p-2 text-center text-sm font-semibold border border-border bg-muted/50"
+              >
+                {dayTotals[day]}
+              </td>
+            ))}
+          </tr>
         </tbody>
       </table>
       
       {/* Legend */}
       <div className="flex items-center justify-end gap-2 mt-4 text-xs text-muted-foreground">
         <span>Calme</span>
-        <div className="flex gap-0.5">
-          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(120, 60%, 75%)" }} />
-          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(100, 60%, 70%)" }} />
-          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(60, 70%, 65%)" }} />
-          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(45, 80%, 60%)" }} />
-          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(30, 85%, 55%)" }} />
-          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(15, 85%, 50%)" }} />
-          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(0, 80%, 50%)" }} />
+        <div className="flex">
+          {GRADIENT_COLORS.map((color, i) => (
+            <div 
+              key={i} 
+              className="w-4 h-4" 
+              style={{ backgroundColor: color }} 
+            />
+          ))}
         </div>
         <span>Chargé</span>
       </div>

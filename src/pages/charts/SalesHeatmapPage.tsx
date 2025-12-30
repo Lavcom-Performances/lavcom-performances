@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useHeatmapData } from "@/hooks/useChartsData";
-import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
+import { ChartPageFilters, heatmapDefaultFilters } from "@/components/charts/ChartPageFilters";
 import { SalesHeatmap } from "@/components/dashboard/SalesHeatmap";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SalesHeatmapPage() {
   const { dateRange, setDateRange } = useDateRange();
-  const [filters, setFilters] = useState(defaultChartFilters);
+  const [filters, setFilters] = useState(heatmapDefaultFilters);
   const { data: heatmapData, isLoading } = useHeatmapData(filters);
 
   return (
@@ -28,7 +28,7 @@ export default function SalesHeatmapPage() {
           onFiltersChange={setFilters}
           showMachineType
           showMachine
-          showPaymentMode
+          showPaymentMode={false}
           showDayOfWeek={false}
         />
       </div>

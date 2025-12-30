@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useMachineStats } from "@/hooks/useChartsData";
-import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { ChartPageFilters, machinePageDefaultFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -16,7 +16,8 @@ type ViewType = "ca" | "ventes";
 
 export default function MachineTypePage() {
   const { dateRange, setDateRange } = useDateRange();
-  const { data: machineData, isLoading } = useMachineStats();
+  const [filters, setFilters] = useState(machinePageDefaultFilters);
+  const { data: machineData, isLoading } = useMachineStats(filters);
   const [selectedView, setSelectedView] = useState<ViewType>("ca");
 
   const caTotals = {
@@ -37,21 +38,24 @@ export default function MachineTypePage() {
   return (
     <div className="p-6 lg:p-8 space-y-6">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-              Détail par Machine
-            </h1>
-            <p className="text-muted-foreground">
-              Chiffre d'affaires et ventes par machine
-            </p>
-          </div>
-          <DateRangePicker 
-            dateRange={dateRange} 
-            onDateChange={setDateRange}
-            showPresets
-          />
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+            Détail par Machine
+          </h1>
+          <p className="text-muted-foreground">
+            Chiffre d'affaires et ventes par machine
+          </p>
         </div>
+        <ChartPageFilters
+          dateRange={dateRange}
+          onDateChange={setDateRange}
+          filters={filters}
+          onFiltersChange={setFilters}
+          showMachineType
+          showMachine
+          showPaymentMode
+          showDayOfWeek
+        />
         
         <div className="flex gap-2">
           <button
