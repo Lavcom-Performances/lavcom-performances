@@ -26,11 +26,28 @@ Deno.serve(async (req) => {
   const startTime = Date.now();
   console.log("[compute-analytics-cron] Starting nightly analytics computation");
 
-  try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+  // Create log entry at start
+  const { data: logEntry, error: logInsertError } = await supabase
+    .from("cron_logs")
+    .insert({
+      job_name: "compute-analytics-cron",
+      status: "running",
+      details: { message: "Starting nightly analytics computation" }
+    })
+    .select("id")
+    .single();
+
+  if (logInsertError) {
+    console.error("[compute-analytics-cron] Failed to create log entry:", logInsertError);
+  }
+
+  const logId = logEntry?.id;
+
+  try {
     // Get all active sites with operations in the last 30 days
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -44,6 +61,21 @@ Deno.serve(async (req) => {
 
     if (sitesError) {
       console.error("[compute-analytics-cron] Error fetching active sites:", sitesError);
+      
+      // Update log with error
+      if (logId) {
+        await supabase
+          .from("cron_logs")
+          .update({
+            status: "error",
+            completed_at: new Date().toISOString(),
+            duration_ms: Date.now() - startTime,
+            error_message: sitesError.message,
+            details: { error: sitesError }
+          })
+          .eq("id", logId);
+      }
+      
       return new Response(
         JSON.stringify({ error: sitesError.message }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -63,6 +95,7 @@ Deno.serve(async (req) => {
 
     let successCount = 0;
     let errorCount = 0;
+    const siteResults: Array<{ site_id: string; status: string; operations?: number; error?: string }> = [];
 
     // Process each site
     for (const [key, { site_id, user_id }] of uniqueSites) {
@@ -86,20 +119,54 @@ Deno.serve(async (req) => {
         if (response.ok) {
           const result = await response.json();
           console.log(`[compute-analytics-cron] Site ${site_id}: ${result.operations_processed || 0} operations processed`);
+          siteResults.push({
+            site_id,
+            status: "success",
+            operations: result.operations_processed || 0
+          });
           successCount++;
         } else {
           const errorText = await response.text();
           console.error(`[compute-analytics-cron] Site ${site_id} failed:`, errorText);
+          siteResults.push({
+            site_id,
+            status: "error",
+            error: errorText.substring(0, 200) // Limit error message length
+          });
           errorCount++;
         }
       } catch (err) {
-        console.error(`[compute-analytics-cron] Site ${site_id} error:`, err);
+        const errorMessage = err instanceof Error ? err.message : "Unknown error";
+        console.error(`[compute-analytics-cron] Site ${site_id} error:`, errorMessage);
+        siteResults.push({
+          site_id,
+          status: "error",
+          error: errorMessage
+        });
         errorCount++;
       }
     }
 
     const duration = Date.now() - startTime;
     console.log(`[compute-analytics-cron] Completed: ${successCount} success, ${errorCount} errors, ${duration}ms`);
+
+    // Update log entry with results
+    if (logId) {
+      await supabase
+        .from("cron_logs")
+        .update({
+          status: errorCount > 0 ? "partial" : "success",
+          completed_at: new Date().toISOString(),
+          sites_processed: successCount,
+          sites_failed: errorCount,
+          duration_ms: duration,
+          details: {
+            total_sites: uniqueSites.size,
+            site_results: siteResults.slice(0, 50) // Limit to first 50 for storage
+          }
+        })
+        .eq("id", logId);
+    }
 
     return new Response(
       JSON.stringify({
@@ -113,6 +180,21 @@ Deno.serve(async (req) => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("[compute-analytics-cron] Unexpected error:", errorMessage);
+    
+    // Update log entry with error
+    if (logId) {
+      await supabase
+        .from("cron_logs")
+        .update({
+          status: "error",
+          completed_at: new Date().toISOString(),
+          duration_ms: Date.now() - startTime,
+          error_message: errorMessage,
+          details: { unexpected_error: errorMessage }
+        })
+        .eq("id", logId);
+    }
+    
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
