@@ -1072,6 +1072,7 @@ export type Database = {
         Args: { p_end_date: string; p_start_date: string }
         Returns: Json
       }
+      rpc_admin_retention_metrics: { Args: never; Returns: Json }
       rpc_admin_revenue_stats: {
         Args: { p_end_date: string; p_start_date: string }
         Returns: Json

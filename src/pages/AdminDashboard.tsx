@@ -32,6 +32,7 @@ import { DateRange } from 'react-day-picker';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { SubscriptionMetricsExport } from '@/components/admin/SubscriptionMetricsExport';
 import { ChurnAlertSettings } from '@/components/admin/ChurnAlertSettings';
+import { RetentionDashboard } from '@/components/admin/RetentionDashboard';
 
 interface GlobalStats {
   total_users: number;
@@ -103,6 +104,7 @@ const ACTION_LABELS: Record<string, { label: string; icon: React.ReactNode }> = 
   view_top_sites: { label: 'Top sites', icon: <Building2 className="h-4 w-4" /> },
   view_monthly_series: { label: 'Séries mensuelles', icon: <Activity className="h-4 w-4" /> },
   view_subscription_metrics: { label: 'Métriques abonnements', icon: <CreditCard className="h-4 w-4" /> },
+  view_retention_metrics: { label: 'Métriques rétention', icon: <Users className="h-4 w-4" /> },
 };
 
 const ACTION_OPTIONS = [
@@ -112,6 +114,7 @@ const ACTION_OPTIONS = [
   { value: 'view_top_sites', label: 'Top sites' },
   { value: 'view_monthly_series', label: 'Séries mensuelles' },
   { value: 'view_subscription_metrics', label: 'Métriques abonnements' },
+  { value: 'view_retention_metrics', label: 'Métriques rétention' },
 ];
 
 export default function AdminDashboard() {
@@ -395,6 +398,10 @@ export default function AdminDashboard() {
               <CreditCard className="h-4 w-4 mr-2" />
               Abonnements
             </TabsTrigger>
+            <TabsTrigger value="retention">
+              <Users className="h-4 w-4 mr-2" />
+              Rétention
+            </TabsTrigger>
             <TabsTrigger value="activity">
               <Activity className="h-4 w-4 mr-2" />
               Activité
@@ -634,6 +641,11 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Retention Tab */}
+          <TabsContent value="retention" className="space-y-4">
+            <RetentionDashboard />
           </TabsContent>
 
           <TabsContent value="activity" className="space-y-4">
