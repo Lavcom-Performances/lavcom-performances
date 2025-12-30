@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { format, startOfYear, endOfYear, startOfMonth, endOfMonth, subMonths, subYears, addYears, startOfQuarter, endOfQuarter } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Database } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/popover";
 import { useDateBounds } from "@/hooks/useAnalyticsRpc";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
+import { Badge } from "@/components/ui/badge";
 
 interface DateRangePickerProps {
   dateRange: DateRange | undefined;
@@ -91,6 +92,14 @@ export function DateRangePicker({
     return basePresets;
   }, [today, dateBounds]);
 
+  // Format date bounds label
+  const dateBoundsLabel = useMemo(() => {
+    if (!dateBounds?.min_date || !dateBounds?.max_date) return null;
+    const minDate = new Date(dateBounds.min_date);
+    const maxDate = new Date(dateBounds.max_date);
+    return `Données de ${format(minDate, "MMM yyyy", { locale: fr })} à ${format(maxDate, "MMM yyyy", { locale: fr })}`;
+  }, [dateBounds]);
+
   const handlePresetClick = (preset: typeof presets[0]) => {
     const range = preset.getRange();
     setSelectedPreset(preset.key);
@@ -149,7 +158,7 @@ export function DateRangePicker({
   }, [dateRange]);
 
   return (
-    <div data-tutorial="date-range" className={cn("grid gap-2", className)}>
+    <div data-tutorial="date-range" className={cn("flex flex-wrap items-center gap-2", className)}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -163,6 +172,14 @@ export function DateRangePicker({
             <span className="flex-1">{displayText}</span>
           </Button>
         </PopoverTrigger>
+        
+        {/* Date bounds badge */}
+        {dateBoundsLabel && (
+          <Badge variant="secondary" className="gap-1.5 font-normal text-xs">
+            <Database className="h-3 w-3" />
+            {dateBoundsLabel}
+          </Badge>
+        )}
         <PopoverContent className="w-auto p-0" align="start">
           <div className="flex">
             {/* Quick presets sidebar */}
