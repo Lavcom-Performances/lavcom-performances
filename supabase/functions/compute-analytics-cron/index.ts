@@ -260,7 +260,7 @@ Deno.serve(async (req) => {
   }
 });
 
-// Helper function to check consecutive failures and send alert email
+// Helper function to check consecutive failures and send alert based on configurable settings
 async function checkAndSendFailureAlert(
   supabase: any,
   supabaseUrl: string,
@@ -269,7 +269,38 @@ async function checkAndSendFailureAlert(
   lastError: string
 ) {
   try {
-    // Get recent logs for this job (last 10)
+    // Get alert settings for this job
+    const { data: alertSettings, error: settingsError } = await supabase
+      .from("cron_alert_settings")
+      .select("*")
+      .eq("job_name", jobName)
+      .maybeSingle();
+
+    // Use defaults if no settings found
+    const failureThreshold = alertSettings?.failure_threshold ?? 3;
+    const cooldownMinutes = alertSettings?.alert_cooldown_minutes ?? 60;
+    const emailEnabled = alertSettings?.email_enabled ?? true;
+    const slackEnabled = alertSettings?.slack_enabled ?? true;
+    const lastAlertAt = alertSettings?.last_alert_at ? new Date(alertSettings.last_alert_at) : null;
+
+    // Check if we're within cooldown period
+    if (lastAlertAt) {
+      const cooldownMs = cooldownMinutes * 60 * 1000;
+      const timeSinceLastAlert = Date.now() - lastAlertAt.getTime();
+      
+      if (timeSinceLastAlert < cooldownMs) {
+        console.log(`[compute-analytics-cron] Alert cooldown active. Next alert in ${Math.round((cooldownMs - timeSinceLastAlert) / 60000)} minutes`);
+        return;
+      }
+    }
+
+    // Check if both channels are disabled
+    if (!emailEnabled && !slackEnabled) {
+      console.log("[compute-analytics-cron] All alert channels disabled, skipping alert");
+      return;
+    }
+
+    // Get recent logs for this job
     const { data: recentLogs, error } = await supabase
       .from("cron_logs")
       .select("status, started_at")
@@ -292,10 +323,10 @@ async function checkAndSendFailureAlert(
       }
     }
 
-    console.log(`[compute-analytics-cron] Consecutive failures: ${consecutiveFailures}`);
+    console.log(`[compute-analytics-cron] Consecutive failures: ${consecutiveFailures}, threshold: ${failureThreshold}`);
 
-    // Send alert if 3 or more consecutive failures
-    if (consecutiveFailures >= 3) {
+    // Send alert if threshold reached
+    if (consecutiveFailures >= failureThreshold) {
       console.log(`[compute-analytics-cron] Sending failure alert (${consecutiveFailures} consecutive failures)`);
       
       try {
@@ -310,11 +341,21 @@ async function checkAndSendFailureAlert(
             consecutive_failures: consecutiveFailures,
             last_error: lastError,
             failed_at: new Date().toISOString(),
+            email_enabled: emailEnabled,
+            slack_enabled: slackEnabled,
           }),
         });
 
         if (alertResponse.ok) {
           console.log("[compute-analytics-cron] Failure alert sent successfully");
+          
+          // Update last_alert_at in settings
+          if (alertSettings?.id) {
+            await supabase
+              .from("cron_alert_settings")
+              .update({ last_alert_at: new Date().toISOString() })
+              .eq("id", alertSettings.id);
+          }
         } else {
           const errorText = await alertResponse.text();
           console.error("[compute-analytics-cron] Failed to send alert:", errorText);

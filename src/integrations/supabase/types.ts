@@ -174,6 +174,42 @@ export type Database = {
         }
         Relationships: []
       }
+      cron_alert_settings: {
+        Row: {
+          alert_cooldown_minutes: number
+          created_at: string
+          email_enabled: boolean
+          failure_threshold: number
+          id: string
+          job_name: string
+          last_alert_at: string | null
+          slack_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          alert_cooldown_minutes?: number
+          created_at?: string
+          email_enabled?: boolean
+          failure_threshold?: number
+          id?: string
+          job_name?: string
+          last_alert_at?: string | null
+          slack_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          alert_cooldown_minutes?: number
+          created_at?: string
+          email_enabled?: boolean
+          failure_threshold?: number
+          id?: string
+          job_name?: string
+          last_alert_at?: string | null
+          slack_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cron_logs: {
         Row: {
           completed_at: string | null

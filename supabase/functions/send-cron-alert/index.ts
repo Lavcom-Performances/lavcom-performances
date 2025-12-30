@@ -10,6 +10,8 @@ interface AlertRequest {
   consecutive_failures: number;
   last_error: string | null;
   failed_at: string;
+  email_enabled?: boolean;
+  slack_enabled?: boolean;
 }
 
 // Send Slack notification
@@ -101,9 +103,9 @@ Deno.serve(async (req) => {
     const toEmail = Deno.env.get("RESEND_TO_EMAIL");
     const slackWebhookUrl = Deno.env.get("SLACK_WEBHOOK_URL");
 
-    const { job_name, consecutive_failures, last_error, failed_at }: AlertRequest = await req.json();
+    const { job_name, consecutive_failures, last_error, failed_at, email_enabled = true, slack_enabled = true }: AlertRequest = await req.json();
 
-    console.log(`[send-cron-alert] Sending alert for ${job_name} with ${consecutive_failures} consecutive failures`);
+    console.log(`[send-cron-alert] Sending alert for ${job_name} with ${consecutive_failures} consecutive failures (email: ${email_enabled}, slack: ${slack_enabled})`);
 
     const results = {
       email_sent: false,
@@ -112,8 +114,8 @@ Deno.serve(async (req) => {
       errors: [] as string[]
     };
 
-    // Send Slack notification (if configured)
-    if (slackWebhookUrl) {
+    // Send Slack notification (if configured and enabled)
+    if (slack_enabled && slackWebhookUrl) {
       results.slack_sent = await sendSlackNotification(
         slackWebhookUrl,
         job_name,
@@ -124,12 +126,14 @@ Deno.serve(async (req) => {
       if (!results.slack_sent) {
         results.errors.push("Slack notification failed");
       }
+    } else if (!slack_enabled) {
+      console.log("[send-cron-alert] Slack notifications disabled in settings");
     } else {
       console.log("[send-cron-alert] Slack webhook not configured, skipping");
     }
 
-    // Send email notification (if configured)
-    if (resendApiKey && fromEmail && toEmail) {
+    // Send email notification (if configured and enabled)
+    if (email_enabled && resendApiKey && fromEmail && toEmail) {
       const resend = new Resend(resendApiKey);
 
       const severityLevel = consecutive_failures >= 5 ? "🔴 CRITIQUE" : consecutive_failures >= 3 ? "🟠 AVERTISSEMENT" : "🟡 INFO";
@@ -204,6 +208,8 @@ Deno.serve(async (req) => {
         results.email_id = data?.id || null;
         console.log("[send-cron-alert] Email sent successfully:", data);
       }
+    } else if (!email_enabled) {
+      console.log("[send-cron-alert] Email notifications disabled in settings");
     } else {
       console.log("[send-cron-alert] Email not configured, skipping");
     }
