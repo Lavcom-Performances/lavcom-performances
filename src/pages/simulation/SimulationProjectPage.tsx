@@ -4,25 +4,18 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, AlertCircle } from "lucide-react";
 import { StepLocal } from "@/components/simulation/StepLocal";
 import { StepProjectInfo } from "@/components/simulation/StepProjectInfo";
-import { 
-  SimulationProject, 
-  defaultSimulationProject,
-} from "@/types/simulation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSimulationValidation } from "@/hooks/useSimulationValidation";
+import { useSimulationProject } from "@/hooks/useSimulationProject";
 import { toast } from "@/hooks/use-toast";
 
 export default function SimulationProjectPage() {
   const navigate = useNavigate();
-  const [project, setProject] = useState<SimulationProject>(defaultSimulationProject);
+  const { project, updateProject } = useSimulationProject();
   const [activeTab, setActiveTab] = useState("project");
   const [showErrors, setShowErrors] = useState(false);
   
   const { isValid, errors, errorCount } = useSimulationValidation(project);
-
-  const updateProject = (updates: Partial<SimulationProject>) => {
-    setProject(prev => ({ ...prev, ...updates }));
-  };
 
   const handleNext = () => {
     if (!isValid) {
