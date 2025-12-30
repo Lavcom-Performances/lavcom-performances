@@ -955,62 +955,121 @@ export default function Operations() {
           </div>
         )}
         
-        {/* Pagination */}
-        {operations.length > pageSize && (
-          <div className="p-4 border-t flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, operations.length)} sur {operations.length} opérations
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Précédent
-              </Button>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, Math.ceil(operations.length / pageSize)) }, (_, i) => {
-                  const totalPages = Math.ceil(operations.length / pageSize);
-                  let pageNum: number;
-                  
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <Button
-                      key={pageNum}
-                      variant={currentPage === pageNum ? "default" : "outline"}
-                      size="sm"
-                      className="w-9"
-                      onClick={() => setCurrentPage(pageNum)}
-                    >
-                      {pageNum}
-                    </Button>
-                  );
-                })}
+        {/* Enhanced Pagination */}
+        {operations.length > pageSize && (() => {
+          const totalPages = Math.ceil(operations.length / pageSize);
+          
+          // Get unique months from operations for quick navigation
+          const monthsSet = new Set<string>();
+          operations.forEach(op => {
+            const month = op.operation_date.substring(0, 7); // YYYY-MM
+            monthsSet.add(month);
+          });
+          const availableMonths = Array.from(monthsSet).sort().reverse();
+          
+          // Find which page a month starts at
+          const goToMonth = (monthStr: string) => {
+            const idx = operations.findIndex(op => op.operation_date.startsWith(monthStr));
+            if (idx >= 0) {
+              setCurrentPage(Math.floor(idx / pageSize) + 1);
+            }
+          };
+          
+          return (
+            <div className="p-4 border-t space-y-3">
+              {/* Quick month navigation */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-muted-foreground">Aller au mois :</span>
+                <div className="flex flex-wrap gap-1">
+                  {availableMonths.slice(0, 12).map(month => {
+                    const [year, m] = month.split('-');
+                    const monthName = format(new Date(parseInt(year), parseInt(m) - 1, 1), 'MMM yyyy', { locale: fr });
+                    return (
+                      <Button
+                        key={month}
+                        variant="outline"
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => goToMonth(month)}
+                      >
+                        {monthName}
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(p => Math.min(Math.ceil(operations.length / pageSize), p + 1))}
-                disabled={currentPage >= Math.ceil(operations.length / pageSize)}
-              >
-                Suivant
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              
+              {/* Main pagination row */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="text-sm text-muted-foreground">
+                  {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, operations.length)} sur {operations.length.toLocaleString('fr-FR')} opérations
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* First page */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    className="hidden sm:flex"
+                  >
+                    Début
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-1">Précédent</span>
+                  </Button>
+                  
+                  {/* Page input for direct navigation */}
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm text-muted-foreground">Page</span>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={totalPages}
+                      value={currentPage}
+                      onChange={(e) => {
+                        const page = parseInt(e.target.value);
+                        if (page >= 1 && page <= totalPages) {
+                          setCurrentPage(page);
+                        }
+                      }}
+                      className="w-16 h-8 text-center"
+                    />
+                    <span className="text-sm text-muted-foreground">/ {totalPages}</span>
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage >= totalPages}
+                  >
+                    <span className="hidden sm:inline mr-1">Suivant</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                  
+                  {/* Last page */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage >= totalPages}
+                    className="hidden sm:flex"
+                  >
+                    Fin
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     </div>
     </>
