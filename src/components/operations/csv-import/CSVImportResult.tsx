@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CheckCircle2, AlertCircle, ArrowRight, Copy, Zap } from "lucide-react";
+import { CheckCircle2, AlertCircle, ArrowRight, Copy, Zap, Euro } from "lucide-react";
 import { ImportResult } from "./types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +48,12 @@ export function CSVImportResult({ result, onClose }: CSVImportResultProps) {
                 <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
                   <Zap className="h-3 w-3 mr-1" />
                   {result.rechEspFixed} rech ESP corrigés
+                </Badge>
+              )}
+              {result.centimesConverted && (
+                <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                  <Euro className="h-3 w-3 mr-1" />
+                  Centimes → Euros
                 </Badge>
               )}
             </div>

@@ -5,287 +5,308 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { applyBusinessRules, OperationForBusinessRules } from './businessRules';
+import { 
+  processOperationForImport, 
+  normalizeMoneyToEuros, 
+  applyRechEspRule,
+  centsToEurosValue,
+  round2,
+  normStr,
+  normMode,
+  OperationRowRaw,
+  OperationRowNormalized 
+} from './businessRules';
 
-describe('applyBusinessRules', () => {
-  describe('Rech ESP rule (TAEX-145)', () => {
-    it('should transform ESP top-up line without sale (TYPE empty, PRIX=0, INSERE>0)', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: '',
-        inserted_eur: 20,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+describe('centsToEurosValue', () => {
+  it('should convert number centimes to euros', () => {
+    expect(centsToEurosValue(2000)).toBe(20);
+    expect(centsToEurosValue(150)).toBe(1.5);
+    expect(centsToEurosValue(99)).toBe(0.99);
+  });
 
-      const result = applyBusinessRules(op);
+  it('should handle string centimes', () => {
+    expect(centsToEurosValue('2000')).toBe(20);
+    expect(centsToEurosValue('650')).toBe(6.5);
+  });
 
-      expect(result.rechEspFixed).toBe(true);
-      expect(op.type).toBe('Rech ESP');
-      expect(op.price_eur).toBe(20);
-      expect(op.price_esp).toBe(20);
-      expect(op.amount).toBe(20);
-    });
+  it('should handle string with spaces', () => {
+    expect(centsToEurosValue('2 000')).toBe(20);
+    expect(centsToEurosValue(' 1500 ')).toBe(15);
+  });
 
-    it('should transform ESP top-up with null TYPE', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: null,
-        inserted_eur: 15.50,
-        price_eur: null,
-        price_esp: null,
-        price_cb: null,
-        amount: null,
-      };
+  it('should handle French decimal comma', () => {
+    expect(centsToEurosValue('2000,00')).toBe(20);
+  });
 
-      const result = applyBusinessRules(op);
+  it('should return 0 for null/undefined/empty', () => {
+    expect(centsToEurosValue(null)).toBe(0);
+    expect(centsToEurosValue(undefined)).toBe(0);
+    expect(centsToEurosValue('')).toBe(0);
+  });
 
-      expect(result.rechEspFixed).toBe(true);
-      expect(op.type).toBe('Rech ESP');
-      expect(op.price_esp).toBe(15.50);
-    });
+  it('should return 0 for invalid values', () => {
+    expect(centsToEurosValue('abc')).toBe(0);
+    expect(centsToEurosValue(NaN)).toBe(0);
+  });
+});
 
-    it('should handle case-insensitive payment mode "esp"', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'esp',
-        type: '',
-        inserted_eur: 10,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+describe('round2', () => {
+  it('should round to 2 decimal places', () => {
+    expect(round2(1.234)).toBe(1.23);
+    expect(round2(1.235)).toBe(1.24);
+    expect(round2(1.2)).toBe(1.2);
+  });
+});
 
-      const result = applyBusinessRules(op);
+describe('normMode', () => {
+  it('should normalize payment modes', () => {
+    expect(normMode('ESP')).toBe('ESP');
+    expect(normMode('esp')).toBe('ESP');
+    expect(normMode('ESPECES')).toBe('ESP');
+    expect(normMode('CASH')).toBe('ESP');
+    expect(normMode('CB')).toBe('CB');
+    expect(normMode('CARTE')).toBe('CB');
+    expect(normMode('FI')).toBe('FI');
+  });
+});
 
-      expect(result.rechEspFixed).toBe(true);
-      expect(op.type).toBe('Rech ESP');
-    });
+describe('normalizeMoneyToEuros', () => {
+  it('should convert all money fields from centimes to euros', () => {
+    const raw: OperationRowRaw = {
+      mode: 'ESP',
+      type: null,
+      insere: 2000,
+      prix: 650,
+      rendu: 50,
+      prix_cb: 0,
+      prix_esp: 650,
+    };
 
-    it('should handle alternate payment mode "ESPECES"', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESPECES',
-        type: '',
-        inserted_eur: 5,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+    const result = normalizeMoneyToEuros(raw);
 
-      const result = applyBusinessRules(op);
+    expect(result.insere_eur).toBe(20);
+    expect(result.prix_eur).toBe(6.5);
+    expect(result.rendu_eur).toBe(0.5);
+    expect(result.prix_cb_eur).toBe(0);
+    expect(result.prix_esp_eur).toBe(6.5);
+  });
+});
 
-      expect(result.rechEspFixed).toBe(true);
-      expect(op.type).toBe('Rech ESP');
-    });
+describe('applyRechEspRule', () => {
+  it('should transform ESP top-up without sale (INSERE>0, PRIX=0)', () => {
+    const op: OperationRowNormalized = {
+      mode: 'ESP',
+      type: '',
+      insere_eur: 20,
+      prix_eur: 0,
+      rendu_eur: 0,
+      prix_cb_eur: 0,
+      prix_esp_eur: 0,
+    };
 
-    it('should handle alternate payment mode "CASH"', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'CASH',
-        type: '',
-        inserted_eur: 8,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+    const result = applyRechEspRule(op);
 
-      const result = applyBusinessRules(op);
+    expect(result).toBe(true);
+    expect(op.type).toBe('Rech ESP');
+    expect(op.prix_eur).toBe(20);
+    expect(op.prix_esp_eur).toBe(20);
+  });
 
-      expect(result.rechEspFixed).toBe(true);
-      expect(op.type).toBe('Rech ESP');
-    });
+  it('should NOT transform normal sale (PRIX > 0)', () => {
+    const op: OperationRowNormalized = {
+      mode: 'ESP',
+      type: '',
+      insere_eur: 20,
+      prix_eur: 6.5,
+      rendu_eur: 0,
+      prix_cb_eur: 0,
+      prix_esp_eur: 6.5,
+    };
 
-    // Cases where the rule should NOT apply
+    const result = applyRechEspRule(op);
 
-    it('should NOT transform normal ESP sale (PRIX > 0)', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: '',
-        inserted_eur: 20,
-        price_eur: 6.50,
-        price_esp: 6.50,
-        price_cb: 0,
-        amount: 6.50,
-      };
+    expect(result).toBe(false);
+    expect(op.type).toBe('');
+  });
 
-      const result = applyBusinessRules(op);
+  it('should NOT transform CB payment', () => {
+    const op: OperationRowNormalized = {
+      mode: 'CB',
+      type: '',
+      insere_eur: 20,
+      prix_eur: 0,
+      rendu_eur: 0,
+      prix_cb_eur: 0,
+      prix_esp_eur: 0,
+    };
 
-      expect(result.rechEspFixed).toBe(false);
-      expect(op.type).toBe(''); // Unchanged
-      expect(op.price_esp).toBe(6.50); // Unchanged
-    });
+    const result = applyRechEspRule(op);
 
-    it('should NOT transform CB top-up (payment_mode = CB)', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'CB',
-        type: '',
-        inserted_eur: 20,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+    expect(result).toBe(false);
+  });
 
-      const result = applyBusinessRules(op);
+  it('should NOT transform if TYPE is set', () => {
+    const op: OperationRowNormalized = {
+      mode: 'ESP',
+      type: 'Lavage',
+      insere_eur: 20,
+      prix_eur: 0,
+      rendu_eur: 0,
+      prix_cb_eur: 0,
+      prix_esp_eur: 0,
+    };
 
-      expect(result.rechEspFixed).toBe(false);
-      expect(op.type).toBe(''); // Unchanged
-    });
+    const result = applyRechEspRule(op);
 
-    it('should NOT transform if TYPE is already set', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: 'Lavage',
-        inserted_eur: 20,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+    expect(result).toBe(false);
+    expect(op.type).toBe('Lavage');
+  });
+});
 
-      const result = applyBusinessRules(op);
+describe('processOperationForImport (full pipeline)', () => {
+  it('should convert centimes to euros AND apply Rech ESP rule', () => {
+    const raw: OperationRowRaw = {
+      mode: 'ESP',
+      type: '',
+      insere: 2000,  // 20€ in centimes
+      prix: 0,
+      rendu: 0,
+      prix_cb: 0,
+      prix_esp: 0,
+    };
 
-      expect(result.rechEspFixed).toBe(false);
-      expect(op.type).toBe('Lavage'); // Unchanged
-    });
+    const result = processOperationForImport(raw);
 
-    it('should NOT transform if INSERE is 0', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: '',
-        inserted_eur: 0,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+    expect(result.rechEspFixed).toBe(true);
+    expect(result.operation.type).toBe('Rech ESP');
+    expect(result.operation.insere_eur).toBe(20);
+    expect(result.operation.prix_eur).toBe(20);
+    expect(result.operation.prix_esp_eur).toBe(20);
+  });
 
-      const result = applyBusinessRules(op);
+  it('should convert normal sale without triggering Rech ESP', () => {
+    const raw: OperationRowRaw = {
+      mode: 'ESP',
+      type: '',
+      insere: 2000,
+      prix: 650,      // 6.50€ in centimes - normal sale
+      rendu: 1350,    // 13.50€ change
+      prix_cb: 0,
+      prix_esp: 650,
+    };
 
-      expect(result.rechEspFixed).toBe(false);
-      expect(op.type).toBe(''); // Unchanged
-    });
+    const result = processOperationForImport(raw);
 
-    it('should NOT transform if INSERE is negative', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: '',
-        inserted_eur: -5,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+    expect(result.rechEspFixed).toBe(false);
+    expect(result.operation.type).toBe('');
+    expect(result.operation.insere_eur).toBe(20);
+    expect(result.operation.prix_eur).toBe(6.5);
+    expect(result.operation.rendu_eur).toBe(13.5);
+    expect(result.operation.prix_esp_eur).toBe(6.5);
+  });
 
-      const result = applyBusinessRules(op);
+  it('should handle CB transaction correctly', () => {
+    const raw: OperationRowRaw = {
+      mode: 'CB',
+      type: '',
+      insere: 0,
+      prix: 750,
+      rendu: 0,
+      prix_cb: 750,
+      prix_esp: 0,
+    };
 
-      expect(result.rechEspFixed).toBe(false);
-    });
+    const result = processOperationForImport(raw);
 
-    it('should NOT transform if PRIX_ESP already > 0', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: '',
-        inserted_eur: 20,
-        price_eur: 0,
-        price_esp: 5,
-        price_cb: 0,
-        amount: 0,
-      };
+    expect(result.rechEspFixed).toBe(false);
+    expect(result.operation.prix_eur).toBe(7.5);
+    expect(result.operation.prix_cb_eur).toBe(7.5);
+    expect(result.operation.prix_esp_eur).toBe(0);
+  });
 
-      const result = applyBusinessRules(op);
+  it('should handle whitespace-only TYPE as empty', () => {
+    const raw: OperationRowRaw = {
+      mode: 'ESP',
+      type: '   ',
+      insere: 1000,
+      prix: 0,
+      rendu: 0,
+      prix_cb: 0,
+      prix_esp: 0,
+    };
 
-      expect(result.rechEspFixed).toBe(false);
-      expect(op.price_esp).toBe(5); // Unchanged
-    });
+    const result = processOperationForImport(raw);
 
-    it('should NOT transform if PRIX_CB > 0 (guard against mixed payments)', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: '',
-        inserted_eur: 20,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 5,
-        amount: 0,
-      };
+    expect(result.rechEspFixed).toBe(true);
+    expect(result.operation.type).toBe('Rech ESP');
+  });
 
-      const result = applyBusinessRules(op);
+  it('should handle case-insensitive ESPECES mode', () => {
+    const raw: OperationRowRaw = {
+      mode: 'especes',
+      type: null,
+      insere: 500,
+      prix: 0,
+      rendu: 0,
+      prix_cb: 0,
+      prix_esp: 0,
+    };
 
-      expect(result.rechEspFixed).toBe(false);
-    });
+    const result = processOperationForImport(raw);
 
-    it('should NOT transform FI payment mode', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'FI',
-        type: '',
-        inserted_eur: 20,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+    expect(result.rechEspFixed).toBe(true);
+    expect(result.operation.type).toBe('Rech ESP');
+    expect(result.operation.prix_eur).toBe(5);
+  });
 
-      const result = applyBusinessRules(op);
+  it('should NOT apply rule if INSERE is 0', () => {
+    const raw: OperationRowRaw = {
+      mode: 'ESP',
+      type: '',
+      insere: 0,
+      prix: 0,
+      rendu: 0,
+      prix_cb: 0,
+      prix_esp: 0,
+    };
 
-      expect(result.rechEspFixed).toBe(false);
-    });
+    const result = processOperationForImport(raw);
 
-    // Edge cases
+    expect(result.rechEspFixed).toBe(false);
+  });
 
-    it('should handle whitespace-only TYPE as empty', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: '   ',
-        inserted_eur: 10,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
+  it('should NOT apply rule if PRIX_CB > 0 (mixed payment guard)', () => {
+    const raw: OperationRowRaw = {
+      mode: 'ESP',
+      type: '',
+      insere: 2000,
+      prix: 0,
+      rendu: 0,
+      prix_cb: 500,  // Some CB payment
+      prix_esp: 0,
+    };
 
-      const result = applyBusinessRules(op);
+    const result = processOperationForImport(raw);
 
-      expect(result.rechEspFixed).toBe(true);
-      expect(op.type).toBe('Rech ESP');
-    });
+    expect(result.rechEspFixed).toBe(false);
+  });
 
-    it('should handle undefined values gracefully', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: undefined as any,
-        inserted_eur: 10,
-        price_eur: undefined,
-        price_esp: undefined,
-        price_cb: undefined,
-        amount: undefined,
-      };
+  it('should preserve decimal precision', () => {
+    const raw: OperationRowRaw = {
+      mode: 'ESP',
+      type: '',
+      insere: 1275,  // 12.75€
+      prix: 0,
+      rendu: 0,
+      prix_cb: 0,
+      prix_esp: 0,
+    };
 
-      const result = applyBusinessRules(op);
+    const result = processOperationForImport(raw);
 
-      expect(result.rechEspFixed).toBe(true);
-      expect(op.type).toBe('Rech ESP');
-    });
-
-    it('should preserve decimal precision in amounts', () => {
-      const op: OperationForBusinessRules = {
-        payment_mode: 'ESP',
-        type: '',
-        inserted_eur: 12.75,
-        price_eur: 0,
-        price_esp: 0,
-        price_cb: 0,
-        amount: 0,
-      };
-
-      const result = applyBusinessRules(op);
-
-      expect(result.rechEspFixed).toBe(true);
-      expect(op.price_esp).toBe(12.75);
-      expect(op.amount).toBe(12.75);
-    });
+    expect(result.rechEspFixed).toBe(true);
+    expect(result.operation.insere_eur).toBe(12.75);
+    expect(result.operation.prix_eur).toBe(12.75);
+    expect(result.operation.prix_esp_eur).toBe(12.75);
   });
 });
