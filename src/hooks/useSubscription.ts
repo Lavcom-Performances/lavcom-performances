@@ -11,7 +11,11 @@ interface Subscription {
   trial_end_date: string | null;
   subscription_start_date: string | null;
   subscription_end_date: string | null;
+  current_period_end: string | null;
   laundry_count: number;
+  stripe_subscription_id: string | null;
+  stripe_customer_id: string | null;
+  last_invoice_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -93,6 +97,9 @@ export function useSubscription() {
     isExpired: subscription?.plan_type === 'trial' && calculateDaysRemaining() <= 0,
     planType: subscription?.plan_type ?? null,
     trialStatus: getTrialStatus(),
+    lastInvoiceUrl: subscription?.last_invoice_url ?? null,
+    stripeSubscriptionId: subscription?.stripe_subscription_id ?? null,
+    stripeCustomerId: subscription?.stripe_customer_id ?? null,
     refetch: () => user && fetchSubscription(user.id),
   };
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, ArrowRight, Building2, User, CreditCard, Check, Minus, Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, User, CreditCard, Check, Minus, Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,9 @@ import { toast } from "@/hooks/use-toast";
 import { getLaundromatPricing } from "@/config/pricingConfig";
 import { Footer } from "@/components/layout/Footer";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { getSubscriptionPriceId } from "@/lib/stripePriceMap";
 
 interface CompanyInfo {
   raisonSociale: string;
@@ -34,6 +37,7 @@ export default function Subscribe() {
   const { t } = useTranslation(['app', 'common']);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { user, isAuthenticated } = useAuth();
   const planFromUrl = searchParams.get("plan") || "monthly";
   const countFromUrl = parseInt(searchParams.get("count") || "1", 10);
   
@@ -139,17 +143,63 @@ export default function Subscribe() {
   };
 
   const handleSubmit = async () => {
+    if (!isAuthenticated || !user) {
+      toast({
+        title: t('common:errors.notAuthenticated'),
+        description: "Veuillez vous connecter pour continuer.",
+        variant: "destructive",
+      });
+      navigate("/login?redirect=/subscribe");
+      return;
+    }
+
     setIsSubmitting(true);
     
-    // Simulation du paiement
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
-    toast({
-      title: t('app:subscribe.success.title'),
-      description: t('app:subscribe.success.description'),
-    });
-    
-    navigate("/select-laundromat");
+    try {
+      const priceId = getSubscriptionPriceId(
+        laundryCount, 
+        selectedPlan === "annual" ? "annual" : "monthly"
+      );
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        throw new Error("Session expirée");
+      }
+
+      const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
+        body: { 
+          price_id: priceId,
+          laundryCount,
+        },
+        headers: {
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message || "Erreur lors de la création du checkout");
+      }
+
+      if (data?.url) {
+        // Ouvrir Stripe Checkout dans un nouvel onglet
+        window.open(data.url, "_blank");
+        toast({
+          title: "Redirection vers le paiement",
+          description: "Un nouvel onglet s'est ouvert pour finaliser votre paiement.",
+        });
+      } else {
+        throw new Error("URL de paiement non reçue");
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      toast({
+        title: "Erreur de paiement",
+        description: err instanceof Error ? err.message : "Une erreur est survenue",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const formatSiret = (value: string) => {
