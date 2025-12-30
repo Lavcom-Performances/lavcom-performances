@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, MapPin, Maximize, Clock, Map } from "lucide-react";
+import { Building2, MapPin, Maximize, Clock, Map, Globe } from "lucide-react";
 import { SimulationProject } from "@/types/simulation";
 import { CityAutocomplete } from "./CityAutocomplete";
 import { formatUserInput } from "@/lib/textUtils";
@@ -11,6 +11,7 @@ import {
   SURFACE_OPTIONS, 
   OPENING_HOURS_OPTIONS, 
   ZONE_TYPES,
+  COUNTRIES,
   CitySearchResult 
 } from "@/hooks/useCitySearch";
 
@@ -100,6 +101,32 @@ export function StepProjectInfo({ project, onUpdate }: StepProjectInfoProps) {
             />
           </div>
 
+          {/* Pays */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              Pays
+            </Label>
+            <Select
+              value={project.country || "FR"}
+              onValueChange={(value) => onUpdate({ country: value, location: '', city: '', postal_code: '', department: '' })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionner un pays" />
+              </SelectTrigger>
+              <SelectContent>
+                {COUNTRIES.map((country) => (
+                  <SelectItem key={country.code} value={country.code}>
+                    <span className="flex items-center gap-2">
+                      <span>{country.flag}</span>
+                      <span>{country.name}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Localisation avec autocomplétion */}
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
@@ -111,6 +138,7 @@ export function StepProjectInfo({ project, onUpdate }: StepProjectInfoProps) {
                 value={project.location || ""}
                 onSelect={handleCitySelect}
                 placeholder="Rechercher une ville..."
+                country={project.country || "FR"}
               />
             </div>
 

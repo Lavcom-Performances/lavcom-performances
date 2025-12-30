@@ -79,6 +79,7 @@ export interface SimulationProject {
   id?: string;
   name: string;
   location: string;
+  country?: string;
   city?: string;
   postal_code?: string;
   department?: string;
@@ -162,6 +163,7 @@ export const defaultMachines: MachineConfig[] = [
 export const defaultSimulationProject: SimulationProject = {
   name: '',
   location: '',
+  country: 'FR',
   surface_m2: 40,
   opening_hours_description: '7h - 21h',
   zone_type: 'urbain',

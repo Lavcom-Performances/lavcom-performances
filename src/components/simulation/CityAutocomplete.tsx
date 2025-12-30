@@ -9,17 +9,19 @@ interface CityAutocompleteProps {
   onSelect: (result: CitySearchResult) => void;
   placeholder?: string;
   className?: string;
+  country?: string;
 }
 
 export function CityAutocomplete({ 
   value, 
   onSelect, 
   placeholder = "Rechercher une ville...",
-  className 
+  className,
+  country = "FR"
 }: CityAutocompleteProps) {
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
-  const { results, isLoading } = useCitySearch(inputValue);
+  const { results, isLoading } = useCitySearch(inputValue, 2, country);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

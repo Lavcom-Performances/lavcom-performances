@@ -17,12 +17,12 @@ export interface CitySearchResult {
   region: string;
 }
 
-export function useCitySearch(query: string, minChars: number = 2) {
+export function useCitySearch(query: string, minChars: number = 2, country: string = "FR") {
   const [results, setResults] = useState<CitySearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const searchCities = useCallback(async (searchQuery: string) => {
+  const searchCities = useCallback(async (searchQuery: string, countryCode: string) => {
     if (searchQuery.length < minChars) {
       setResults([]);
       return;
@@ -32,25 +32,52 @@ export function useCitySearch(query: string, minChars: number = 2) {
     setError(null);
 
     try {
-      const response = await fetch(
-        `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(searchQuery)}&fields=nom,code,codeDepartement,codeRegion,codesPostaux,population&boost=population&limit=10`
-      );
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la recherche");
-      }
-
-      const cities: City[] = await response.json();
+      let formattedResults: CitySearchResult[] = [];
       
-      const formattedResults: CitySearchResult[] = cities.flatMap((city) =>
-        city.codesPostaux.map((postalCode) => ({
-          label: `${city.nom} (${postalCode})`,
-          city: city.nom,
-          postalCode,
-          department: city.codeDepartement,
-          region: city.codeRegion,
-        }))
-      ).slice(0, 15);
+      if (countryCode === "FR") {
+        // API française officielle
+        const response = await fetch(
+          `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(searchQuery)}&fields=nom,code,codeDepartement,codeRegion,codesPostaux,population&boost=population&limit=10`
+        );
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la recherche");
+        }
+
+        const cities: City[] = await response.json();
+        
+        formattedResults = cities.flatMap((city) =>
+          city.codesPostaux.map((postalCode) => ({
+            label: `${city.nom} (${postalCode})`,
+            city: city.nom,
+            postalCode,
+            department: city.codeDepartement,
+            region: city.codeRegion,
+          }))
+        ).slice(0, 15);
+      } else {
+        // Pour les autres pays, utiliser l'API GeoNames via OpenStreetMap Nominatim
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(searchQuery)}&countrycodes=${countryCode.toLowerCase()}&format=json&limit=10&addressdetails=1`
+        );
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la recherche");
+        }
+
+        const results = await response.json();
+        
+        formattedResults = results
+          .filter((r: any) => r.type === "city" || r.type === "town" || r.type === "village" || r.class === "place")
+          .map((r: any) => ({
+            label: `${r.address?.city || r.address?.town || r.address?.village || r.display_name.split(',')[0]}${r.address?.postcode ? ` (${r.address.postcode})` : ''}`,
+            city: r.address?.city || r.address?.town || r.address?.village || r.display_name.split(',')[0],
+            postalCode: r.address?.postcode || '',
+            department: r.address?.state || '',
+            region: r.address?.country || '',
+          }))
+          .slice(0, 15);
+      }
 
       setResults(formattedResults);
     } catch (err) {
@@ -63,11 +90,11 @@ export function useCitySearch(query: string, minChars: number = 2) {
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      searchCities(query);
+      searchCities(query, country);
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [query, searchCities]);
+  }, [query, country, searchCities]);
 
   return { results, isLoading, error };
 }
@@ -207,4 +234,13 @@ export const ZONE_TYPES = [
   { value: "zone-universitaire", label: "Zone universitaire / étudiante" },
   { value: "zone-touristique", label: "Zone touristique" },
   { value: "banlieue", label: "Banlieue / Périphérie" },
+];
+
+// Liste des pays supportés
+export const COUNTRIES = [
+  { code: "FR", name: "France", flag: "🇫🇷" },
+  { code: "BE", name: "Belgique", flag: "🇧🇪" },
+  { code: "CH", name: "Suisse", flag: "🇨🇭" },
+  { code: "LU", name: "Luxembourg", flag: "🇱🇺" },
+  { code: "MC", name: "Monaco", flag: "🇲🇨" },
 ];
