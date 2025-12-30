@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useOccupancyRate } from "@/hooks/useChartsData";
-import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
+import { useChartPreferences } from "@/hooks/useChartPreferences";
+import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -22,7 +22,7 @@ function getOccupancyTextColor(rate: number): string {
 
 export default function OccupancyRatePage() {
   const { dateRange, setDateRange } = useDateRange();
-  const [filters, setFilters] = useState(defaultChartFilters);
+  const { filters, setFilters, isLoaded } = useChartPreferences("occupancy_rate");
   const { data: machineData, isLoading } = useOccupancyRate(filters);
 
   const washingMachines = machineData?.filter(m => m.type === "LL") ?? [];
@@ -39,6 +39,14 @@ export default function OccupancyRatePage() {
   const totalAllCycles = totalWashingCycles + totalDryerCycles;
   const totalAllOptimal = totalWashingOptimal + totalDryerOptimal;
   const avgTotalRate = totalAllOptimal > 0 ? Math.round((totalAllCycles / totalAllOptimal) * 100) : 0;
+
+  if (!isLoaded) {
+    return (
+      <div className="p-6 lg:p-8">
+        <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">

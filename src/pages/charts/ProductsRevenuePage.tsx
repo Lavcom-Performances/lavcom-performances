@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useMachineStats } from "@/hooks/useChartsData";
-import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
+import { useChartPreferences } from "@/hooks/useChartPreferences";
+import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -14,7 +14,7 @@ import {
 
 export default function ProductsRevenuePage() {
   const { dateRange, setDateRange } = useDateRange();
-  const [filters, setFilters] = useState(defaultChartFilters);
+  const { filters, setFilters, isLoaded } = useChartPreferences("products_revenue");
   const { data: machineData, isLoading } = useMachineStats(filters);
 
   const formatCurrency = (value: number) => 
@@ -26,6 +26,14 @@ export default function ProductsRevenuePage() {
     total: machineData?.reduce((sum, m) => sum + m.caTotal, 0) ?? 0,
     ventes: machineData?.reduce((sum, m) => sum + m.ventesTotal, 0) ?? 0,
   };
+
+  if (!isLoaded) {
+    return (
+      <div className="p-6 lg:p-8">
+        <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">

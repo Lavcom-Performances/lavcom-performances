@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useHalfHourlyFrequency } from "@/hooks/useChartsData";
-import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
+import { useChartPreferences } from "@/hooks/useChartPreferences";
+import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   BarChart,
@@ -23,10 +23,18 @@ import {
 
 export default function HalfHourlyFrequencyPage() {
   const { dateRange, setDateRange } = useDateRange();
-  const [filters, setFilters] = useState(defaultChartFilters);
+  const { filters, setFilters, isLoaded } = useChartPreferences("half_hourly_frequency");
   const { data: halfHourlyData, isLoading } = useHalfHourlyFrequency(filters);
 
   const total = halfHourlyData?.reduce((sum, d) => sum + d.count, 0) ?? 0;
+
+  if (!isLoaded) {
+    return (
+      <div className="p-6 lg:p-8">
+        <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
