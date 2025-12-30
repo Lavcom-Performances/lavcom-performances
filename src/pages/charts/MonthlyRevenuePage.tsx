@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
-import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { useMonthlyRevenue } from "@/hooks/useAnalyticsRpc";
+import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
 import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
 
 export default function MonthlyRevenuePage() {
   const { dateRange, setDateRange } = useDateRange();
+  const [filters, setFilters] = useState(defaultChartFilters);
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
             CA par mois
@@ -16,10 +19,15 @@ export default function MonthlyRevenuePage() {
             Évolution du chiffre d'affaires mensuel
           </p>
         </div>
-        <DateRangePicker 
-          dateRange={dateRange} 
+        <ChartPageFilters
+          dateRange={dateRange}
           onDateChange={setDateRange}
-          showPresets
+          filters={filters}
+          onFiltersChange={setFilters}
+          showMachineType
+          showMachine
+          showPaymentMode
+          showDayOfWeek
         />
       </div>
 

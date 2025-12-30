@@ -1,4 +1,7 @@
+import { useState } from "react";
+import { useDateRange } from "@/hooks/useDateRange";
 import { useAnnualComparison } from "@/hooks/useChartsData";
+import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -10,7 +13,9 @@ import {
 } from "@/components/ui/table";
 
 export default function AnnualComparisonPage() {
-  const { data, isLoading } = useAnnualComparison();
+  const { dateRange, setDateRange } = useDateRange();
+  const [filters, setFilters] = useState(defaultChartFilters);
+  const { data, isLoading } = useAnnualComparison(filters);
   const { monthlyData, yearTotals, years } = data ?? { monthlyData: [], yearTotals: {}, years: [] };
 
   const formatCurrency = (value: number | null) => 
@@ -37,6 +42,16 @@ export default function AnnualComparisonPage() {
             Évolution du chiffre d'affaires par année
           </p>
         </div>
+        <ChartPageFilters
+          dateRange={dateRange}
+          onDateChange={setDateRange}
+          filters={filters}
+          onFiltersChange={setFilters}
+          showMachineType
+          showMachine
+          showPaymentMode
+          showDayOfWeek
+        />
       </div>
 
       {isLoading ? (

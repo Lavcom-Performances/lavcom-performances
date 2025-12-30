@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useOccupancyRate } from "@/hooks/useChartsData";
-import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -21,7 +22,8 @@ function getOccupancyTextColor(rate: number): string {
 
 export default function OccupancyRatePage() {
   const { dateRange, setDateRange } = useDateRange();
-  const { data: machineData, isLoading } = useOccupancyRate();
+  const [filters, setFilters] = useState(defaultChartFilters);
+  const { data: machineData, isLoading } = useOccupancyRate(filters);
 
   const washingMachines = machineData?.filter(m => m.type === "LL") ?? [];
   const dryerMachines = machineData?.filter(m => m.type === "SL") ?? [];
@@ -39,8 +41,8 @@ export default function OccupancyRatePage() {
   const avgTotalRate = totalAllOptimal > 0 ? Math.round((totalAllCycles / totalAllOptimal) * 100) : 0;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="p-6 lg:p-8 space-y-6">
+      <div className="flex flex-col gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-foreground">
             Taux d'occupation
@@ -49,10 +51,15 @@ export default function OccupancyRatePage() {
             Analyse du taux d'occupation par machine
           </p>
         </div>
-        <DateRangePicker 
-          dateRange={dateRange} 
+        <ChartPageFilters
+          dateRange={dateRange}
           onDateChange={setDateRange}
-          showPresets
+          filters={filters}
+          onFiltersChange={setFilters}
+          showMachineType
+          showMachine
+          showPaymentMode={false}
+          showDayOfWeek
         />
       </div>
 

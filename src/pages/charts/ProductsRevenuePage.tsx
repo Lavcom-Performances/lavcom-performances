@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useMachineStats } from "@/hooks/useChartsData";
-import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -13,7 +14,8 @@ import {
 
 export default function ProductsRevenuePage() {
   const { dateRange, setDateRange } = useDateRange();
-  const { data: machineData, isLoading } = useMachineStats();
+  const [filters, setFilters] = useState(defaultChartFilters);
+  const { data: machineData, isLoading } = useMachineStats(filters);
 
   const formatCurrency = (value: number) => 
     new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
@@ -27,7 +29,7 @@ export default function ProductsRevenuePage() {
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
             CA Produits & Machines
@@ -36,10 +38,15 @@ export default function ProductsRevenuePage() {
             Chiffre d'affaires par machine
           </p>
         </div>
-        <DateRangePicker 
-          dateRange={dateRange} 
+        <ChartPageFilters
+          dateRange={dateRange}
           onDateChange={setDateRange}
-          showPresets
+          filters={filters}
+          onFiltersChange={setFilters}
+          showMachineType
+          showMachine
+          showPaymentMode
+          showDayOfWeek
         />
       </div>
 

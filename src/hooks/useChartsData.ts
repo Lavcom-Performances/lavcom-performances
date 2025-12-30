@@ -6,7 +6,7 @@ import { useDateRange } from "@/hooks/useDateRange";
 import { getDay, format } from "date-fns";
 import { ChartFilters } from "@/components/charts/ChartPageFilters";
 
-// Helper to filter operations by filters
+// Helper to filter operations by multi-select filters
 function applyFilters<T extends { 
   operation_date?: string;
   payment_mode?: string | null;
@@ -17,37 +17,42 @@ function applyFilters<T extends {
   if (!filters) return data;
   
   return data.filter(op => {
-    // Payment mode filter
-    if (filters.paymentMode !== "all") {
+    // Payment mode filter (multi-select)
+    if (filters.paymentModes.length > 0) {
       const mode = op.payment_mode?.toUpperCase();
-      if (mode !== filters.paymentMode) return false;
+      if (!mode || !filters.paymentModes.includes(mode)) return false;
     }
     
-    // Machine type filter
-    if (filters.machineType !== "all") {
+    // Machine type filter (multi-select)
+    if (filters.machineTypes.length > 0) {
       const machineName = (op.machine_name || op.machine || "").toLowerCase();
       const type = op.type?.toLowerCase() || "";
       
-      if (filters.machineType === "LL") {
-        const isWashing = machineName.includes("lave") || type.includes("lave") || type === "ll";
-        if (!isWashing) return false;
-      } else if (filters.machineType === "SL") {
-        const isDrying = machineName.includes("sèche") || machineName.includes("seche") || 
-                        type.includes("sèche") || type.includes("seche") || type === "sl";
-        if (!isDrying) return false;
-      }
+      const isWashing = machineName.includes("lave") || type.includes("lave") || type === "ll";
+      const isDrying = machineName.includes("sèche") || machineName.includes("seche") || 
+                       type.includes("sèche") || type.includes("seche") || type === "sl";
+      const isLessive = machineName.includes("lessive") || type.includes("lessive");
+      const isRecharge = machineName.includes("rech") || type.includes("rech");
+      
+      let matches = false;
+      if (filters.machineTypes.includes("LL") && isWashing) matches = true;
+      if (filters.machineTypes.includes("SL") && isDrying) matches = true;
+      if (filters.machineTypes.includes("LESSIVE") && isLessive) matches = true;
+      if (filters.machineTypes.includes("RECH") && isRecharge) matches = true;
+      
+      if (!matches) return false;
     }
     
-    // Specific machine filter
-    if (filters.machine !== "all") {
+    // Specific machine filter (multi-select)
+    if (filters.machines.length > 0) {
       const machineName = op.machine_name || op.machine;
-      if (machineName !== filters.machine) return false;
+      if (!machineName || !filters.machines.includes(machineName)) return false;
     }
     
-    // Day of week filter
-    if (filters.dayOfWeek !== "all" && op.operation_date) {
+    // Day of week filter (multi-select)
+    if (filters.daysOfWeek.length > 0 && op.operation_date) {
       const dayOfWeek = getDay(new Date(op.operation_date));
-      if (dayOfWeek.toString() !== filters.dayOfWeek) return false;
+      if (!filters.daysOfWeek.includes(dayOfWeek.toString())) return false;
     }
     
     return true;
@@ -100,29 +105,33 @@ export function useDailyRevenue(filters?: Omit<ChartFilters, 'dateRange'>) {
 }
 
 // Payment distribution data
-export function usePaymentDistribution() {
+export function usePaymentDistribution(filters?: Omit<ChartFilters, 'dateRange'>) {
   const { currentSiteId } = useCurrentSite();
   const { formattedRange } = useDateRange();
 
   return useQuery({
-    queryKey: ["paymentDistribution", currentSiteId, formattedRange.from, formattedRange.to],
+    queryKey: ["paymentDistribution", currentSiteId, formattedRange.from, formattedRange.to, filters],
     queryFn: async () => {
       if (!currentSiteId || !formattedRange.from || !formattedRange.to) return [];
 
       const { data, error } = await supabase
         .from("operations")
-        .select("price_cb, price_esp, payment_mode")
+        .select("price_cb, price_esp, payment_mode, machine_name, machine, type, operation_date")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to);
 
       if (error) throw error;
 
+      // Apply filters (excluding payment mode filter for this chart)
+      const filtersWithoutPayment = filters ? { ...filters, paymentModes: [] } : undefined;
+      const filtered = applyFilters(data || [], filtersWithoutPayment);
+
       let totalCb = 0;
       let totalEsp = 0;
       let totalFi = 0;
 
-      data?.forEach((op) => {
+      filtered.forEach((op) => {
         totalCb += Number(op.price_cb || 0);
         totalEsp += Number(op.price_esp || 0);
         if (op.payment_mode?.toUpperCase() === "FI") {
@@ -185,28 +194,32 @@ export function useHourlyFrequency(filters?: Omit<ChartFilters, 'dateRange'>) {
 }
 
 // Daily frequency (by day of week)
-export function useDailyFrequency() {
+export function useDailyFrequency(filters?: Omit<ChartFilters, 'dateRange'>) {
   const { currentSiteId } = useCurrentSite();
   const { formattedRange } = useDateRange();
 
   return useQuery({
-    queryKey: ["dailyFrequency", currentSiteId, formattedRange.from, formattedRange.to],
+    queryKey: ["dailyFrequency", currentSiteId, formattedRange.from, formattedRange.to, filters],
     queryFn: async () => {
       if (!currentSiteId || !formattedRange.from || !formattedRange.to) return [];
 
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_date")
+        .select("operation_date, payment_mode, machine_name, machine, type")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to);
 
       if (error) throw error;
 
+      // Apply filters (excluding day filter for this chart)
+      const filtersWithoutDay = filters ? { ...filters, daysOfWeek: [] } : undefined;
+      const filtered = applyFilters(data || [], filtersWithoutDay);
+
       const days: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
       const dayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
-      data?.forEach((op) => {
+      filtered.forEach((op) => {
         const dayOfWeek = getDay(new Date(op.operation_date));
         days[dayOfWeek] = (days[dayOfWeek] || 0) + 1;
       });
@@ -222,18 +235,18 @@ export function useDailyFrequency() {
 }
 
 // Half-hourly frequency
-export function useHalfHourlyFrequency() {
+export function useHalfHourlyFrequency(filters?: Omit<ChartFilters, 'dateRange'>) {
   const { currentSiteId } = useCurrentSite();
   const { formattedRange } = useDateRange();
 
   return useQuery({
-    queryKey: ["halfHourlyFrequency", currentSiteId, formattedRange.from, formattedRange.to],
+    queryKey: ["halfHourlyFrequency", currentSiteId, formattedRange.from, formattedRange.to, filters],
     queryFn: async () => {
       if (!currentSiteId || !formattedRange.from || !formattedRange.to) return [];
 
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_time")
+        .select("operation_time, operation_date, payment_mode, machine_name, machine, type")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to)
@@ -241,13 +254,16 @@ export function useHalfHourlyFrequency() {
 
       if (error) throw error;
 
+      // Apply filters
+      const filtered = applyFilters(data || [], filters);
+
       const slots: Record<string, number> = {};
       for (let h = 7; h <= 21; h++) {
         slots[`${h.toString().padStart(2, "0")}:00`] = 0;
         slots[`${h.toString().padStart(2, "0")}:30`] = 0;
       }
 
-      data?.forEach((op) => {
+      filtered.forEach((op) => {
         if (op.operation_time) {
           const [hourStr, minStr] = op.operation_time.split(":");
           const hour = parseInt(hourStr, 10);
@@ -287,8 +303,8 @@ export function useHeatmapData(filters?: Omit<ChartFilters, 'dateRange'>) {
 
       if (error) throw error;
 
-      // Apply filters (except dayOfWeek for heatmap)
-      const filtersWithoutDay = filters ? { ...filters, dayOfWeek: "all" } : undefined;
+      // Apply filters (except daysOfWeek for heatmap since it shows all days)
+      const filtersWithoutDay = filters ? { ...filters, daysOfWeek: [] } : undefined;
       const filtered = applyFilters(data || [], filtersWithoutDay);
 
       const dayNames = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
@@ -329,27 +345,31 @@ export function useHeatmapData(filters?: Omit<ChartFilters, 'dateRange'>) {
 }
 
 // Machine statistics
-export function useMachineStats() {
+export function useMachineStats(filters?: Omit<ChartFilters, 'dateRange'>) {
   const { currentSiteId } = useCurrentSite();
   const { formattedRange } = useDateRange();
 
   return useQuery({
-    queryKey: ["machineStats", currentSiteId, formattedRange.from, formattedRange.to],
+    queryKey: ["machineStats", currentSiteId, formattedRange.from, formattedRange.to, filters],
     queryFn: async () => {
       if (!currentSiteId || !formattedRange.from || !formattedRange.to) return [];
 
       const { data, error } = await supabase
         .from("operations")
-        .select("machine_name, machine, price_cb, price_esp, type")
+        .select("machine_name, machine, price_cb, price_esp, type, operation_date, payment_mode")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to);
 
       if (error) throw error;
 
+      // Apply filters (excluding machine filter for this chart)
+      const filtersWithoutMachine = filters ? { ...filters, machines: [] } : undefined;
+      const filtered = applyFilters(data || [], filtersWithoutMachine);
+
       const machines = new Map<string, { caEsp: number; caCb: number; ventesEsp: number; ventesCb: number; type: string }>();
 
-      data?.forEach((op) => {
+      filtered.forEach((op) => {
         const name = op.machine_name || op.machine || "Inconnu";
         const existing = machines.get(name) || { caEsp: 0, caCb: 0, ventesEsp: 0, ventesCb: 0, type: op.type || "" };
         
@@ -382,11 +402,11 @@ export function useMachineStats() {
 }
 
 // Annual comparison data
-export function useAnnualComparison() {
+export function useAnnualComparison(filters?: Omit<ChartFilters, 'dateRange'>) {
   const { currentSiteId } = useCurrentSite();
 
   return useQuery({
-    queryKey: ["annualComparison", currentSiteId],
+    queryKey: ["annualComparison", currentSiteId, filters],
     queryFn: async () => {
       if (!currentSiteId) return { monthlyData: [], yearTotals: {} };
 
@@ -396,12 +416,15 @@ export function useAnnualComparison() {
 
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_date, price_cb, price_esp")
+        .select("operation_date, price_cb, price_esp, payment_mode, machine_name, machine, type")
         .eq("site_id", currentSiteId)
         .gte("operation_date", `${years[0]}-01-01`)
         .lte("operation_date", `${currentYear}-12-31`);
 
       if (error) throw error;
+
+      // Apply filters
+      const filtered = applyFilters(data || [], filters);
 
       // Initialize data structure
       const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
@@ -414,7 +437,7 @@ export function useAnnualComparison() {
       const yearTotals: Record<string, number> = {};
       years.forEach((y) => (yearTotals[`y${y}`] = 0));
 
-      data?.forEach((op) => {
+      filtered.forEach((op) => {
         const date = new Date(op.operation_date);
         const year = date.getFullYear();
         const month = date.getMonth();
@@ -433,27 +456,31 @@ export function useAnnualComparison() {
 }
 
 // Occupancy rate data
-export function useOccupancyRate() {
+export function useOccupancyRate(filters?: Omit<ChartFilters, 'dateRange'>) {
   const { currentSiteId } = useCurrentSite();
   const { formattedRange } = useDateRange();
 
   return useQuery({
-    queryKey: ["occupancyRate", currentSiteId, formattedRange.from, formattedRange.to],
+    queryKey: ["occupancyRate", currentSiteId, formattedRange.from, formattedRange.to, filters],
     queryFn: async () => {
       if (!currentSiteId || !formattedRange.from || !formattedRange.to) return [];
 
       const { data, error } = await supabase
         .from("operations")
-        .select("machine_name, machine, type")
+        .select("machine_name, machine, type, operation_date, payment_mode")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to);
 
       if (error) throw error;
 
+      // Apply filters (excluding machine filter)
+      const filtersWithoutMachine = filters ? { ...filters, machines: [] } : undefined;
+      const filtered = applyFilters(data || [], filtersWithoutMachine);
+
       // Count cycles per machine
       const machines = new Map<string, { count: number; type: string }>();
-      data?.forEach((op) => {
+      filtered.forEach((op) => {
         const name = op.machine_name || op.machine || "Inconnu";
         const existing = machines.get(name) || { count: 0, type: op.type || "" };
         existing.count += 1;
