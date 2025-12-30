@@ -65,8 +65,8 @@ export function useOperations(filters: OperationsFilters = {}) {
         query = query.eq("site_id", filters.siteId);
       }
 
-      // Increase limit for better data coverage
-      const { data, error: fetchError } = await query.limit(5000);
+      // Fetch all operations (increased limit for full data)
+      const { data, error: fetchError } = await query.limit(50000);
 
       if (fetchError) throw fetchError;
 
