@@ -128,43 +128,81 @@ export function useOperationsImport() {
           };
         }));
 
-        // Insert operations in batches of 500
+        // Insert operations in batches of 500, ignoring duplicates
         const BATCH_SIZE = 500;
         let insertedCount = 0;
+        let duplicatesIgnored = 0;
         const errors: string[] = [];
 
         for (let i = 0; i < operations.length; i += BATCH_SIZE) {
           const chunk = operations.slice(i, i + BATCH_SIZE);
-          const { error: insertError, count } = await supabase
+          
+          // Use upsert with ignoreDuplicates to skip duplicates based on import_hash
+          const { error: insertError, data: insertedData } = await supabase
             .from("operations")
-            .insert(chunk);
+            .upsert(chunk, { 
+              onConflict: 'site_id,import_hash',
+              ignoreDuplicates: true 
+            })
+            .select('id');
 
           if (insertError) {
-            console.error("Error inserting operations chunk:", insertError);
-            errors.push(`Erreur à la ligne ${i + 1}: ${insertError.message}`);
+            // Check if it's a duplicate key error (can happen with partial batches)
+            if (insertError.code === '23505') {
+              // Unique constraint violation - some duplicates in batch
+              // Try inserting one by one to count properly
+              for (const op of chunk) {
+                const { error: singleError } = await supabase
+                  .from("operations")
+                  .insert(op);
+                
+                if (singleError?.code === '23505') {
+                  duplicatesIgnored++;
+                } else if (singleError) {
+                  errors.push(`Erreur: ${singleError.message}`);
+                } else {
+                  insertedCount++;
+                }
+              }
+            } else {
+              console.error("Error inserting operations chunk:", insertError);
+              errors.push(`Erreur à la ligne ${i + 1}: ${insertError.message}`);
+            }
           } else {
-            insertedCount += chunk.length;
+            // Count actual inserts (upsert with ignoreDuplicates returns inserted rows)
+            insertedCount += insertedData?.length || chunk.length;
           }
         }
 
         // Update batch with actual inserted count if different
-        if (insertedCount !== validRows.length) {
+        const actualIgnored = parsedRows.length - insertedCount;
+        if (insertedCount !== validRows.length || duplicatesIgnored > 0) {
           await supabase
             .from("import_batches")
-            .update({ imported_rows: insertedCount })
+            .update({ 
+              imported_rows: insertedCount,
+              ignored_rows: actualIgnored
+            })
             .eq("id", batch.id);
+        }
+
+        // Build result messages
+        const resultMessages: string[] = [];
+        if (invalidRows.length > 0) {
+          resultMessages.push(`${invalidRows.length} lignes ignorées (données incomplètes)`);
+        }
+        if (duplicatesIgnored > 0) {
+          resultMessages.push(`${duplicatesIgnored} doublons ignorés`);
+        }
+        if (errors.length > 0) {
+          resultMessages.push(...errors);
         }
 
         return {
           success: insertedCount > 0,
           imported: insertedCount,
-          ignored: parsedRows.length - insertedCount,
-          errors:
-            errors.length > 0
-              ? errors
-              : invalidRows.length > 0
-              ? [`${invalidRows.length} lignes ignorées (données incomplètes)`]
-              : [],
+          ignored: actualIgnored,
+          errors: resultMessages.length > 0 ? resultMessages : [],
         };
       } catch (err) {
         console.error("Import error:", err);
