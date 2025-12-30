@@ -35,8 +35,8 @@ const categoryLabels: Record<string, string> = {
   LAVE_LINGE: "Lave-linge",
   SECHE_LINGE: "Sèche-linge",
   LESSIVE: "Lessive",
-  RECHARGE_CB: "Recharge CB",
-  RECHARGE_ESP: "Recharge ESP",
+  RECH_CB: "Rech CB",
+  RECH_ESP: "Rech ESP",
   AUTRE: "Autre",
 };
 

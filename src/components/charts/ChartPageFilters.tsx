@@ -39,7 +39,8 @@ export const MACHINE_TYPES = [
   { value: "LL", label: "Lave-linge" },
   { value: "SL", label: "Sèche-linge" },
   { value: "LESSIVE", label: "Lessive" },
-  { value: "RECH", label: "Recharge CB" },
+  { value: "RECH_CB", label: "Rech CB" },
+  { value: "RECH_ESP", label: "Rech ESP" },
 ];
 
 export const DAYS_OF_WEEK = [
