@@ -25,6 +25,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { useDateRange } from "@/hooks/useDateRange";
 import { generateRecommendationsReport, getRecommendationsData } from "@/utils/recommendationsPdfExport";
 import { generateMarketingRecommendations, getMockAnalyticsData } from "@/utils/marketingRecommendations";
 import { trackPdfDownload } from "@/lib/analytics";
@@ -162,6 +164,7 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
 export default function RecommendationsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  const { dateRange, setDateRange } = useDateRange();
 
   const handleExportPDF = async () => {
     setIsGenerating(true);
@@ -296,32 +299,38 @@ export default function RecommendationsPage() {
         noindex={true}
       />
       <div className="p-6 lg:p-8 space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-            Recommandations
-          </h1>
-          <p className="text-muted-foreground">
-            Insights et actions recommandées basées sur vos données
-          </p>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+              Recommandations
+            </h1>
+            <p className="text-muted-foreground">
+              Insights et actions recommandées basées sur vos données
+            </p>
+          </div>
+          <Button 
+            onClick={handleExportPDF} 
+            disabled={isGenerating}
+            className="gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Génération...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                Télécharger PDF
+              </>
+            )}
+          </Button>
         </div>
-        <Button 
-          onClick={handleExportPDF} 
-          disabled={isGenerating}
-          className="gap-2"
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Génération...
-            </>
-          ) : (
-            <>
-              <Download className="h-4 w-4" />
-              Télécharger PDF
-            </>
-          )}
-        </Button>
+        <DateRangePicker 
+          dateRange={dateRange}
+          onDateChange={setDateRange}
+        />
       </div>
 
       {/* Légende des couleurs */}

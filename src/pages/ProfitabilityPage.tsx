@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { KPISection } from "@/components/dashboard/KPISection";
+import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { useDateRange } from "@/hooks/useDateRange";
 import {
   ChartContainer,
   ChartTooltip,
@@ -112,6 +114,7 @@ const chartConfig = {
 
 export default function ProfitabilityPage() {
   const { isExpert } = useViewMode();
+  const { dateRange, setDateRange } = useDateRange();
   const totalLostRevenue = lostRevenueData.reduce((acc, d) => acc + d.lostRevenue, 0);
   const avgRotation = rotationData.reduce((acc, d) => acc + d.cyclesPerDay, 0) / rotationData.length;
   const peakSaturation = Math.max(...saturationData.map(d => d.saturation));
@@ -127,13 +130,19 @@ export default function ProfitabilityPage() {
       />
       <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
-          Analyse de Rentabilité
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground">
-          Identifiez les leviers pour augmenter votre chiffre d'affaires
-        </p>
+      <div className="flex flex-col gap-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
+            Analyse de Rentabilité
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Identifiez les leviers pour augmenter votre chiffre d'affaires
+          </p>
+        </div>
+        <DateRangePicker 
+          dateRange={dateRange}
+          onDateChange={setDateRange}
+        />
       </div>
 
       {/* KPIs Principaux */}

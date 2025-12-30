@@ -67,6 +67,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { useDateRange } from "@/hooks/useDateRange";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { trackPdfDownload } from "@/lib/analytics";
@@ -568,6 +570,8 @@ export default function PredictiveMaintenance() {
 
   const selectedMachineType = machines.find((m) => m.id === selectedMachine)?.type;
   const availableParts = selectedMachineType ? partsCatalog[selectedMachineType] : [];
+
+  const { dateRange, setDateRange } = useDateRange();
 
   return (
     <div className="p-4 md:p-6 space-y-6">

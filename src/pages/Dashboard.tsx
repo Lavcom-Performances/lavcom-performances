@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { DateRange } from "react-day-picker";
-import { subDays, parseISO, format } from "date-fns";
+import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -47,6 +46,7 @@ import { useViewMode } from "@/hooks/useViewMode";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useSites } from "@/hooks/useSites";
 import { useUserGoals } from "@/hooks/useUserGoals";
+import { useDateRange } from "@/hooks/useDateRange";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { generateDashboardPdf } from "@/utils/dashboardPdfExport";
 
@@ -92,11 +92,10 @@ export default function Dashboard() {
   const { isExpert } = useViewMode();
   const { user } = useAuth();
   const { sites, getDefaultSite } = useSites();
+  const { dateRange, setDateRange } = useDateRange();
   
   // Get site from URL or default
   const urlSiteId = searchParams.get('site');
-  const urlDateStart = searchParams.get('date_start');
-  const urlDateEnd = searchParams.get('date_end');
   
   // Track if we came from a drill-down (site param in URL)
   const isFromDrillDown = !!urlSiteId;
@@ -128,20 +127,6 @@ export default function Dashboard() {
     }
   }, [isFromDrillDown, selectedSite?.id, siteWasInvalid, sites.length, t]);
   
-  // Initialize date range from URL or defaults
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
-    if (urlDateStart && urlDateEnd) {
-      return {
-        from: parseISO(urlDateStart),
-        to: parseISO(urlDateEnd),
-      };
-    }
-    return {
-      from: subDays(new Date(), 30),
-      to: new Date(),
-    };
-  });
-  
   const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
   const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
 
@@ -149,24 +134,13 @@ export default function Dashboard() {
   const handleReturnToMultiSites = () => {
     const params = new URLSearchParams();
     if (dateRange?.from) {
-      params.set('date_start', dateRange.from.toISOString().split('T')[0]);
+      params.set('date_start', format(dateRange.from, 'yyyy-MM-dd'));
     }
     if (dateRange?.to) {
-      params.set('date_end', dateRange.to.toISOString().split('T')[0]);
+      params.set('date_end', format(dateRange.to, 'yyyy-MM-dd'));
     }
     params.set('tab', 'comparatifs');
     navigate(`/dashboard?${params.toString()}`);
-  };
-
-  // Sync date range changes to URL
-  const handleDateChange = (range: DateRange | undefined) => {
-    setDateRange(range);
-    if (range?.from && range?.to) {
-      const params = new URLSearchParams(searchParams);
-      params.set('date_start', range.from.toISOString().split('T')[0]);
-      params.set('date_end', range.to.toISOString().split('T')[0]);
-      setSearchParams(params, { replace: true });
-    }
   };
 
   const { stats, isLoading, isEmpty, refetch, dataSource } = useDashboardStats(dateRange, selectedSite?.id);
@@ -386,7 +360,7 @@ export default function Dashboard() {
         </div>
         <DateRangePicker 
           dateRange={dateRange}
-          onDateChange={handleDateChange}
+          onDateChange={setDateRange}
         />
       </div>
 

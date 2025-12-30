@@ -7,6 +7,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { SimulationLayout } from "@/components/layout/SimulationLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ViewModeProvider } from "@/hooks/useViewMode";
+import { DateRangeProvider } from "@/hooks/useDateRange";
 import { RouteTracker } from "@/components/analytics/RouteTracker";
 import { CookieBanner } from "@/components/cookies/CookieBanner";
 import { LoginLoggerProvider } from "@/components/auth/LoginLoggerProvider";
@@ -106,7 +107,9 @@ const App = () => (
           {/* Protected app routes with sidebar layout */}
           <Route element={
             <ProtectedRoute>
-              <AppLayout />
+              <DateRangeProvider>
+                <AppLayout />
+              </DateRangeProvider>
             </ProtectedRoute>
           }>
             <Route path="/dashboard" element={<Dashboard />} />
