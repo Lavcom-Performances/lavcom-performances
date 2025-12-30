@@ -25,6 +25,7 @@ import { DashboardKPIGrid } from "@/components/dashboard/DashboardKPIGrid";
 import { toast } from "sonner";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
+import { YearComparisonChart } from "@/components/dashboard/YearComparisonChart";
 import { DailyRevenueChart } from "@/components/dashboard/DailyRevenueChart";
 import { PaymentPieChart } from "@/components/dashboard/PaymentPieChart";
 import { SalesHeatmap } from "@/components/dashboard/SalesHeatmap";
@@ -542,10 +543,12 @@ export default function Dashboard() {
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <MonthlyRevenueChart />
-            <PaymentPieChart data={stats.paymentData} />
+            <YearComparisonChart />
           </div>
+
+          <PaymentPieChart data={stats.paymentData} />
 
           {/* Section Rentabilité */}
           <ProfitabilitySection 
