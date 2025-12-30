@@ -33,6 +33,31 @@ const logStep = (step: string, details?: unknown) => {
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
 };
 
+// Helper to send subscription emails
+async function sendSubscriptionEmail(
+  type: "activation" | "renewal" | "payment_failed" | "cancellation",
+  to: string,
+  data?: { planType?: string; endDate?: string; invoiceUrl?: string; firstName?: string }
+) {
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const response = await fetch(`${supabaseUrl}/functions/v1/send-subscription-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ to, type, data }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.text();
+      logStep("Email send failed", { type, to, error });
+    } else {
+      logStep("Email sent successfully", { type, to });
+    }
+  } catch (err) {
+    logStep("Email send error", { type, to, error: err instanceof Error ? err.message : String(err) });
+  }
+}
+
 // Helper to handle simulator one-time purchase
 async function handleSimulatorPurchase(
   session: Stripe.Checkout.Session,
@@ -242,6 +267,7 @@ async function handleSubscriptionCheckout(
   const interval = session.metadata?.interval as "month" | "year" || "month";
   const subscriptionId = session.subscription as string;
   const customerId = session.customer as string;
+  const customerEmail = session.customer_email;
 
   logStep("Processing subscription checkout", { userId, laundryCount, tier, interval, subscriptionId });
 
@@ -279,10 +305,21 @@ async function handleSubscriptionCheckout(
   }
 
   // Also store customer ID in profile for faster lookups
-  await supabaseAdmin
+  const { data: profile } = await supabaseAdmin
     .from("profiles")
     .update({ stripe_customer_id: customerId })
-    .eq("id", userId);
+    .eq("id", userId)
+    .select("first_name, email")
+    .single();
+
+  // Send activation email
+  if (customerEmail || profile?.email) {
+    const planName = interval === "year" ? "Annuel" : "Mensuel";
+    await sendSubscriptionEmail("activation", customerEmail || profile?.email, {
+      planType: `${planName} - ${laundryCount} laverie${laundryCount > 1 ? 's' : ''}`,
+      firstName: profile?.first_name || undefined,
+    });
+  }
 
   logStep("Subscription activated successfully", {
     userId,
@@ -346,6 +383,8 @@ async function handleSubscriptionDeleted(
     return;
   }
 
+  const currentPeriodEnd = new Date(subscription.current_period_end * 1000);
+
   const { error } = await supabaseAdmin
     .from("subscriptions")
     .update({
@@ -359,6 +398,21 @@ async function handleSubscriptionDeleted(
     throw new Error(`Failed to cancel subscription: ${error.message}`);
   }
 
+  // Get profile for email
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("email, first_name")
+    .eq("id", userId)
+    .single();
+
+  // Send cancellation email
+  if (profile?.email) {
+    await sendSubscriptionEmail("cancellation", profile.email, {
+      firstName: profile.first_name || undefined,
+      endDate: currentPeriodEnd.toLocaleDateString("fr-FR"),
+    });
+  }
+
   logStep("Subscription canceled", { userId });
 }
 
@@ -370,6 +424,7 @@ async function handleSubscriptionRenewal(
 ) {
   const subscriptionId = invoice.subscription as string;
   const invoiceUrl = invoice.hosted_invoice_url || invoice.invoice_pdf || null;
+  const customerEmail = invoice.customer_email;
   
   // Get the subscription to access metadata
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -403,6 +458,22 @@ async function handleSubscriptionRenewal(
     throw new Error(`Failed to update subscription after renewal: ${error.message}`);
   }
 
+  // Get profile for email
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("first_name, email")
+    .eq("id", userId)
+    .single();
+
+  // Send renewal email
+  if (customerEmail || profile?.email) {
+    await sendSubscriptionEmail("renewal", customerEmail || profile?.email, {
+      firstName: profile?.first_name || undefined,
+      endDate: currentPeriodEnd.toLocaleDateString("fr-FR"),
+      invoiceUrl: invoiceUrl || undefined,
+    });
+  }
+
   logStep("Subscription renewed", { userId, endDate: currentPeriodEnd.toISOString(), invoiceUrl });
 }
 
@@ -420,7 +491,7 @@ async function handleInvoicePaymentFailed(
   // Find profile by email
   const { data: profile } = await supabaseAdmin
     .from("profiles")
-    .select("id")
+    .select("id, first_name")
     .eq("email", customerEmail)
     .maybeSingle();
 
@@ -441,6 +512,11 @@ async function handleInvoicePaymentFailed(
     logStep("Subscription past_due update error", { error: error.message });
     throw new Error(`Failed to update subscription status: ${error.message}`);
   }
+
+  // Send payment failed email
+  await sendSubscriptionEmail("payment_failed", customerEmail, {
+    firstName: profile.first_name || undefined,
+  });
 
   logStep("Subscription marked as past_due", { userId: profile.id });
 }

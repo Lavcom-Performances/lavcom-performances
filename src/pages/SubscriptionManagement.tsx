@@ -267,34 +267,60 @@ export default function SubscriptionManagement() {
               </Card>
             </div>
 
-            {/* Invoice Link - shown only if available */}
-            {lastInvoiceUrl && !isTrialActive && (
-              <Card className="border-emerald-500/20 bg-emerald-500/5">
+            {/* Invoice Section */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              {/* Last Invoice */}
+              {lastInvoiceUrl && !isTrialActive && (
+                <Card className="border-emerald-500/20 bg-emerald-500/5">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-emerald-500/20 rounded-lg">
+                          <FileText className="h-6 w-6 text-emerald-500" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Dernière facture TTC</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Consultez et téléchargez
+                          </p>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => window.open(lastInvoiceUrl, "_blank")}
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Voir
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Billing History Link */}
+              <Card 
+                className="cursor-pointer hover:bg-muted/50 transition-colors" 
+                onClick={() => navigate("/billing-history")}
+              >
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-emerald-500/20 rounded-lg">
-                        <FileText className="h-6 w-6 text-emerald-500" />
+                      <div className="p-3 bg-blue-500/10 rounded-lg">
+                        <FileText className="h-6 w-6 text-blue-500" />
                       </div>
                       <div>
-                        <h3 className="font-semibold">Dernière facture TTC</h3>
+                        <h3 className="font-semibold">Historique des factures</h3>
                         <p className="text-sm text-muted-foreground">
-                          Consultez et téléchargez votre facture
+                          Toutes vos factures TTC
                         </p>
                       </div>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => window.open(lastInvoiceUrl, "_blank")}
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Voir la facture
-                    </Button>
+                    <ExternalLink className="h-5 w-5 text-muted-foreground" />
                   </div>
                 </CardContent>
               </Card>
-            )}
+            </div>
 
             {/* Features included */}
             <Card>
