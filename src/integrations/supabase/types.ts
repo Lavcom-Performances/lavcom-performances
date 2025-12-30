@@ -143,6 +143,7 @@ export type Database = {
           created_at: string
           id: string
           import_batch_id: string | null
+          import_hash: string | null
           inserted_eur: number | null
           machine: string | null
           machine_name: string | null
@@ -163,6 +164,7 @@ export type Database = {
           created_at?: string
           id?: string
           import_batch_id?: string | null
+          import_hash?: string | null
           inserted_eur?: number | null
           machine?: string | null
           machine_name?: string | null
@@ -183,6 +185,7 @@ export type Database = {
           created_at?: string
           id?: string
           import_batch_id?: string | null
+          import_hash?: string | null
           inserted_eur?: number | null
           machine?: string | null
           machine_name?: string | null
