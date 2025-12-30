@@ -45,6 +45,8 @@ const machines = [
   { value: "lave-18kg", label: "Lave-linge 18kg" },
   { value: "seche", label: "Sèche-linge" },
   { value: "lessive", label: "Lessive" },
+  { value: "rech-cb", label: "Rech CB" },
+  { value: "rech-esp", label: "Rech ESP" },
 ];
 
 const payments = [
