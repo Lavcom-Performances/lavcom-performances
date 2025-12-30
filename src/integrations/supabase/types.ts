@@ -257,6 +257,7 @@ export type Database = {
           phone: string | null
           plan_code: string | null
           siret: string | null
+          stripe_customer_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -274,6 +275,7 @@ export type Database = {
           phone?: string | null
           plan_code?: string | null
           siret?: string | null
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -291,6 +293,7 @@ export type Database = {
           phone?: string | null
           plan_code?: string | null
           siret?: string | null
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Relationships: []
