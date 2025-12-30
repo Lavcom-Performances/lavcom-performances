@@ -923,6 +923,17 @@ export type Database = {
           transactions_count: number
         }[]
       }
+      rpc_monthly_revenue_range: {
+        Args: { p_end_date: string; p_site_id: string; p_start_date: string }
+        Returns: {
+          month: number
+          revenue_cb: number
+          revenue_esp: number
+          revenue_total: number
+          transactions_count: number
+          year: number
+        }[]
+      }
       rpc_recommendations_v1: {
         Args: { p_end_date: string; p_site_id: string; p_start_date: string }
         Returns: {
