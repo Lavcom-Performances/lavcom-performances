@@ -45,6 +45,7 @@ import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { DateRange } from "react-day-picker";
 import { ManualCronTrigger } from "@/components/admin/ManualCronTrigger";
 import { CronMonitoringDashboard } from "@/components/admin/CronMonitoringDashboard";
+import { CronLogsExport } from "@/components/admin/CronLogsExport";
 
 type CronLog = {
   id: string;
@@ -185,6 +186,7 @@ export default function AdminCronLogs() {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <ManualCronTrigger onSuccess={() => refetch()} />
+          <CronLogsExport logs={logs || []} disabled={isLoading} />
           <Button
             variant="outline"
             size="sm"
