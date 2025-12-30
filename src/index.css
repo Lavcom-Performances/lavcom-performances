@@ -209,6 +209,43 @@ html {
     }
   }
 
+  /* Ripple effect */
+  .ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 70%, transparent 100%);
+    transform: scale(0);
+    animation: ripple-animation 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  @keyframes ripple-animation {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  /* Dark mode ripple */
+  .dark .ripple-effect {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 70%, transparent 100%);
+  }
+
+  /* Ghost/outline button ripple */
+  button[class*="ghost"] .ripple-effect,
+  button[class*="outline"] .ripple-effect {
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.03) 70%, transparent 100%);
+  }
+
+  .dark button[class*="ghost"] .ripple-effect,
+  .dark button[class*="outline"] .ripple-effect {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.03) 70%, transparent 100%);
+  }
+
   .badge-esp {
     @apply bg-lime-100 text-lime-700 px-2 py-0.5 rounded-full text-xs font-medium dark:bg-lime-900/30 dark:text-lime-400;
   }
