@@ -50,3 +50,9 @@ verify_jwt = false
 
 [functions.submit-expert-request]
 verify_jwt = false
+
+[functions.compute-analytics]
+verify_jwt = true
+
+[functions.compute-analytics-cron]
+verify_jwt = false
