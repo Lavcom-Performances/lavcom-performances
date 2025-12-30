@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ParsedRow, ImportResult } from "@/components/operations/csv-import/types";
 import { EventsParsedRow } from "@/components/operations/csv-import/eventsParser";
 import { format } from "date-fns";
+import { buildDedupeKeyHashed } from "@/lib/csv/buildDedupeKey";
 
 // Type guard to check if row is EventsParsedRow
 function isEventsParsedRow(row: ParsedRow): row is EventsParsedRow {
@@ -11,22 +12,14 @@ function isEventsParsedRow(row: ParsedRow): row is EventsParsedRow {
 }
 
 /**
- * Generate a fingerprint hash for deduplication
- * Uses: site_id + date + mode + amount + machine
+ * Chunk an array into smaller arrays of specified size
  */
-async function generateImportHash(
-  siteId: string,
-  date: string,
-  mode: string | null,
-  amountCents: number,
-  machine: string | null
-): Promise<string> {
-  const data = `${siteId}|${date}|${mode || ''}|${amountCents}|${machine || ''}`;
-  const encoder = new TextEncoder();
-  const dataBuffer = encoder.encode(data);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+function chunkArray<T>(array: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
 }
 
 export function useOperationsImport() {
@@ -82,31 +75,51 @@ export function useOperationsImport() {
           throw new Error("Erreur lors de la création du batch d'import");
         }
 
-        // Prepare operations for insert with import_hash
-        const operations = await Promise.all(validRows.map(async (row) => {
-          const dateStr = row.date ? format(row.date, "yyyy-MM-dd") : null;
-          const amountCents = Math.round((row.amount || 0) * 100);
+        // Prepare operations for insert with dedupe_key
+        const operations = validRows.map((row) => {
+          const dateStr = row.date ? format(row.date, "yyyy-MM-dd") : "";
           const mode = row.paymentMode?.toUpperCase() || null;
           const machine = row.machine || null;
+          const time = row.time || null;
           
-          // Generate deduplication hash
-          const importHash = dateStr 
-            ? await generateImportHash(siteId, dateStr, mode, amountCents, machine)
-            : null;
+          // Determine price_cb and price_esp based on payment mode
+          let priceCb: number | null = null;
+          let priceEsp: number | null = null;
+          
+          if (mode === 'CB' || mode === 'CARTE') {
+            priceCb = row.amount || 0;
+          } else if (mode === 'ESP' || mode === 'ESPECES' || mode === 'CASH') {
+            priceEsp = row.amount || 0;
+          }
+          
+          // Generate dedupe_key using MD5 hash
+          const dedupeKey = buildDedupeKeyHashed({
+            siteId,
+            operationDate: dateStr,
+            operationTime: time,
+            paymentMode: mode,
+            type: null, // type will be set later if needed
+            priceCb,
+            priceEsp,
+            amount: row.amount || 0,
+          });
 
           // Base operation data
           const baseOperation = {
             user_id: user.id,
             site_id: siteId,
             operation_date: dateStr,
-            operation_time: row.time || null,
+            operation_time: time,
             amount: row.amount,
             machine: machine,
             program: row.program || null,
             payment_mode: mode,
             raw_data: { original: row.rawData },
             import_batch_id: batch.id,
-            import_hash: importHash,
+            dedupe_key: dedupeKey,
+            price_cb: priceCb,
+            price_esp: priceEsp,
+            type: null as string | null,
           };
           
           // Extended fields for Events format
@@ -126,7 +139,7 @@ export function useOperationsImport() {
             ...baseOperation,
             source: 'manual',
           };
-        }));
+        });
 
         // Insert operations in batches of 500, ignoring duplicates
         const BATCH_SIZE = 500;
@@ -134,14 +147,16 @@ export function useOperationsImport() {
         let duplicatesIgnored = 0;
         const errors: string[] = [];
 
-        for (let i = 0; i < operations.length; i += BATCH_SIZE) {
-          const chunk = operations.slice(i, i + BATCH_SIZE);
+        const chunks = chunkArray(operations, BATCH_SIZE);
+        
+        for (let i = 0; i < chunks.length; i++) {
+          const chunk = chunks[i];
           
-          // Use upsert with ignoreDuplicates to skip duplicates based on import_hash
+          // Use upsert with ignoreDuplicates to skip duplicates based on dedupe_key
           const { error: insertError, data: insertedData } = await supabase
             .from("operations")
             .upsert(chunk, { 
-              onConflict: 'site_id,import_hash',
+              onConflict: 'site_id,dedupe_key',
               ignoreDuplicates: true 
             })
             .select('id');
@@ -166,7 +181,7 @@ export function useOperationsImport() {
               }
             } else {
               console.error("Error inserting operations chunk:", insertError);
-              errors.push(`Erreur à la ligne ${i + 1}: ${insertError.message}`);
+              errors.push(`Erreur au chunk ${i + 1}: ${insertError.message}`);
             }
           } else {
             // Count actual inserts (upsert with ignoreDuplicates returns inserted rows)
