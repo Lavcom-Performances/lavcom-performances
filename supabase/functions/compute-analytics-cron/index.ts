@@ -1,8 +1,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, rateLimitResponse, hashIP } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
 Deno.serve(async (req) => {
@@ -40,11 +41,29 @@ Deno.serve(async (req) => {
     );
   }
 
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+  // Rate limiting - use IP or a fixed identifier for cron
+  const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "cron-caller";
+  const ipHash = await hashIP(clientIP);
+  
+  const rateLimitResult = await checkRateLimit(
+    supabaseUrl,
+    supabaseServiceKey,
+    "edge/compute-analytics-cron",
+    ipHash,
+    ipHash
+  );
+
+  if (!rateLimitResult.allowed) {
+    console.warn(`[compute-analytics-cron] Rate limit exceeded for IP hash ${ipHash.slice(0, 8)}...`);
+    return rateLimitResponse(rateLimitResult.cooldownSeconds || 300, "edge/compute-analytics-cron", corsHeaders);
+  }
+
   const startTime = Date.now();
   console.log("[compute-analytics-cron] Starting nightly analytics computation");
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   // Create log entry at start
