@@ -260,7 +260,7 @@ Deno.serve(async (req) => {
   }
 });
 
-// Helper function to check consecutive failures and send alert based on configurable settings
+// Helper function to check consecutive failures and send alert based on configurable settings with severity levels
 async function checkAndSendFailureAlert(
   supabase: any,
   supabaseUrl: string,
@@ -277,22 +277,13 @@ async function checkAndSendFailureAlert(
       .maybeSingle();
 
     // Use defaults if no settings found
-    const failureThreshold = alertSettings?.failure_threshold ?? 3;
+    const warningThreshold = alertSettings?.warning_threshold ?? 3;
+    const criticalThreshold = alertSettings?.critical_threshold ?? 5;
     const cooldownMinutes = alertSettings?.alert_cooldown_minutes ?? 60;
     const emailEnabled = alertSettings?.email_enabled ?? true;
     const slackEnabled = alertSettings?.slack_enabled ?? true;
     const lastAlertAt = alertSettings?.last_alert_at ? new Date(alertSettings.last_alert_at) : null;
-
-    // Check if we're within cooldown period
-    if (lastAlertAt) {
-      const cooldownMs = cooldownMinutes * 60 * 1000;
-      const timeSinceLastAlert = Date.now() - lastAlertAt.getTime();
-      
-      if (timeSinceLastAlert < cooldownMs) {
-        console.log(`[compute-analytics-cron] Alert cooldown active. Next alert in ${Math.round((cooldownMs - timeSinceLastAlert) / 60000)} minutes`);
-        return;
-      }
-    }
+    const lastAlertSeverity = alertSettings?.last_alert_severity || null;
 
     // Check if both channels are disabled
     if (!emailEnabled && !slackEnabled) {
@@ -306,7 +297,7 @@ async function checkAndSendFailureAlert(
       .select("status, started_at")
       .eq("job_name", jobName)
       .order("started_at", { ascending: false })
-      .limit(10);
+      .limit(15);
 
     if (error || !recentLogs) {
       console.error("[compute-analytics-cron] Failed to fetch recent logs for alert check:", error);
@@ -323,46 +314,79 @@ async function checkAndSendFailureAlert(
       }
     }
 
-    console.log(`[compute-analytics-cron] Consecutive failures: ${consecutiveFailures}, threshold: ${failureThreshold}`);
+    // Determine current severity level
+    let currentSeverity: string | null = null;
+    if (consecutiveFailures >= criticalThreshold) {
+      currentSeverity = "critical";
+    } else if (consecutiveFailures >= warningThreshold) {
+      currentSeverity = "warning";
+    }
 
-    // Send alert if threshold reached
-    if (consecutiveFailures >= failureThreshold) {
-      console.log(`[compute-analytics-cron] Sending failure alert (${consecutiveFailures} consecutive failures)`);
+    console.log(`[compute-analytics-cron] Consecutive failures: ${consecutiveFailures}, warning: ${warningThreshold}, critical: ${criticalThreshold}, severity: ${currentSeverity || 'none'}`);
+
+    // No alert needed if below warning threshold
+    if (!currentSeverity) {
+      return;
+    }
+
+    // Check cooldown - but allow upgrade from warning to critical
+    if (lastAlertAt) {
+      const cooldownMs = cooldownMinutes * 60 * 1000;
+      const timeSinceLastAlert = Date.now() - lastAlertAt.getTime();
       
-      try {
-        const alertResponse = await fetch(`${supabaseUrl}/functions/v1/send-cron-alert`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${supabaseServiceKey}`,
-          },
-          body: JSON.stringify({
-            job_name: jobName,
-            consecutive_failures: consecutiveFailures,
-            last_error: lastError,
-            failed_at: new Date().toISOString(),
-            email_enabled: emailEnabled,
-            slack_enabled: slackEnabled,
-          }),
-        });
-
-        if (alertResponse.ok) {
-          console.log("[compute-analytics-cron] Failure alert sent successfully");
-          
-          // Update last_alert_at in settings
-          if (alertSettings?.id) {
-            await supabase
-              .from("cron_alert_settings")
-              .update({ last_alert_at: new Date().toISOString() })
-              .eq("id", alertSettings.id);
-          }
-        } else {
-          const errorText = await alertResponse.text();
-          console.error("[compute-analytics-cron] Failed to send alert:", errorText);
-        }
-      } catch (alertError) {
-        console.error("[compute-analytics-cron] Error sending alert:", alertError);
+      // If same severity and within cooldown, skip
+      if (currentSeverity === lastAlertSeverity && timeSinceLastAlert < cooldownMs) {
+        console.log(`[compute-analytics-cron] Alert cooldown active for ${currentSeverity}. Next alert in ${Math.round((cooldownMs - timeSinceLastAlert) / 60000)} minutes`);
+        return;
       }
+      
+      // If upgrading from warning to critical, allow immediately
+      if (currentSeverity === "critical" && lastAlertSeverity === "warning") {
+        console.log("[compute-analytics-cron] Upgrading from warning to critical alert");
+      }
+    }
+
+    console.log(`[compute-analytics-cron] Sending ${currentSeverity} alert (${consecutiveFailures} consecutive failures)`);
+    
+    try {
+      const alertResponse = await fetch(`${supabaseUrl}/functions/v1/send-cron-alert`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${supabaseServiceKey}`,
+        },
+        body: JSON.stringify({
+          job_name: jobName,
+          consecutive_failures: consecutiveFailures,
+          last_error: lastError,
+          failed_at: new Date().toISOString(),
+          email_enabled: emailEnabled,
+          slack_enabled: slackEnabled,
+          severity: currentSeverity,
+          warning_threshold: warningThreshold,
+          critical_threshold: criticalThreshold,
+        }),
+      });
+
+      if (alertResponse.ok) {
+        console.log(`[compute-analytics-cron] ${currentSeverity} alert sent successfully`);
+        
+        // Update last_alert_at and severity in settings
+        if (alertSettings?.id) {
+          await supabase
+            .from("cron_alert_settings")
+            .update({ 
+              last_alert_at: new Date().toISOString(),
+              last_alert_severity: currentSeverity
+            })
+            .eq("id", alertSettings.id);
+        }
+      } else {
+        const errorText = await alertResponse.text();
+        console.error("[compute-analytics-cron] Failed to send alert:", errorText);
+      }
+    } catch (alertError) {
+      console.error("[compute-analytics-cron] Error sending alert:", alertError);
     }
   } catch (err) {
     console.error("[compute-analytics-cron] Error in checkAndSendFailureAlert:", err);

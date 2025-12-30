@@ -178,35 +178,44 @@ export type Database = {
         Row: {
           alert_cooldown_minutes: number
           created_at: string
+          critical_threshold: number
           email_enabled: boolean
           failure_threshold: number
           id: string
           job_name: string
           last_alert_at: string | null
+          last_alert_severity: string | null
           slack_enabled: boolean
           updated_at: string
+          warning_threshold: number
         }
         Insert: {
           alert_cooldown_minutes?: number
           created_at?: string
+          critical_threshold?: number
           email_enabled?: boolean
           failure_threshold?: number
           id?: string
           job_name?: string
           last_alert_at?: string | null
+          last_alert_severity?: string | null
           slack_enabled?: boolean
           updated_at?: string
+          warning_threshold?: number
         }
         Update: {
           alert_cooldown_minutes?: number
           created_at?: string
+          critical_threshold?: number
           email_enabled?: boolean
           failure_threshold?: number
           id?: string
           job_name?: string
           last_alert_at?: string | null
+          last_alert_severity?: string | null
           slack_enabled?: boolean
           updated_at?: string
+          warning_threshold?: number
         }
         Relationships: []
       }

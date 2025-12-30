@@ -12,6 +12,17 @@ interface AlertRequest {
   failed_at: string;
   email_enabled?: boolean;
   slack_enabled?: boolean;
+  severity?: "warning" | "critical";
+  warning_threshold?: number;
+  critical_threshold?: number;
+}
+
+// Get severity display info
+function getSeverityInfo(severity: string) {
+  if (severity === "critical") {
+    return { emoji: "🔴", text: "CRITIQUE", color: "#dc2626" };
+  }
+  return { emoji: "🟠", text: "AVERTISSEMENT", color: "#f97316" };
 }
 
 // Send Slack notification
@@ -20,22 +31,21 @@ async function sendSlackNotification(
   jobName: string,
   consecutiveFailures: number,
   lastError: string | null,
-  failedAt: string
+  failedAt: string,
+  severity: string
 ): Promise<boolean> {
-  const severityEmoji = consecutiveFailures >= 5 ? "🔴" : consecutiveFailures >= 3 ? "🟠" : "🟡";
-  const severityText = consecutiveFailures >= 5 ? "CRITIQUE" : consecutiveFailures >= 3 ? "AVERTISSEMENT" : "INFO";
-  const severityColor = consecutiveFailures >= 5 ? "#dc2626" : consecutiveFailures >= 3 ? "#f97316" : "#eab308";
+  const { emoji, text, color } = getSeverityInfo(severity);
 
   const slackPayload = {
     attachments: [
       {
-        color: severityColor,
+        color: color,
         blocks: [
           {
             type: "header",
             text: {
               type: "plain_text",
-              text: `${severityEmoji} ${severityText} - Alerte Cron`,
+              text: `${emoji} ${text} - Alerte Cron`,
               emoji: true
             }
           },
@@ -103,9 +113,9 @@ Deno.serve(async (req) => {
     const toEmail = Deno.env.get("RESEND_TO_EMAIL");
     const slackWebhookUrl = Deno.env.get("SLACK_WEBHOOK_URL");
 
-    const { job_name, consecutive_failures, last_error, failed_at, email_enabled = true, slack_enabled = true }: AlertRequest = await req.json();
+    const { job_name, consecutive_failures, last_error, failed_at, email_enabled = true, slack_enabled = true, severity = "warning" }: AlertRequest = await req.json();
 
-    console.log(`[send-cron-alert] Sending alert for ${job_name} with ${consecutive_failures} consecutive failures (email: ${email_enabled}, slack: ${slack_enabled})`);
+    console.log(`[send-cron-alert] Sending ${severity} alert for ${job_name} with ${consecutive_failures} consecutive failures (email: ${email_enabled}, slack: ${slack_enabled})`);
 
     const results = {
       email_sent: false,
@@ -121,7 +131,8 @@ Deno.serve(async (req) => {
         job_name,
         consecutive_failures,
         last_error,
-        failed_at
+        failed_at,
+        severity
       );
       if (!results.slack_sent) {
         results.errors.push("Slack notification failed");
@@ -136,8 +147,8 @@ Deno.serve(async (req) => {
     if (email_enabled && resendApiKey && fromEmail && toEmail) {
       const resend = new Resend(resendApiKey);
 
-      const severityLevel = consecutive_failures >= 5 ? "🔴 CRITIQUE" : consecutive_failures >= 3 ? "🟠 AVERTISSEMENT" : "🟡 INFO";
-      const severityColor = consecutive_failures >= 5 ? "#dc2626" : consecutive_failures >= 3 ? "#f97316" : "#eab308";
+      const { emoji, text: severityText, color: severityColor } = getSeverityInfo(severity);
+      const severityLevel = `${emoji} ${severityText}`;
 
       const { data, error } = await resend.emails.send({
         from: fromEmail,
