@@ -201,11 +201,11 @@
   "howItWorks": {
     "title": "Hoe werkt het?",
     "step1Title": "Importeer uw gegevens",
-    "step1Desc": "Download uw betalingsbestanden van uw terminal en importeer ze in Lavcom Performances.",
+    "step1Desc": "Importeer uw betalingsbestanden met een paar klikken.",
     "step2Title": "Visualiseer uw resultaten",
-    "step2Desc": "Bekijk uw inkomsten per wasserette, per machine, per tijdslot en uw rustigere periodes.",
+    "step2Desc": "Inkomsten per wasserette, per machine en per tijdslot.",
     "step3Title": "Onderneem actie",
-    "step3Desc": "Het platform suggereert ideeën: waar een prijs aan te passen, welke tijdsloten te versterken, welke machines nauwer te monitoren."
+    "step3Desc": "Ontvang concrete suggesties om uw wasserettes te optimaliseren."
   },
   "whyUse": {
     "title": "Waarom Lavcom Performances gebruiken?",

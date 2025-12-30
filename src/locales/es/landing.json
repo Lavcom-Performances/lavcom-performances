@@ -201,11 +201,11 @@
   "howItWorks": {
     "title": "¿Cómo funciona?",
     "step1Title": "Importa tus datos",
-    "step1Desc": "Descarga tus archivos de pago desde tu terminal y impórtalos a Lavcom Performances.",
+    "step1Desc": "Importa tus archivos de pago en pocos clics.",
     "step2Title": "Visualiza tus resultados",
-    "step2Desc": "Ve tus ingresos por lavandería, por máquina, por franja horaria y tus períodos más tranquilos.",
+    "step2Desc": "Ingresos por lavandería, por máquina y por franja horaria.",
     "step3Title": "Actúa",
-    "step3Desc": "La plataforma sugiere ideas: dónde ajustar un precio, qué franjas reforzar, qué máquinas vigilar más."
+    "step3Desc": "Recibe sugerencias concretas para optimizar tus lavanderías."
   },
   "whyUse": {
     "title": "¿Por qué usar Lavcom Performances?",

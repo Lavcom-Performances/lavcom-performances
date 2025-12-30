@@ -200,12 +200,12 @@
   },
   "howItWorks": {
     "title": "Wie funktioniert es?",
-    "step1Title": "Importieren Sie Ihre Daten",
-    "step1Desc": "Laden Sie Ihre Zahlungsdateien von Ihrem Terminal herunter und importieren Sie sie in Lavcom Performances.",
-    "step2Title": "Visualisieren Sie Ihre Ergebnisse",
-    "step2Desc": "Sehen Sie Ihre Einnahmen nach Waschsalon, nach Maschine, nach Zeitfenster und Ihre ruhigeren Perioden.",
-    "step3Title": "Handeln Sie",
-    "step3Desc": "Die Plattform schlägt Ideen vor: wo ein Preis angepasst werden sollte, welche Zeitfenster verstärkt werden sollten, welche Maschinen genauer überwacht werden sollten."
+    "step1Title": "Daten importieren",
+    "step1Desc": "Importieren Sie Ihre Zahlungsdateien mit wenigen Klicks.",
+    "step2Title": "Ergebnisse visualisieren",
+    "step2Desc": "Einnahmen nach Waschsalon, nach Maschine und nach Zeitfenster.",
+    "step3Title": "Handeln",
+    "step3Desc": "Erhalten Sie konkrete Vorschläge zur Optimierung Ihrer Waschsalons."
   },
   "whyUse": {
     "title": "Warum Lavcom Performances nutzen?",
