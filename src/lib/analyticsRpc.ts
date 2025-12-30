@@ -39,3 +39,11 @@ export async function fetchRecommendations(siteId: string, startDate: string, en
   if (error) throw error;
   return data ?? [];
 }
+
+export async function fetchDateBounds(siteId: string) {
+  const { data, error } = await supabase.rpc("rpc_date_bounds" as any, {
+    p_site_id: siteId,
+  });
+  if (error) throw error;
+  return data?.[0] ?? null;
+}

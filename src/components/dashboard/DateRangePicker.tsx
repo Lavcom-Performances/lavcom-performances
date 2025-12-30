@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { format, startOfYear, endOfYear, startOfMonth, endOfMonth, subMonths, subYears, addYears, startOfQuarter, endOfQuarter } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
@@ -11,6 +11,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useDateBounds } from "@/hooks/useAnalyticsRpc";
+import { useCurrentSite } from "@/hooks/useCurrentSite";
 
 interface DateRangePickerProps {
   dateRange: DateRange | undefined;
@@ -19,7 +21,7 @@ interface DateRangePickerProps {
   showPresets?: boolean;
 }
 
-type PresetKey = "thisMonth" | "lastMonth" | "thisQuarter" | "thisYear" | "lastYear" | "allTime" | "custom";
+type PresetKey = "thisMonth" | "lastMonth" | "thisQuarter" | "thisYear" | "lastYear" | "allData" | "custom";
 
 export function DateRangePicker({ 
   dateRange, 
@@ -31,59 +33,70 @@ export function DateRangePicker({
   const [selectedPreset, setSelectedPreset] = useState<PresetKey | null>(null);
   const today = new Date();
   
+  // Fetch date bounds from operations
+  const { currentSiteId } = useCurrentSite();
+  const { data: dateBounds } = useDateBounds(currentSiteId ?? "");
+  
   // Calendar display month - track independently for navigation
   const [calendarMonth, setCalendarMonth] = useState<Date>(dateRange?.from || today);
   
-  // Quick presets
-  const presets: { key: PresetKey; label: string; getRange: () => DateRange }[] = [
-    {
-      key: "thisMonth",
-      label: "Ce mois",
-      getRange: () => ({ from: startOfMonth(today), to: endOfMonth(today) }),
-    },
-    {
-      key: "lastMonth",
-      label: "Mois dernier",
-      getRange: () => {
-        const lastMonth = subMonths(today, 1);
-        return { from: startOfMonth(lastMonth), to: endOfMonth(lastMonth) };
+  // Quick presets - dynamically include "Toutes les données" only if data exists
+  const presets: { key: PresetKey; label: string; getRange: () => DateRange }[] = useMemo(() => {
+    const basePresets: { key: PresetKey; label: string; getRange: () => DateRange }[] = [
+      {
+        key: "thisMonth",
+        label: "Ce mois",
+        getRange: () => ({ from: startOfMonth(today), to: endOfMonth(today) }),
       },
-    },
-    {
-      key: "thisQuarter",
-      label: "Ce trimestre",
-      getRange: () => ({ from: startOfQuarter(today), to: endOfQuarter(today) }),
-    },
-    {
-      key: "thisYear",
-      label: format(today, "yyyy"),
-      getRange: () => ({ from: startOfYear(today), to: endOfYear(today) }),
-    },
-    {
-      key: "lastYear",
-      label: format(subYears(today, 1), "yyyy"),
-      getRange: () => {
-        const lastYear = subYears(today, 1);
-        return { from: startOfYear(lastYear), to: endOfYear(lastYear) };
+      {
+        key: "lastMonth",
+        label: "Mois dernier",
+        getRange: () => {
+          const lastMonth = subMonths(today, 1);
+          return { from: startOfMonth(lastMonth), to: endOfMonth(lastMonth) };
+        },
       },
-    },
-    {
-      key: "allTime",
-      label: "Tout",
-      getRange: () => ({ from: undefined, to: undefined } as unknown as DateRange),
-    },
-  ];
+      {
+        key: "thisQuarter",
+        label: "Ce trimestre",
+        getRange: () => ({ from: startOfQuarter(today), to: endOfQuarter(today) }),
+      },
+      {
+        key: "thisYear",
+        label: format(today, "yyyy"),
+        getRange: () => ({ from: startOfYear(today), to: endOfYear(today) }),
+      },
+      {
+        key: "lastYear",
+        label: format(subYears(today, 1), "yyyy"),
+        getRange: () => {
+          const lastYear = subYears(today, 1);
+          return { from: startOfYear(lastYear), to: endOfYear(lastYear) };
+        },
+      },
+    ];
+    
+    // Add "Toutes les données" preset only if we have min/max dates
+    if (dateBounds?.min_date && dateBounds?.max_date) {
+      basePresets.push({
+        key: "allData",
+        label: "Toutes les données",
+        getRange: () => ({ 
+          from: new Date(dateBounds.min_date), 
+          to: new Date(dateBounds.max_date) 
+        }),
+      });
+    }
+    
+    return basePresets;
+  }, [today, dateBounds]);
 
   const handlePresetClick = (preset: typeof presets[0]) => {
     const range = preset.getRange();
     setSelectedPreset(preset.key);
-    if (preset.key === "allTime") {
-      onDateChange(undefined);
-    } else {
-      onDateChange(range);
-      if (range.from) {
-        setCalendarMonth(range.from);
-      }
+    onDateChange(range);
+    if (range.from) {
+      setCalendarMonth(range.from);
     }
     setIsOpen(false);
   };
