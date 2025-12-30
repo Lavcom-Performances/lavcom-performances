@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { generateMonthlyReport, getMockMonthlyData } from "@/utils/pdfExport";
 import { trackPdfDownload } from "@/lib/analytics";
 import { toast } from "@/hooks/use-toast";
+import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
 
 const MONTHS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
@@ -18,6 +19,8 @@ export default function ImportExport() {
   const [selectedMonth, setSelectedMonth] = useState<string>("Janvier");
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [lastImportCount, setLastImportCount] = useState<number | null>(null);
 
   const handleExportPDF = async () => {
     setIsGenerating(true);
@@ -44,14 +47,8 @@ export default function ImportExport() {
     }
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      toast({
-        title: "Fichier sélectionné",
-        description: `${file.name} - L'import sera disponible prochainement.`,
-      });
-    }
+  const handleImportComplete = (count: number) => {
+    setLastImportCount(count);
   };
 
   return (
@@ -149,11 +146,11 @@ export default function ImportExport() {
         </Card>
 
         {/* Import Section */}
-        <Card className="border-2 border-accent/20">
+        <Card className="border-2 border-lavcom-green/20">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
-                <Upload className="h-6 w-6 text-accent-foreground" />
+              <div className="w-12 h-12 rounded-xl bg-lavcom-green/10 flex items-center justify-center">
+                <Upload className="h-6 w-6 text-lavcom-green" />
               </div>
               <div>
                 <CardTitle className="text-xl">Import CSV</CardTitle>
@@ -162,44 +159,43 @@ export default function ImportExport() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-              <input
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                onChange={handleFileUpload}
-                className="hidden"
-                id="file-upload"
-              />
-              <label htmlFor="file-upload" className="cursor-pointer">
-                <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                <p className="text-sm font-medium text-foreground mb-1">
-                  Glissez-déposez votre fichier ici
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  ou cliquez pour sélectionner (CSV, Excel)
-                </p>
-              </label>
+            <div 
+              className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-lavcom-green/50 transition-colors cursor-pointer"
+              onClick={() => setImportDialogOpen(true)}
+            >
+              <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+              <p className="text-sm font-medium text-foreground mb-1">
+                Glissez-déposez votre fichier ici
+              </p>
+              <p className="text-xs text-muted-foreground">
+                ou cliquez pour sélectionner (CSV)
+              </p>
             </div>
 
             <div className="bg-muted/50 rounded-lg p-4 space-y-2">
               <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-accent-foreground" />
+                <Calendar className="h-4 w-4 text-lavcom-green" />
                 <span className="font-medium">Format attendu</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Colonnes requises : Date, Machine, Mode paiement, Montant, Type opération.
+                Formats supportés : Events, LM Control, ou CSV standard avec colonnes Date, Machine, Mode paiement, Montant.
               </p>
             </div>
 
             <Button 
-              variant="outline" 
-              className="w-full" 
+              className="w-full bg-lavcom-green hover:bg-lavcom-green-dark text-white" 
               size="lg"
-              disabled
+              onClick={() => setImportDialogOpen(true)}
             >
               <Upload className="h-5 w-5 mr-2" />
-              Importer les données (bientôt disponible)
+              Importer des données CSV
             </Button>
+
+            {lastImportCount !== null && (
+              <p className="text-sm text-center text-muted-foreground">
+                Dernier import : {lastImportCount} opérations importées
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -218,6 +214,13 @@ export default function ImportExport() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Import Dialog */}
+      <CSVImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImportComplete={handleImportComplete}
+      />
     </div>
   );
 }

@@ -147,8 +147,8 @@ export function useOperationsImport() {
           };
         });
 
-        // Insert operations in batches of 500, ignoring duplicates
-        const BATCH_SIZE = 500;
+        // Insert operations in batches, handling duplicates via constraint errors
+        const BATCH_SIZE = 100;
         let insertedCount = 0;
         let duplicatesIgnored = 0;
         const errors: string[] = [];
@@ -158,29 +158,25 @@ export function useOperationsImport() {
         for (let i = 0; i < chunks.length; i++) {
           const chunk = chunks[i];
           
-          // Use upsert with ignoreDuplicates to skip duplicates based on dedupe_key
+          // Try batch insert first
           const { error: insertError, data: insertedData } = await supabase
             .from("operations")
-            .upsert(chunk, { 
-              onConflict: 'site_id,dedupe_key',
-              ignoreDuplicates: true 
-            })
+            .insert(chunk)
             .select('id');
 
           if (insertError) {
-            // Check if it's a duplicate key error (can happen with partial batches)
-            if (insertError.code === '23505') {
-              // Unique constraint violation - some duplicates in batch
-              // Try inserting one by one to count properly
+            // If constraint violation, insert one by one to count duplicates
+            if (insertError.code === '23505' || insertError.message?.includes('unique') || insertError.message?.includes('duplicate')) {
               for (const op of chunk) {
                 const { error: singleError } = await supabase
                   .from("operations")
                   .insert(op);
                 
-                if (singleError?.code === '23505') {
+                if (singleError?.code === '23505' || singleError?.message?.includes('unique') || singleError?.message?.includes('duplicate')) {
                   duplicatesIgnored++;
                 } else if (singleError) {
-                  errors.push(`Erreur: ${singleError.message}`);
+                  console.error("Single insert error:", singleError);
+                  errors.push(`Erreur à la ligne ${i * BATCH_SIZE + chunk.indexOf(op) + 1}: ${singleError.message}`);
                 } else {
                   insertedCount++;
                 }
@@ -190,7 +186,7 @@ export function useOperationsImport() {
               errors.push(`Erreur au chunk ${i + 1}: ${insertError.message}`);
             }
           } else {
-            // Count actual inserts (upsert with ignoreDuplicates returns inserted rows)
+            // Batch insert succeeded
             insertedCount += insertedData?.length || chunk.length;
           }
         }
