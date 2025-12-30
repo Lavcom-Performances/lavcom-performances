@@ -173,9 +173,20 @@ export function DateRangePicker({
           </Button>
         </PopoverTrigger>
         
-        {/* Date bounds badge */}
-        {dateBoundsLabel && (
-          <Badge variant="secondary" className="gap-1.5 font-normal text-xs">
+        {/* Date bounds badge - clickable to select all data */}
+        {dateBoundsLabel && dateBounds?.min_date && dateBounds?.max_date && (
+          <Badge 
+            variant="secondary" 
+            className="gap-1.5 font-normal text-xs cursor-pointer hover:bg-secondary/80 transition-colors"
+            onClick={() => {
+              const range = {
+                from: new Date(dateBounds.min_date),
+                to: new Date(dateBounds.max_date)
+              };
+              onDateChange(range);
+            }}
+            title="Cliquez pour sélectionner toutes les données"
+          >
             <Database className="h-3 w-3" />
             {dateBoundsLabel}
           </Badge>
