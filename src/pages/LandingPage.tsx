@@ -67,6 +67,7 @@ import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import ebookAvantOuvrir from "@/assets/ebook-avant-ouvrir.jpg";
 import { HeroValueSlider } from "@/components/landing/HeroValueSlider";
 import { ScrollReveal } from "@/components/landing/ScrollReveal";
+import { ExpertSection } from "@/components/landing/ExpertSection";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { SEOHead } from "@/components/seo/SEOHead";
 
@@ -1006,6 +1007,9 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Expert Section */}
+      <ExpertSection variant="landing" />
 
       {/* FAQ Section */}
       <section id="faq" className="py-20 px-4 bg-muted/30">
