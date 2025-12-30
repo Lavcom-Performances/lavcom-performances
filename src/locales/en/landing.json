@@ -171,11 +171,11 @@
   "howItWorks": {
     "title": "How does it work?",
     "step1Title": "Import your data",
-    "step1Desc": "Download your payment files from your payment terminal and import them into Lavcom Performances.",
+    "step1Desc": "Import your payment files in just a few clicks.",
     "step2Title": "Visualize your results",
-    "step2Desc": "See your revenue by laundromat, by machine, by time slot, and your quieter periods.",
+    "step2Desc": "Revenue by laundromat, by machine, and by time slot.",
     "step3Title": "Take action",
-    "step3Desc": "The platform suggests ideas: where to adjust a price, which time slots to reinforce, which machines to monitor more closely."
+    "step3Desc": "Receive concrete suggestions to optimize your laundromats."
   },
   "whyUse": {
     "title": "Why use Lavcom Performances?",
