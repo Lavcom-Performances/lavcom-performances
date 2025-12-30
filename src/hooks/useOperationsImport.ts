@@ -5,6 +5,7 @@ import { ParsedRow, ImportResult } from "@/components/operations/csv-import/type
 import { EventsParsedRow } from "@/components/operations/csv-import/eventsParser";
 import { format } from "date-fns";
 import { buildDedupeKeyHashed } from "@/lib/csv/buildDedupeKey";
+import { applyBusinessRules } from "@/lib/csv/businessRules";
 
 // Type guard to check if row is EventsParsedRow
 function isEventsParsedRow(row: ParsedRow): row is EventsParsedRow {
@@ -78,6 +79,8 @@ export function useOperationsImport() {
         }
 
         // Prepare operations for insert with dedupe_key
+        let rechEspFixedCount = 0;
+        
         const operations = validRows.map((row) => {
           const dateStr = row.date ? format(row.date, "yyyy-MM-dd") : "";
           const mode = row.paymentMode?.toUpperCase() || null;
@@ -96,6 +99,11 @@ export function useOperationsImport() {
             amountEur = amountEur / 100;
           }
           
+          // Get extended fields for Events format
+          const insertedEur = isEventsParsedRow(row) ? (row.insertedEur || null) : null;
+          const priceEur = isEventsParsedRow(row) ? (row.priceEur || null) : null;
+          const changeEur = isEventsParsedRow(row) ? (row.changeEur || null) : null;
+          
           // Determine price_cb and price_esp based on payment mode
           let priceCb: number | null = null;
           let priceEsp: number | null = null;
@@ -106,13 +114,38 @@ export function useOperationsImport() {
             priceEsp = amountEur;
           }
           
+          // Build initial operation object
+          let operationType: string | null = null;
+          
+          // Prepare operation for business rules
+          const opForRules = {
+            payment_mode: mode,
+            type: operationType,
+            inserted_eur: insertedEur,
+            price_eur: priceEur,
+            price_esp: priceEsp,
+            price_cb: priceCb,
+            amount: amountEur,
+            change_eur: changeEur,
+          };
+          
+          // Apply business rules (TAEX-145: Fix ESP top-ups)
+          const rulesResult = applyBusinessRules(opForRules);
+          if (rulesResult.rechEspFixed) {
+            rechEspFixedCount++;
+            // Update values from rules result
+            operationType = opForRules.type ?? null;
+            priceEsp = opForRules.price_esp ?? null;
+            amountEur = opForRules.amount ?? amountEur;
+          }
+          
           // Generate dedupe_key using MD5 hash
           const dedupeKey = buildDedupeKeyHashed({
             siteId,
             operationDate: dateStr,
             operationTime: time,
             paymentMode: mode,
-            type: null,
+            type: operationType,
             priceCb,
             priceEsp,
             amount: amountEur,
@@ -133,16 +166,16 @@ export function useOperationsImport() {
             dedupe_key: dedupeKey,
             price_cb: priceCb,
             price_esp: priceEsp,
-            type: null, // Don't set 'vend' type anymore
+            type: operationType,
           };
           
           // Extended fields for Events format
           if (isEventsParsedRow(row)) {
             return {
               ...baseOperation,
-              inserted_eur: row.insertedEur || null,
-              price_eur: row.priceEur || null,
-              change_eur: row.changeEur || null,
+              inserted_eur: insertedEur,
+              price_eur: opForRules.price_eur ?? null,
+              change_eur: changeEur,
               machine_name: row.machineName || null,
               source: 'events_csv',
               raw: row.rawData ? { original: row.rawData } : null,
@@ -221,6 +254,7 @@ export function useOperationsImport() {
           ignored: actualIgnored - duplicatesIgnored,
           duplicates: duplicatesIgnored,
           errors: resultMessages.length > 0 ? resultMessages : [],
+          rechEspFixed: rechEspFixedCount,
         };
       } catch (err) {
         console.error("Import error:", err);
@@ -230,6 +264,7 @@ export function useOperationsImport() {
           ignored: parsedRows.length,
           duplicates: 0,
           errors: [err instanceof Error ? err.message : "Erreur inconnue"],
+          rechEspFixed: 0,
         };
       } finally {
         setIsImporting(false);
