@@ -11,11 +11,28 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Only allow POST method
+  if (req.method !== "POST") {
+    console.error("[compute-analytics-cron] Method not allowed:", req.method);
+    return new Response(
+      JSON.stringify({ error: "Method not allowed", allowed: ["POST"] }),
+      { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json", "Allow": "POST" } }
+    );
+  }
+
   // Verify secret header for security
   const cronSecret = Deno.env.get("CRON_SECRET");
   const authHeader = req.headers.get("x-cron-secret");
   
-  if (!cronSecret || authHeader !== cronSecret) {
+  if (!cronSecret) {
+    console.error("[compute-analytics-cron] CRON_SECRET not configured");
+    return new Response(
+      JSON.stringify({ error: "Server configuration error" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+  
+  if (!authHeader || authHeader !== cronSecret) {
     console.error("[compute-analytics-cron] Unauthorized: invalid or missing x-cron-secret header");
     return new Response(
       JSON.stringify({ error: "Unauthorized" }),
