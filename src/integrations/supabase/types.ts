@@ -174,6 +174,45 @@ export type Database = {
         }
         Relationships: []
       }
+      cron_logs: {
+        Row: {
+          completed_at: string | null
+          details: Json | null
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          job_name: string
+          sites_failed: number | null
+          sites_processed: number | null
+          started_at: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          details?: Json | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          job_name: string
+          sites_failed?: number | null
+          sites_processed?: number | null
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          details?: Json | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          job_name?: string
+          sites_failed?: number | null
+          sites_processed?: number | null
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       expert_requests: {
         Row: {
           created_at: string
@@ -830,6 +869,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_cron_logs: { Args: never; Returns: undefined }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       has_org_role: {
