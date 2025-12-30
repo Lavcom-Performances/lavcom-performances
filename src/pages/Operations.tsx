@@ -108,7 +108,7 @@ export default function Operations() {
     }
   }, [siteWasInvalid, sites.length, toast, t]);
   
-  // Initialize date range from URL or defaults
+  // Initialize date range from URL or defaults - use undefined to show all data initially
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     if (urlDateStart && urlDateEnd) {
       return {
@@ -116,10 +116,8 @@ export default function Operations() {
         to: parseISO(urlDateEnd),
       };
     }
-    return {
-      from: subDays(new Date(), 30),
-      to: new Date(),
-    };
+    // No default date filter - show all data
+    return undefined;
   });
   
   const [searchQuery, setSearchQuery] = useState("");
