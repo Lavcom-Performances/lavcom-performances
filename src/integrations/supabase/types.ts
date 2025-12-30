@@ -1052,6 +1052,15 @@ export type Database = {
           year: number
         }[]
       }
+      rpc_operations_calendar_kpis: {
+        Args: { p_site_id: string }
+        Returns: {
+          period: string
+          revenue_cb: number
+          revenue_esp: number
+          revenue_total: number
+        }[]
+      }
       rpc_recommendations_v1: {
         Args: { p_end_date: string; p_site_id: string; p_start_date: string }
         Returns: {
