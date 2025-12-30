@@ -68,6 +68,11 @@ interface AuditLog {
   action: string;
   details: Record<string, unknown>;
   created_at: string;
+  admin_profile?: {
+    email: string;
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
 }
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
@@ -152,7 +157,7 @@ export default function AdminDashboard() {
     enabled: !!dateRange?.from && !!dateRange?.to
   });
 
-  // Fetch audit logs
+  // Fetch audit logs with profile data
   const { data: auditLogs, isLoading: loadingAudit, refetch: refetchAudit } = useQuery({
     queryKey: ['admin-audit-logs'],
     queryFn: async () => {
@@ -162,7 +167,20 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false })
         .limit(100);
       if (error) throw error;
-      return data as AuditLog[];
+
+      // Fetch profiles for admin users
+      const adminIds = [...new Set((data || []).map(log => log.admin_user_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, email, first_name, last_name')
+        .in('id', adminIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      return (data || []).map(log => ({
+        ...log,
+        admin_profile: profileMap.get(log.admin_user_id) || null
+      })) as AuditLog[];
     }
   });
 
@@ -177,13 +195,18 @@ export default function AdminDashboard() {
 
   // Export audit logs to CSV
   const exportAuditLogsCSV = (logs: AuditLog[]) => {
-    const headers = ['Date', 'Action', 'Détails', 'Admin ID'];
-    const rows = logs.map(log => [
-      format(new Date(log.created_at), 'yyyy-MM-dd HH:mm:ss'),
-      ACTION_LABELS[log.action]?.label || log.action,
-      Object.keys(log.details).length > 0 ? JSON.stringify(log.details) : '',
-      log.admin_user_id
-    ]);
+    const headers = ['Date', 'Action', 'Détails', 'Admin'];
+    const rows = logs.map(log => {
+      const adminName = log.admin_profile
+        ? `${log.admin_profile.first_name || ''} ${log.admin_profile.last_name || ''} (${log.admin_profile.email})`.trim()
+        : log.admin_user_id;
+      return [
+        format(new Date(log.created_at), 'yyyy-MM-dd HH:mm:ss'),
+        ACTION_LABELS[log.action]?.label || log.action,
+        Object.keys(log.details).length > 0 ? JSON.stringify(log.details) : '',
+        adminName
+      ];
+    });
     
     const csvContent = [
       headers.join(';'),
@@ -657,7 +680,7 @@ export default function AdminDashboard() {
                           <TableHead>Date</TableHead>
                           <TableHead>Action</TableHead>
                           <TableHead>Détails</TableHead>
-                          <TableHead>Admin ID</TableHead>
+                          <TableHead>Admin</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -683,8 +706,24 @@ export default function AdminDashboard() {
                                   : '-'
                                 }
                               </TableCell>
-                              <TableCell className="font-mono text-xs text-muted-foreground">
-                                {log.admin_user_id.substring(0, 8)}...
+                              <TableCell className="text-sm">
+                                {log.admin_profile ? (
+                                  <div className="flex flex-col">
+                                    <span className="font-medium">
+                                      {log.admin_profile.first_name || log.admin_profile.last_name
+                                        ? `${log.admin_profile.first_name || ''} ${log.admin_profile.last_name || ''}`.trim()
+                                        : log.admin_profile.email
+                                      }
+                                    </span>
+                                    {(log.admin_profile.first_name || log.admin_profile.last_name) && (
+                                      <span className="text-xs text-muted-foreground">{log.admin_profile.email}</span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <span className="font-mono text-xs text-muted-foreground">
+                                    {log.admin_user_id.substring(0, 8)}...
+                                  </span>
+                                )}
                               </TableCell>
                             </TableRow>
                           );
