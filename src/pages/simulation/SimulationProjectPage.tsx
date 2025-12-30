@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, AlertCircle } from "lucide-react";
 import { StepLocal } from "@/components/simulation/StepLocal";
 import { StepProjectInfo } from "@/components/simulation/StepProjectInfo";
 import { 
@@ -9,17 +9,35 @@ import {
   defaultSimulationProject,
 } from "@/types/simulation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSimulationValidation } from "@/hooks/useSimulationValidation";
+import { toast } from "@/hooks/use-toast";
 
 export default function SimulationProjectPage() {
   const navigate = useNavigate();
   const [project, setProject] = useState<SimulationProject>(defaultSimulationProject);
   const [activeTab, setActiveTab] = useState("project");
+  const [showErrors, setShowErrors] = useState(false);
+  
+  const { isValid, errors, errorCount } = useSimulationValidation(project);
 
   const updateProject = (updates: Partial<SimulationProject>) => {
     setProject(prev => ({ ...prev, ...updates }));
   };
 
   const handleNext = () => {
+    if (!isValid) {
+      setShowErrors(true);
+      toast({
+        title: "Champs obligatoires manquants",
+        description: `Veuillez remplir les ${errorCount} champ${errorCount > 1 ? 's' : ''} obligatoire${errorCount > 1 ? 's' : ''} avant de continuer.`,
+        variant: "destructive",
+      });
+      // Basculer vers l'onglet projet s'il y a des erreurs là
+      if (errors.name || errors.city || errors.zone_type || errors.surface_m2 || errors.opening_hours_description) {
+        setActiveTab("project");
+      }
+      return;
+    }
     navigate("/simulation/local");
   };
 
@@ -34,14 +52,23 @@ export default function SimulationProjectPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="project">Mon projet</TabsTrigger>
+          <TabsTrigger value="project" className="relative">
+            Mon projet
+            {showErrors && errorCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center">
+                {errorCount}
+              </span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="local">Contraintes du local</TabsTrigger>
         </TabsList>
 
         <TabsContent value="project" className="mt-6">
           <StepProjectInfo 
             project={project} 
-            onUpdate={updateProject} 
+            onUpdate={updateProject}
+            errors={errors}
+            showErrors={showErrors}
           />
         </TabsContent>
 
@@ -54,6 +81,12 @@ export default function SimulationProjectPage() {
       </Tabs>
 
       <div className="flex justify-end pt-6 border-t">
+        {showErrors && !isValid && (
+          <div className="flex items-center gap-2 text-sm text-destructive mr-4">
+            <AlertCircle className="h-4 w-4" />
+            {errorCount} champ{errorCount > 1 ? 's' : ''} obligatoire{errorCount > 1 ? 's' : ''} manquant{errorCount > 1 ? 's' : ''}
+          </div>
+        )}
         <Button onClick={handleNext} className="gap-2">
           Continuer
           <ChevronRight className="h-4 w-4" />

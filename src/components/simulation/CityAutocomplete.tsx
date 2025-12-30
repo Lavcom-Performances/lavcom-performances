@@ -10,6 +10,7 @@ interface CityAutocompleteProps {
   placeholder?: string;
   className?: string;
   country?: string;
+  hasError?: boolean;
 }
 
 export function CityAutocomplete({ 
@@ -17,7 +18,8 @@ export function CityAutocomplete({
   onSelect, 
   placeholder = "Rechercher une ville...",
   className,
-  country = "FR"
+  country = "FR",
+  hasError = false
 }: CityAutocompleteProps) {
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +59,7 @@ export function CityAutocomplete({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="pl-10"
+          className={cn("pl-10", hasError && "border-destructive focus-visible:ring-destructive")}
         />
         {isLoading && (
           <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
