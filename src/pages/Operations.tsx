@@ -778,9 +778,8 @@ export default function Operations() {
       {/* Calendar KPI Block - Fixed (independent of filters) */}
       <CalendarKPIBlock siteId={selectedSite?.id} />
 
-      {/* Stats Grid - 3 blocs always visible */}
+      {/* Stats Grid - Graph + Machines */}
       <OperationsStatsGrid 
-        kpis={kpis}
         hourlyData={hourlyData}
         machineCounts={machineCounts}
       />
