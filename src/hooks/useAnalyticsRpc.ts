@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchDashboardKpis, fetchMonthlyRevenue, fetchRecommendations } from "@/lib/analyticsRpc";
+import { fetchDashboardKpis, fetchMonthlyRevenue, fetchMonthlyRevenueRange, fetchRecommendations } from "@/lib/analyticsRpc";
 
 export function useDashboardKpis(siteId: string, startDate: string, endDate: string) {
   return useQuery({
@@ -14,6 +14,14 @@ export function useMonthlyRevenue(siteId: string, year: number) {
     queryKey: ["monthlyRevenue", siteId, year],
     queryFn: () => fetchMonthlyRevenue(siteId, year),
     enabled: !!siteId,
+  });
+}
+
+export function useMonthlyRevenueRange(siteId: string, startDate: string, endDate: string) {
+  return useQuery({
+    queryKey: ["monthlyRevenueRange", siteId, startDate, endDate],
+    queryFn: () => fetchMonthlyRevenueRange(siteId, startDate, endDate),
+    enabled: !!siteId && !!startDate && !!endDate,
   });
 }
 

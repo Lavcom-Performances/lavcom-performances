@@ -4,7 +4,6 @@ import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart"
 
 export default function MonthlyRevenuePage() {
   const { dateRange, setDateRange } = useDateRange();
-  const selectedYear = dateRange?.from?.getFullYear() ?? new Date().getFullYear();
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
@@ -25,7 +24,10 @@ export default function MonthlyRevenuePage() {
       </div>
 
       <div className="max-w-5xl">
-        <MonthlyRevenueChart year={selectedYear} />
+        <MonthlyRevenueChart 
+          startDate={dateRange?.from} 
+          endDate={dateRange?.to} 
+        />
       </div>
     </div>
   );
