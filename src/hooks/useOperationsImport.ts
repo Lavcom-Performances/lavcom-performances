@@ -86,16 +86,24 @@ export function useOperationsImport() {
           
           // Determine source/type based on row source field
           const rowSource = (row as any).source || 'manual';
-          const operationType = rowSource === 'events_csv' ? 'vend' : null;
+          
+          // Get amount - check if it's already in euros or in centimes
+          // If amount > 20, it's likely in centimes and needs to be divided by 100
+          // (typical laundry prices range from 0.60€ to 20€)
+          let amountEur = row.amount || 0;
+          if (amountEur > 20) {
+            // Amount is in centimes, convert to euros
+            amountEur = amountEur / 100;
+          }
           
           // Determine price_cb and price_esp based on payment mode
           let priceCb: number | null = null;
           let priceEsp: number | null = null;
           
           if (mode === 'CB' || mode === 'CARTE') {
-            priceCb = row.amount || 0;
+            priceCb = amountEur;
           } else if (mode === 'ESP' || mode === 'ESPECES' || mode === 'CASH') {
-            priceEsp = row.amount || 0;
+            priceEsp = amountEur;
           }
           
           // Generate dedupe_key using MD5 hash
@@ -104,10 +112,10 @@ export function useOperationsImport() {
             operationDate: dateStr,
             operationTime: time,
             paymentMode: mode,
-            type: operationType,
+            type: null,
             priceCb,
             priceEsp,
-            amount: row.amount || 0,
+            amount: amountEur,
           });
 
           // Base operation data
@@ -116,7 +124,7 @@ export function useOperationsImport() {
             site_id: siteId,
             operation_date: dateStr,
             operation_time: time,
-            amount: row.amount,
+            amount: amountEur,
             machine: machine,
             program: row.program || null,
             payment_mode: mode,
@@ -125,7 +133,7 @@ export function useOperationsImport() {
             dedupe_key: dedupeKey,
             price_cb: priceCb,
             price_esp: priceEsp,
-            type: operationType,
+            type: null, // Don't set 'vend' type anymore
           };
           
           // Extended fields for Events format
