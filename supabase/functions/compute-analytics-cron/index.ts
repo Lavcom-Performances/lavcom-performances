@@ -11,6 +11,18 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Verify secret header for security
+  const cronSecret = Deno.env.get("CRON_SECRET");
+  const authHeader = req.headers.get("x-cron-secret");
+  
+  if (!cronSecret || authHeader !== cronSecret) {
+    console.error("[compute-analytics-cron] Unauthorized: invalid or missing x-cron-secret header");
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   const startTime = Date.now();
   console.log("[compute-analytics-cron] Starting nightly analytics computation");
 
