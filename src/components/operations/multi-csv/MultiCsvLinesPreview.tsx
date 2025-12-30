@@ -23,13 +23,13 @@ import { centsToEuros } from "@/lib/csv/parseAmount";
 interface MultiCsvLinesPreviewProps {
   rows: MultiCsvParsedRow[];
   onRowSelectionChange: (rowIndex: number, selected: boolean) => void;
-  onSelectAll: (status: 'importable' | 'to_review', selected: boolean) => void;
+  onSelectAllByStatus: (status: 'importable' | 'to_review', selected: boolean) => void;
 }
 
 export function MultiCsvLinesPreview({
   rows,
   onRowSelectionChange,
-  onSelectAll,
+  onSelectAllByStatus,
 }: MultiCsvLinesPreviewProps) {
   const { t } = useTranslation("app");
   const [activeTab, setActiveTab] = useState<string>("importable");
@@ -81,7 +81,7 @@ export function MultiCsvLinesPreview({
                     checked={filteredRows.length > 0 && filteredRows.every(r => r.selected)}
                     onCheckedChange={(checked) => {
                       const status = filteredRows[0]?.status as 'importable' | 'to_review';
-                      onSelectAll(status, !!checked);
+                      onSelectAllByStatus(status, !!checked);
                     }}
                   />
                 </TableHead>
