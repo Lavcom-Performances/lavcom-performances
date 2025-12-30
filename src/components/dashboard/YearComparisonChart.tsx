@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -12,21 +12,36 @@ import {
 import { useMonthlyRevenueRange } from "@/hooks/useAnalyticsRpc";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format, subYears, startOfYear, endOfYear } from "date-fns";
-import { fr } from "date-fns/locale";
+import { format, startOfYear, endOfYear } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, CalendarDays } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const MONTH_NAMES = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
 
-interface YearComparisonChartProps {
-  referenceYear?: number;
-}
+// Generate available years (last 10 years)
+const generateYearOptions = () => {
+  const currentYear = new Date().getFullYear();
+  const years: number[] = [];
+  for (let i = 0; i < 10; i++) {
+    years.push(currentYear - i);
+  }
+  return years;
+};
 
-export function YearComparisonChart({ referenceYear }: YearComparisonChartProps) {
+const YEAR_OPTIONS = generateYearOptions();
+
+export function YearComparisonChart() {
   const { currentSiteId } = useCurrentSite();
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   
-  const currentYear = referenceYear ?? new Date().getFullYear();
+  const currentYear = selectedYear;
   const previousYear = currentYear - 1;
   
   // Fetch current year data
@@ -109,9 +124,25 @@ export function YearComparisonChart({ referenceYear }: YearComparisonChartProps)
   return (
     <div data-pdf-chart="year-comparison" className="kpi-card h-[450px]">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-        <h3 className="font-display font-semibold text-lg">
-          Comparaison {previousYear} vs {currentYear}
-        </h3>
+        <div className="flex items-center gap-3">
+          <h3 className="font-display font-semibold text-lg">Comparaison annuelle</h3>
+          <Select
+            value={selectedYear.toString()}
+            onValueChange={(value) => setSelectedYear(parseInt(value))}
+          >
+            <SelectTrigger className="w-[100px] h-8">
+              <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {YEAR_OPTIONS.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="gap-1.5">
             <span className="font-normal text-muted-foreground">{previousYear}:</span>
