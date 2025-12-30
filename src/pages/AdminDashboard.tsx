@@ -62,6 +62,23 @@ interface MonthlySeries {
   active_sites: number;
 }
 
+interface SubscriptionMetrics {
+  active_subscriptions: number;
+  trial_subscriptions: number;
+  past_due_subscriptions: number;
+  canceled_subscriptions: number;
+  monthly_subscriptions: number;
+  annual_subscriptions: number;
+  total_laundries_subscribed: number;
+  mrr_estimated: number;
+  churn_current_month: number;
+  new_subscriptions_current_month: number;
+  trial_conversions_current_month: number;
+  trials_expiring_soon: number;
+  status_breakdown: Array<{ status: string; count: number }> | null;
+  monthly_trend: Array<{ month: string; active: number; new: number; churned: number }> | null;
+}
+
 interface AuditLog {
   id: string;
   admin_user_id: string;
@@ -82,6 +99,7 @@ const ACTION_LABELS: Record<string, { label: string; icon: React.ReactNode }> = 
   view_revenue_stats: { label: 'Stats CA', icon: <TrendingUp className="h-4 w-4" /> },
   view_top_sites: { label: 'Top sites', icon: <Building2 className="h-4 w-4" /> },
   view_monthly_series: { label: 'Séries mensuelles', icon: <Activity className="h-4 w-4" /> },
+  view_subscription_metrics: { label: 'Métriques abonnements', icon: <CreditCard className="h-4 w-4" /> },
 };
 
 const ACTION_OPTIONS = [
@@ -90,6 +108,7 @@ const ACTION_OPTIONS = [
   { value: 'view_revenue_stats', label: 'Stats CA' },
   { value: 'view_top_sites', label: 'Top sites' },
   { value: 'view_monthly_series', label: 'Séries mensuelles' },
+  { value: 'view_subscription_metrics', label: 'Métriques abonnements' },
 ];
 
 export default function AdminDashboard() {
@@ -157,6 +176,16 @@ export default function AdminDashboard() {
     enabled: !!dateRange?.from && !!dateRange?.to
   });
 
+  // Fetch subscription metrics
+  const { data: subMetrics, isLoading: loadingSubMetrics, refetch: refetchSubMetrics } = useQuery({
+    queryKey: ['admin-subscription-metrics'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('rpc_admin_subscription_metrics');
+      if (error) throw error;
+      return data as unknown as SubscriptionMetrics;
+    }
+  });
+
   // Fetch audit logs with profile data
   const { data: auditLogs, isLoading: loadingAudit, refetch: refetchAudit } = useQuery({
     queryKey: ['admin-audit-logs'],
@@ -191,6 +220,7 @@ export default function AdminDashboard() {
     refetchGlobal();
     refetchRevenue();
     refetchAudit();
+    refetchSubMetrics();
   };
 
   // Export audit logs to CSV
@@ -356,8 +386,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="activity" className="space-y-4">
-          <TabsList>
+        <Tabs defaultValue="subscriptions" className="space-y-4">
+          <TabsList className="flex-wrap">
+            <TabsTrigger value="subscriptions">
+              <CreditCard className="h-4 w-4 mr-2" />
+              Abonnements
+            </TabsTrigger>
             <TabsTrigger value="activity">
               <Activity className="h-4 w-4 mr-2" />
               Activité
@@ -375,6 +409,218 @@ export default function AdminDashboard() {
               Audit Logs
             </TabsTrigger>
           </TabsList>
+
+          {/* Subscriptions Tab - NEW */}
+          <TabsContent value="subscriptions" className="space-y-4">
+            {/* MRR & Key Metrics */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">MRR Estimé</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                </CardHeader>
+                <CardContent>
+                  {loadingSubMetrics ? (
+                    <Skeleton className="h-8 w-24" />
+                  ) : (
+                    <div className="text-2xl font-bold text-emerald-600">
+                      {formatCurrency(subMetrics?.mrr_estimated || 0)}
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Revenu mensuel récurrent
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Abonnements actifs</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  {loadingSubMetrics ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className="text-2xl font-bold">{subMetrics?.active_subscriptions || 0}</div>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    {subMetrics?.total_laundries_subscribed || 0} laveries
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Essais en cours</CardTitle>
+                  <Activity className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  {loadingSubMetrics ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className="text-2xl font-bold">{subMetrics?.trial_subscriptions || 0}</div>
+                  )}
+                  <p className="text-xs text-amber-500">
+                    {subMetrics?.trials_expiring_soon || 0} expirent sous 7j
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className={subMetrics?.churn_current_month ? "border-red-500/20" : ""}>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Churn ce mois</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-red-500 rotate-180" />
+                </CardHeader>
+                <CardContent>
+                  {loadingSubMetrics ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className="text-2xl font-bold text-red-500">{subMetrics?.churn_current_month || 0}</div>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Abonnements annulés
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Second row */}
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Nouveaux ce mois</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {loadingSubMetrics ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className="text-2xl font-bold text-emerald-500">+{subMetrics?.new_subscriptions_current_month || 0}</div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Conversions trial</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {loadingSubMetrics ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className="text-2xl font-bold text-blue-500">{subMetrics?.trial_conversions_current_month || 0}</div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Impayés</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {loadingSubMetrics ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className={`text-2xl font-bold ${(subMetrics?.past_due_subscriptions || 0) > 0 ? 'text-amber-500' : ''}`}>
+                      {subMetrics?.past_due_subscriptions || 0}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Charts */}
+            <div className="grid gap-4 lg:grid-cols-2">
+              {/* Plan Distribution */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Répartition des plans</CardTitle>
+                  <CardDescription>Mensuel vs Annuel</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {loadingSubMetrics ? (
+                    <Skeleton className="h-[250px] w-full" />
+                  ) : (
+                    <ResponsiveContainer width="100%" height={250}>
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: 'Mensuel', value: subMetrics?.monthly_subscriptions || 0 },
+                            { name: 'Annuel', value: subMetrics?.annual_subscriptions || 0 },
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={50}
+                          outerRadius={80}
+                          dataKey="value"
+                          label={({ name, value }) => `${name}: ${value}`}
+                        >
+                          <Cell fill="hsl(var(--primary))" />
+                          <Cell fill="hsl(var(--chart-2))" />
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Trend Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Évolution des abonnements</CardTitle>
+                  <CardDescription>Derniers 6 mois</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {loadingSubMetrics || !subMetrics?.monthly_trend ? (
+                    <Skeleton className="h-[250px] w-full" />
+                  ) : (
+                    <ResponsiveContainer width="100%" height={250}>
+                      <BarChart data={subMetrics.monthly_trend.map(item => ({
+                        ...item,
+                        month: format(new Date(item.month), 'MMM', { locale: fr })
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                        <XAxis dataKey="month" className="text-xs" />
+                        <YAxis className="text-xs" />
+                        <Tooltip />
+                        <Bar dataKey="active" name="Actifs" fill="hsl(var(--primary))" />
+                        <Bar dataKey="new" name="Nouveaux" fill="hsl(var(--chart-2))" />
+                        <Bar dataKey="churned" name="Churn" fill="hsl(var(--destructive))" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Status Breakdown Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Répartition par statut</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {loadingSubMetrics ? (
+                  <Skeleton className="h-[100px] w-full" />
+                ) : (
+                  <div className="flex flex-wrap gap-4">
+                    {subMetrics?.status_breakdown?.map((item) => (
+                      <div key={item.status} className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-lg">
+                        <Badge variant={
+                          item.status === 'active' ? 'default' :
+                          item.status === 'canceled' ? 'destructive' :
+                          item.status === 'past_due' ? 'secondary' : 'outline'
+                        }>
+                          {item.status}
+                        </Badge>
+                        <span className="font-semibold">{item.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="activity" className="space-y-4">
             <div className="grid gap-4 lg:grid-cols-2">

@@ -1043,6 +1043,7 @@ export type Database = {
         Args: { p_end_date: string; p_start_date: string }
         Returns: Json
       }
+      rpc_admin_subscription_metrics: { Args: never; Returns: Json }
       rpc_admin_top_sites: {
         Args: { p_end_date: string; p_limit?: number; p_start_date: string }
         Returns: Json
