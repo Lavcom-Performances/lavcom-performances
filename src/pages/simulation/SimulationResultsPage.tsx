@@ -40,14 +40,10 @@ export default function SimulationResultsPage() {
         onEditStep={handleEditStep}
       />
 
-      <div className="flex justify-between pt-6 border-t">
+      <div className="flex justify-start pt-6 border-t">
         <Button variant="outline" onClick={handlePrevious} className="gap-2">
           <ChevronLeft className="h-4 w-4" />
           Modifier les charges
-        </Button>
-        <Button className="gap-2">
-          <FileText className="h-4 w-4" />
-          Télécharger le rapport PDF
         </Button>
       </div>
 
