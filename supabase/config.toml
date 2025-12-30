@@ -47,3 +47,6 @@ verify_jwt = true
 
 [functions.validate-invitation]
 verify_jwt = false
+
+[functions.submit-expert-request]
+verify_jwt = false
