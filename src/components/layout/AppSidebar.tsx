@@ -134,7 +134,8 @@ export function AppSidebar({
     <aside 
       data-tutorial="sidebar"
       className={cn(
-        "flex flex-col bg-sidebar h-screen transition-all duration-300 border-r border-sidebar-border",
+        "flex flex-col bg-sidebar h-screen border-r border-sidebar-border",
+        "transition-[width] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
         collapsed ? "w-16" : "w-64"
       )}
     >
@@ -173,46 +174,54 @@ export function AppSidebar({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        {!collapsed && (
+        <div className={cn(
+          "transition-all duration-300 ease-out",
+          collapsed ? "opacity-0 scale-75 w-0" : "opacity-100 scale-100"
+        )}>
           <Button
             variant="ghost"
             size="icon"
             onClick={onToggle}
-            className="text-sidebar-foreground hover:bg-sidebar-accent"
+            className="text-sidebar-foreground hover:bg-sidebar-accent transition-transform duration-200 hover:scale-110"
           >
-            <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
+            <ChevronLeft className="h-4 w-4 transition-transform duration-300" />
           </Button>
-        )}
+        </div>
       </div>
       
       {/* Collapse toggle for collapsed state */}
-      {collapsed && (
-        <div className="flex justify-center py-2 border-b border-sidebar-border">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggle}
-            className="text-sidebar-foreground hover:bg-sidebar-accent h-8 w-8"
-          >
-            <ChevronLeft className="h-4 w-4 rotate-180" />
-          </Button>
-        </div>
-      )}
+      <div className={cn(
+        "flex justify-center border-b border-sidebar-border overflow-hidden transition-all duration-300 ease-out",
+        collapsed ? "py-2 max-h-12 opacity-100" : "py-0 max-h-0 opacity-0"
+      )}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggle}
+          className="text-sidebar-foreground hover:bg-sidebar-accent h-8 w-8 transition-transform duration-200 hover:scale-110"
+        >
+          <ChevronLeft className="h-4 w-4 rotate-180 transition-transform duration-300" />
+        </Button>
+      </div>
 
       {/* Trial Banner - only show when not collapsed and on trial */}
-      {!collapsed && showTrialBanner && (
-        <div className="py-2">
-          <TrialBanner 
-            daysRemaining={daysRemaining} 
-            status={trialStatus}
-            variant="sidebar"
-          />
-        </div>
-      )}
+      <div className={cn(
+        "overflow-hidden transition-all duration-300 ease-out",
+        !collapsed && showTrialBanner ? "py-2 max-h-24 opacity-100" : "py-0 max-h-0 opacity-0"
+      )}>
+        <TrialBanner 
+          daysRemaining={daysRemaining} 
+          status={trialStatus}
+          variant="sidebar"
+        />
+      </div>
 
       {/* Current Laundromat */}
-      {!collapsed && (
-        <div className="px-4 py-3 border-b border-sidebar-border space-y-2">
+      <div className={cn(
+        "border-b border-sidebar-border overflow-hidden transition-all duration-300 ease-out",
+        collapsed ? "px-0 py-0 max-h-0 opacity-0" : "px-4 py-3 max-h-24 opacity-100"
+      )}>
+        <div className="space-y-2">
           <NavLink 
             to="/laundromat-settings"
             className="flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
@@ -223,7 +232,7 @@ export function AppSidebar({
               size="sm"
             />
             <span className="text-sm truncate flex-1">{currentLaundromat}</span>
-            <Settings className="h-3 w-3 ml-auto opacity-50" />
+            <Settings className="h-3 w-3 ml-auto opacity-50 transition-opacity duration-200" />
           </NavLink>
           <NavLink 
             to="/select-laundromat"
@@ -232,7 +241,7 @@ export function AppSidebar({
             <span>← {t('app:nav.changeLaundry')}</span>
           </NavLink>
         </div>
-      )}
+      </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -249,8 +258,13 @@ export function AppSidebar({
                 isActive && "sidebar-item-active"
               )}
             >
-              <item.icon className="h-5 w-5 shrink-0" />
-              {!collapsed && <span>{item.name}</span>}
+              <item.icon className="h-5 w-5 shrink-0 transition-transform duration-200" />
+              <span className={cn(
+                "transition-all duration-300 ease-out whitespace-nowrap",
+                collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
+              )}>
+                {item.name}
+              </span>
             </NavLink>
           );
         })}
