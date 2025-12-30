@@ -342,18 +342,18 @@ export function AppSidebar({
         )}
       </nav>
 
-      {/* User Section */}
-      <div className="p-3 border-t border-sidebar-border space-y-1">
+      {/* User Section - Compact */}
+      <div className="px-3 py-2 border-t border-sidebar-border space-y-0.5">
         <NavLink
           to="/profile"
           className={cn(
-            "sidebar-item",
+            "sidebar-item !py-1.5",
             location.pathname === "/profile" && "sidebar-item-active"
           )}
         >
-          <Avatar className="h-5 w-5 shrink-0">
+          <Avatar className="h-4 w-4 shrink-0">
             <AvatarImage src={profile?.avatar_url || undefined} alt="Avatar" />
-            <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+            <AvatarFallback className="text-[8px] bg-primary/10 text-primary">
               {getInitials()}
             </AvatarFallback>
           </Avatar>
@@ -362,29 +362,34 @@ export function AppSidebar({
         <NavLink
           to="/subscription"
           className={cn(
-            "sidebar-item",
+            "sidebar-item !py-1.5",
             location.pathname === "/subscription" && "sidebar-item-active"
           )}
         >
-          <CreditCard className="h-5 w-5 shrink-0" />
+          <CreditCard className="h-4 w-4 shrink-0" />
           {!collapsed && <span>{t('app:nav.subscription')}</span>}
         </NavLink>
-        <ThemeToggle collapsed={collapsed} className="sidebar-item" />
-        <LanguageSelector variant="sidebar" collapsed={collapsed} />
-        <NavLink
-          to="/"
-          className="sidebar-item text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors duration-200"
-        >
-          <LayoutDashboard className="h-5 w-5 shrink-0" />
-          {!collapsed && <span>{t('common:home')}</span>}
-        </NavLink>
-        <button
-          onClick={handleLogout}
-          className="sidebar-item w-full text-sidebar-foreground/60 hover:text-destructive transition-colors duration-200"
-        >
-          <LogOut className="h-5 w-5 shrink-0" />
-          {!collapsed && <span>{t('common:logout')}</span>}
-        </button>
+        <div className="flex items-center gap-1">
+          <ThemeToggle collapsed={collapsed} className="sidebar-item !py-1.5 flex-1" />
+          {!collapsed && <LanguageSelector variant="sidebar" collapsed={collapsed} />}
+        </div>
+        {collapsed && <LanguageSelector variant="sidebar" collapsed={collapsed} />}
+        <div className="flex items-center gap-1 pt-1">
+          <NavLink
+            to="/"
+            className="sidebar-item !py-1.5 flex-1 text-sidebar-foreground/60 hover:text-sidebar-foreground"
+          >
+            <LayoutDashboard className="h-4 w-4 shrink-0" />
+            {!collapsed && <span className="text-xs">{t('common:home')}</span>}
+          </NavLink>
+          <button
+            onClick={handleLogout}
+            className="sidebar-item !py-1.5 text-sidebar-foreground/60 hover:text-destructive"
+            title={t('common:logout')}
+          >
+            <LogOut className="h-4 w-4 shrink-0" />
+          </button>
+        </div>
       </div>
     </aside>
   );
