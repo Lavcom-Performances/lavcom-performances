@@ -37,6 +37,7 @@ export function useOperationsImport() {
           success: false,
           imported: 0,
           ignored: 0,
+          duplicates: 0,
           errors: ["Utilisateur non connecté"],
         };
       }
@@ -52,6 +53,7 @@ export function useOperationsImport() {
             success: false,
             imported: 0,
             ignored: invalidRows.length,
+            duplicates: 0,
             errors: ["Aucune ligne valide à importer"],
           };
         }
@@ -82,6 +84,10 @@ export function useOperationsImport() {
           const machine = row.machine || null;
           const time = row.time || null;
           
+          // Determine source/type based on row source field
+          const rowSource = (row as any).source || 'manual';
+          const operationType = rowSource === 'events_csv' ? 'vend' : null;
+          
           // Determine price_cb and price_esp based on payment mode
           let priceCb: number | null = null;
           let priceEsp: number | null = null;
@@ -98,7 +104,7 @@ export function useOperationsImport() {
             operationDate: dateStr,
             operationTime: time,
             paymentMode: mode,
-            type: null, // type will be set later if needed
+            type: operationType,
             priceCb,
             priceEsp,
             amount: row.amount || 0,
@@ -119,7 +125,7 @@ export function useOperationsImport() {
             dedupe_key: dedupeKey,
             price_cb: priceCb,
             price_esp: priceEsp,
-            type: null as string | null,
+            type: operationType,
           };
           
           // Extended fields for Events format
@@ -137,7 +143,7 @@ export function useOperationsImport() {
           
           return {
             ...baseOperation,
-            source: 'manual',
+            source: rowSource,
           };
         });
 
@@ -216,7 +222,8 @@ export function useOperationsImport() {
         return {
           success: insertedCount > 0,
           imported: insertedCount,
-          ignored: actualIgnored,
+          ignored: actualIgnored - duplicatesIgnored,
+          duplicates: duplicatesIgnored,
           errors: resultMessages.length > 0 ? resultMessages : [],
         };
       } catch (err) {
@@ -225,6 +232,7 @@ export function useOperationsImport() {
           success: false,
           imported: 0,
           ignored: parsedRows.length,
+          duplicates: 0,
           errors: [err instanceof Error ? err.message : "Erreur inconnue"],
         };
       } finally {

@@ -5,7 +5,31 @@
 import { normalizeCsvText, detectSeparator, parseCsvLine } from './normalizeCsvText';
 import { normalizePaymentMode, PAYMENT_MODES_ACCEPTED } from './normalizePaymentMode';
 import { parseAmountToCents, getAmountFromColumns } from './parseAmount';
-import { MultiCsvParsedRow, MAX_PREVIEW_ROWS_PER_FILE } from './multiCsvTypes';
+import { MultiCsvParsedRow, MAX_PREVIEW_ROWS_PER_FILE, CsvFormatType } from './multiCsvTypes';
+
+/**
+ * Detect CSV format type from headers and content
+ */
+function detectCsvFormat(headers: string[], columnMap: Record<string, number>): CsvFormatType {
+  const headerLower = headers.map(h => h.toLowerCase());
+  
+  // Events format: has 'type' column and specific Events headers
+  if (columnMap.type !== undefined) {
+    return 'events';
+  }
+  
+  // LM Control format: has specific column patterns
+  if (headerLower.some(h => h.includes('lm') || h.includes('control'))) {
+    return 'lm_control';
+  }
+  
+  // Standard format: has basic date, amount, payment columns
+  if (columnMap.date !== undefined && (columnMap.price !== undefined || columnMap.amount !== undefined)) {
+    return 'standard';
+  }
+  
+  return 'unknown';
+}
 
 /**
  * Parse date string to ISO format
@@ -125,8 +149,9 @@ export function parseMultiCsvFile(
   const headers = parseCsvLine(lines[headerIndex], separator).map(h => h.toLowerCase().trim());
   const columnMap = detectColumnMapping(headers);
   
-  // Check if this is Events format (has type column with 'vend' values)
-  const isEventsFormat = columnMap.type !== undefined;
+  // Detect CSV format
+  const detectedFormat = detectCsvFormat(headers, columnMap);
+  const isEventsFormat = detectedFormat === 'events';
   
   const rows: MultiCsvParsedRow[] = [];
   
@@ -213,6 +238,7 @@ export function parseMultiCsvFile(
       price_cents,
       change_cents,
       machine_name: machineStr || null,
+      detected_type: detectedFormat,
       status,
       errors,
       selected: status === 'importable', // Auto-select importable rows

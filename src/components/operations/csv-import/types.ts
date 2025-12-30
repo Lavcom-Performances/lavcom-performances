@@ -45,6 +45,7 @@ export interface ImportResult {
   success: boolean;
   imported: number;
   ignored: number;
+  duplicates: number;
   errors: string[];
 }
 

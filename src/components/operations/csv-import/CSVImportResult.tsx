@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { CheckCircle2, AlertCircle, ArrowRight, Copy } from "lucide-react";
 import { ImportResult } from "./types";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface CSVImportResultProps {
   result: ImportResult;
@@ -23,22 +24,34 @@ export function CSVImportResult({ result, onClose }: CSVImportResultProps) {
         ) : (
           <AlertCircle className="h-6 w-6 shrink-0" />
         )}
-        <div>
+        <div className="flex-1">
           <p className="font-medium">
             {result.success ? "Import terminé avec succès !" : "Erreur lors de l'import"}
           </p>
           {result.success && (
-            <p className="text-sm mt-1">
-              {result.imported} opérations importées
-              {result.ignored > 0 && ` • ${result.ignored} lignes ignorées`}
-            </p>
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              <Badge variant="default" className="bg-lavcom-green text-white">
+                {result.imported} importées
+              </Badge>
+              {result.duplicates > 0 && (
+                <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                  <Copy className="h-3 w-3 mr-1" />
+                  {result.duplicates} doublons ignorés
+                </Badge>
+              )}
+              {result.ignored > 0 && (
+                <Badge variant="outline" className="text-muted-foreground">
+                  {result.ignored} lignes ignorées
+                </Badge>
+              )}
+            </div>
           )}
         </div>
       </div>
 
       {result.errors.length > 0 && (
         <div className="bg-muted/50 rounded-lg p-3">
-          <p className="text-xs font-medium text-muted-foreground mb-2">Détails des erreurs :</p>
+          <p className="text-xs font-medium text-muted-foreground mb-2">Détails :</p>
           <ul className="text-xs text-muted-foreground space-y-1 max-h-20 overflow-y-auto">
             {result.errors.slice(0, 5).map((error, i) => (
               <li key={i}>• {error}</li>
