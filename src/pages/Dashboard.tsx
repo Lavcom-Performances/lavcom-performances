@@ -22,6 +22,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
+import { DashboardKPIGrid } from "@/components/dashboard/DashboardKPIGrid";
 import { toast } from "sonner";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
@@ -411,70 +412,8 @@ export default function Dashboard() {
 
         {/* Vue d'ensemble */}
         <TabsContent value="overview" className="space-y-6">
-          {/* KPI Cards principales */}
-          <motion.div 
-            data-tutorial="kpis" 
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.div variants={itemVariants}>
-              <KPICard
-                title={t('app:dashboard.kpi.totalRevenue')}
-                value={formatCurrency(stats.totalRevenue)}
-                icon={Euro}
-                variant="primary"
-                trend={stats.revenueTrend !== 0 ? { value: Math.abs(stats.revenueTrend), isPositive: stats.revenueTrend > 0 } : undefined}
-                helpText={t('app:dashboard.help.totalRevenue')}
-              />
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <KPICard
-                title={t('app:dashboard.kpi.revenueCard')}
-                value={formatCurrency(stats.revenueByCard)}
-                icon={CreditCard}
-                variant="success"
-                subtitle={`${cardPercentage}% ${t('app:dashboard.kpi.ofRevenue')}`}
-                helpText={t('app:dashboard.help.revenueCard')}
-              />
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <KPICard
-                title={t('app:dashboard.kpi.revenueCash')}
-                value={formatCurrency(stats.revenueByCash)}
-                icon={Banknote}
-                subtitle={`${cashPercentage}% ${t('app:dashboard.kpi.ofRevenue')}`}
-                helpText={t('app:dashboard.help.revenueCash')}
-              />
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <KPICard
-                title={t('app:dashboard.kpi.transactions')}
-                value={stats.totalTransactions.toString()}
-                icon={ShoppingCart}
-                trend={stats.transactionsTrend !== 0 ? { value: Math.abs(stats.transactionsTrend), isPositive: stats.transactionsTrend > 0 } : undefined}
-                helpText={t('app:dashboard.help.transactions')}
-              />
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <KPICard
-                title={t('app:dashboard.kpi.avgBasket')}
-                value={`${stats.averageBasket.toFixed(2)} €`}
-                icon={TrendingUp}
-                helpText={t('app:dashboard.help.avgBasket')}
-              />
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <KPICard
-                title={t('app:dashboard.kpi.occupancyRate')}
-                value="—"
-                icon={Percent}
-                subtitle={t('app:dashboard.kpi.insufficientData')}
-                helpText={t('app:dashboard.help.occupancyRate')}
-              />
-            </motion.div>
-          </motion.div>
+          {/* KPI Cards principales - Using RPC function */}
+          <DashboardKPIGrid dateRange={dateRange?.from && dateRange?.to ? { from: dateRange.from, to: dateRange.to } : undefined} />
 
           {/* Expert: Nouveaux KPIs Rentabilité */}
           {isExpert && stats.totalRevenue > 0 && (
