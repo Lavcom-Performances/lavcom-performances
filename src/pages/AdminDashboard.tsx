@@ -24,7 +24,8 @@ import {
   FileText,
   Eye,
   Download,
-  Bell
+  Bell,
+  Brain
 } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -33,6 +34,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { SubscriptionMetricsExport } from '@/components/admin/SubscriptionMetricsExport';
 import { ChurnAlertSettings } from '@/components/admin/ChurnAlertSettings';
 import { RetentionDashboard } from '@/components/admin/RetentionDashboard';
+import { ChurnPredictionsDashboard } from '@/components/admin/ChurnPredictionsDashboard';
 
 interface GlobalStats {
   total_users: number;
@@ -105,6 +107,7 @@ const ACTION_LABELS: Record<string, { label: string; icon: React.ReactNode }> = 
   view_monthly_series: { label: 'Séries mensuelles', icon: <Activity className="h-4 w-4" /> },
   view_subscription_metrics: { label: 'Métriques abonnements', icon: <CreditCard className="h-4 w-4" /> },
   view_retention_metrics: { label: 'Métriques rétention', icon: <Users className="h-4 w-4" /> },
+  view_churn_predictions: { label: 'Prédictions churn', icon: <Brain className="h-4 w-4" /> },
 };
 
 const ACTION_OPTIONS = [
@@ -115,6 +118,7 @@ const ACTION_OPTIONS = [
   { value: 'view_monthly_series', label: 'Séries mensuelles' },
   { value: 'view_subscription_metrics', label: 'Métriques abonnements' },
   { value: 'view_retention_metrics', label: 'Métriques rétention' },
+  { value: 'view_churn_predictions', label: 'Prédictions churn' },
 ];
 
 export default function AdminDashboard() {
@@ -402,6 +406,10 @@ export default function AdminDashboard() {
               <Users className="h-4 w-4 mr-2" />
               Rétention
             </TabsTrigger>
+            <TabsTrigger value="predictions">
+              <Brain className="h-4 w-4 mr-2" />
+              Prédictions ML
+            </TabsTrigger>
             <TabsTrigger value="activity">
               <Activity className="h-4 w-4 mr-2" />
               Activité
@@ -646,6 +654,11 @@ export default function AdminDashboard() {
           {/* Retention Tab */}
           <TabsContent value="retention" className="space-y-4">
             <RetentionDashboard />
+          </TabsContent>
+
+          {/* Predictions Tab */}
+          <TabsContent value="predictions" className="space-y-4">
+            <ChurnPredictionsDashboard />
           </TabsContent>
 
           <TabsContent value="activity" className="space-y-4">

@@ -1067,6 +1067,7 @@ export type Database = {
         Returns: boolean
       }
       owns_site: { Args: { _site_id: string }; Returns: boolean }
+      rpc_admin_churn_predictions: { Args: never; Returns: Json }
       rpc_admin_global_stats: { Args: never; Returns: Json }
       rpc_admin_monthly_series: {
         Args: { p_end_date: string; p_start_date: string }
