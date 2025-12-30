@@ -540,7 +540,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
           >
-            <MonthlyRevenueChart data={stats.monthlyData} />
+            <MonthlyRevenueChart />
             {isExpert && stats.dailyData.length > 0 && <DailyRevenueChart data={stats.dailyData} />}
           </motion.div>
 
@@ -630,7 +630,7 @@ export default function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <MonthlyRevenueChart data={stats.monthlyData} />
+            <MonthlyRevenueChart />
             <PaymentPieChart data={stats.paymentData} />
           </div>
 
@@ -742,7 +742,7 @@ export default function Dashboard() {
           <SiteComparisonSection dateRange={dateRange} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <MonthlyRevenueChart data={stats.monthlyData} />
+            <MonthlyRevenueChart />
             <WeekdayPerformanceChart data={stats.weekdayData} />
           </div>
 
