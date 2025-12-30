@@ -47,6 +47,8 @@ export interface ImportResult {
   ignored: number;
   duplicates: number;
   errors: string[];
+  /** Count of ESP top-up lines fixed by business rules (TAEX-145) */
+  rechEspFixed?: number;
 }
 
 export const COLUMN_OPTIONS = [

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CheckCircle2, AlertCircle, ArrowRight, Copy } from "lucide-react";
+import { CheckCircle2, AlertCircle, ArrowRight, Copy, Zap } from "lucide-react";
 import { ImportResult } from "./types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,12 @@ export function CSVImportResult({ result, onClose }: CSVImportResultProps) {
               {result.ignored > 0 && (
                 <Badge variant="outline" className="text-muted-foreground">
                   {result.ignored} lignes ignorées
+                </Badge>
+              )}
+              {result.rechEspFixed !== undefined && result.rechEspFixed > 0 && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                  <Zap className="h-3 w-3 mr-1" />
+                  {result.rechEspFixed} rech ESP corrigés
                 </Badge>
               )}
             </div>
