@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Trash2, FileText, Loader2, History, AlertTriangle } from "lucide-react";
+import { Trash2, FileText, Loader2, History, AlertTriangle, TrendingUp, ShieldCheck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,15 @@ export function ImportHistoryDialog({ open, onOpenChange, onBatchDeleted }: Impo
   const { batches, isLoading, deleteBatch, refetch } = useImportBatches();
   const [deleteConfirmBatch, setDeleteConfirmBatch] = useState<ImportBatch | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Compute import statistics
+  const stats = useMemo(() => {
+    const totalImports = batches.length;
+    const totalImported = batches.reduce((sum, b) => sum + b.imported_rows, 0);
+    const totalIgnored = batches.reduce((sum, b) => sum + b.ignored_rows, 0);
+    const totalRows = batches.reduce((sum, b) => sum + b.total_rows, 0);
+    return { totalImports, totalImported, totalIgnored, totalRows };
+  }, [batches]);
 
   const handleDeleteClick = (batch: ImportBatch) => {
     setDeleteConfirmBatch(batch);
@@ -76,7 +85,34 @@ export function ImportHistoryDialog({ open, onOpenChange, onBatchDeleted }: Impo
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+          {/* Stats summary */}
+          {!isLoading && batches.length > 0 && (
+            <div className="grid grid-cols-3 gap-3 p-3 rounded-lg bg-muted/50 border mb-4">
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 text-lavcom-green mb-1">
+                  <TrendingUp className="h-4 w-4" />
+                </div>
+                <p className="text-lg font-semibold">{stats.totalImported.toLocaleString('fr-FR')}</p>
+                <p className="text-xs text-muted-foreground">Opérations importées</p>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 text-amber-500 mb-1">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+                <p className="text-lg font-semibold">{stats.totalIgnored.toLocaleString('fr-FR')}</p>
+                <p className="text-xs text-muted-foreground">Doublons évités</p>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 text-muted-foreground mb-1">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <p className="text-lg font-semibold">{stats.totalImports}</p>
+                <p className="text-xs text-muted-foreground">Imports</p>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-2 max-h-[300px] overflow-y-auto">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
