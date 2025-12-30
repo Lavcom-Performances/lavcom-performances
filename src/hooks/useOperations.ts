@@ -43,6 +43,7 @@ export function useOperations(filters: OperationsFilters = {}) {
       return;
     }
 
+    console.log('[useOperations] Fetching for user:', user.id, 'site:', filters.siteId);
     fetchOperations();
   }, [user, filters.siteId]);
 
