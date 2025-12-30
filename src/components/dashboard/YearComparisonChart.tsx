@@ -39,10 +39,12 @@ const YEAR_OPTIONS = generateYearOptions();
 
 export function YearComparisonChart() {
   const { currentSiteId } = useCurrentSite();
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const currentCalendarYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentCalendarYear);
+  const [comparisonYear, setComparisonYear] = useState(currentCalendarYear - 1);
   
   const currentYear = selectedYear;
-  const previousYear = currentYear - 1;
+  const previousYear = comparisonYear;
   
   // Fetch current year data
   const currentYearStart = format(startOfYear(new Date(currentYear, 0, 1)), "yyyy-MM-dd");
@@ -125,23 +127,40 @@ export function YearComparisonChart() {
     <div data-pdf-chart="year-comparison" className="kpi-card h-[450px]">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-3">
-          <h3 className="font-display font-semibold text-lg">Comparaison annuelle</h3>
-          <Select
-            value={selectedYear.toString()}
-            onValueChange={(value) => setSelectedYear(parseInt(value))}
-          >
-            <SelectTrigger className="w-[100px] h-8">
-              <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {YEAR_OPTIONS.map((year) => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <h3 className="font-display font-semibold text-lg">Comparaison</h3>
+          <div className="flex items-center gap-2">
+            <Select
+              value={comparisonYear.toString()}
+              onValueChange={(value) => setComparisonYear(parseInt(value))}
+            >
+              <SelectTrigger className="w-[90px] h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {YEAR_OPTIONS.filter(y => y !== selectedYear).map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-muted-foreground">vs</span>
+            <Select
+              value={selectedYear.toString()}
+              onValueChange={(value) => setSelectedYear(parseInt(value))}
+            >
+              <SelectTrigger className="w-[90px] h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {YEAR_OPTIONS.filter(y => y !== comparisonYear).map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="gap-1.5">
