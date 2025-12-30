@@ -209,6 +209,22 @@ html {
     }
   }
 
+  /* Stagger animation for nav items */
+  @keyframes navItemIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-nav-item-in {
+    animation: navItemIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
   /* Ripple effect */
   .ripple-effect {
     position: absolute;
