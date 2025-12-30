@@ -901,6 +901,16 @@ export type Database = {
         Returns: boolean
       }
       owns_site: { Args: { _site_id: string }; Returns: boolean }
+      rpc_monthly_revenue: {
+        Args: { p_site_id: string; p_year: number }
+        Returns: {
+          month: number
+          revenue_cb: number
+          revenue_esp: number
+          revenue_total: number
+          transactions_count: number
+        }[]
+      }
       user_belongs_to_org: {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
