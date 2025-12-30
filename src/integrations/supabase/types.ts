@@ -153,6 +153,39 @@ export type Database = {
           },
         ]
       }
+      churn_alert_settings: {
+        Row: {
+          alert_cooldown_hours: number
+          churn_threshold: number
+          created_at: string
+          email_enabled: boolean
+          id: string
+          last_alert_at: string | null
+          recipient_emails: string[]
+          updated_at: string
+        }
+        Insert: {
+          alert_cooldown_hours?: number
+          churn_threshold?: number
+          created_at?: string
+          email_enabled?: boolean
+          id?: string
+          last_alert_at?: string | null
+          recipient_emails?: string[]
+          updated_at?: string
+        }
+        Update: {
+          alert_cooldown_hours?: number
+          churn_threshold?: number
+          created_at?: string
+          email_enabled?: boolean
+          id?: string
+          last_alert_at?: string | null
+          recipient_emails?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
