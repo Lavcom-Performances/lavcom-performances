@@ -6,6 +6,15 @@ const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(Math.round(value));
+};
+
+const formatCurrencyDecimals = (value: number): string => {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(value);
@@ -26,39 +35,43 @@ export function generateSimulationReport(
 ): void {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 15;
+  const contentWidth = pageWidth - (margin * 2);
   
-  // Couleurs
-  const primaryColor: [number, number, number] = [59, 130, 246];
-  const successColor: [number, number, number] = [34, 197, 94];
-  const dangerColor: [number, number, number] = [239, 68, 68];
+  // Couleurs harmonisées
+  const primaryColor: [number, number, number] = [34, 82, 136]; // Bleu plus professionnel
+  const successColor: [number, number, number] = [22, 163, 74];
+  const dangerColor: [number, number, number] = [220, 38, 38];
   const darkColor: [number, number, number] = [30, 41, 59];
+  const lightBg: [number, number, number] = [248, 250, 252];
   
   let yPos = 20;
 
   // En-tête
   doc.setFillColor(...primaryColor);
-  doc.rect(0, 0, pageWidth, 45, 'F');
+  doc.rect(0, 0, pageWidth, 50, 'F');
   
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(22);
+  doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  doc.text('SIMULATION DE PROJET', pageWidth / 2, 18, { align: 'center' });
+  doc.text('SIMULATION DE PROJET', pageWidth / 2, 20, { align: 'center' });
   
-  doc.setFontSize(16);
+  doc.setFontSize(14);
   doc.setFont('helvetica', 'normal');
-  doc.text(project.name || 'Nouveau projet', pageWidth / 2, 28, { align: 'center' });
+  doc.text(project.name || 'Nouveau projet', pageWidth / 2, 32, { align: 'center' });
   
   doc.setFontSize(10);
-  doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, pageWidth / 2, 38, { align: 'center' });
+  doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, pageWidth / 2, 44, { align: 'center' });
   
-  yPos = 55;
+  yPos = 65;
 
   // Section 1 : Informations du projet
   doc.setTextColor(...darkColor);
-  doc.setFontSize(14);
+  doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
-  doc.text('1. INFORMATIONS DU PROJET', 14, yPos);
-  yPos += 8;
+  doc.text('1. INFORMATIONS DU PROJET', margin, yPos);
+  yPos += 10;
 
   autoTable(doc, {
     startY: yPos,
@@ -67,22 +80,38 @@ export function generateSimulationReport(
       ['Nom du projet', project.name || 'Non renseigné'],
       ['Localisation', project.location || 'Non renseignée'],
       ['Surface', `${project.surface_m2 || 0} m²`],
-      ['Zone', project.zone_type || 'Non renseignée'],
+      ['Zone', project.zone_type === 'urban' ? 'Urbain' : project.zone_type === 'suburban' ? 'Péri-urbain' : project.zone_type || 'Non renseignée'],
       ['Horaires envisagés', project.opening_hours_description || 'Non renseignés'],
     ],
-    theme: 'striped',
-    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
-    styles: { fontSize: 10, cellPadding: 4 },
-    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 }, 1: { cellWidth: 'auto' } },
+    theme: 'grid',
+    headStyles: { 
+      fillColor: primaryColor, 
+      textColor: [255, 255, 255],
+      fontSize: 10,
+      fontStyle: 'bold',
+      cellPadding: 5
+    },
+    bodyStyles: {
+      fontSize: 10,
+      cellPadding: 5,
+      lineColor: [226, 232, 240],
+      lineWidth: 0.5
+    },
+    alternateRowStyles: { fillColor: lightBg },
+    columnStyles: { 
+      0: { fontStyle: 'bold', cellWidth: 70 }, 
+      1: { cellWidth: contentWidth - 70 } 
+    },
+    margin: { left: margin, right: margin },
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 15;
+  yPos = (doc as any).lastAutoTable.finalY + 20;
 
   // Section 2 : Configuration des machines
-  doc.setFontSize(14);
+  doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
-  doc.text('2. CONFIGURATION DES MACHINES', 14, yPos);
-  yPos += 8;
+  doc.text('2. CONFIGURATION DES MACHINES', margin, yPos);
+  yPos += 10;
 
   // Lave-linge
   const washers = project.machines.filter(m => m.type === 'washer');
@@ -91,7 +120,7 @@ export function generateSimulationReport(
     return [
       `${m.capacity_kg} kg`,
       m.count.toString(),
-      formatCurrency(m.price),
+      formatCurrencyDecimals(m.price),
       m.cycles_day.toString(),
       formatCurrency(revenue?.turnover_month || 0)
     ];
@@ -100,20 +129,39 @@ export function generateSimulationReport(
   if (washerRows.length > 0) {
     washerRows.push([
       { content: 'Total lavage', colSpan: 4, styles: { fontStyle: 'bold', halign: 'right' } } as any,
-      { content: formatCurrency(results.total_wash_turnover_month), styles: { fontStyle: 'bold' } } as any
+      { content: formatCurrency(results.total_wash_turnover_month), styles: { fontStyle: 'bold', halign: 'right' } } as any
     ]);
   }
 
   autoTable(doc, {
     startY: yPos,
-    head: [['Lave-linge', 'Nombre', 'Prix/cycle', 'Cycles/jour', 'CA mensuel']],
-    body: washerRows.length > 0 ? washerRows : [['Aucun lave-linge configuré', '', '', '', '']],
-    theme: 'striped',
-    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
-    styles: { fontSize: 9, cellPadding: 3 },
+    head: [['Lave-linge', 'Qté', 'Prix/cycle', 'Cycles/j', 'CA mensuel']],
+    body: washerRows.length > 0 ? washerRows : [['Aucun lave-linge', '', '', '', '']],
+    theme: 'grid',
+    headStyles: { 
+      fillColor: primaryColor, 
+      textColor: [255, 255, 255],
+      fontSize: 9,
+      fontStyle: 'bold',
+      cellPadding: 4,
+      halign: 'center'
+    },
+    bodyStyles: {
+      fontSize: 9,
+      cellPadding: 4,
+      halign: 'center',
+      lineColor: [226, 232, 240],
+      lineWidth: 0.5
+    },
+    alternateRowStyles: { fillColor: lightBg },
+    columnStyles: { 
+      0: { halign: 'left' },
+      4: { halign: 'right' }
+    },
+    margin: { left: margin, right: margin },
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 5;
+  yPos = (doc as any).lastAutoTable.finalY + 8;
 
   // Sèche-linge
   const dryers = project.machines.filter(m => m.type === 'dryer');
@@ -122,7 +170,7 @@ export function generateSimulationReport(
     return [
       `${m.capacity_kg} kg`,
       m.count.toString(),
-      formatCurrency(m.price),
+      formatCurrencyDecimals(m.price),
       m.cycles_day.toString(),
       formatCurrency(revenue?.turnover_month || 0)
     ];
@@ -131,26 +179,45 @@ export function generateSimulationReport(
   if (dryerRows.length > 0) {
     dryerRows.push([
       { content: 'Total séchage', colSpan: 4, styles: { fontStyle: 'bold', halign: 'right' } } as any,
-      { content: formatCurrency(results.total_dry_turnover_month), styles: { fontStyle: 'bold' } } as any
+      { content: formatCurrency(results.total_dry_turnover_month), styles: { fontStyle: 'bold', halign: 'right' } } as any
     ]);
   }
 
   autoTable(doc, {
     startY: yPos,
-    head: [['Sèche-linge', 'Nombre', 'Prix/cycle', 'Cycles/jour', 'CA mensuel']],
-    body: dryerRows.length > 0 ? dryerRows : [['Aucun sèche-linge configuré', '', '', '', '']],
-    theme: 'striped',
-    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
-    styles: { fontSize: 9, cellPadding: 3 },
+    head: [['Sèche-linge', 'Qté', 'Prix/cycle', 'Cycles/j', 'CA mensuel']],
+    body: dryerRows.length > 0 ? dryerRows : [['Aucun sèche-linge', '', '', '', '']],
+    theme: 'grid',
+    headStyles: { 
+      fillColor: primaryColor, 
+      textColor: [255, 255, 255],
+      fontSize: 9,
+      fontStyle: 'bold',
+      cellPadding: 4,
+      halign: 'center'
+    },
+    bodyStyles: {
+      fontSize: 9,
+      cellPadding: 4,
+      halign: 'center',
+      lineColor: [226, 232, 240],
+      lineWidth: 0.5
+    },
+    alternateRowStyles: { fillColor: lightBg },
+    columnStyles: { 
+      0: { halign: 'left' },
+      4: { halign: 'right' }
+    },
+    margin: { left: margin, right: margin },
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 15;
+  yPos = (doc as any).lastAutoTable.finalY + 20;
 
   // Section 3 : Charges
-  doc.setFontSize(14);
+  doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
-  doc.text('3. CHARGES MENSUELLES', 14, yPos);
-  yPos += 8;
+  doc.text('3. CHARGES MENSUELLES', margin, yPos);
+  yPos += 10;
 
   // Charges fixes
   const fixedCostsRows = project.fixed_costs
@@ -159,20 +226,36 @@ export function generateSimulationReport(
   
   fixedCostsRows.push([
     { content: 'TOTAL CHARGES FIXES', styles: { fontStyle: 'bold' } } as any,
-    { content: formatCurrency(results.fixed_costs_total), styles: { fontStyle: 'bold' } } as any
+    { content: formatCurrency(results.fixed_costs_total), styles: { fontStyle: 'bold', halign: 'right' } } as any
   ]);
 
   autoTable(doc, {
     startY: yPos,
     head: [['Charges fixes', 'Montant']],
     body: fixedCostsRows,
-    theme: 'striped',
-    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
-    styles: { fontSize: 10, cellPadding: 4 },
-    columnStyles: { 0: { cellWidth: 100 }, 1: { halign: 'right' } },
+    theme: 'grid',
+    headStyles: { 
+      fillColor: primaryColor, 
+      textColor: [255, 255, 255],
+      fontSize: 10,
+      fontStyle: 'bold',
+      cellPadding: 5
+    },
+    bodyStyles: {
+      fontSize: 10,
+      cellPadding: 5,
+      lineColor: [226, 232, 240],
+      lineWidth: 0.5
+    },
+    alternateRowStyles: { fillColor: lightBg },
+    columnStyles: { 
+      0: { cellWidth: 120 }, 
+      1: { halign: 'right', cellWidth: contentWidth - 120 } 
+    },
+    margin: { left: margin, right: margin },
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 5;
+  yPos = (doc as any).lastAutoTable.finalY + 8;
 
   // Charges variables
   const variableCostsRows = project.variable_costs
@@ -181,17 +264,33 @@ export function generateSimulationReport(
   
   variableCostsRows.push([
     { content: 'TOTAL CHARGES VARIABLES', styles: { fontStyle: 'bold' } } as any,
-    { content: formatPercent(results.var_total_percent), styles: { fontStyle: 'bold' } } as any
+    { content: formatPercent(results.var_total_percent), styles: { fontStyle: 'bold', halign: 'right' } } as any
   ]);
 
   autoTable(doc, {
     startY: yPos,
     head: [['Charges variables', 'Taux']],
     body: variableCostsRows,
-    theme: 'striped',
-    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
-    styles: { fontSize: 10, cellPadding: 4 },
-    columnStyles: { 0: { cellWidth: 100 }, 1: { halign: 'right' } },
+    theme: 'grid',
+    headStyles: { 
+      fillColor: primaryColor, 
+      textColor: [255, 255, 255],
+      fontSize: 10,
+      fontStyle: 'bold',
+      cellPadding: 5
+    },
+    bodyStyles: {
+      fontSize: 10,
+      cellPadding: 5,
+      lineColor: [226, 232, 240],
+      lineWidth: 0.5
+    },
+    alternateRowStyles: { fillColor: lightBg },
+    columnStyles: { 
+      0: { cellWidth: 120 }, 
+      1: { halign: 'right', cellWidth: contentWidth - 120 } 
+    },
+    margin: { left: margin, right: margin },
   });
 
   // Nouvelle page pour les résultats
@@ -200,47 +299,65 @@ export function generateSimulationReport(
 
   // Section 4 : Résultats
   doc.setFillColor(...primaryColor);
-  doc.rect(0, 0, pageWidth, 25, 'F');
+  doc.rect(0, 0, pageWidth, 30, 'F');
   
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
-  doc.text('RÉSULTATS DE LA SIMULATION', pageWidth / 2, 16, { align: 'center' });
+  doc.text('RÉSULTATS DE LA SIMULATION', pageWidth / 2, 20, { align: 'center' });
   
-  yPos = 40;
+  yPos = 50;
 
   // Récapitulatif des recettes
   doc.setTextColor(...darkColor);
-  doc.setFontSize(14);
+  doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
-  doc.text('4. CHIFFRE D\'AFFAIRES PRÉVISIONNEL', 14, yPos);
-  yPos += 8;
+  doc.text('4. CHIFFRE D\'AFFAIRES PRÉVISIONNEL', margin, yPos);
+  yPos += 10;
 
   autoTable(doc, {
     startY: yPos,
-    head: [['Poste', 'Montant mensuel', 'Montant annuel']],
+    head: [['Poste', 'Mensuel', 'Annuel']],
     body: [
       ['CA Lavage', formatCurrency(results.total_wash_turnover_month), formatCurrency(results.total_wash_turnover_month * 12)],
       ['CA Séchage', formatCurrency(results.total_dry_turnover_month), formatCurrency(results.total_dry_turnover_month * 12)],
       [
         { content: 'CA TOTAL', styles: { fontStyle: 'bold' } },
-        { content: formatCurrency(results.project_turnover_month), styles: { fontStyle: 'bold' } },
-        { content: formatCurrency(results.project_turnover_month * 12), styles: { fontStyle: 'bold' } }
+        { content: formatCurrency(results.project_turnover_month), styles: { fontStyle: 'bold', halign: 'right' } },
+        { content: formatCurrency(results.project_turnover_month * 12), styles: { fontStyle: 'bold', halign: 'right' } }
       ],
     ],
-    theme: 'striped',
-    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
-    styles: { fontSize: 10, cellPadding: 4 },
-    columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' } },
+    theme: 'grid',
+    headStyles: { 
+      fillColor: primaryColor, 
+      textColor: [255, 255, 255],
+      fontSize: 10,
+      fontStyle: 'bold',
+      cellPadding: 6,
+      halign: 'center'
+    },
+    bodyStyles: {
+      fontSize: 10,
+      cellPadding: 6,
+      lineColor: [226, 232, 240],
+      lineWidth: 0.5
+    },
+    alternateRowStyles: { fillColor: lightBg },
+    columnStyles: { 
+      0: { cellWidth: 80 },
+      1: { halign: 'right' }, 
+      2: { halign: 'right' } 
+    },
+    margin: { left: margin, right: margin },
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 15;
+  yPos = (doc as any).lastAutoTable.finalY + 20;
 
   // Seuil de rentabilité
-  doc.setFontSize(14);
+  doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
-  doc.text('5. SEUIL DE RENTABILITÉ', 14, yPos);
-  yPos += 8;
+  doc.text('5. SEUIL DE RENTABILITÉ', margin, yPos);
+  yPos += 10;
 
   autoTable(doc, {
     startY: yPos,
@@ -250,21 +367,37 @@ export function generateSimulationReport(
       ['Seuil de rentabilité (CA annuel)', results.break_even_revenue_monthly ? formatCurrency(results.break_even_revenue_monthly * 12) : 'N/A'],
       ['Cycles nécessaires / mois', formatNumber(results.break_even_cycles_month, 0)],
       ['Cycles nécessaires / jour', formatNumber(results.break_even_cycles_day, 1)],
-      ['Recette moyenne par cycle', formatCurrency(results.avg_revenue_per_cycle)],
+      ['Recette moyenne par cycle', formatCurrencyDecimals(results.avg_revenue_per_cycle)],
     ],
-    theme: 'striped',
-    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
-    styles: { fontSize: 10, cellPadding: 4 },
-    columnStyles: { 0: { cellWidth: 100 }, 1: { halign: 'right' } },
+    theme: 'grid',
+    headStyles: { 
+      fillColor: primaryColor, 
+      textColor: [255, 255, 255],
+      fontSize: 10,
+      fontStyle: 'bold',
+      cellPadding: 6
+    },
+    bodyStyles: {
+      fontSize: 10,
+      cellPadding: 6,
+      lineColor: [226, 232, 240],
+      lineWidth: 0.5
+    },
+    alternateRowStyles: { fillColor: lightBg },
+    columnStyles: { 
+      0: { cellWidth: 120 }, 
+      1: { halign: 'right', cellWidth: contentWidth - 120 } 
+    },
+    margin: { left: margin, right: margin },
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 15;
+  yPos = (doc as any).lastAutoTable.finalY + 20;
 
   // Compte de résultat prévisionnel
-  doc.setFontSize(14);
+  doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
-  doc.text('6. COMPTE DE RÉSULTAT PRÉVISIONNEL', 14, yPos);
-  yPos += 8;
+  doc.text('6. COMPTE DE RÉSULTAT PRÉVISIONNEL', margin, yPos);
+  yPos += 10;
 
   const isProfitable = results.estimated_profit_month >= 0;
   
@@ -278,60 +411,112 @@ export function generateSimulationReport(
         `- ${formatCurrency(results.variable_costs_total)}`, 
         `- ${formatCurrency(results.variable_costs_total * 12)}`
       ],
-      ['Marge sur coûts variables', formatCurrency(results.project_turnover_month - results.variable_costs_total), formatCurrency((results.project_turnover_month - results.variable_costs_total) * 12)],
-      ['Charges fixes', `- ${formatCurrency(results.fixed_costs_total)}`, `- ${formatCurrency(results.fixed_costs_total * 12)}`],
+      [
+        'Marge sur coûts variables', 
+        formatCurrency(results.project_turnover_month - results.variable_costs_total), 
+        formatCurrency((results.project_turnover_month - results.variable_costs_total) * 12)
+      ],
+      [
+        'Charges fixes', 
+        `- ${formatCurrency(results.fixed_costs_total)}`, 
+        `- ${formatCurrency(results.fixed_costs_total * 12)}`
+      ],
       [
         { content: 'RÉSULTAT NET ESTIMÉ', styles: { fontStyle: 'bold' } },
         { 
           content: formatCurrency(results.estimated_profit_month), 
           styles: { 
             fontStyle: 'bold',
-            textColor: isProfitable ? successColor : dangerColor
+            textColor: isProfitable ? successColor : dangerColor,
+            halign: 'right'
           } 
         },
         { 
           content: formatCurrency(results.estimated_profit_month * 12), 
           styles: { 
             fontStyle: 'bold',
-            textColor: isProfitable ? successColor : dangerColor
+            textColor: isProfitable ? successColor : dangerColor,
+            halign: 'right'
           } 
         }
       ],
     ],
-    theme: 'striped',
-    headStyles: { fillColor: primaryColor, textColor: [255, 255, 255] },
-    styles: { fontSize: 10, cellPadding: 4 },
-    columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' } },
+    theme: 'grid',
+    headStyles: { 
+      fillColor: primaryColor, 
+      textColor: [255, 255, 255],
+      fontSize: 10,
+      fontStyle: 'bold',
+      cellPadding: 6,
+      halign: 'center'
+    },
+    bodyStyles: {
+      fontSize: 10,
+      cellPadding: 6,
+      lineColor: [226, 232, 240],
+      lineWidth: 0.5
+    },
+    alternateRowStyles: { fillColor: lightBg },
+    columnStyles: { 
+      0: { cellWidth: 90 },
+      1: { halign: 'right' }, 
+      2: { halign: 'right' } 
+    },
+    margin: { left: margin, right: margin },
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 15;
+  yPos = (doc as any).lastAutoTable.finalY + 20;
 
   // Conclusion
   const conclusionColor = isProfitable ? successColor : dangerColor;
   doc.setFillColor(...conclusionColor);
-  doc.roundedRect(14, yPos, pageWidth - 28, 30, 3, 3, 'F');
+  doc.roundedRect(margin, yPos, contentWidth, 40, 4, 4, 'F');
   
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(12);
+  doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   
   if (isProfitable) {
-    doc.text('✓ Projet au-dessus du seuil de rentabilité', pageWidth / 2, yPos + 12, { align: 'center' });
-    doc.setFontSize(10);
+    doc.text('✓ Projet au-dessus du seuil de rentabilité', pageWidth / 2, yPos + 14, { align: 'center' });
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Avec ces hypothèses, votre projet génère un bénéfice estimé de ${formatCurrency(results.estimated_profit_month)}/mois.`, pageWidth / 2, yPos + 22, { align: 'center' });
+    doc.text(
+      `Avec ces hypothèses, votre projet génère un bénéfice estimé de ${formatCurrency(results.estimated_profit_month)}/mois,`,
+      pageWidth / 2, yPos + 26, { align: 'center' }
+    );
+    doc.text(
+      `soit ${formatCurrency(results.estimated_profit_month * 12)}/an.`,
+      pageWidth / 2, yPos + 35, { align: 'center' }
+    );
   } else {
-    doc.text('⚠ Projet en dessous du seuil de rentabilité', pageWidth / 2, yPos + 12, { align: 'center' });
-    doc.setFontSize(10);
+    doc.text('⚠ Projet en dessous du seuil de rentabilité', pageWidth / 2, yPos + 14, { align: 'center' });
+    doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    doc.text('Ajustez vos paramètres (loyer, prix, machines, fréquentation...) pour améliorer la rentabilité.', pageWidth / 2, yPos + 22, { align: 'center' });
+    doc.text(
+      'Ajustez vos paramètres (loyer, prix, machines, fréquentation...)',
+      pageWidth / 2, yPos + 26, { align: 'center' }
+    );
+    doc.text(
+      'pour améliorer la rentabilité de votre projet.',
+      pageWidth / 2, yPos + 35, { align: 'center' }
+    );
   }
 
   // Pied de page
-  yPos = doc.internal.pageSize.getHeight() - 20;
-  doc.setTextColor(150, 150, 150);
+  doc.setTextColor(120, 120, 120);
   doc.setFontSize(8);
-  doc.text('Simulation réalisée avec Lavcom Performances | Ces données sont des estimations basées sur vos hypothèses.', pageWidth / 2, yPos, { align: 'center' });
+  doc.text(
+    'Simulation réalisée avec Lavcom Performances',
+    pageWidth / 2, 
+    pageHeight - 15, 
+    { align: 'center' }
+  );
+  doc.text(
+    'Ces données sont des estimations basées sur vos hypothèses et ne constituent pas un engagement.',
+    pageWidth / 2, 
+    pageHeight - 10, 
+    { align: 'center' }
+  );
 
   // Sauvegarder le PDF
   const fileName = `simulation_${project.name?.replace(/\s+/g, '_') || 'projet'}_${new Date().toISOString().split('T')[0]}.pdf`;
