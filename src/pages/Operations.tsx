@@ -31,8 +31,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { OperationsStatsGrid } from "@/components/operations/OperationsStatsGrid";
-import { CalendarKPIBlock } from "@/components/operations/CalendarKPIBlock";
+import { OperationsKPIRow } from "@/components/operations/OperationsKPIRow";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
 import { ImportHistoryDialog } from "@/components/operations/ImportHistoryDialog";
 import { OperationsEmptyState } from "@/components/operations/OperationsEmptyState";
@@ -775,11 +774,9 @@ export default function Operations() {
         </div>
       </FiltersCard>
 
-      {/* Calendar KPI Block - Fixed (independent of filters) */}
-      <CalendarKPIBlock siteId={selectedSite?.id} />
-
-      {/* Stats Grid - Graph + Machines */}
-      <OperationsStatsGrid 
+      {/* KPI Row - CA calendaire + Graph + Machines sur une ligne */}
+      <OperationsKPIRow 
+        siteId={selectedSite?.id}
         hourlyData={hourlyData}
         machineCounts={machineCounts}
       />
