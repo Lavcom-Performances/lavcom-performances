@@ -250,9 +250,80 @@ Deno.serve(async (req) => {
         .eq("id", logId);
     }
     
+    // Check for consecutive failures and send alert
+    await checkAndSendFailureAlert(supabase, supabaseUrl, supabaseServiceKey, "compute-analytics-cron", errorMessage);
+    
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
+
+// Helper function to check consecutive failures and send alert email
+async function checkAndSendFailureAlert(
+  supabase: any,
+  supabaseUrl: string,
+  supabaseServiceKey: string,
+  jobName: string,
+  lastError: string
+) {
+  try {
+    // Get recent logs for this job (last 10)
+    const { data: recentLogs, error } = await supabase
+      .from("cron_logs")
+      .select("status, started_at")
+      .eq("job_name", jobName)
+      .order("started_at", { ascending: false })
+      .limit(10);
+
+    if (error || !recentLogs) {
+      console.error("[compute-analytics-cron] Failed to fetch recent logs for alert check:", error);
+      return;
+    }
+
+    // Count consecutive failures from the most recent
+    let consecutiveFailures = 0;
+    for (const log of recentLogs) {
+      if (log.status === "error" || log.status === "failed") {
+        consecutiveFailures++;
+      } else if (log.status === "success" || log.status === "partial") {
+        break; // Stop counting at first success
+      }
+    }
+
+    console.log(`[compute-analytics-cron] Consecutive failures: ${consecutiveFailures}`);
+
+    // Send alert if 3 or more consecutive failures
+    if (consecutiveFailures >= 3) {
+      console.log(`[compute-analytics-cron] Sending failure alert (${consecutiveFailures} consecutive failures)`);
+      
+      try {
+        const alertResponse = await fetch(`${supabaseUrl}/functions/v1/send-cron-alert`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({
+            job_name: jobName,
+            consecutive_failures: consecutiveFailures,
+            last_error: lastError,
+            failed_at: new Date().toISOString(),
+          }),
+        });
+
+        if (alertResponse.ok) {
+          console.log("[compute-analytics-cron] Failure alert sent successfully");
+        } else {
+          const errorText = await alertResponse.text();
+          console.error("[compute-analytics-cron] Failed to send alert:", errorText);
+        }
+      } catch (alertError) {
+        console.error("[compute-analytics-cron] Error sending alert:", alertError);
+      }
+    }
+  } catch (err) {
+    console.error("[compute-analytics-cron] Error in checkAndSendFailureAlert:", err);
+  }
+}
