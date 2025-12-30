@@ -1,17 +1,16 @@
-import { useState } from "react";
-import { ChartFilters } from "@/components/dashboard/ChartFilters";
+import { useDateRange } from "@/hooks/useDateRange";
+import { useHeatmapData } from "@/hooks/useChartsData";
+import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { SalesHeatmap } from "@/components/dashboard/SalesHeatmap";
-import { realHeatmapData } from "@/data/heatmapData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SalesHeatmapPage() {
-  const [selectedYear, setSelectedYear] = useState("2025");
-  const [selectedMonth, setSelectedMonth] = useState("01");
-  const [selectedMachine, setSelectedMachine] = useState("all");
+  const { dateRange, setDateRange } = useDateRange();
+  const { data: heatmapData, isLoading } = useHeatmapData();
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
             Heatmap des ventes
@@ -20,23 +19,25 @@ export default function SalesHeatmapPage() {
             Volume de cycles par jour et heure
           </p>
         </div>
-        
-        <ChartFilters
-          selectedYear={selectedYear}
-          onYearChange={setSelectedYear}
-          selectedMonth={selectedMonth}
-          onMonthChange={setSelectedMonth}
-          selectedMachine={selectedMachine}
-          onMachineChange={setSelectedMachine}
-          showYearFilter
-          showMonthFilter
-          showMachineFilter
+        <DateRangePicker 
+          dateRange={dateRange} 
+          onDateChange={setDateRange}
+          showPresets
         />
       </div>
 
-      {/* Chart */}
       <div className="max-w-4xl">
-        <SalesHeatmap data={realHeatmapData} />
+        {isLoading ? (
+          <div className="kpi-card h-[400px]">
+            <Skeleton className="h-full w-full" />
+          </div>
+        ) : !heatmapData || heatmapData.length === 0 ? (
+          <div className="kpi-card h-[400px] flex items-center justify-center text-muted-foreground">
+            Aucune donnée disponible pour la période sélectionnée
+          </div>
+        ) : (
+          <SalesHeatmap data={heatmapData} />
+        )}
       </div>
     </div>
   );
