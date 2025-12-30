@@ -1,0 +1,11 @@
+Events
+
+id,type,name,payment_mode,amount,price,change,detail,date
+"edge001","vend","Lave linge 1","cb",4.50,4.50,0,"montant euros","2025-12-22 08:00:00"
+"edge002","vend","Seche linge 1","esp","3,00","3,00",0,"virgule","2025-12-22 09:00:00"
+"edge003","vend","Lessive","cb",1.5€,1.5€,0,"avec symbole","2025-12-22 10:00:00"
+"edge004","reset","","",0,0,0,"auto","2025-12-22 05:00:00"
+"edge005","vend","Lave linge 2","cb",,450,0,"montant vide","2025-12-22 11:00:00"
+"edge006","vend","Seche linge 2","esp",300,,0,"price vide","2025-12-22 12:00:00"
+"edge007","vend","Lave linge 3","inconnu",500,500,0,"mode inconnu","2025-12-22 13:00:00"
+"edge008","vend","Seche linge 3","cb",850,850,0,"","22/12/2025 14:00"
