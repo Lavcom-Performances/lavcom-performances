@@ -22,7 +22,8 @@ import {
   Activity,
   MapPin,
   FileText,
-  Eye
+  Eye,
+  Download
 } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -172,6 +173,32 @@ export default function AdminDashboard() {
     refetchGlobal();
     refetchRevenue();
     refetchAudit();
+  };
+
+  // Export audit logs to CSV
+  const exportAuditLogsCSV = (logs: AuditLog[]) => {
+    const headers = ['Date', 'Action', 'Détails', 'Admin ID'];
+    const rows = logs.map(log => [
+      format(new Date(log.created_at), 'yyyy-MM-dd HH:mm:ss'),
+      ACTION_LABELS[log.action]?.label || log.action,
+      Object.keys(log.details).length > 0 ? JSON.stringify(log.details) : '',
+      log.admin_user_id
+    ]);
+    
+    const csvContent = [
+      headers.join(';'),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
+    ].join('\n');
+    
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `audit-logs-${format(new Date(), 'yyyy-MM-dd-HHmm')}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Prepare chart data
@@ -520,16 +547,18 @@ export default function AdminDashboard() {
 
           <TabsContent value="audit" className="space-y-4">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Journal d'audit
-                </CardTitle>
-                <CardDescription>Historique des actions administrateur (100 dernières)</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Journal d'audit
+                  </CardTitle>
+                  <CardDescription>Historique des actions administrateur (100 dernières)</CardDescription>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Filters */}
-                <div className="flex flex-wrap gap-4 p-4 rounded-lg bg-muted/50">
+                <div className="flex flex-wrap items-end gap-4 p-4 rounded-lg bg-muted/50">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-muted-foreground">Type d'action</label>
                     <Select value={auditActionFilter} onValueChange={setAuditActionFilter}>
@@ -580,6 +609,27 @@ export default function AdminDashboard() {
                       </PopoverContent>
                     </Popover>
                   </div>
+
+                  {/* Export button */}
+                  <Button
+                    variant="outline"
+                    className="gap-2"
+                    onClick={() => {
+                      const filteredLogs = (auditLogs || []).filter(log => {
+                        if (auditActionFilter !== 'all' && log.action !== auditActionFilter) return false;
+                        if (auditDateRange?.from && auditDateRange?.to) {
+                          const logDate = new Date(log.created_at);
+                          if (logDate < auditDateRange.from || logDate > auditDateRange.to) return false;
+                        }
+                        return true;
+                      });
+                      exportAuditLogsCSV(filteredLogs);
+                    }}
+                    disabled={!auditLogs || auditLogs.length === 0}
+                  >
+                    <Download className="h-4 w-4" />
+                    Exporter CSV
+                  </Button>
                 </div>
 
                 {/* Table */}
@@ -592,16 +642,10 @@ export default function AdminDashboard() {
                 ) : (() => {
                   // Apply filters
                   const filteredLogs = (auditLogs || []).filter(log => {
-                    // Action filter
-                    if (auditActionFilter !== 'all' && log.action !== auditActionFilter) {
-                      return false;
-                    }
-                    // Date filter
+                    if (auditActionFilter !== 'all' && log.action !== auditActionFilter) return false;
                     if (auditDateRange?.from && auditDateRange?.to) {
                       const logDate = new Date(log.created_at);
-                      if (logDate < auditDateRange.from || logDate > auditDateRange.to) {
-                        return false;
-                      }
+                      if (logDate < auditDateRange.from || logDate > auditDateRange.to) return false;
                     }
                     return true;
                   });
