@@ -10,6 +10,25 @@ function isEventsParsedRow(row: ParsedRow): row is EventsParsedRow {
   return 'source' in row && (row as EventsParsedRow).source === 'events_csv';
 }
 
+/**
+ * Generate a fingerprint hash for deduplication
+ * Uses: site_id + date + mode + amount + machine
+ */
+async function generateImportHash(
+  siteId: string,
+  date: string,
+  mode: string | null,
+  amountCents: number,
+  machine: string | null
+): Promise<string> {
+  const data = `${siteId}|${date}|${mode || ''}|${amountCents}|${machine || ''}`;
+  const encoder = new TextEncoder();
+  const dataBuffer = encoder.encode(data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 export function useOperationsImport() {
   const { user } = useAuth();
   const [isImporting, setIsImporting] = useState(false);
@@ -63,20 +82,31 @@ export function useOperationsImport() {
           throw new Error("Erreur lors de la création du batch d'import");
         }
 
-        // Prepare operations for insert
-        const operations = validRows.map((row) => {
+        // Prepare operations for insert with import_hash
+        const operations = await Promise.all(validRows.map(async (row) => {
+          const dateStr = row.date ? format(row.date, "yyyy-MM-dd") : null;
+          const amountCents = Math.round((row.amount || 0) * 100);
+          const mode = row.paymentMode?.toUpperCase() || null;
+          const machine = row.machine || null;
+          
+          // Generate deduplication hash
+          const importHash = dateStr 
+            ? await generateImportHash(siteId, dateStr, mode, amountCents, machine)
+            : null;
+
           // Base operation data
           const baseOperation = {
             user_id: user.id,
             site_id: siteId,
-            operation_date: row.date ? format(row.date, "yyyy-MM-dd") : null,
+            operation_date: dateStr,
             operation_time: row.time || null,
             amount: row.amount,
-            machine: row.machine || null,
+            machine: machine,
             program: row.program || null,
-            payment_mode: row.paymentMode || null,
+            payment_mode: mode,
             raw_data: { original: row.rawData },
             import_batch_id: batch.id,
+            import_hash: importHash,
           };
           
           // Extended fields for Events format
@@ -96,7 +126,7 @@ export function useOperationsImport() {
             ...baseOperation,
             source: 'manual',
           };
-        });
+        }));
 
         // Insert operations in batches of 500
         const BATCH_SIZE = 500;
