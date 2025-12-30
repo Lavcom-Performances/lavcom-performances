@@ -1,23 +1,16 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StepMachines } from "@/components/simulation/StepMachines";
-import { 
-  SimulationProject, 
-  defaultSimulationProject,
-  calculateSimulationResults 
-} from "@/types/simulation";
+import { calculateSimulationResults } from "@/types/simulation";
+import { useSimulationProject } from "@/hooks/useSimulationProject";
 
 export default function SimulationLocalPage() {
   const navigate = useNavigate();
-  const [project, setProject] = useState<SimulationProject>(defaultSimulationProject);
+  const { project, updateProject } = useSimulationProject();
 
   const results = useMemo(() => calculateSimulationResults(project), [project]);
-
-  const updateProject = (updates: Partial<SimulationProject>) => {
-    setProject(prev => ({ ...prev, ...updates }));
-  };
 
   const handlePrevious = () => {
     navigate("/simulation");

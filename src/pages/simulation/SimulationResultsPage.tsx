@@ -1,18 +1,15 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, FileText } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { StepResults } from "@/components/simulation/StepResults";
 import { ExpertSection } from "@/components/landing/ExpertSection";
-import { 
-  SimulationProject, 
-  defaultSimulationProject,
-  calculateSimulationResults 
-} from "@/types/simulation";
+import { calculateSimulationResults } from "@/types/simulation";
+import { useSimulationProject } from "@/hooks/useSimulationProject";
 
 export default function SimulationResultsPage() {
   const navigate = useNavigate();
-  const [project, setProject] = useState<SimulationProject>(defaultSimulationProject);
+  const { project } = useSimulationProject();
 
   const results = useMemo(() => calculateSimulationResults(project), [project]);
 
