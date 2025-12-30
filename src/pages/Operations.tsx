@@ -4,6 +4,7 @@ import { DateRange } from "react-day-picker";
 import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO, getDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { OperationsStatsGrid } from "@/components/operations/OperationsStatsGrid";
+import { CalendarKPIBlock } from "@/components/operations/CalendarKPIBlock";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
 import { ImportHistoryDialog } from "@/components/operations/ImportHistoryDialog";
 import { OperationsEmptyState } from "@/components/operations/OperationsEmptyState";
@@ -75,6 +77,7 @@ export default function Operations() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { isExpert } = useViewMode();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { sites, getDefaultSite } = useSites();
   
   // Get site from URL or default
@@ -561,8 +564,9 @@ export default function Operations() {
   };
 
   const handleImportComplete = (count: number) => {
-    // Refresh operations after import
+    // Refresh operations and calendar KPIs after import
     refetch();
+    queryClient.invalidateQueries({ queryKey: ["operationsCalendarKpis", selectedSite?.id] });
     setTimeout(() => {
       setIsImportDialogOpen(false);
     }, 2000);
@@ -770,6 +774,9 @@ export default function Operations() {
           </Select>
         </div>
       </FiltersCard>
+
+      {/* Calendar KPI Block - Fixed (independent of filters) */}
+      <CalendarKPIBlock siteId={selectedSite?.id} />
 
       {/* Stats Grid - 3 blocs always visible */}
       <OperationsStatsGrid 
