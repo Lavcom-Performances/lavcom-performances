@@ -1,8 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { DateRange } from "react-day-picker";
-import { subDays, parseISO } from "date-fns";
+import { subDays, parseISO, format } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { 
   Euro, 
@@ -17,6 +19,7 @@ import {
   Settings,
   ArrowLeft,
   FileDown,
+  RefreshCw,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { toast } from "sonner";
@@ -86,6 +89,7 @@ export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isExpert } = useViewMode();
+  const { user } = useAuth();
   const { sites, getDefaultSite } = useSites();
   
   // Get site from URL or default
@@ -164,8 +168,40 @@ export default function Dashboard() {
     }
   };
 
-  const { stats, isLoading, isEmpty } = useDashboardStats(dateRange, selectedSite?.id);
+  const { stats, isLoading, isEmpty, refetch, dataSource } = useDashboardStats(dateRange, selectedSite?.id);
   const { goals } = useUserGoals(selectedSite?.id);
+  const [isRecalculating, setIsRecalculating] = useState(false);
+
+  // Handle analytics recalculation
+  const handleRecalculateAnalytics = async () => {
+    if (!selectedSite?.id || !user) return;
+    
+    setIsRecalculating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("compute-analytics", {
+        body: {
+          site_id: selectedSite.id,
+          user_id: user.id,
+          start_date: dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : undefined,
+          end_date: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
+        },
+      });
+
+      if (error) throw error;
+
+      toast.success(t('app:dashboard.analytics.recalculated', { 
+        count: data?.operations_processed || 0 
+      }));
+      
+      // Refetch dashboard data
+      await refetch();
+    } catch (err: any) {
+      console.error("Error recalculating analytics:", err);
+      toast.error(t('app:dashboard.analytics.error'));
+    } finally {
+      setIsRecalculating(false);
+    }
+  };
 
   // Format currency
   const formatCurrency = (value: number) => {
@@ -312,7 +348,21 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleRecalculateAnalytics}
+              disabled={isRecalculating || !selectedSite}
+              className="gap-2"
+            >
+              {isRecalculating ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              <span className="hidden sm:inline">{t('app:dashboard.analytics.refresh')}</span>
+            </Button>
             <Button 
               variant="outline" 
               size="sm" 

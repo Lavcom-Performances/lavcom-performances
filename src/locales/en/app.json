@@ -960,6 +960,11 @@
       "generating": "Generating PDF...",
       "error": "Error generating PDF"
     },
+    "analytics": {
+      "refresh": "Refresh",
+      "recalculated": "Analytics recalculated ({{count}} operations processed)",
+      "error": "Error recalculating analytics"
+    },
     "allSites": "All laundries"
   },
   "operations": {

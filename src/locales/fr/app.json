@@ -960,6 +960,11 @@
       "generating": "Génération du PDF en cours...",
       "error": "Erreur lors de la génération du PDF"
     },
+    "analytics": {
+      "refresh": "Recalculer",
+      "recalculated": "Analytics recalculés ({{count}} opérations traitées)",
+      "error": "Erreur lors du recalcul des analytics"
+    },
     "allSites": "Toutes les laveries"
   },
   "operations": {
