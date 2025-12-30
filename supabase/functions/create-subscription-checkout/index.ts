@@ -13,22 +13,34 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   console.log(`[CREATE-SUBSCRIPTION-CHECKOUT] ${step}${detailsStr}`);
 };
 
-// Price IDs for subscription plans
+// ============================================
+// ALLOWLIST: Prix autorisés pour "Accès Lavcom Performances"
+// ============================================
+const ALLOWED_PRICE_IDS: Record<string, { tier: string; interval: "month" | "year" }> = {
+  // Tier 1 (1-2 laveries)
+  "price_1ShGd1B849ikvSjDddCJJA4c": { tier: "tier1", interval: "month" }, // 29€/mois
+  "price_1ShGinB849ikvSjDbjYUTkdw": { tier: "tier1", interval: "year" },  // 290€/an
+  // Tier 2 (3-5 laveries)
+  "price_1ShGeVB849ikvSjD3LIR8UtE": { tier: "tier2", interval: "month" }, // 25€/mois/laverie
+  "price_1ShGjEB849ikvSjD4VnQGXQO": { tier: "tier2", interval: "year" },  // 250€/an/laverie
+  // Tier 3 (6+ laveries)
+  "price_1ShGetB849ikvSjDs2aIkeYS": { tier: "tier3", interval: "month" }, // 21€/mois/laverie
+  "price_1ShGjaB849ikvSjDIWARPdI2": { tier: "tier3", interval: "year" },  // 210€/an/laverie
+};
+
+// Price IDs for subscription plans (legacy mapping from plan + laundryCount)
 const SUBSCRIPTION_PRICES = {
-  // 1-2 laundries
   tier1: {
-    monthly: "price_1ShGd1B849ikvSjDddCJJA4c", // 29€/month
-    annual: "price_1ShGinB849ikvSjDbjYUTkdw",  // 290€/year
+    monthly: "price_1ShGd1B849ikvSjDddCJJA4c",
+    annual: "price_1ShGinB849ikvSjDbjYUTkdw",
   },
-  // 3-5 laundries  
   tier2: {
-    monthly: "price_1ShGeVB849ikvSjD3LIR8UtE", // 25€/month per laundry
-    annual: "price_1ShGjEB849ikvSjD4VnQGXQO",  // 250€/year per laundry
+    monthly: "price_1ShGeVB849ikvSjD3LIR8UtE",
+    annual: "price_1ShGjEB849ikvSjD4VnQGXQO",
   },
-  // 6+ laundries
   tier3: {
-    monthly: "price_1ShGetB849ikvSjDs2aIkeYS", // 21€/month per laundry
-    annual: "price_1ShGjaB849ikvSjDIWARPdI2",  // 210€/year per laundry
+    monthly: "price_1ShGetB849ikvSjDs2aIkeYS",
+    annual: "price_1ShGjaB849ikvSjDIWARPdI2",
   },
 };
 
@@ -52,10 +64,17 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    // Authenticate user
+    // Use service role for profile updates
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+
+    // Authenticate user - JWT required
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      throw new Error("No authorization header provided");
+      throw new Error("No authorization header provided - JWT required");
     }
 
     const token = authHeader.replace("Bearer ", "");
@@ -69,16 +88,34 @@ serve(async (req) => {
     logStep("User authenticated", { userId: user.id, email: user.email });
 
     // Parse request body
-    const { plan, laundryCount = 1 } = await req.json();
+    const body = await req.json();
+    const { price_id, plan, laundryCount = 1, success_url, cancel_url } = body;
     
-    if (!plan || !["monthly", "annual"].includes(plan)) {
-      throw new Error("Invalid plan. Must be 'monthly' or 'annual'");
+    // Determine which price_id to use
+    let finalPriceId: string;
+    let priceInfo: { tier: string; interval: "month" | "year" };
+    
+    if (price_id) {
+      // Direct price_id provided - validate against allowlist
+      if (!ALLOWED_PRICE_IDS[price_id]) {
+        logStep("Invalid price_id - not in allowlist", { price_id });
+        throw new Error("Invalid price_id: not in allowed list");
+      }
+      finalPriceId = price_id;
+      priceInfo = ALLOWED_PRICE_IDS[price_id];
+      logStep("Using direct price_id", { price_id: finalPriceId, ...priceInfo });
+    } else if (plan) {
+      // Legacy: use plan + laundryCount to determine price
+      if (!["monthly", "annual"].includes(plan)) {
+        throw new Error("Invalid plan. Must be 'monthly' or 'annual'");
+      }
+      const tier = getTier(laundryCount);
+      finalPriceId = SUBSCRIPTION_PRICES[tier][plan as "monthly" | "annual"];
+      priceInfo = { tier, interval: plan === "annual" ? "year" : "month" };
+      logStep("Resolved price from plan", { plan, laundryCount, tier, priceId: finalPriceId });
+    } else {
+      throw new Error("Either price_id or plan must be provided");
     }
-
-    const tier = getTier(laundryCount);
-    const priceId = SUBSCRIPTION_PRICES[tier][plan as "monthly" | "annual"];
-    
-    logStep("Plan selected", { plan, laundryCount, tier, priceId });
 
     // Initialize Stripe
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
@@ -88,40 +125,60 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
-    // Check if Stripe customer exists
+    // Check if Stripe customer exists, create if not
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId: string | undefined;
+    let customerId: string;
     
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
       logStep("Existing customer found", { customerId });
+    } else {
+      // Create new Stripe customer
+      const newCustomer = await stripe.customers.create({
+        email: user.email,
+        metadata: {
+          user_id: user.id,
+        },
+      });
+      customerId = newCustomer.id;
+      logStep("Created new Stripe customer", { customerId });
+      
+      // Store customer ID in profile (optional, for faster lookups)
+      await supabaseAdmin
+        .from("profiles")
+        .update({ stripe_customer_id: customerId })
+        .eq("id", user.id);
     }
 
+    // Build URLs
+    const origin = req.headers.get("origin") || "https://app.lavcom.fr";
+    const finalSuccessUrl = success_url || `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
+    const finalCancelUrl = cancel_url || `${origin}/billing/cancel`;
+
     // Create checkout session
-    const origin = req.headers.get("origin") || "https://lavcom.fr";
-    
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: priceId,
+          price: finalPriceId,
           quantity: laundryCount,
         },
       ],
       mode: "subscription",
-      success_url: `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/billing/cancel`,
+      success_url: finalSuccessUrl,
+      cancel_url: finalCancelUrl,
+      allow_promotion_codes: true,
       metadata: {
         user_id: user.id,
         laundry_count: laundryCount.toString(),
-        plan: plan,
-        tier: tier,
+        tier: priceInfo.tier,
+        interval: priceInfo.interval,
       },
       subscription_data: {
         metadata: {
           user_id: user.id,
           laundry_count: laundryCount.toString(),
+          tier: priceInfo.tier,
         },
       },
     });
