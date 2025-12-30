@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ExpertType {
   id: string;
@@ -120,16 +121,35 @@ export function ExpertSection({ variant = "landing", className = "" }: ExpertSec
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate submission - in production, this would call an API
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const { error } = await supabase.functions.invoke("submit-expert-request", {
+        body: {
+          expertType: selectedExpert?.id,
+          name: contactForm.name,
+          email: contactForm.email,
+          phone: contactForm.phone || undefined,
+          message: contactForm.message || undefined,
+        },
+      });
 
-    toast.success("Demande envoyée !", {
-      description: `Un expert ${selectedExpert?.title.toLowerCase()} vous contactera sous 48h.`
-    });
+      if (error) {
+        throw error;
+      }
 
-    setShowContactDialog(false);
-    setContactForm({ name: "", email: "", phone: "", message: "" });
-    setIsSubmitting(false);
+      toast.success("Demande envoyée !", {
+        description: `Un expert ${selectedExpert?.title.toLowerCase()} vous contactera sous 48h.`
+      });
+
+      setShowContactDialog(false);
+      setContactForm({ name: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      console.error("Error submitting expert request:", error);
+      toast.error("Erreur", {
+        description: "Impossible d'envoyer votre demande. Veuillez réessayer."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isSimulator = variant === "simulator";
