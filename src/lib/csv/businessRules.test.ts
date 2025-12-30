@@ -8,8 +8,12 @@ import { describe, it, expect } from 'vitest';
 import { 
   processOperationForImport, 
   normalizeMoneyToEuros, 
+  normalizeMoneyWithDetection,
   applyRechEspRule,
   centsToEurosValue,
+  smartConvertToEuros,
+  detectCentimes,
+  detectBatchCentimes,
   round2,
   normStr,
   normMode,
@@ -55,6 +59,110 @@ describe('round2', () => {
     expect(round2(1.234)).toBe(1.23);
     expect(round2(1.235)).toBe(1.24);
     expect(round2(1.2)).toBe(1.2);
+  });
+});
+
+describe('detectCentimes', () => {
+  it('should detect centimes when value >= 1000', () => {
+    expect(detectCentimes([2000])).toBe(true);
+    expect(detectCentimes([1000])).toBe(true);
+    expect(detectCentimes([5, 1500, 0])).toBe(true);
+  });
+
+  it('should NOT detect centimes when all values < 1000', () => {
+    expect(detectCentimes([20, 6.5, 13.5])).toBe(false);
+    expect(detectCentimes([999])).toBe(false);
+    expect(detectCentimes([0, 0, 0])).toBe(false);
+  });
+
+  it('should handle empty or null values', () => {
+    expect(detectCentimes([])).toBe(false);
+    expect(detectCentimes([null, undefined, ''])).toBe(false);
+  });
+});
+
+describe('smartConvertToEuros', () => {
+  it('should auto-convert values >= 1000 as centimes', () => {
+    expect(smartConvertToEuros(2000)).toBe(20);
+    expect(smartConvertToEuros(1500)).toBe(15);
+    expect(smartConvertToEuros(1000)).toBe(10);
+  });
+
+  it('should keep values < 1000 as euros', () => {
+    expect(smartConvertToEuros(20)).toBe(20);
+    expect(smartConvertToEuros(6.5)).toBe(6.5);
+    expect(smartConvertToEuros(999)).toBe(999);
+  });
+
+  it('should force conversion when forceCentimes is true', () => {
+    expect(smartConvertToEuros(650, true)).toBe(6.5);
+    expect(smartConvertToEuros(50, true)).toBe(0.5);
+  });
+
+  it('should handle zero and nulls', () => {
+    expect(smartConvertToEuros(0)).toBe(0);
+    expect(smartConvertToEuros(null)).toBe(0);
+    expect(smartConvertToEuros(undefined)).toBe(0);
+  });
+});
+
+describe('normalizeMoneyWithDetection', () => {
+  it('should detect and convert centimes automatically', () => {
+    const raw: OperationRowRaw = {
+      mode: 'ESP',
+      type: null,
+      insere: 2000,  // >= 1000, triggers detection
+      prix: 650,
+      rendu: 50,
+      prix_cb: 0,
+      prix_esp: 650,
+    };
+
+    const { normalized, centimesDetected } = normalizeMoneyWithDetection(raw);
+
+    expect(centimesDetected).toBe(true);
+    expect(normalized.insere_eur).toBe(20);
+    expect(normalized.prix_eur).toBe(6.5);
+    expect(normalized.rendu_eur).toBe(0.5);
+    expect(normalized.prix_esp_eur).toBe(6.5);
+  });
+
+  it('should keep euros when no value >= 1000', () => {
+    const raw: OperationRowRaw = {
+      mode: 'CB',
+      type: null,
+      insere: 0,
+      prix: 7.5,
+      rendu: 0,
+      prix_cb: 7.5,
+      prix_esp: 0,
+    };
+
+    const { normalized, centimesDetected } = normalizeMoneyWithDetection(raw);
+
+    expect(centimesDetected).toBe(false);
+    expect(normalized.prix_eur).toBe(7.5);
+    expect(normalized.prix_cb_eur).toBe(7.5);
+  });
+});
+
+describe('detectBatchCentimes', () => {
+  it('should detect if any operation in batch has centimes', () => {
+    const operations: OperationRowRaw[] = [
+      { insere: 20, prix: 6.5 },
+      { insere: 2000, prix: 650 },  // This one has centimes
+    ];
+
+    expect(detectBatchCentimes(operations)).toBe(true);
+  });
+
+  it('should return false if all operations are in euros', () => {
+    const operations: OperationRowRaw[] = [
+      { insere: 20, prix: 6.5 },
+      { insere: 15, prix: 8.5 },
+    ];
+
+    expect(detectBatchCentimes(operations)).toBe(false);
   });
 });
 
@@ -164,11 +272,11 @@ describe('applyRechEspRule', () => {
 });
 
 describe('processOperationForImport (full pipeline)', () => {
-  it('should convert centimes to euros AND apply Rech ESP rule', () => {
+  it('should auto-detect centimes, convert to euros, AND apply Rech ESP rule', () => {
     const raw: OperationRowRaw = {
       mode: 'ESP',
       type: '',
-      insere: 2000,  // 20€ in centimes
+      insere: 2000,  // >= 1000, detected as centimes -> 20€
       prix: 0,
       rendu: 0,
       prix_cb: 0,
@@ -177,11 +285,31 @@ describe('processOperationForImport (full pipeline)', () => {
 
     const result = processOperationForImport(raw);
 
+    expect(result.centimesDetected).toBe(true);
     expect(result.rechEspFixed).toBe(true);
     expect(result.operation.type).toBe('Rech ESP');
     expect(result.operation.insere_eur).toBe(20);
     expect(result.operation.prix_eur).toBe(20);
     expect(result.operation.prix_esp_eur).toBe(20);
+  });
+
+  it('should handle euros correctly (no conversion when < 1000)', () => {
+    const raw: OperationRowRaw = {
+      mode: 'CB',
+      type: '',
+      insere: 0,
+      prix: 7.5,     // < 1000, treated as euros
+      rendu: 0,
+      prix_cb: 7.5,
+      prix_esp: 0,
+    };
+
+    const result = processOperationForImport(raw);
+
+    expect(result.centimesDetected).toBe(false);
+    expect(result.rechEspFixed).toBe(false);
+    expect(result.operation.prix_eur).toBe(7.5);
+    expect(result.operation.prix_cb_eur).toBe(7.5);
   });
 
   it('should convert normal sale without triggering Rech ESP', () => {

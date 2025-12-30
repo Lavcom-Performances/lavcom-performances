@@ -26,9 +26,61 @@ export function normMode(v: unknown): string {
 }
 
 /**
- * Convert centimes to euros
- * Accepts: number (centimes), "2000", "2 000", "2000,00"
- * Returns: euros as number (e.g., 2000 => 20.00)
+ * Round to 2 decimal places for euro amounts
+ */
+export function round2(n: number): number {
+  return Math.round(n * 100) / 100;
+}
+
+/**
+ * Parse a raw value to a number
+ */
+function parseToNumber(v: unknown): number {
+  if (v === null || v === undefined || v === "") return 0;
+  if (typeof v === "number") return v;
+  const s = String(v).trim().replace(/\s/g, "").replace(",", ".");
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/**
+ * Detect if amounts are in centimes (values >= 1000 indicate centimes)
+ * 
+ * @param values Array of raw amount values to check
+ * @returns true if amounts appear to be in centimes
+ */
+export function detectCentimes(values: unknown[]): boolean {
+  const numbers = values.map(parseToNumber).filter(n => n > 0);
+  if (numbers.length === 0) return false;
+  
+  // If any value >= 1000, assume centimes
+  // (a laundry transaction of 1000€ is extremely unlikely)
+  return numbers.some(n => n >= 1000);
+}
+
+/**
+ * Convert centimes to euros if needed
+ * Uses automatic detection: if value >= 1000, assumes centimes
+ * 
+ * @param v Raw value (may be centimes or euros)
+ * @param forceCentimes If true, always treat as centimes
+ * @returns Value in euros
+ */
+export function smartConvertToEuros(v: unknown, forceCentimes: boolean = false): number {
+  const n = parseToNumber(v);
+  if (n === 0) return 0;
+  
+  // If forced or value >= 1000, treat as centimes
+  if (forceCentimes || n >= 1000) {
+    return round2(n / 100);
+  }
+  
+  return round2(n);
+}
+
+/**
+ * Convert centimes to euros (legacy - always divides by 100)
+ * @deprecated Use smartConvertToEuros for automatic detection
  */
 export function centsToEurosValue(v: unknown): number {
   if (v === null || v === undefined || v === "") return 0;
@@ -37,13 +89,6 @@ export function centsToEurosValue(v: unknown): number {
   const n = Number(s);
   if (!Number.isFinite(n)) return 0;
   return Math.round(n) / 100;
-}
-
-/**
- * Round to 2 decimal places for euro amounts
- */
-export function round2(n: number): number {
-  return Math.round(n * 100) / 100;
 }
 
 /**
@@ -78,13 +123,12 @@ export interface OperationRowNormalized {
 export interface BusinessRulesResult {
   operation: OperationRowNormalized;
   rechEspFixed: boolean;
+  centimesDetected: boolean;
 }
 
 /**
- * Convert all money fields from centimes to euros
- * 
- * @param op Raw operation with amounts in centimes
- * @returns Normalized operation with amounts in euros
+ * Convert all money fields from centimes to euros (legacy - always converts)
+ * @deprecated Use normalizeMoneyWithDetection for automatic detection
  */
 export function normalizeMoneyToEuros(op: OperationRowRaw): OperationRowNormalized {
   return {
@@ -96,6 +140,34 @@ export function normalizeMoneyToEuros(op: OperationRowRaw): OperationRowNormaliz
     prix_cb_eur: round2(centsToEurosValue(op.prix_cb)),
     prix_esp_eur: round2(centsToEurosValue(op.prix_esp)),
   };
+}
+
+/**
+ * Convert all money fields with automatic centimes detection
+ * 
+ * @param op Raw operation with amounts (may be centimes or euros)
+ * @param forceCentimes If true, always treat as centimes
+ * @returns Normalized operation with amounts in euros + detection flag
+ */
+export function normalizeMoneyWithDetection(
+  op: OperationRowRaw, 
+  forceCentimes: boolean = false
+): { normalized: OperationRowNormalized; centimesDetected: boolean } {
+  // Collect all money values to check for centimes
+  const values = [op.insere, op.prix, op.rendu, op.prix_cb, op.prix_esp];
+  const centimesDetected = forceCentimes || detectCentimes(values);
+  
+  const normalized: OperationRowNormalized = {
+    mode: op.mode,
+    type: op.type,
+    insere_eur: smartConvertToEuros(op.insere, centimesDetected),
+    prix_eur: smartConvertToEuros(op.prix, centimesDetected),
+    rendu_eur: smartConvertToEuros(op.rendu, centimesDetected),
+    prix_cb_eur: smartConvertToEuros(op.prix_cb, centimesDetected),
+    prix_esp_eur: smartConvertToEuros(op.prix_esp, centimesDetected),
+  };
+  
+  return { normalized, centimesDetected };
 }
 
 /**
@@ -135,19 +207,41 @@ export function applyRechEspRule(op: OperationRowNormalized): boolean {
 }
 
 /**
- * Full pipeline: normalize centimes to euros, then apply business rules
+ * Full pipeline: normalize money (with auto-detection) then apply business rules
  * 
- * @param rawOp Raw operation with amounts in centimes
+ * @param rawOp Raw operation with amounts (may be centimes or euros)
+ * @param forceCentimes If true, always treat as centimes
  * @returns Normalized operation with business rules applied, plus flags
  */
-export function processOperationForImport(rawOp: OperationRowRaw): BusinessRulesResult {
-  const normalized = normalizeMoneyToEuros(rawOp);
+export function processOperationForImport(
+  rawOp: OperationRowRaw, 
+  forceCentimes: boolean = false
+): BusinessRulesResult {
+  const { normalized, centimesDetected } = normalizeMoneyWithDetection(rawOp, forceCentimes);
   const rechEspFixed = applyRechEspRule(normalized);
   
   return {
     operation: normalized,
     rechEspFixed,
+    centimesDetected,
   };
+}
+
+/**
+ * Batch detection: check if a batch of operations contains centimes
+ * Useful for detecting the format of an entire CSV file
+ * 
+ * @param operations Array of raw operations
+ * @returns true if any operation appears to have centimes values
+ */
+export function detectBatchCentimes(operations: OperationRowRaw[]): boolean {
+  const allValues: unknown[] = [];
+  
+  for (const op of operations) {
+    allValues.push(op.insere, op.prix, op.rendu, op.prix_cb, op.prix_esp);
+  }
+  
+  return detectCentimes(allValues);
 }
 
 // =============================================================================
