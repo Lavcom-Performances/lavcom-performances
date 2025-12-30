@@ -54,30 +54,23 @@ export function useOperations(filters: OperationsFilters = {}) {
     setError(null);
 
     try {
-      // DEBUG: Fetch all operations without site filter to diagnose
-      console.log('[useOperations] DEBUG - Fetching ALL operations for user:', user.id);
-      
       let query = supabase
         .from("operations")
         .select("*")
         .order("operation_date", { ascending: false })
         .order("operation_time", { ascending: false });
 
-      // Temporarily disabled site filter for debugging
-      // if (filters.siteId) {
-      //   query = query.eq("site_id", filters.siteId);
-      // }
+      // Filter by site if specified
+      if (filters.siteId) {
+        query = query.eq("site_id", filters.siteId);
+      }
 
       // Increase limit for better data coverage
       const { data, error: fetchError } = await query.limit(5000);
 
-      if (fetchError) {
-        console.error('[useOperations] Supabase error:', fetchError);
-        throw fetchError;
-      }
+      if (fetchError) throw fetchError;
 
-      console.log(`[useOperations] Fetched ${data?.length || 0} operations (no site filter)`);
-      console.log('[useOperations] Sample data:', data?.slice(0, 3));
+      console.log(`[useOperations] Fetched ${data?.length || 0} operations for site ${filters.siteId}`);
       setOperations(data || []);
     } catch (err) {
       console.error("Error fetching operations:", err);
