@@ -58,6 +58,25 @@ Deno.serve(async (req) => {
 
   if (!rateLimitResult.allowed) {
     console.warn(`[compute-analytics-cron] Rate limit exceeded for IP hash ${ipHash.slice(0, 8)}...`);
+    
+    // Log rate limit event to cron_logs for monitoring
+    const supabaseForLog = createClient(supabaseUrl, supabaseServiceKey);
+    await supabaseForLog
+      .from("cron_logs")
+      .insert({
+        job_name: "compute-analytics-cron",
+        status: "rate_limited",
+        completed_at: new Date().toISOString(),
+        duration_ms: 0,
+        details: {
+          reason: "rate_limit_exceeded",
+          ip_hash: ipHash.slice(0, 8) + "...",
+          cooldown_seconds: rateLimitResult.cooldownSeconds || 300,
+          remaining: rateLimitResult.remaining,
+          reset_in: rateLimitResult.resetIn
+        }
+      });
+    
     return rateLimitResponse(rateLimitResult.cooldownSeconds || 300, "edge/compute-analytics-cron", corsHeaders);
   }
 
