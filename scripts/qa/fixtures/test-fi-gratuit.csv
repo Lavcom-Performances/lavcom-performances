@@ -1,0 +1,9 @@
+Events
+
+id,type,name,payment_mode,amount,price,change,detail,date
+"fi001","vend","Lave linge 1","fi",0,0,0,"promo","2025-12-21 08:00:00"
+"fi002","vend","Seche linge 1","FI",0,0,0,"fidélité","2025-12-21 09:00:00"
+"fi003","vend","Lessive","free",0,0,0,"offert","2025-12-21 10:00:00"
+"fi004","vend","Lave linge 2","gratuit",0,0,0,"test","2025-12-21 11:00:00"
+"fi005","vend","Seche linge 2","cb",450,450,0,"","2025-12-21 12:00:00"
+"fi006","vend","Lave linge 3","esp",500,450,50,"","2025-12-21 13:00:00"
