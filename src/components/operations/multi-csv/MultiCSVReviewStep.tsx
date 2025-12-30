@@ -35,6 +35,7 @@ export function MultiCSVReviewStep({
       importable_count: f.multiCsvRows?.filter(r => r.status === 'importable').length || 0,
       to_review_count: f.multiCsvRows?.filter(r => r.status === 'to_review').length || 0,
       invalid_count: f.multiCsvRows?.filter(r => r.status === 'invalid').length || 0,
+      detected_format: f.multiCsvRows?.[0]?.detected_type || 'unknown',
       error: f.error,
       duplicate_warning: f.duplicateWarning,
     }));

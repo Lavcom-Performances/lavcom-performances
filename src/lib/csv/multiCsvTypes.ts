@@ -10,6 +10,11 @@ export const MAX_PREVIEW_ROWS_PER_FILE = 50;
 /**
  * Extended parsed row with multi-CSV metadata
  */
+/**
+ * Detected CSV format type
+ */
+export type CsvFormatType = 'events' | 'lm_control' | 'standard' | 'unknown';
+
 export interface MultiCsvParsedRow {
   // Source tracking
   source_file_name: string;
@@ -31,6 +36,9 @@ export interface MultiCsvParsedRow {
   price_cents: number | null;
   change_cents: number | null;
   machine_name: string | null;
+  
+  // Format detection
+  detected_type: CsvFormatType;
   
   // Validation status
   status: 'importable' | 'to_review' | 'invalid';
@@ -103,6 +111,9 @@ export interface MultiCsvFile {
   to_review_count: number;
   invalid_count: number;
   
+  // Format detection
+  detected_format: CsvFormatType;
+  
   // Error
   error: string | null;
   duplicate_warning: string | null;
@@ -111,6 +122,7 @@ export interface MultiCsvFile {
   import_result?: {
     imported: number;
     ignored: number;
+    duplicates: number;
     errors: string[];
   };
 }

@@ -110,6 +110,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
           importable_count: 0,
           to_review_count: 0,
           invalid_count: 0,
+          detected_format: 'unknown',
           error: t("csvImport.fileTypeError"),
           duplicate_warning: null,
         });
@@ -129,6 +130,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
           importable_count: 0,
           to_review_count: 0,
           invalid_count: 0,
+          detected_format: 'unknown',
           error: showFileError(validation.errorKey),
           duplicate_warning: null,
         });
@@ -150,6 +152,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
             importable_count: 0,
             to_review_count: 0,
             invalid_count: 0,
+            detected_format: 'unknown',
             error: "Fichier vide ou format non reconnu",
             duplicate_warning: null,
           });
@@ -169,6 +172,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
             importable_count: 0,
             to_review_count: 0,
             invalid_count: 0,
+            detected_format: parsedRows[0]?.detected_type || 'unknown',
             error: showFileError(lineValidation.errorKey),
             duplicate_warning: null,
           });
@@ -189,6 +193,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
           importable_count: importable,
           to_review_count: toReview,
           invalid_count: invalid,
+          detected_format: parsedRows[0]?.detected_type || 'unknown',
           error: null,
           duplicate_warning: null,
         });
@@ -204,6 +209,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
           importable_count: 0,
           to_review_count: 0,
           invalid_count: 0,
+          detected_format: 'unknown',
           error: "Erreur lors de l'analyse du fichier",
           duplicate_warning: null,
         });
@@ -472,7 +478,16 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
                             file.status === 'error' ? 'text-destructive' : 'text-lavcom-green'
                           }`} />
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium truncate">{file.file.name}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-medium truncate">{file.file.name}</p>
+                              {file.status === 'ready' && file.detected_format !== 'unknown' && (
+                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 shrink-0">
+                                  {file.detected_format === 'events' ? 'Events' : 
+                                   file.detected_format === 'lm_control' ? 'LM Control' : 
+                                   file.detected_format === 'standard' ? 'Standard' : 'CSV'}
+                                </Badge>
+                              )}
+                            </div>
                             <p className="text-xs text-muted-foreground">
                               {formatFileSize(file.file.size)}
                               {file.status === 'ready' && (
