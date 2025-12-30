@@ -453,7 +453,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
           >
-            <MonthlyRevenueChart />
+            <MonthlyRevenueChart startDate={dateRange?.from} endDate={dateRange?.to} />
             {isExpert && stats.dailyData.length > 0 && <DailyRevenueChart data={stats.dailyData} />}
           </motion.div>
 

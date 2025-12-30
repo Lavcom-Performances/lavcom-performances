@@ -913,6 +913,14 @@ export type Database = {
           unique_machines: number
         }[]
       }
+      rpc_date_bounds: {
+        Args: { p_site_id: string }
+        Returns: {
+          max_date: string
+          min_date: string
+          total_count: number
+        }[]
+      }
       rpc_monthly_revenue: {
         Args: { p_site_id: string; p_year: number }
         Returns: {
