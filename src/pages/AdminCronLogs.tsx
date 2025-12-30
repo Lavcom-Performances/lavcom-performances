@@ -65,10 +65,13 @@ type CronStats = {
 };
 
 const statusConfig = {
+  success: { label: "Terminé", icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-100" },
   completed: { label: "Terminé", icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-100" },
+  error: { label: "Échoué", icon: XCircle, color: "text-destructive", bg: "bg-destructive/10" },
   failed: { label: "Échoué", icon: XCircle, color: "text-destructive", bg: "bg-destructive/10" },
   running: { label: "En cours", icon: RefreshCw, color: "text-primary", bg: "bg-primary/10" },
   partial: { label: "Partiel", icon: AlertTriangle, color: "text-amber-500", bg: "bg-amber-100" },
+  rate_limited: { label: "Rate limité", icon: Clock, color: "text-orange-500", bg: "bg-orange-100" },
 };
 
 export default function AdminCronLogs() {
@@ -245,10 +248,11 @@ export default function AdminCronLogs() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tous les statuts</SelectItem>
-              <SelectItem value="completed">Terminé</SelectItem>
-              <SelectItem value="failed">Échoué</SelectItem>
+              <SelectItem value="success">Terminé</SelectItem>
+              <SelectItem value="error">Échoué</SelectItem>
               <SelectItem value="running">En cours</SelectItem>
               <SelectItem value="partial">Partiel</SelectItem>
+              <SelectItem value="rate_limited">Rate limité</SelectItem>
             </SelectContent>
           </Select>
 
