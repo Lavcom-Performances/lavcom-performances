@@ -24,7 +24,8 @@ import {
   DollarSign,
   Calculator,
   Shield,
-  CreditCard
+  CreditCard,
+  ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ import { CompanyLogoUpload } from "./CompanyLogoUpload";
 import { TrialBanner } from "@/components/trial/TrialBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useState, useEffect, useMemo } from "react";
 
 interface AppSidebarProps {
@@ -76,6 +78,7 @@ export function AppSidebar({
   
   const { signOut, profile } = useAuth();
   const { daysRemaining, trialStatus, planType } = useSubscription();
+  const { isAdmin } = useIsAdmin();
 
   const getInitials = () => {
     const first = profile?.first_name?.charAt(0)?.toUpperCase() || "";
@@ -344,6 +347,30 @@ export function AppSidebar({
               })}
             </CollapsibleContent>
           </Collapsible>
+        )}
+
+        {/* Super Admin Section - Only for platform admins */}
+        {isAdmin && (
+          <>
+            {!collapsed && (
+              <div className="pt-4 pb-2">
+                <span className="px-3 text-xs font-medium text-destructive/70 uppercase tracking-wider">
+                  Super Admin
+                </span>
+              </div>
+            )}
+            <NavLink
+              to="/admin"
+              className={cn(
+                "sidebar-item",
+                location.pathname.startsWith("/admin") && "sidebar-item-active",
+                mounted && "animate-nav-item-in"
+              )}
+            >
+              <ShieldCheck className="h-5 w-5 shrink-0 text-destructive" />
+              {!collapsed && <span className="text-destructive">Admin Lavcom</span>}
+            </NavLink>
+          </>
         )}
 
         {/* Admin Section */}

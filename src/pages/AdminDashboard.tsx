@@ -9,6 +9,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import { 
   Users, 
   Building2, 
@@ -18,7 +19,9 @@ import {
   RefreshCw,
   ShieldCheck,
   Activity,
-  MapPin
+  MapPin,
+  FileText,
+  Eye
 } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -57,7 +60,22 @@ interface MonthlySeries {
   active_sites: number;
 }
 
+interface AuditLog {
+  id: string;
+  admin_user_id: string;
+  action: string;
+  details: Record<string, unknown>;
+  created_at: string;
+}
+
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+
+const ACTION_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
+  view_global_stats: { label: 'Stats globales', icon: <Users className="h-4 w-4" /> },
+  view_revenue_stats: { label: 'Stats CA', icon: <TrendingUp className="h-4 w-4" /> },
+  view_top_sites: { label: 'Top sites', icon: <Building2 className="h-4 w-4" /> },
+  view_monthly_series: { label: 'Séries mensuelles', icon: <Activity className="h-4 w-4" /> },
+};
 
 export default function AdminDashboard() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -121,12 +139,27 @@ export default function AdminDashboard() {
     enabled: !!dateRange?.from && !!dateRange?.to
   });
 
+  // Fetch audit logs
+  const { data: auditLogs, isLoading: loadingAudit, refetch: refetchAudit } = useQuery({
+    queryKey: ['admin-audit-logs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('admin_audit_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      return data as AuditLog[];
+    }
+  });
+
   const formatCurrency = (value: number) => 
     new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
 
   const handleRefresh = () => {
     refetchGlobal();
     refetchRevenue();
+    refetchAudit();
   };
 
   // Prepare chart data
@@ -274,6 +307,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="top-sites">
               <TrendingUp className="h-4 w-4 mr-2" />
               Top Sites
+            </TabsTrigger>
+            <TabsTrigger value="audit">
+              <FileText className="h-4 w-4 mr-2" />
+              Audit Logs
             </TabsTrigger>
           </TabsList>
 
@@ -463,6 +500,72 @@ export default function AdminDashboard() {
                 ) : (
                   <div className="flex h-32 items-center justify-center text-muted-foreground">
                     Aucune donnée sur cette période
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="audit" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Journal d'audit
+                </CardTitle>
+                <CardDescription>Historique des actions administrateur (100 dernières)</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loadingAudit ? (
+                  <div className="space-y-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="h-12 w-full" />
+                    ))}
+                  </div>
+                ) : auditLogs && auditLogs.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Action</TableHead>
+                        <TableHead>Détails</TableHead>
+                        <TableHead>Admin ID</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {auditLogs.map((log) => {
+                        const actionInfo = ACTION_LABELS[log.action] || { 
+                          label: log.action, 
+                          icon: <Eye className="h-4 w-4" /> 
+                        };
+                        return (
+                          <TableRow key={log.id}>
+                            <TableCell className="text-sm">
+                              {format(new Date(log.created_at), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="gap-1">
+                                {actionInfo.icon}
+                                {actionInfo.label}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
+                              {Object.keys(log.details).length > 0 
+                                ? JSON.stringify(log.details)
+                                : '-'
+                              }
+                            </TableCell>
+                            <TableCell className="font-mono text-xs text-muted-foreground">
+                              {log.admin_user_id.substring(0, 8)}...
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="flex h-32 items-center justify-center text-muted-foreground">
+                    Aucun log d'audit disponible
                   </div>
                 )}
               </CardContent>
