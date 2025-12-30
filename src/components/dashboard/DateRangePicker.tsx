@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import { format, startOfYear, endOfYear, startOfMonth, endOfMonth, subMonths, subYears, startOfQuarter, endOfQuarter } from "date-fns";
+import { format, startOfYear, endOfYear, startOfMonth, endOfMonth, subMonths, subYears, addYears, startOfQuarter, endOfQuarter } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,9 @@ export function DateRangePicker({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<PresetKey | null>(null);
   const today = new Date();
+  
+  // Calendar display month - track independently for navigation
+  const [calendarMonth, setCalendarMonth] = useState<Date>(dateRange?.from || today);
   
   // Quick presets
   const presets: { key: PresetKey; label: string; getRange: () => DateRange }[] = [
@@ -78,6 +81,9 @@ export function DateRangePicker({
       onDateChange(undefined);
     } else {
       onDateChange(range);
+      if (range.from) {
+        setCalendarMonth(range.from);
+      }
     }
     setIsOpen(false);
   };
@@ -85,6 +91,15 @@ export function DateRangePicker({
   const handleCalendarSelect = (range: DateRange | undefined) => {
     setSelectedPreset("custom");
     onDateChange(range);
+  };
+
+  // Year navigation
+  const handlePreviousYear = () => {
+    setCalendarMonth(subYears(calendarMonth, 1));
+  };
+
+  const handleNextYear = () => {
+    setCalendarMonth(addYears(calendarMonth, 1));
   };
 
   // Determine display text
@@ -133,14 +148,13 @@ export function DateRangePicker({
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             <span className="flex-1">{displayText}</span>
-            <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <div className="flex">
             {/* Quick presets sidebar */}
             {showPresets && (
-              <div className="border-r p-2 space-y-1 min-w-[120px] bg-muted/30">
+              <div className="border-r p-2 space-y-1 min-w-[110px] bg-muted/30">
                 <p className="text-xs font-medium text-muted-foreground px-2 py-1">
                   Période
                 </p>
@@ -158,12 +172,38 @@ export function DateRangePicker({
               </div>
             )}
             
-            {/* Calendar - simplified without dropdown navigation */}
+            {/* Calendar with year navigation */}
             <div className="p-3">
+              {/* Year navigation buttons */}
+              <div className="flex items-center justify-center gap-2 mb-3 pb-2 border-b">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handlePreviousYear}
+                  className="h-7 px-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  {format(subYears(calendarMonth, 1), "yyyy")}
+                </Button>
+                <span className="font-semibold text-sm min-w-[50px] text-center">
+                  {format(calendarMonth, "yyyy")}
+                </span>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleNextYear}
+                  className="h-7 px-2"
+                >
+                  {format(addYears(calendarMonth, 1), "yyyy")}
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+              
               <Calendar
                 initialFocus
                 mode="range"
-                defaultMonth={dateRange?.from || today}
+                month={calendarMonth}
+                onMonthChange={setCalendarMonth}
                 selected={dateRange}
                 onSelect={handleCalendarSelect}
                 numberOfMonths={2}
