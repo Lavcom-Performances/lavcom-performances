@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -77,12 +78,23 @@ const ACTION_LABELS: Record<string, { label: string; icon: React.ReactNode }> = 
   view_monthly_series: { label: 'Séries mensuelles', icon: <Activity className="h-4 w-4" /> },
 };
 
+const ACTION_OPTIONS = [
+  { value: 'all', label: 'Toutes les actions' },
+  { value: 'view_global_stats', label: 'Stats globales' },
+  { value: 'view_revenue_stats', label: 'Stats CA' },
+  { value: 'view_top_sites', label: 'Top sites' },
+  { value: 'view_monthly_series', label: 'Séries mensuelles' },
+];
+
 export default function AdminDashboard() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: startOfMonth(new Date()),
     to: endOfMonth(new Date())
   });
 
+  // Audit filters
+  const [auditActionFilter, setAuditActionFilter] = useState<string>('all');
+  const [auditDateRange, setAuditDateRange] = useState<DateRange | undefined>();
   // Fetch global stats
   const { data: globalStats, isLoading: loadingGlobal, refetch: refetchGlobal } = useQuery({
     queryKey: ['admin-global-stats'],
@@ -515,59 +527,132 @@ export default function AdminDashboard() {
                 </CardTitle>
                 <CardDescription>Historique des actions administrateur (100 dernières)</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                {/* Filters */}
+                <div className="flex flex-wrap gap-4 p-4 rounded-lg bg-muted/50">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium text-muted-foreground">Type d'action</label>
+                    <Select value={auditActionFilter} onValueChange={setAuditActionFilter}>
+                      <SelectTrigger className="w-[200px] bg-background">
+                        <SelectValue placeholder="Toutes les actions" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover">
+                        {ACTION_OPTIONS.map(opt => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium text-muted-foreground">Période</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-[240px] justify-start gap-2 bg-background">
+                          <CalendarIcon className="h-4 w-4" />
+                          {auditDateRange?.from && auditDateRange?.to 
+                            ? `${format(auditDateRange.from, 'dd/MM/yy')} - ${format(auditDateRange.to, 'dd/MM/yy')}`
+                            : 'Toutes les dates'
+                          }
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-popover" align="start">
+                        <Calendar
+                          mode="range"
+                          selected={auditDateRange}
+                          onSelect={setAuditDateRange}
+                          locale={fr}
+                          numberOfMonths={2}
+                          className="pointer-events-auto"
+                        />
+                        {auditDateRange && (
+                          <div className="p-2 border-t">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="w-full"
+                              onClick={() => setAuditDateRange(undefined)}
+                            >
+                              Effacer les dates
+                            </Button>
+                          </div>
+                        )}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+
+                {/* Table */}
                 {loadingAudit ? (
                   <div className="space-y-2">
                     {[...Array(5)].map((_, i) => (
                       <Skeleton key={i} className="h-12 w-full" />
                     ))}
                   </div>
-                ) : auditLogs && auditLogs.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Action</TableHead>
-                        <TableHead>Détails</TableHead>
-                        <TableHead>Admin ID</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {auditLogs.map((log) => {
-                        const actionInfo = ACTION_LABELS[log.action] || { 
-                          label: log.action, 
-                          icon: <Eye className="h-4 w-4" /> 
-                        };
-                        return (
-                          <TableRow key={log.id}>
-                            <TableCell className="text-sm">
-                              {format(new Date(log.created_at), 'dd/MM/yyyy HH:mm', { locale: fr })}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="outline" className="gap-1">
-                                {actionInfo.icon}
-                                {actionInfo.label}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
-                              {Object.keys(log.details).length > 0 
-                                ? JSON.stringify(log.details)
-                                : '-'
-                              }
-                            </TableCell>
-                            <TableCell className="font-mono text-xs text-muted-foreground">
-                              {log.admin_user_id.substring(0, 8)}...
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <div className="flex h-32 items-center justify-center text-muted-foreground">
-                    Aucun log d'audit disponible
-                  </div>
-                )}
+                ) : (() => {
+                  // Apply filters
+                  const filteredLogs = (auditLogs || []).filter(log => {
+                    // Action filter
+                    if (auditActionFilter !== 'all' && log.action !== auditActionFilter) {
+                      return false;
+                    }
+                    // Date filter
+                    if (auditDateRange?.from && auditDateRange?.to) {
+                      const logDate = new Date(log.created_at);
+                      if (logDate < auditDateRange.from || logDate > auditDateRange.to) {
+                        return false;
+                      }
+                    }
+                    return true;
+                  });
+
+                  return filteredLogs.length > 0 ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Action</TableHead>
+                          <TableHead>Détails</TableHead>
+                          <TableHead>Admin ID</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredLogs.map((log) => {
+                          const actionInfo = ACTION_LABELS[log.action] || { 
+                            label: log.action, 
+                            icon: <Eye className="h-4 w-4" /> 
+                          };
+                          return (
+                            <TableRow key={log.id}>
+                              <TableCell className="text-sm">
+                                {format(new Date(log.created_at), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="gap-1">
+                                  {actionInfo.icon}
+                                  {actionInfo.label}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-sm text-muted-foreground max-w-xs truncate">
+                                {Object.keys(log.details).length > 0 
+                                  ? JSON.stringify(log.details)
+                                  : '-'
+                                }
+                              </TableCell>
+                              <TableCell className="font-mono text-xs text-muted-foreground">
+                                {log.admin_user_id.substring(0, 8)}...
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <div className="flex h-32 items-center justify-center text-muted-foreground">
+                      Aucun log correspondant aux filtres
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           </TabsContent>
