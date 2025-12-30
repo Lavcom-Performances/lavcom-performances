@@ -130,9 +130,15 @@ export default function Operations() {
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   
-  // Pagination
+  // Server-side pagination
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
+  const paginationState = useMemo(() => ({ page: currentPage, pageSize }), [currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [dateRange, searchQuery, categoryFilter, paymentFilter, machineFilter, dayFilter, selectedSite?.id]);
 
   // Sorting
   type SortColumn = "date" | "time" | "machine" | "mode" | "price" | null;
@@ -178,15 +184,23 @@ export default function Operations() {
     }
   };
 
-  const { operations: rawOperations, isLoading, isEmpty, refetch } = useOperations({
+  const { 
+    operations: rawOperations, 
+    totalCount, 
+    totalPages: serverTotalPages,
+    monthSummaries,
+    isLoading, 
+    isEmpty, 
+    refetch 
+  } = useOperations({
     dateRange,
     searchQuery,
     category: categoryFilter,
     paymentMode: paymentFilter,
     siteId: selectedSite?.id,
-  });
+  }, paginationState);
 
-  // Get unique machines from operations for filter dropdown
+  // Get unique machines from current page operations
   const uniqueMachines = useMemo(() => {
     const machines = new Set<string>();
     rawOperations.forEach(op => {
@@ -902,47 +916,40 @@ export default function Operations() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(() => {
-                const totalPages = Math.ceil(operations.length / pageSize);
-                const startIndex = (currentPage - 1) * pageSize;
-                const endIndex = startIndex + pageSize;
-                const paginatedOps = operations.slice(startIndex, endIndex);
+              {operations.map((op) => {
+                const modeUpper = op.payment_mode?.toUpperCase();
+                const isCB = modeUpper === "CB";
+                const isESP = modeUpper === "ESP";
+                const price = op.price_eur ?? Number(op.amount);
                 
-                return paginatedOps.map((op) => {
-                  const modeUpper = op.payment_mode?.toUpperCase();
-                  const isCB = modeUpper === "CB";
-                  const isESP = modeUpper === "ESP";
-                  const price = op.price_eur ?? Number(op.amount);
-                  
-                  return (
-                    <TableRow key={op.id} className="hover:bg-muted/30">
-                      <TableCell className="font-medium whitespace-nowrap">
-                        {format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr })}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {op.operation_time?.slice(0, 5) || "—"}
-                      </TableCell>
-                      <TableCell className="font-medium">{op.machine_name || op.machine || "—"}</TableCell>
-                      <TableCell>{paymentModeBadge(op.payment_mode)}</TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(isESP ? op.inserted_eur : null)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(price)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatRendu(isESP ? op.change_eur : null)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(isCB ? price : null)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(isESP ? price : null)}
-                      </TableCell>
-                    </TableRow>
-                  );
-                });
-              })()}
+                return (
+                  <TableRow key={op.id} className="hover:bg-muted/30">
+                    <TableCell className="font-medium whitespace-nowrap">
+                      {format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr })}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {op.operation_time?.slice(0, 5) || "—"}
+                    </TableCell>
+                    <TableCell className="font-medium">{op.machine_name || op.machine || "—"}</TableCell>
+                    <TableCell>{paymentModeBadge(op.payment_mode)}</TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(isESP ? op.inserted_eur : null)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(price)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatRendu(isESP ? op.change_eur : null)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(isCB ? price : null)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(isESP ? price : null)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
@@ -955,121 +962,106 @@ export default function Operations() {
           </div>
         )}
         
-        {/* Enhanced Pagination */}
-        {operations.length > pageSize && (() => {
-          const totalPages = Math.ceil(operations.length / pageSize);
-          
-          // Get unique months from operations for quick navigation
-          const monthsSet = new Set<string>();
-          operations.forEach(op => {
-            const month = op.operation_date.substring(0, 7); // YYYY-MM
-            monthsSet.add(month);
-          });
-          const availableMonths = Array.from(monthsSet).sort().reverse();
-          
-          // Find which page a month starts at
-          const goToMonth = (monthStr: string) => {
-            const idx = operations.findIndex(op => op.operation_date.startsWith(monthStr));
-            if (idx >= 0) {
-              setCurrentPage(Math.floor(idx / pageSize) + 1);
-            }
-          };
-          
-          return (
-            <div className="p-4 border-t space-y-3">
-              {/* Quick month navigation */}
+        {/* Server-side Pagination */}
+        {totalCount > 0 && (
+          <div className="p-4 border-t space-y-3">
+            {/* Quick month navigation from server data */}
+            {monthSummaries.length > 0 && (
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm text-muted-foreground">Aller au mois :</span>
                 <div className="flex flex-wrap gap-1">
-                  {availableMonths.slice(0, 12).map(month => {
-                    const [year, m] = month.split('-');
+                  {monthSummaries.slice(0, 12).map(summary => {
+                    const [year, m] = summary.month.split('-');
                     const monthName = format(new Date(parseInt(year), parseInt(m) - 1, 1), 'MMM yyyy', { locale: fr });
+                    const targetPage = Math.floor(summary.firstRowIndex / pageSize) + 1;
                     return (
                       <Button
-                        key={month}
-                        variant="outline"
+                        key={summary.month}
+                        variant={currentPage === targetPage ? "default" : "outline"}
                         size="sm"
                         className="h-7 px-2 text-xs"
-                        onClick={() => goToMonth(month)}
+                        onClick={() => setCurrentPage(targetPage)}
+                        title={`${summary.count.toLocaleString('fr-FR')} opérations`}
                       >
                         {monthName}
+                        <span className="ml-1 opacity-60">({summary.count})</span>
                       </Button>
                     );
                   })}
                 </div>
               </div>
-              
-              {/* Main pagination row */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="text-sm text-muted-foreground">
-                  {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, operations.length)} sur {operations.length.toLocaleString('fr-FR')} opérations
+            )}
+            
+            {/* Main pagination row */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="text-sm text-muted-foreground">
+                {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, totalCount)} sur {totalCount.toLocaleString('fr-FR')} opérations
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* First page */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="hidden sm:flex"
+                >
+                  Début
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline ml-1">Précédent</span>
+                </Button>
+                
+                {/* Page input for direct navigation */}
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-muted-foreground">Page</span>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={serverTotalPages}
+                    value={currentPage}
+                    onChange={(e) => {
+                      const page = parseInt(e.target.value);
+                      if (page >= 1 && page <= serverTotalPages) {
+                        setCurrentPage(page);
+                      }
+                    }}
+                    className="w-16 h-8 text-center"
+                  />
+                  <span className="text-sm text-muted-foreground">/ {serverTotalPages}</span>
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  {/* First page */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                    className="hidden sm:flex"
-                  >
-                    Début
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    <span className="hidden sm:inline ml-1">Précédent</span>
-                  </Button>
-                  
-                  {/* Page input for direct navigation */}
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm text-muted-foreground">Page</span>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={totalPages}
-                      value={currentPage}
-                      onChange={(e) => {
-                        const page = parseInt(e.target.value);
-                        if (page >= 1 && page <= totalPages) {
-                          setCurrentPage(page);
-                        }
-                      }}
-                      className="w-16 h-8 text-center"
-                    />
-                    <span className="text-sm text-muted-foreground">/ {totalPages}</span>
-                  </div>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage >= totalPages}
-                  >
-                    <span className="hidden sm:inline mr-1">Suivant</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  
-                  {/* Last page */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(totalPages)}
-                    disabled={currentPage >= totalPages}
-                    className="hidden sm:flex"
-                  >
-                    Fin
-                  </Button>
-                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(serverTotalPages, p + 1))}
+                  disabled={currentPage >= serverTotalPages}
+                >
+                  <span className="hidden sm:inline mr-1">Suivant</span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                
+                {/* Last page */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(serverTotalPages)}
+                  disabled={currentPage >= serverTotalPages}
+                  className="hidden sm:flex"
+                >
+                  Fin
+                </Button>
               </div>
             </div>
-          );
-        })()}
+          </div>
+        )}
       </div>
     </div>
     </>
