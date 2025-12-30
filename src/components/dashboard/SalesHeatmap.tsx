@@ -8,93 +8,106 @@ interface SalesHeatmapProps {
   }>;
 }
 
-const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+const DAYS_ORDER = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+const DAYS_FULL = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 const HOURS = Array.from({ length: 15 }, (_, i) => i + 7); // 7h to 21h
 
 function getIntensityColor(value: number, maxValue: number): string {
-  if (value === 0) return "hsl(var(--muted))";
+  if (value === 0 || maxValue === 0) return "hsl(120, 50%, 85%)"; // Very light green for zero
   
   const intensity = value / maxValue;
   
-  // Green for low frequency, Red for high frequency (as per PDF reference)
-  if (intensity < 0.25) return "hsl(120, 60%, 75%)"; // Light green - calm
-  if (intensity < 0.5) return "hsl(60, 70%, 65%)";   // Yellow-green - moderate
-  if (intensity < 0.75) return "hsl(30, 80%, 55%)";  // Orange - busy
-  return "hsl(0, 70%, 50%)"; // Red - very busy
+  // Gradient from green (low) → yellow → orange → red (high) - like Excel
+  if (intensity < 0.2) return "hsl(120, 60%, 75%)"; // Light green
+  if (intensity < 0.35) return "hsl(100, 60%, 70%)"; // Yellow-green
+  if (intensity < 0.5) return "hsl(60, 70%, 65%)";  // Yellow
+  if (intensity < 0.65) return "hsl(45, 80%, 60%)"; // Yellow-orange
+  if (intensity < 0.8) return "hsl(30, 85%, 55%)";  // Orange
+  if (intensity < 0.9) return "hsl(15, 85%, 50%)";  // Orange-red
+  return "hsl(0, 80%, 50%)"; // Red
+}
+
+function getTextColor(value: number, maxValue: number): string {
+  if (maxValue === 0) return "hsl(0, 0%, 30%)";
+  const intensity = value / maxValue;
+  return intensity > 0.6 ? "hsl(0, 0%, 100%)" : "hsl(0, 0%, 20%)";
 }
 
 export function SalesHeatmap({ data }: SalesHeatmapProps) {
-  const { grid, maxValue } = useMemo(() => {
+  const { gridMap, maxValue } = useMemo(() => {
     const gridMap = new Map<string, number>();
     let max = 0;
     
     data.forEach(({ day, hour, cycles }) => {
-      const key = `${day}-${hour}`;
+      const key = `${hour}-${day}`;
       gridMap.set(key, cycles);
       if (cycles > max) max = cycles;
     });
     
-    return { grid: gridMap, maxValue: max };
+    return { gridMap, maxValue: max };
   }, [data]);
 
   return (
-    <div data-pdf-chart="sales-heatmap" className="kpi-card h-[400px]">
-      <h3 className="font-display font-semibold text-lg mb-4">Heatmap des cycles (jour × heure)</h3>
+    <div data-pdf-chart="sales-heatmap" className="kpi-card overflow-x-auto">
+      <h3 className="font-display font-semibold text-lg mb-4">Heatmap des cycles (heure × jour)</h3>
       
-      <div className="overflow-x-auto">
-        <div className="inline-block min-w-full">
-          {/* Header row with hours */}
-          <div className="flex">
-            <div className="w-12 h-8 flex items-center justify-center text-xs text-muted-foreground font-medium">
-              {/* Empty corner */}
-            </div>
-            {HOURS.map((hour) => (
-              <div 
-                key={hour} 
-                className="w-8 h-8 flex items-center justify-center text-xs text-muted-foreground font-medium"
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr>
+            <th className="p-2 text-left text-xs font-medium text-muted-foreground border border-border bg-muted/50 w-20">
+              HEURES
+            </th>
+            {DAYS_FULL.map((day) => (
+              <th 
+                key={day} 
+                className="p-2 text-center text-xs font-medium text-muted-foreground border border-border bg-muted/50 min-w-[80px]"
               >
-                {hour}h
-              </div>
-            ))}
-          </div>
-          
-          {/* Data rows */}
-          {DAYS.map((day) => (
-            <div key={day} className="flex">
-              <div className="w-12 h-8 flex items-center justify-center text-xs text-muted-foreground font-medium">
                 {day}
-              </div>
-              {HOURS.map((hour) => {
-                const value = grid.get(`${day}-${hour}`) || 0;
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {HOURS.map((hour) => (
+            <tr key={hour}>
+              <td className="p-2 text-left text-sm font-medium text-muted-foreground border border-border bg-muted/30 w-20">
+                {hour.toString().padStart(2, '0')}
+              </td>
+              {DAYS_ORDER.map((day) => {
+                const value = gridMap.get(`${hour}-${day}`) || 0;
+                const bgColor = getIntensityColor(value, maxValue);
+                const textColor = getTextColor(value, maxValue);
+                
                 return (
-                  <div
-                    key={`${day}-${hour}`}
-                    className="w-8 h-8 m-0.5 rounded-sm flex items-center justify-center text-xs font-medium cursor-default transition-transform hover:scale-110"
-                    style={{ backgroundColor: getIntensityColor(value, maxValue) }}
+                  <td
+                    key={`${hour}-${day}`}
+                    className="p-2 text-center text-sm font-medium border border-border min-w-[80px] transition-transform hover:scale-105 cursor-default"
+                    style={{ 
+                      backgroundColor: bgColor,
+                      color: textColor
+                    }}
                     title={`${day} ${hour}h: ${value} cycles`}
                   >
-                    {value > 0 && (
-                      <span className={value / maxValue > 0.5 ? "text-white" : "text-foreground"}>
-                        {value}
-                      </span>
-                    )}
-                  </div>
+                    {value}
+                  </td>
                 );
               })}
-            </div>
+            </tr>
           ))}
-        </div>
-      </div>
+        </tbody>
+      </table>
       
       {/* Legend */}
-      <div className="flex items-center justify-center gap-2 mt-4 text-xs text-muted-foreground">
+      <div className="flex items-center justify-end gap-2 mt-4 text-xs text-muted-foreground">
         <span>Calme</span>
-        <div className="flex gap-1">
-          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(var(--muted))" }} />
-          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(120, 60%, 75%)" }} />
-          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(60, 70%, 65%)" }} />
-          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(30, 80%, 55%)" }} />
-          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: "hsl(0, 70%, 50%)" }} />
+        <div className="flex gap-0.5">
+          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(120, 60%, 75%)" }} />
+          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(100, 60%, 70%)" }} />
+          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(60, 70%, 65%)" }} />
+          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(45, 80%, 60%)" }} />
+          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(30, 85%, 55%)" }} />
+          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(15, 85%, 50%)" }} />
+          <div className="w-5 h-4 rounded-sm" style={{ backgroundColor: "hsl(0, 80%, 50%)" }} />
         </div>
         <span>Chargé</span>
       </div>

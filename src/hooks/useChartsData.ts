@@ -4,20 +4,69 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { useDateRange } from "@/hooks/useDateRange";
 import { getDay, format } from "date-fns";
+import { ChartFilters } from "@/components/charts/ChartPageFilters";
+
+// Helper to filter operations by filters
+function applyFilters<T extends { 
+  operation_date?: string;
+  payment_mode?: string | null;
+  machine_name?: string | null;
+  machine?: string | null;
+  type?: string | null;
+}>(data: T[], filters?: Omit<ChartFilters, 'dateRange'>): T[] {
+  if (!filters) return data;
+  
+  return data.filter(op => {
+    // Payment mode filter
+    if (filters.paymentMode !== "all") {
+      const mode = op.payment_mode?.toUpperCase();
+      if (mode !== filters.paymentMode) return false;
+    }
+    
+    // Machine type filter
+    if (filters.machineType !== "all") {
+      const machineName = (op.machine_name || op.machine || "").toLowerCase();
+      const type = op.type?.toLowerCase() || "";
+      
+      if (filters.machineType === "LL") {
+        const isWashing = machineName.includes("lave") || type.includes("lave") || type === "ll";
+        if (!isWashing) return false;
+      } else if (filters.machineType === "SL") {
+        const isDrying = machineName.includes("sèche") || machineName.includes("seche") || 
+                        type.includes("sèche") || type.includes("seche") || type === "sl";
+        if (!isDrying) return false;
+      }
+    }
+    
+    // Specific machine filter
+    if (filters.machine !== "all") {
+      const machineName = op.machine_name || op.machine;
+      if (machineName !== filters.machine) return false;
+    }
+    
+    // Day of week filter
+    if (filters.dayOfWeek !== "all" && op.operation_date) {
+      const dayOfWeek = getDay(new Date(op.operation_date));
+      if (dayOfWeek.toString() !== filters.dayOfWeek) return false;
+    }
+    
+    return true;
+  });
+}
 
 // Daily revenue data
-export function useDailyRevenue() {
+export function useDailyRevenue(filters?: Omit<ChartFilters, 'dateRange'>) {
   const { currentSiteId } = useCurrentSite();
   const { formattedRange } = useDateRange();
 
   return useQuery({
-    queryKey: ["dailyRevenue", currentSiteId, formattedRange.from, formattedRange.to],
+    queryKey: ["dailyRevenue", currentSiteId, formattedRange.from, formattedRange.to, filters],
     queryFn: async () => {
       if (!currentSiteId || !formattedRange.from || !formattedRange.to) return [];
 
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_date, price_cb, price_esp, amount")
+        .select("operation_date, price_cb, price_esp, amount, payment_mode, machine_name, machine, type")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to)
@@ -25,9 +74,12 @@ export function useDailyRevenue() {
 
       if (error) throw error;
 
+      // Apply filters
+      const filtered = applyFilters(data || [], filters);
+
       // Group by date
       const grouped = new Map<string, { cb: number; esp: number }>();
-      data?.forEach((op) => {
+      filtered.forEach((op) => {
         const date = op.operation_date;
         const existing = grouped.get(date) || { cb: 0, esp: 0 };
         existing.cb += Number(op.price_cb || 0);
@@ -89,18 +141,18 @@ export function usePaymentDistribution() {
 }
 
 // Hourly frequency data
-export function useHourlyFrequency() {
+export function useHourlyFrequency(filters?: Omit<ChartFilters, 'dateRange'>) {
   const { currentSiteId } = useCurrentSite();
   const { formattedRange } = useDateRange();
 
   return useQuery({
-    queryKey: ["hourlyFrequency", currentSiteId, formattedRange.from, formattedRange.to],
+    queryKey: ["hourlyFrequency", currentSiteId, formattedRange.from, formattedRange.to, filters],
     queryFn: async () => {
       if (!currentSiteId || !formattedRange.from || !formattedRange.to) return [];
 
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_time")
+        .select("operation_date, operation_time, payment_mode, machine_name, machine, type")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to)
@@ -108,10 +160,13 @@ export function useHourlyFrequency() {
 
       if (error) throw error;
 
+      // Apply filters
+      const filtered = applyFilters(data || [], filters);
+
       const hours: Record<number, number> = {};
       for (let i = 6; i <= 22; i++) hours[i] = 0;
 
-      data?.forEach((op) => {
+      filtered.forEach((op) => {
         if (op.operation_time) {
           const hour = parseInt(op.operation_time.split(":")[0], 10);
           if (hour >= 6 && hour <= 22) {
@@ -213,24 +268,28 @@ export function useHalfHourlyFrequency() {
 }
 
 // Heatmap data (day x hour)
-export function useHeatmapData() {
+export function useHeatmapData(filters?: Omit<ChartFilters, 'dateRange'>) {
   const { currentSiteId } = useCurrentSite();
   const { formattedRange } = useDateRange();
 
   return useQuery({
-    queryKey: ["heatmapData", currentSiteId, formattedRange.from, formattedRange.to],
+    queryKey: ["heatmapData", currentSiteId, formattedRange.from, formattedRange.to, filters],
     queryFn: async () => {
       if (!currentSiteId || !formattedRange.from || !formattedRange.to) return [];
 
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_date, operation_time")
+        .select("operation_date, operation_time, payment_mode, machine_name, machine, type")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to)
         .not("operation_time", "is", null);
 
       if (error) throw error;
+
+      // Apply filters (except dayOfWeek for heatmap)
+      const filtersWithoutDay = filters ? { ...filters, dayOfWeek: "all" } : undefined;
+      const filtered = applyFilters(data || [], filtersWithoutDay);
 
       const dayNames = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
       const heatmap: { day: string; hour: number; cycles: number }[] = [];
@@ -243,7 +302,7 @@ export function useHeatmapData() {
         }
       }
 
-      data?.forEach((op) => {
+      filtered.forEach((op) => {
         const dayOfWeek = getDay(new Date(op.operation_date));
         const hour = parseInt(op.operation_time!.split(":")[0], 10);
         if (hour >= 7 && hour <= 21) {

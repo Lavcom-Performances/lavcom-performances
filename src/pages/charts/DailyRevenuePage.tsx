@@ -1,12 +1,14 @@
+import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useDailyRevenue } from "@/hooks/useChartsData";
-import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
+import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
 import { DailyRevenueChart } from "@/components/dashboard/DailyRevenueChart";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DailyRevenuePage() {
   const { dateRange, setDateRange } = useDateRange();
-  const { data: dailyData, isLoading } = useDailyRevenue();
+  const [filters, setFilters] = useState(defaultChartFilters);
+  const { data: dailyData, isLoading } = useDailyRevenue(filters);
 
   const chartData = dailyData?.map(d => ({
     date: d.date,
@@ -15,7 +17,7 @@ export default function DailyRevenuePage() {
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
             CA par jour
@@ -24,10 +26,15 @@ export default function DailyRevenuePage() {
             Évolution du chiffre d'affaires journalier
           </p>
         </div>
-        <DateRangePicker 
-          dateRange={dateRange} 
+        <ChartPageFilters
+          dateRange={dateRange}
           onDateChange={setDateRange}
-          showPresets
+          filters={filters}
+          onFiltersChange={setFilters}
+          showMachineType
+          showMachine
+          showPaymentMode
+          showDayOfWeek
         />
       </div>
 
