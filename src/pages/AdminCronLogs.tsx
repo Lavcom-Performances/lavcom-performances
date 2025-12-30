@@ -13,7 +13,8 @@ import {
   Timer,
   Server,
   AlertTriangle,
-  BarChart3
+  BarChart3,
+  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,7 @@ import { DateRange } from "react-day-picker";
 import { ManualCronTrigger } from "@/components/admin/ManualCronTrigger";
 import { CronMonitoringDashboard } from "@/components/admin/CronMonitoringDashboard";
 import { CronLogsExport } from "@/components/admin/CronLogsExport";
+import { CronAlertSettings } from "@/components/admin/CronAlertSettings";
 
 type CronLog = {
   id: string;
@@ -210,10 +212,18 @@ export default function AdminCronLogs() {
             <Activity className="h-4 w-4" />
             Logs détaillés
           </TabsTrigger>
+          <TabsTrigger value="settings" className="gap-2">
+            <Settings className="h-4 w-4" />
+            Paramètres
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="monitoring">
           <CronMonitoringDashboard logs={monitoringLogs || []} />
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <CronAlertSettings />
         </TabsContent>
 
         <TabsContent value="logs" className="space-y-4">
