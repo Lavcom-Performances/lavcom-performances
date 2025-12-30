@@ -147,47 +147,39 @@ export function useOperationsImport() {
           };
         });
 
-        // Insert operations in batches, handling duplicates via constraint errors
-        const BATCH_SIZE = 100;
+        // Insert operations in batches using upsert with ignoreDuplicates
+        const BATCH_SIZE = 500;
         let insertedCount = 0;
         let duplicatesIgnored = 0;
         const errors: string[] = [];
 
         const chunks = chunkArray(operations, BATCH_SIZE);
         
-        for (let i = 0; i < chunks.length; i++) {
-          const chunk = chunks[i];
-          
-          // Try batch insert first
-          const { error: insertError, data: insertedData } = await supabase
+        for (const chunk of chunks) {
+          const countBefore = await supabase
             .from("operations")
-            .insert(chunk)
-            .select('id');
+            .select("id", { count: "exact", head: true })
+            .eq("site_id", siteId);
+          
+          const { error: upsertError } = await supabase
+            .from("operations")
+            .upsert(chunk, {
+              onConflict: "site_id,dedupe_key",
+              ignoreDuplicates: true,
+            });
 
-          if (insertError) {
-            // If constraint violation, insert one by one to count duplicates
-            if (insertError.code === '23505' || insertError.message?.includes('unique') || insertError.message?.includes('duplicate')) {
-              for (const op of chunk) {
-                const { error: singleError } = await supabase
-                  .from("operations")
-                  .insert(op);
-                
-                if (singleError?.code === '23505' || singleError?.message?.includes('unique') || singleError?.message?.includes('duplicate')) {
-                  duplicatesIgnored++;
-                } else if (singleError) {
-                  console.error("Single insert error:", singleError);
-                  errors.push(`Erreur à la ligne ${i * BATCH_SIZE + chunk.indexOf(op) + 1}: ${singleError.message}`);
-                } else {
-                  insertedCount++;
-                }
-              }
-            } else {
-              console.error("Error inserting operations chunk:", insertError);
-              errors.push(`Erreur au chunk ${i + 1}: ${insertError.message}`);
-            }
+          if (upsertError) {
+            console.error("Error upserting operations chunk:", upsertError);
+            errors.push(`Erreur: ${upsertError.message}`);
           } else {
-            // Batch insert succeeded
-            insertedCount += insertedData?.length || chunk.length;
+            const countAfter = await supabase
+              .from("operations")
+              .select("id", { count: "exact", head: true })
+              .eq("site_id", siteId);
+            
+            const actualInserted = (countAfter.count || 0) - (countBefore.count || 0);
+            insertedCount += actualInserted;
+            duplicatesIgnored += chunk.length - actualInserted;
           }
         }
 
