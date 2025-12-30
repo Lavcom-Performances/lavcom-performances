@@ -901,6 +901,18 @@ export type Database = {
         Returns: boolean
       }
       owns_site: { Args: { _site_id: string }; Returns: boolean }
+      rpc_dashboard_kpis: {
+        Args: { p_end_date: string; p_site_id: string; p_start_date: string }
+        Returns: {
+          average_basket: number
+          peak_hour: number
+          revenue_cb: number
+          revenue_esp: number
+          total_revenue: number
+          total_transactions: number
+          unique_machines: number
+        }[]
+      }
       rpc_monthly_revenue: {
         Args: { p_site_id: string; p_year: number }
         Returns: {
@@ -909,6 +921,18 @@ export type Database = {
           revenue_esp: number
           revenue_total: number
           transactions_count: number
+        }[]
+      }
+      rpc_recommendations_v1: {
+        Args: { p_end_date: string; p_site_id: string; p_start_date: string }
+        Returns: {
+          description: string
+          effort: string
+          impact_estimated: number
+          meta: Json
+          rec_key: string
+          severity: string
+          title: string
         }[]
       }
       user_belongs_to_org: {
