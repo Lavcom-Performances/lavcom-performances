@@ -144,10 +144,16 @@ serve(async (req) => {
       logStep("Created new Stripe customer", { customerId });
       
       // Store customer ID in profile (optional, for faster lookups)
-      await supabaseAdmin
-        .from("profiles")
-        .update({ stripe_customer_id: customerId })
-        .eq("id", user.id);
+      try {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ stripe_customer_id: customerId })
+          .eq("id", user.id);
+        logStep("Stored customer ID in profile");
+      } catch (profileErr) {
+        // Non-blocking - continue even if profile update fails
+        logStep("Warning: failed to store customer ID in profile", { error: String(profileErr) });
+      }
     }
 
     // Build URLs
