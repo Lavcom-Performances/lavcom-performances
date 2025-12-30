@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Settings, Save, Loader2, Bell, Mail, MessageSquare, Clock, AlertTriangle } from "lucide-react";
+import { Settings, Save, Loader2, Bell, Mail, MessageSquare, Clock, AlertTriangle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,16 +16,20 @@ interface AlertSettings {
   id: string;
   job_name: string;
   failure_threshold: number;
+  warning_threshold: number;
+  critical_threshold: number;
   alert_cooldown_minutes: number;
   email_enabled: boolean;
   slack_enabled: boolean;
   last_alert_at: string | null;
+  last_alert_severity: string | null;
 }
 
 export function CronAlertSettings() {
   const queryClient = useQueryClient();
-  const [localSettings, setLocalSettings] = useState<Partial<AlertSettings>>({
-    failure_threshold: 3,
+  const [localSettings, setLocalSettings] = useState({
+    warning_threshold: 3,
+    critical_threshold: 5,
     alert_cooldown_minutes: 60,
     email_enabled: true,
     slack_enabled: true,
@@ -47,7 +52,8 @@ export function CronAlertSettings() {
   useEffect(() => {
     if (settings) {
       setLocalSettings({
-        failure_threshold: settings.failure_threshold,
+        warning_threshold: settings.warning_threshold ?? 3,
+        critical_threshold: settings.critical_threshold ?? 5,
         alert_cooldown_minutes: settings.alert_cooldown_minutes,
         email_enabled: settings.email_enabled,
         slack_enabled: settings.slack_enabled,
@@ -56,16 +62,19 @@ export function CronAlertSettings() {
   }, [settings]);
 
   const updateMutation = useMutation({
-    mutationFn: async (newSettings: Partial<AlertSettings>) => {
+    mutationFn: async (newSettings: typeof localSettings) => {
       // Validate inputs
-      const threshold = Math.max(1, Math.min(10, newSettings.failure_threshold || 3));
+      const warningThreshold = Math.max(1, Math.min(10, newSettings.warning_threshold || 3));
+      const criticalThreshold = Math.max(warningThreshold + 1, Math.min(15, newSettings.critical_threshold || 5));
       const cooldown = Math.max(5, Math.min(1440, newSettings.alert_cooldown_minutes || 60));
 
       if (settings?.id) {
         const { error } = await supabase
           .from('cron_alert_settings')
           .update({
-            failure_threshold: threshold,
+            warning_threshold: warningThreshold,
+            critical_threshold: criticalThreshold,
+            failure_threshold: warningThreshold, // Keep for backwards compatibility
             alert_cooldown_minutes: cooldown,
             email_enabled: newSettings.email_enabled ?? true,
             slack_enabled: newSettings.slack_enabled ?? true,
@@ -78,7 +87,9 @@ export function CronAlertSettings() {
           .from('cron_alert_settings')
           .insert({
             job_name: 'compute-analytics-cron',
-            failure_threshold: threshold,
+            warning_threshold: warningThreshold,
+            critical_threshold: criticalThreshold,
+            failure_threshold: warningThreshold,
             alert_cooldown_minutes: cooldown,
             email_enabled: newSettings.email_enabled ?? true,
             slack_enabled: newSettings.slack_enabled ?? true,
@@ -104,7 +115,12 @@ export function CronAlertSettings() {
   });
 
   const handleSave = () => {
-    updateMutation.mutate(localSettings);
+    // Ensure critical is always greater than warning
+    const adjustedSettings = {
+      ...localSettings,
+      critical_threshold: Math.max(localSettings.warning_threshold + 1, localSettings.critical_threshold)
+    };
+    updateMutation.mutate(adjustedSettings);
   };
 
   if (isLoading) {
@@ -131,51 +147,97 @@ export function CronAlertSettings() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Thresholds */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="failure-threshold" className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
-              Seuil d'échecs consécutifs
-            </Label>
-            <Input
-              id="failure-threshold"
-              type="number"
-              min={1}
-              max={10}
-              value={localSettings.failure_threshold || 3}
-              onChange={(e) => setLocalSettings(prev => ({
-                ...prev,
-                failure_threshold: parseInt(e.target.value) || 3
-              }))}
-              className="max-w-[120px]"
-            />
-            <p className="text-xs text-muted-foreground">
-              Nombre d'échecs avant d'envoyer une alerte (1-10)
-            </p>
-          </div>
+        {/* Severity Thresholds */}
+        <div className="space-y-4">
+          <Label className="flex items-center gap-2 text-sm font-medium">
+            <AlertTriangle className="h-4 w-4" />
+            Seuils de sévérité
+          </Label>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Warning threshold */}
+            <div className="p-4 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 space-y-3">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/50 dark:text-amber-400">
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  Warning
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="warning-threshold" className="text-sm text-muted-foreground">
+                  Échecs consécutifs
+                </Label>
+                <Input
+                  id="warning-threshold"
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={localSettings.warning_threshold}
+                  onChange={(e) => setLocalSettings(prev => ({
+                    ...prev,
+                    warning_threshold: parseInt(e.target.value) || 3
+                  }))}
+                  className="max-w-[100px] bg-background"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Première alerte envoyée (1-10)
+                </p>
+              </div>
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="cooldown" className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-primary" />
-              Délai entre alertes (minutes)
-            </Label>
-            <Input
-              id="cooldown"
-              type="number"
-              min={5}
-              max={1440}
-              value={localSettings.alert_cooldown_minutes || 60}
-              onChange={(e) => setLocalSettings(prev => ({
-                ...prev,
-                alert_cooldown_minutes: parseInt(e.target.value) || 60
-              }))}
-              className="max-w-[120px]"
-            />
-            <p className="text-xs text-muted-foreground">
-              Temps minimum entre deux alertes (5-1440 min)
-            </p>
+            {/* Critical threshold */}
+            <div className="p-4 rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-800 space-y-3">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-red-100 text-red-700 border-red-300 dark:bg-red-900/50 dark:text-red-400">
+                  <AlertCircle className="h-3 w-3 mr-1" />
+                  Critique
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="critical-threshold" className="text-sm text-muted-foreground">
+                  Échecs consécutifs
+                </Label>
+                <Input
+                  id="critical-threshold"
+                  type="number"
+                  min={localSettings.warning_threshold + 1}
+                  max={15}
+                  value={localSettings.critical_threshold}
+                  onChange={(e) => setLocalSettings(prev => ({
+                    ...prev,
+                    critical_threshold: parseInt(e.target.value) || 5
+                  }))}
+                  className="max-w-[100px] bg-background"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Alerte critique (min: {localSettings.warning_threshold + 1})
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Cooldown */}
+        <div className="space-y-2">
+          <Label htmlFor="cooldown" className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-primary" />
+            Délai entre alertes (minutes)
+          </Label>
+          <Input
+            id="cooldown"
+            type="number"
+            min={5}
+            max={1440}
+            value={localSettings.alert_cooldown_minutes}
+            onChange={(e) => setLocalSettings(prev => ({
+              ...prev,
+              alert_cooldown_minutes: parseInt(e.target.value) || 60
+            }))}
+            className="max-w-[120px]"
+          />
+          <p className="text-xs text-muted-foreground">
+            Temps minimum entre deux alertes de même sévérité (5-1440 min)
+          </p>
         </div>
 
         {/* Notification Channels */}
@@ -189,7 +251,7 @@ export function CronAlertSettings() {
             <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
               <Switch
                 id="email-enabled"
-                checked={localSettings.email_enabled ?? true}
+                checked={localSettings.email_enabled}
                 onCheckedChange={(checked) => setLocalSettings(prev => ({
                   ...prev,
                   email_enabled: checked
@@ -204,7 +266,7 @@ export function CronAlertSettings() {
             <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30">
               <Switch
                 id="slack-enabled"
-                checked={localSettings.slack_enabled ?? true}
+                checked={localSettings.slack_enabled}
                 onCheckedChange={(checked) => setLocalSettings(prev => ({
                   ...prev,
                   slack_enabled: checked
@@ -220,8 +282,18 @@ export function CronAlertSettings() {
 
         {/* Last alert info */}
         {settings?.last_alert_at && (
-          <div className="text-sm text-muted-foreground border-t pt-4">
-            Dernière alerte envoyée : {format(new Date(settings.last_alert_at), "dd MMM yyyy à HH:mm", { locale: fr })}
+          <div className="text-sm text-muted-foreground border-t pt-4 flex items-center gap-2">
+            Dernière alerte : 
+            {settings.last_alert_severity && (
+              <Badge variant="outline" className={
+                settings.last_alert_severity === 'critical' 
+                  ? 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/50 dark:text-red-400'
+                  : 'bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/50 dark:text-amber-400'
+              }>
+                {settings.last_alert_severity === 'critical' ? 'Critique' : 'Warning'}
+              </Badge>
+            )}
+            {format(new Date(settings.last_alert_at), "dd MMM yyyy à HH:mm", { locale: fr })}
           </div>
         )}
 
