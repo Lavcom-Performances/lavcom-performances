@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, FileText } from "lucide-react";
 import { StepResults } from "@/components/simulation/StepResults";
+import { ExpertSection } from "@/components/landing/ExpertSection";
 import { 
   SimulationProject, 
   defaultSimulationProject,
@@ -49,6 +50,9 @@ export default function SimulationResultsPage() {
           Télécharger le rapport PDF
         </Button>
       </div>
+
+      {/* Expert Section */}
+      <ExpertSection variant="simulator" className="mt-12 -mx-6 px-6" />
     </div>
   );
 }
