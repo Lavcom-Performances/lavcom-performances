@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppSidebar } from "./AppSidebar";
 import { MobileHeader } from "./MobileHeader";
 import { TrialBanner } from "@/components/trial/TrialBanner";
@@ -11,6 +12,29 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { useOnboarding } from "@/hooks/useOnboarding";
 
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    y: 8,
+  },
+  enter: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut" as const,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -8,
+    transition: {
+      duration: 0.15,
+      ease: "easeIn" as const,
+    },
+  },
+};
+
 interface AppLayoutProps {
   userRole?: string;
   currentLaundromat?: string;
@@ -21,6 +45,7 @@ export function AppLayout({
   currentLaundromat = "Laverie Saint-Michel" 
 }: AppLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const location = useLocation();
   const { daysRemaining, trialStatus, planType } = useSubscription();
   const { isDemo, siteName } = useCurrentSite();
   const { showOnboarding, completeOnboarding, skipOnboarding } = useOnboarding();
@@ -79,7 +104,18 @@ export function AppLayout({
           )}
           
           <main className="flex-1 overflow-auto">
-            <Outlet />
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={location.pathname}
+                initial="initial"
+                animate="enter"
+                exit="exit"
+                variants={pageVariants}
+                className="h-full"
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
           </main>
         </div>
       </div>
