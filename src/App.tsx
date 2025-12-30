@@ -31,6 +31,8 @@ import ImportExport from "./pages/ImportExport";
 import AdminUsers from "./pages/AdminUsers";
 import AdminExpertRequests from "./pages/AdminExpertRequests";
 import AdminCronLogs from "./pages/AdminCronLogs";
+import AdminDashboard from "./pages/AdminDashboard";
+import { AdminProtectedRoute } from "./components/admin/AdminProtectedRoute";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
@@ -119,9 +121,10 @@ const App = () => (
             <Route path="/laundromat-settings" element={<LaundromatSettings />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/expert-requests" element={<AdminExpertRequests />} />
-            <Route path="/admin/cron-logs" element={<AdminCronLogs />} />
+            <Route path="/admin" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
+            <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
+            <Route path="/admin/expert-requests" element={<AdminProtectedRoute><AdminExpertRequests /></AdminProtectedRoute>} />
+            <Route path="/admin/cron-logs" element={<AdminProtectedRoute><AdminCronLogs /></AdminProtectedRoute>} />
             
             {/* Chart pages */}
             <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />

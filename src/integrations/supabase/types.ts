@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_logs: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          details: Json | null
+          id: string
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+        }
+        Relationships: []
+      }
       analytics_daily: {
         Row: {
           average_basket: number | null
@@ -937,6 +961,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: never; Returns: boolean }
       is_org_admin: {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
@@ -946,6 +971,19 @@ export type Database = {
         Returns: boolean
       }
       owns_site: { Args: { _site_id: string }; Returns: boolean }
+      rpc_admin_global_stats: { Args: never; Returns: Json }
+      rpc_admin_monthly_series: {
+        Args: { p_end_date: string; p_start_date: string }
+        Returns: Json
+      }
+      rpc_admin_revenue_stats: {
+        Args: { p_end_date: string; p_start_date: string }
+        Returns: Json
+      }
+      rpc_admin_top_sites: {
+        Args: { p_end_date: string; p_limit?: number; p_start_date: string }
+        Returns: Json
+      }
       rpc_dashboard_kpis: {
         Args: { p_end_date: string; p_site_id: string; p_start_date: string }
         Returns: {
