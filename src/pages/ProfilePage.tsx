@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Loader2, Save, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff, Shield, ArrowRight } from "lucide-react";
+import { Loader2, Save, Building2, Phone, FileText, Mail, ArrowLeft, Lock, Eye, EyeOff, Shield, ArrowRight, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,12 +15,14 @@ import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { MFASetup } from "@/components/auth/MFASetup";
 import { ReAuthDialog } from "@/components/auth/ReAuthDialog";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 export default function ProfilePage() {
   const { t } = useTranslation(['app', 'common']);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, profile, updateProfile, updatePassword, loading: authLoading } = useAuth();
+  const { resetOnboarding } = useOnboarding();
   
   // Profile form state
   const [firstName, setFirstName] = useState("");
@@ -504,6 +506,24 @@ export default function ProfilePage() {
             </div>
           </CardHeader>
         </Link>
+      </Card>
+
+      {/* Onboarding Tutorial Card */}
+      <Card className="hover:bg-muted/50 transition-colors cursor-pointer" onClick={resetOnboarding}>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                <GraduationCap className="h-5 w-5 text-amber-600" />
+              </div>
+              <div>
+                <CardTitle className="text-base">Revoir le tutoriel</CardTitle>
+                <CardDescription className="text-xs">Relancez le guide de prise en main de Lavcom</CardDescription>
+              </div>
+            </div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground" />
+          </div>
+        </CardHeader>
       </Card>
 
       {/* Re-auth Dialog for Password Change */}
