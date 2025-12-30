@@ -23,12 +23,15 @@ import {
   MapPin,
   FileText,
   Eye,
-  Download
+  Download,
+  Bell
 } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { SubscriptionMetricsExport } from '@/components/admin/SubscriptionMetricsExport';
+import { ChurnAlertSettings } from '@/components/admin/ChurnAlertSettings';
 
 interface GlobalStats {
   total_users: number;
@@ -404,6 +407,10 @@ export default function AdminDashboard() {
               <TrendingUp className="h-4 w-4 mr-2" />
               Top Sites
             </TabsTrigger>
+            <TabsTrigger value="alerts">
+              <Bell className="h-4 w-4 mr-2" />
+              Alertes
+            </TabsTrigger>
             <TabsTrigger value="audit">
               <FileText className="h-4 w-4 mr-2" />
               Audit Logs
@@ -412,6 +419,13 @@ export default function AdminDashboard() {
 
           {/* Subscriptions Tab - NEW */}
           <TabsContent value="subscriptions" className="space-y-4">
+            {/* Export button */}
+            <div className="flex justify-end">
+              <SubscriptionMetricsExport 
+                metrics={subMetrics || null} 
+                disabled={loadingSubMetrics} 
+              />
+            </div>
             {/* MRR & Key Metrics */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20">
@@ -812,6 +826,11 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Alerts Tab */}
+          <TabsContent value="alerts" className="space-y-4">
+            <ChurnAlertSettings />
           </TabsContent>
 
           <TabsContent value="audit" className="space-y-4">
