@@ -1,12 +1,20 @@
-import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
-import { useMonthlyRevenue } from "@/hooks/useAnalyticsRpc";
-import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
+import { useChartPreferences } from "@/hooks/useChartPreferences";
+import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MonthlyRevenuePage() {
   const { dateRange, setDateRange } = useDateRange();
-  const [filters, setFilters] = useState(defaultChartFilters);
+  const { filters, setFilters, isLoaded } = useChartPreferences("monthly_revenue");
+
+  if (!isLoaded) {
+    return (
+      <div className="p-6 lg:p-8">
+        <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">

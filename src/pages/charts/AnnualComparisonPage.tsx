@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useAnnualComparison } from "@/hooks/useChartsData";
-import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
+import { useChartPreferences } from "@/hooks/useChartPreferences";
+import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -14,7 +14,7 @@ import {
 
 export default function AnnualComparisonPage() {
   const { dateRange, setDateRange } = useDateRange();
-  const [filters, setFilters] = useState(defaultChartFilters);
+  const { filters, setFilters, isLoaded } = useChartPreferences("annual_comparison");
   const { data, isLoading } = useAnnualComparison(filters);
   const { monthlyData, yearTotals, years } = data ?? { monthlyData: [], yearTotals: {}, years: [] };
 
@@ -30,6 +30,14 @@ export default function AnnualComparisonPage() {
 
   const currentYear = new Date().getFullYear();
   const previousYear = currentYear - 1;
+
+  if (!isLoaded) {
+    return (
+      <div className="p-6 lg:p-8">
+        <Skeleton className="h-[500px]" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">

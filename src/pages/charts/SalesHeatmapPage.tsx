@@ -1,14 +1,22 @@
-import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useHeatmapData } from "@/hooks/useChartsData";
-import { ChartPageFilters, heatmapDefaultFilters } from "@/components/charts/ChartPageFilters";
+import { useChartPreferences } from "@/hooks/useChartPreferences";
+import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { SalesHeatmap } from "@/components/dashboard/SalesHeatmap";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SalesHeatmapPage() {
   const { dateRange, setDateRange } = useDateRange();
-  const [filters, setFilters] = useState(heatmapDefaultFilters);
+  const { filters, setFilters, isLoaded } = useChartPreferences("heatmap");
   const { data: heatmapData, isLoading } = useHeatmapData(filters);
+
+  if (!isLoaded) {
+    return (
+      <div className="p-6 lg:p-8">
+        <Skeleton className="h-[500px]" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">

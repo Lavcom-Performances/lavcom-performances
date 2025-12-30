@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useMachineStats } from "@/hooks/useChartsData";
-import { ChartPageFilters, machinePageDefaultFilters } from "@/components/charts/ChartPageFilters";
+import { useChartPreferences } from "@/hooks/useChartPreferences";
+import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -16,7 +17,7 @@ type ViewType = "ca" | "ventes";
 
 export default function MachineTypePage() {
   const { dateRange, setDateRange } = useDateRange();
-  const [filters, setFilters] = useState(machinePageDefaultFilters);
+  const { filters, setFilters, isLoaded } = useChartPreferences("machine_type");
   const { data: machineData, isLoading } = useMachineStats(filters);
   const [selectedView, setSelectedView] = useState<ViewType>("ca");
 
@@ -34,6 +35,14 @@ export default function MachineTypePage() {
 
   const formatCurrency = (value: number) => 
     new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
+
+  if (!isLoaded) {
+    return (
+      <div className="p-6 lg:p-8">
+        <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
