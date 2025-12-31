@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Upload, FileText, Calendar } from "lucide-react";
+import { Download, Upload, FileText, Calendar, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,6 +7,8 @@ import { generateMonthlyReport, getMockMonthlyData } from "@/utils/pdfExport";
 import { trackPdfDownload } from "@/lib/analytics";
 import { toast } from "@/hooks/use-toast";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
+import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const MONTHS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
@@ -16,6 +18,7 @@ const MONTHS = [
 const YEARS = [2024, 2025];
 
 export default function ImportExport() {
+  const { canImport, canExport, permissions } = useCurrentUserPermissions();
   const [selectedMonth, setSelectedMonth] = useState<string>("Janvier");
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -124,11 +127,19 @@ export default function ImportExport() {
               </p>
             </div>
 
+            {!canExport && (
+              <Alert className="mb-4">
+                <Lock className="h-4 w-4" />
+                <AlertDescription>
+                  Vous n'avez pas la permission d'exporter des données.
+                </AlertDescription>
+              </Alert>
+            )}
             <Button 
               className="w-full" 
               size="lg"
               onClick={handleExportPDF}
-              disabled={isGenerating}
+              disabled={isGenerating || !canExport}
             >
               {isGenerating ? (
                 <>
@@ -159,42 +170,53 @@ export default function ImportExport() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div 
-              className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-lavcom-green/50 transition-colors cursor-pointer"
-              onClick={() => setImportDialogOpen(true)}
-            >
-              <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-              <p className="text-sm font-medium text-foreground mb-1">
-                Glissez-déposez votre fichier ici
-              </p>
-              <p className="text-xs text-muted-foreground">
-                ou cliquez pour sélectionner (CSV)
-              </p>
-            </div>
+            {!canImport ? (
+              <Alert>
+                <Lock className="h-4 w-4" />
+                <AlertDescription>
+                  Vous n'avez pas la permission d'importer des données.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <>
+                <div 
+                  className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-lavcom-green/50 transition-colors cursor-pointer"
+                  onClick={() => setImportDialogOpen(true)}
+                >
+                  <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                  <p className="text-sm font-medium text-foreground mb-1">
+                    Glissez-déposez votre fichier ici
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    ou cliquez pour sélectionner (CSV)
+                  </p>
+                </div>
 
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-lavcom-green" />
-                <span className="font-medium">Format attendu</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Formats supportés : Events, LM Control, ou CSV standard avec colonnes Date, Machine, Mode paiement, Montant.
-              </p>
-            </div>
+                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Calendar className="h-4 w-4 text-lavcom-green" />
+                    <span className="font-medium">Format attendu</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Formats supportés : Events, LM Control, ou CSV standard avec colonnes Date, Machine, Mode paiement, Montant.
+                  </p>
+                </div>
 
-            <Button 
-              className="w-full bg-lavcom-green hover:bg-lavcom-green-dark text-white" 
-              size="lg"
-              onClick={() => setImportDialogOpen(true)}
-            >
-              <Upload className="h-5 w-5 mr-2" />
-              Importer des données CSV
-            </Button>
+                <Button 
+                  className="w-full bg-lavcom-green hover:bg-lavcom-green-dark text-white" 
+                  size="lg"
+                  onClick={() => setImportDialogOpen(true)}
+                >
+                  <Upload className="h-5 w-5 mr-2" />
+                  Importer des données CSV
+                </Button>
 
-            {lastImportCount !== null && (
-              <p className="text-sm text-center text-muted-foreground">
-                Dernier import : {lastImportCount} opérations importées
-              </p>
+                {lastImportCount !== null && (
+                  <p className="text-sm text-center text-muted-foreground">
+                    Dernier import : {lastImportCount} opérations importées
+                  </p>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
