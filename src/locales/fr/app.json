@@ -1244,6 +1244,35 @@
     "avgForecastProfit": "Bénéfice mensuel prévu",
     "forecastLabel": "Prévision",
     "insufficientDataForForecast": "Données historiques insuffisantes pour générer des prévisions fiables. Importez au moins 6 mois de données.",
-    "forecastDisclaimer": "Ces prévisions sont basées sur les tendances historiques et peuvent varier en fonction des conditions réelles."
+    "forecastDisclaimer": "Ces prévisions sont basées sur les tendances historiques et peuvent varier en fonction des conditions réelles.",
+    "comparisonPdfTitle": "Comparatif de rentabilité multi-sites",
+    "comparisonPdfDisclaimer": "Données basées sur les opérations et coûts configurés",
+    "totalRevenueLabel": "CA Total",
+    "totalCostsLabel": "Charges Totales",
+    "totalProfitLabel": "Bénéfice Total",
+    "avgMargin": "Marge moyenne",
+    "siteDetails": "Détail par site",
+    "city": "Ville",
+    "period": "Période",
+    "days": "jours",
+    "pdfExported": "PDF exporté avec succès",
+    "csvExported": "CSV exporté avec succès",
+    "recommendations": {
+      "title": "Recommandations",
+      "count": "recommandations",
+      "noData": "Pas assez de données pour générer des recommandations.",
+      "priorityHigh": "Priorité haute",
+      "priorityMedium": "Priorité moyenne",
+      "priorityLow": "Information",
+      "lowMargin": { "title": "Marge critique", "description": "Votre marge bénéficiaire est inférieure à 10%. Analysez vos charges fixes et variables.", "impact": "Risque de pertes si la situation perdure" },
+      "moderateMargin": { "title": "Marge à optimiser", "description": "Votre marge entre 10% et 20% peut être améliorée.", "impact": "Potentiel d'amélioration de 5-10%" },
+      "excellentMargin": { "title": "Excellente rentabilité", "description": "Votre marge supérieure à 30% est excellente. Maintenez cette performance.", "impact": "Continuez sur cette lancée" },
+      "decliningRevenue": { "title": "CA en baisse", "description": "La tendance des revenus est à la baisse. Analysez les causes.", "impact": "Actions marketing recommandées" },
+      "growingRevenue": { "title": "CA en croissance", "description": "Vos revenus progressent régulièrement. Continuez ainsi.", "impact": "Tendance positive à maintenir" },
+      "peakConcentration": { "title": "Concentration horaire", "description": "L'activité est concentrée sur les heures {{hours}}. Envisagez des promotions hors-pic.", "impact": "Lissage potentiel de l'activité" },
+      "highVarCosts": { "title": "Charges variables élevées", "description": "Vos charges variables ({{percent}}%) sont au-dessus de la moyenne.", "impact": "Négociation fournisseurs recommandée" },
+      "highFixedCosts": { "title": "Charges fixes élevées", "description": "Vos charges fixes dépassent 60% du CA. Renégociez vos contrats.", "impact": "Réduction des charges prioritaire" },
+      "underperformingMachines": { "title": "Machines sous-performantes", "description": "{{count}} machine(s) génèrent moins de 50% du CA moyen.", "impact": "Maintenance ou remplacement à évaluer" }
+    }
   }
 }

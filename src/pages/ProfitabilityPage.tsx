@@ -48,6 +48,7 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { useHasData } from "@/hooks/useHasData";
 import { ProfitabilityEmptyState } from "@/components/ui/empty-state";
 import { CostsConfigBanner } from "@/components/dashboard/CostsConfigBanner";
+import { ProfitabilityRecommendations } from "@/components/dashboard/ProfitabilityRecommendations";
 import { useProfitability } from "@/hooks/useProfitability";
 import { MonthlyProfitabilityChart } from "@/components/dashboard/MonthlyProfitabilityChart";
 import { MarginAlertBanner } from "@/components/dashboard/MarginAlertBanner";
@@ -289,6 +290,9 @@ export default function ProfitabilityPage() {
         {/* Onglet Rentabilité */}
         {profitability.hasCosts && (
           <TabsContent value="profitability" className="space-y-6">
+            {/* Recommendations based on forecast */}
+            <ProfitabilityRecommendations />
+            
             {/* Profitability Forecast */}
             <ProfitabilityForecast />
             

@@ -1244,6 +1244,35 @@
     "avgForecastProfit": "Avg. forecast profit",
     "forecastLabel": "Forecast",
     "insufficientDataForForecast": "Insufficient historical data to generate reliable forecasts. Import at least 6 months of data.",
-    "forecastDisclaimer": "These forecasts are based on historical trends and may vary depending on actual conditions."
+    "forecastDisclaimer": "These forecasts are based on historical trends and may vary depending on actual conditions.",
+    "comparisonPdfTitle": "Multi-site profitability comparison",
+    "comparisonPdfDisclaimer": "Data based on configured operations and costs",
+    "totalRevenueLabel": "Total Revenue",
+    "totalCostsLabel": "Total Costs",
+    "totalProfitLabel": "Total Profit",
+    "avgMargin": "Average margin",
+    "siteDetails": "Site details",
+    "city": "City",
+    "period": "Period",
+    "days": "days",
+    "pdfExported": "PDF exported successfully",
+    "csvExported": "CSV exported successfully",
+    "recommendations": {
+      "title": "Recommendations",
+      "count": "recommendations",
+      "noData": "Not enough data to generate recommendations.",
+      "priorityHigh": "High priority",
+      "priorityMedium": "Medium priority",
+      "priorityLow": "Information",
+      "lowMargin": { "title": "Critical margin", "description": "Your profit margin is below 10%. Analyze your fixed and variable costs.", "impact": "Risk of losses if situation continues" },
+      "moderateMargin": { "title": "Margin to optimize", "description": "Your margin between 10% and 20% can be improved.", "impact": "Potential improvement of 5-10%" },
+      "excellentMargin": { "title": "Excellent profitability", "description": "Your margin above 30% is excellent. Maintain this performance.", "impact": "Keep up the good work" },
+      "decliningRevenue": { "title": "Declining revenue", "description": "Revenue trend is declining. Analyze the causes.", "impact": "Marketing actions recommended" },
+      "growingRevenue": { "title": "Growing revenue", "description": "Your revenues are progressing steadily. Keep it up.", "impact": "Positive trend to maintain" },
+      "peakConcentration": { "title": "Peak concentration", "description": "Activity is concentrated during {{hours}}. Consider off-peak promotions.", "impact": "Potential activity smoothing" },
+      "highVarCosts": { "title": "High variable costs", "description": "Your variable costs ({{percent}}%) are above average.", "impact": "Supplier negotiation recommended" },
+      "highFixedCosts": { "title": "High fixed costs", "description": "Your fixed costs exceed 60% of revenue. Renegotiate contracts.", "impact": "Cost reduction priority" },
+      "underperformingMachines": { "title": "Underperforming machines", "description": "{{count}} machine(s) generate less than 50% of average revenue.", "impact": "Maintenance or replacement to evaluate" }
+    }
   }
 }
