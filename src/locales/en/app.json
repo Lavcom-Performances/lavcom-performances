@@ -1233,6 +1233,17 @@
       "settingsDescription": "Set the threshold below which you want to be alerted",
       "thresholdLabel": "Minimum margin threshold",
       "currentMargin": "Current margin"
-    }
+    },
+    "multiSiteComparison": "Multi-site comparison",
+    "bestPerformer": "Best performer",
+    "needsAttention": "Needs attention",
+    "site": "Site",
+    "forecast": "Profitability forecast",
+    "next3Months": "Next 3 months",
+    "expectedTrend": "Expected trend",
+    "avgForecastProfit": "Avg. forecast profit",
+    "forecastLabel": "Forecast",
+    "insufficientDataForForecast": "Insufficient historical data to generate reliable forecasts. Import at least 6 months of data.",
+    "forecastDisclaimer": "These forecasts are based on historical trends and may vary depending on actual conditions."
   }
 }

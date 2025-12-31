@@ -51,6 +51,8 @@ import { CostsConfigBanner } from "@/components/dashboard/CostsConfigBanner";
 import { useProfitability } from "@/hooks/useProfitability";
 import { MonthlyProfitabilityChart } from "@/components/dashboard/MonthlyProfitabilityChart";
 import { MarginAlertBanner } from "@/components/dashboard/MarginAlertBanner";
+import { MultiSiteProfitabilityComparison } from "@/components/dashboard/MultiSiteProfitabilityComparison";
+import { ProfitabilityForecast } from "@/components/dashboard/ProfitabilityForecast";
 
 // Mock data - CA perdu estimé par machine (will be replaced later with real data)
 const lostRevenueData = [
@@ -287,6 +289,12 @@ export default function ProfitabilityPage() {
         {/* Onglet Rentabilité */}
         {profitability.hasCosts && (
           <TabsContent value="profitability" className="space-y-6">
+            {/* Profitability Forecast */}
+            <ProfitabilityForecast />
+            
+            {/* Multi-site comparison */}
+            <MultiSiteProfitabilityComparison dateRange={dateRange} />
+            
             {/* Monthly evolution chart */}
             <MonthlyProfitabilityChart />
             

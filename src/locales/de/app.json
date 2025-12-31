@@ -882,6 +882,17 @@
       "settingsDescription": "Legen Sie den Schwellenwert fest, unter dem Sie benachrichtigt werden möchten",
       "thresholdLabel": "Mindestmargenschwellenwert",
       "currentMargin": "Aktuelle Marge"
-    }
+    },
+    "multiSiteComparison": "Standortvergleich",
+    "bestPerformer": "Beste Leistung",
+    "needsAttention": "Benötigt Aufmerksamkeit",
+    "site": "Standort",
+    "forecast": "Rentabilitätsprognose",
+    "next3Months": "Nächste 3 Monate",
+    "expectedTrend": "Erwartete Tendenz",
+    "avgForecastProfit": "Durchschn. progn. Gewinn",
+    "forecastLabel": "Prognose",
+    "insufficientDataForForecast": "Unzureichende historische Daten für zuverlässige Prognosen. Importieren Sie mindestens 6 Monate Daten.",
+    "forecastDisclaimer": "Diese Prognosen basieren auf historischen Trends und können je nach tatsächlichen Bedingungen variieren."
   }
 }

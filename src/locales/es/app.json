@@ -882,6 +882,17 @@
       "settingsDescription": "Establezca el umbral por debajo del cual desea recibir alertas",
       "thresholdLabel": "Umbral mínimo de margen",
       "currentMargin": "Margen actual"
-    }
+    },
+    "multiSiteComparison": "Comparativa multi-sitio",
+    "bestPerformer": "Mejor rendimiento",
+    "needsAttention": "Necesita atención",
+    "site": "Sitio",
+    "forecast": "Previsión de rentabilidad",
+    "next3Months": "Próximos 3 meses",
+    "expectedTrend": "Tendencia esperada",
+    "avgForecastProfit": "Beneficio prev. medio",
+    "forecastLabel": "Previsión",
+    "insufficientDataForForecast": "Datos históricos insuficientes para generar previsiones fiables. Importe al menos 6 meses de datos.",
+    "forecastDisclaimer": "Estas previsiones se basan en tendencias históricas y pueden variar según las condiciones reales."
   }
 }

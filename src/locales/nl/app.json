@@ -882,6 +882,17 @@
       "settingsDescription": "Stel de drempel in waaronder u wilt worden gewaarschuwd",
       "thresholdLabel": "Minimale margedrempel",
       "currentMargin": "Huidige marge"
-    }
+    },
+    "multiSiteComparison": "Vergelijking meerdere locaties",
+    "bestPerformer": "Beste prestatie",
+    "needsAttention": "Vereist aandacht",
+    "site": "Locatie",
+    "forecast": "Winstgevendheidsprognose",
+    "next3Months": "Volgende 3 maanden",
+    "expectedTrend": "Verwachte trend",
+    "avgForecastProfit": "Gem. voorspelde winst",
+    "forecastLabel": "Prognose",
+    "insufficientDataForForecast": "Onvoldoende historische gegevens voor betrouwbare prognoses. Importeer minimaal 6 maanden aan gegevens.",
+    "forecastDisclaimer": "Deze prognoses zijn gebaseerd op historische trends en kunnen variëren afhankelijk van de werkelijke omstandigheden."
   }
 }
