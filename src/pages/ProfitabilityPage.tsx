@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Euro,
   TrendingUp,
@@ -40,6 +41,8 @@ import {
 } from "recharts";
 import { useViewMode } from "@/hooks/useViewMode";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { useHasData } from "@/hooks/useHasData";
+import { ProfitabilityEmptyState } from "@/components/ui/empty-state";
 
 // Mock data - CA perdu estimé par machine
 const lostRevenueData = [
@@ -115,10 +118,55 @@ const chartConfig = {
 export default function ProfitabilityPage() {
   const { isExpert } = useViewMode();
   const { dateRange, setDateRange } = useDateRange();
+  const { hasData, isLoading: dataLoading } = useHasData();
+  
   const totalLostRevenue = lostRevenueData.reduce((acc, d) => acc + d.lostRevenue, 0);
   const avgRotation = rotationData.reduce((acc, d) => acc + d.cyclesPerDay, 0) / rotationData.length;
   const peakSaturation = Math.max(...saturationData.map(d => d.saturation));
   const potentialGain = underperformingMachines.reduce((acc, d) => acc + d.potentialGain, 0);
+
+  // Loading state
+  if (dataLoading) {
+    return (
+      <div className="p-6 lg:p-8 space-y-6">
+        <Skeleton className="h-10 w-64" />
+        <Skeleton className="h-6 w-96" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state - no data imported
+  if (!hasData) {
+    return (
+      <>
+        <SEOHead 
+          title="Analyse de rentabilité"
+          description="Analysez la rentabilité de votre laverie automatique et identifiez les leviers d'optimisation."
+          url="/profitability"
+          noindex={true}
+        />
+        <div className="p-6 lg:p-8">
+          <div className="mb-6">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-foreground">
+              Analyse de Rentabilité
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Identifiez les leviers pour augmenter votre chiffre d'affaires
+            </p>
+          </div>
+          <div className="card-lavcom">
+            <ProfitabilityEmptyState />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

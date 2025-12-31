@@ -3,6 +3,8 @@ import { useDateRange } from "@/hooks/useDateRange";
 import { useHourlyFrequency } from "@/hooks/useChartsData";
 import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useHasData } from "@/hooks/useHasData";
+import { ChartEmptyState } from "@/components/ui/empty-state";
 import {
   BarChart,
   Bar,
@@ -25,8 +27,37 @@ export default function HourlyFrequencyPage() {
   const { dateRange, setDateRange } = useDateRange();
   const [filters, setFilters] = useState(defaultChartFilters);
   const { data: hourlyData, isLoading } = useHourlyFrequency(filters);
+  const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
   const total = hourlyData?.reduce((sum, d) => sum + d.count, 0) ?? 0;
+
+  // Loading state
+  if (dataLoading) {
+    return (
+      <div className="p-6 lg:p-8">
+        <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
+
+  // No data imported at all - show premium empty state
+  if (!hasImportedData) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+            Fréquentation par Heure
+          </h1>
+          <p className="text-muted-foreground">
+            Nombre de cycles par tranche horaire
+          </p>
+        </div>
+        <div className="card-lavcom">
+          <ChartEmptyState />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
