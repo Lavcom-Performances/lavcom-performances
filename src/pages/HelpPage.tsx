@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { HelpCircle, Upload, CreditCard, FileDown, Send, Loader2, CheckCircle, Mail, MessageSquare, ChevronDown } from "lucide-react";
+import { SupportChatbot } from "@/components/help/SupportChatbot";
 import { z } from "zod";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -405,6 +406,8 @@ export default function HelpPage() {
           </Card>
         </section>
       </div>
+      
+      <SupportChatbot language={lang as "fr" | "en"} />
     </>
   );
 }
