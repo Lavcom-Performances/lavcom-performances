@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Settings, ArrowRight } from "lucide-react";
+import { Building2, Settings, ArrowRight, Lock } from "lucide-react";
 import { useSites } from "@/hooks/useSites";
+import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function LaundryContent() {
   const navigate = useNavigate();
+  const { permissions } = useCurrentUserPermissions();
   const { sites, isLoading: loading } = useSites();
 
   return (
@@ -64,10 +67,26 @@ export default function LaundryContent() {
                 </div>
               ))}
               <div className="pt-4">
-                <Button variant="outline" onClick={() => navigate("/select-laundromat")}>
-                  <Building2 className="h-4 w-4 mr-2" />
-                  Ajouter une laverie
-                </Button>
+                {permissions.can_edit_sites ? (
+                  <Button variant="outline" onClick={() => navigate("/select-laundromat")}>
+                    <Building2 className="h-4 w-4 mr-2" />
+                    Ajouter une laverie
+                  </Button>
+                ) : (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" disabled className="opacity-50 cursor-not-allowed">
+                          <Lock className="h-4 w-4 mr-2" />
+                          Ajouter une laverie
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Vous n'avez pas la permission d'ajouter des laveries</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </div>
             </>
           )}
