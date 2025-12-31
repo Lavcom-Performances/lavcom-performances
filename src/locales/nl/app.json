@@ -834,5 +834,36 @@
       "import": "Importeren",
       "dashboard": "Dashboard"
     }
+  },
+  "profitability": {
+    "revenue": "Omzet",
+    "totalCosts": "Totale kosten",
+    "netProfit": "Nettowinst",
+    "margin": "Marge",
+    "profitMargin": "Winstmarge",
+    "periodSelected": "Geselecteerde periode",
+    "fixed": "vast",
+    "variable": "variabel",
+    "afterCosts": "Na kosten",
+    "tabProfitability": "Winstgevendheid",
+    "tabLosses": "Verliezen",
+    "tabEfficiency": "Efficiëntie",
+    "tabMachines": "Machines",
+    "tabTrends": "Trends",
+    "costsBreakdown": "Kostenspecificatie",
+    "totalCostsLabel": "Totale kosten",
+    "summary": "Winstgevendheidsoverzicht",
+    "fixedCosts": "Vaste kosten",
+    "variableCosts": "Variabele kosten",
+    "netResult": "Nettoresultaat",
+    "marginLabel": "Nettomarge",
+    "perTransaction": "Per transactie",
+    "avgRevenue": "Gem. omzet",
+    "avgCost": "Gem. kosten",
+    "avgProfit": "Gem. winst",
+    "monthlyEvolution": "Maandelijkse winstgevendheidsontwikkeling",
+    "avgMonthlyRevenue": "Gem. maandomzet",
+    "avgMonthlyCosts": "Gem. maandkosten",
+    "avgMonthlyProfit": "Gem. maandwinst"
   }
 }

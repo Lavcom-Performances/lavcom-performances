@@ -834,5 +834,36 @@
       "import": "Importa",
       "dashboard": "Dashboard"
     }
+  },
+  "profitability": {
+    "revenue": "Fatturato",
+    "totalCosts": "Costi totali",
+    "netProfit": "Utile netto",
+    "margin": "Margine",
+    "profitMargin": "Margine di profitto",
+    "periodSelected": "Periodo selezionato",
+    "fixed": "fisso",
+    "variable": "variabile",
+    "afterCosts": "Dopo i costi",
+    "tabProfitability": "Redditività",
+    "tabLosses": "Perdite",
+    "tabEfficiency": "Efficienza",
+    "tabMachines": "Macchine",
+    "tabTrends": "Tendenze",
+    "costsBreakdown": "Ripartizione dei costi",
+    "totalCostsLabel": "Costi totali",
+    "summary": "Riepilogo redditività",
+    "fixedCosts": "Costi fissi",
+    "variableCosts": "Costi variabili",
+    "netResult": "Risultato netto",
+    "marginLabel": "Margine netto",
+    "perTransaction": "Per transazione",
+    "avgRevenue": "Fatturato medio",
+    "avgCost": "Costo medio",
+    "avgProfit": "Profitto medio",
+    "monthlyEvolution": "Evoluzione mensile della redditività",
+    "avgMonthlyRevenue": "Fatturato mensile medio",
+    "avgMonthlyCosts": "Costi mensili medi",
+    "avgMonthlyProfit": "Profitto mensile medio"
   }
 }
