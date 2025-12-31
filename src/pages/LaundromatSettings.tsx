@@ -33,7 +33,8 @@ import {
   TrendingUp,
   TrendingDown,
   Info,
-  FileDown
+  FileDown,
+  Lock
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
@@ -58,6 +59,8 @@ import { ReportVariantDialog } from "@/components/report/ReportVariantDialog";
 import { ReportVariant } from "@/types/report";
 import { useSiteCosts } from "@/hooks/useSiteCosts";
 import { useSites } from "@/hooks/useSites";
+import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Machine {
   id: string;
@@ -111,6 +114,7 @@ export default function LaundromatSettings() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const siteIdFromUrl = searchParams.get('site');
+  const { permissions } = useCurrentUserPermissions();
   
   // Get sites
   const { sites, getDefaultSite } = useSites();
@@ -712,14 +716,34 @@ export default function LaundromatSettings() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeMachine(machine.id)}
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            {permissions.can_delete_sites ? (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeMachine(machine.id)}
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            ) : (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      disabled
+                                      className="h-8 w-8 text-muted-foreground opacity-50 cursor-not-allowed"
+                                    >
+                                      <Lock className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Vous n'avez pas la permission de supprimer</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
                           </TableCell>
                         </TableRow>
                       );

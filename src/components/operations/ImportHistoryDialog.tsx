@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Trash2, FileText, Loader2, History, AlertTriangle, TrendingUp, ShieldCheck } from "lucide-react";
+import { Trash2, FileText, Loader2, History, AlertTriangle, TrendingUp, ShieldCheck, Lock } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +22,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useImportBatches, ImportBatch } from "@/hooks/useImportBatches";
-
+import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 interface ImportHistoryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -32,6 +33,7 @@ interface ImportHistoryDialogProps {
 export function ImportHistoryDialog({ open, onOpenChange, onBatchDeleted }: ImportHistoryDialogProps) {
   const { toast } = useToast();
   const { batches, isLoading, deleteBatch, refetch } = useImportBatches();
+  const { canDelete } = useCurrentUserPermissions();
   const [deleteConfirmBatch, setDeleteConfirmBatch] = useState<ImportBatch | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -145,15 +147,35 @@ export function ImportHistoryDialog({ open, onOpenChange, onBatchDeleted }: Impo
                       </p>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDeleteClick(batch)}
-                    className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                    title="Supprimer cet import"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {canDelete ? (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteClick(batch)}
+                      className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      title="Supprimer cet import"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled
+                            className="shrink-0 text-muted-foreground opacity-50 cursor-not-allowed"
+                          >
+                            <Lock className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Vous n'avez pas la permission de supprimer des données</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                 </div>
               ))
             )}
