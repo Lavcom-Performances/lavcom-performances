@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   FileDown,
   RefreshCw,
+  Play,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { DashboardKPIGrid } from "@/components/dashboard/DashboardKPIGrid";
@@ -52,6 +53,8 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { generateDashboardPdf } from "@/utils/dashboardPdfExport";
 import { QuickStartBanner } from "@/components/onboarding/QuickStartBanner";
 import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
+import { useTutorial } from "@/hooks/useTutorial";
+import { InteractiveTutorial } from "@/components/onboarding/InteractiveTutorial";
 
 // Animation variants for staggered cards
 const containerVariants = {
@@ -150,6 +153,7 @@ export default function Dashboard() {
   const { goals } = useUserGoals(selectedSite?.id);
   const [isRecalculating, setIsRecalculating] = useState(false);
   const onboardingStatus = useOnboardingStatus();
+  const tutorial = useTutorial();
 
   // Handle analytics recalculation
   const handleRecalculateAnalytics = async () => {
@@ -300,6 +304,17 @@ export default function Dashboard() {
         url="/dashboard"
         noindex={true}
       />
+      
+      {/* Interactive Tutorial */}
+      <InteractiveTutorial
+        isActive={tutorial.isActive}
+        currentStep={tutorial.currentStep}
+        onNext={tutorial.nextStep}
+        onPrev={tutorial.prevStep}
+        onSkip={tutorial.skipTutorial}
+        onNeverShow={tutorial.neverShowAgain}
+      />
+
       <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
@@ -328,6 +343,18 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex gap-2 flex-wrap">
+            {/* Tutorial button */}
+            {tutorial.showStartButton && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={tutorial.startTutorial}
+                className="gap-2"
+              >
+                <Play className="h-4 w-4" />
+                <span className="hidden sm:inline">Tutoriel</span>
+              </Button>
+            )}
             <Button 
               variant="outline" 
               size="sm" 

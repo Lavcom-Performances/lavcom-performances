@@ -68,6 +68,7 @@ import PredictiveMaintenance from "./pages/PredictiveMaintenance";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
 import SettingsPage from "./pages/SettingsPage";
 import RolesManagement from "./pages/RolesManagement";
+import GettingStarted from "./pages/GettingStarted";
 
 const queryClient = new QueryClient();
 
@@ -119,6 +120,7 @@ const App = () => (
             </ProtectedRoute>
           }>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/getting-started" element={<GettingStarted />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/security" element={<SecurityPage />} />
             <Route path="/subscription" element={<SubscriptionManagement />} />
