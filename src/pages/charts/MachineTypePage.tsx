@@ -4,7 +4,7 @@ import { useMachineStats } from "@/hooks/useChartsData";
 import { useChartPreferences } from "@/hooks/useChartPreferences";
 import { useHasData } from "@/hooks/useHasData";
 import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
-import { ChartEmptyState } from "@/components/ui/empty-state";
+import { ChartEmptyState, DataLoadErrorState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -20,7 +20,7 @@ type ViewType = "ca" | "ventes";
 export default function MachineTypePage() {
   const { dateRange, setDateRange } = useDateRange();
   const { filters, setFilters, isLoaded } = useChartPreferences("machine_type");
-  const { data: machineData, isLoading } = useMachineStats(filters);
+  const { data: machineData, isLoading, isError, refetch } = useMachineStats(filters);
   const { hasData, isLoading: isLoadingHasData } = useHasData();
   const [selectedView, setSelectedView] = useState<ViewType>("ca");
 
@@ -51,6 +51,14 @@ export default function MachineTypePage() {
     return (
       <div className="p-6 lg:p-8">
         <ChartEmptyState />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6 lg:p-8">
+        <DataLoadErrorState onRetry={() => refetch()} />
       </div>
     );
   }
