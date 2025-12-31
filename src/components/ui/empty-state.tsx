@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Upload, ExternalLink, type LucideIcon } from "lucide-react";
+import { Upload, ExternalLink, AlertCircle, RefreshCw, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -118,6 +118,96 @@ export function EmptyState({
   );
 }
 
+// ============================================
+// ErrorState Component
+// ============================================
+
+interface ErrorStateProps {
+  /** Title of the error */
+  title?: string;
+  /** Description of the error */
+  description?: string;
+  /** Retry callback */
+  onRetry?: () => void;
+  /** Show admin link */
+  showAdminLink?: boolean;
+  /** Custom icon */
+  icon?: LucideIcon;
+  /** Additional className */
+  className?: string;
+}
+
+export function ErrorState({
+  title = "Impossible de charger les données",
+  description = "Une erreur est survenue lors du chargement. Veuillez réessayer.",
+  onRetry,
+  showAdminLink = false,
+  icon: Icon = AlertCircle,
+  className,
+}: ErrorStateProps) {
+  const navigate = useNavigate();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className={cn(
+        "flex flex-col items-center justify-center py-12 sm:py-16 px-6 text-center",
+        className
+      )}
+    >
+      {/* Icon container with error glow */}
+      <div className="relative mb-6">
+        <div className="absolute inset-0 blur-2xl bg-destructive/20 rounded-full scale-150" />
+        <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-destructive/20 to-destructive/5 border border-destructive/20 flex items-center justify-center">
+          <Icon className="h-10 w-10 text-destructive" />
+        </div>
+      </div>
+
+      {/* Title */}
+      <h2 className="text-xl sm:text-2xl font-display font-semibold text-foreground mb-2 max-w-md">
+        {title}
+      </h2>
+
+      {/* Description */}
+      <p className="text-muted-foreground max-w-lg mb-6">
+        {description}
+      </p>
+
+      {/* Action buttons */}
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        {onRetry && (
+          <Button
+            size="lg"
+            onClick={onRetry}
+            className="gap-2 min-w-[180px]"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Réessayer
+          </Button>
+        )}
+
+        {showAdminLink && (
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={() => navigate("/admin/status")}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ExternalLink className="h-4 w-4" />
+            État du système
+          </Button>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// ============================================
+// Pre-configured variants
+// ============================================
+
 // Pre-configured variants for common pages
 export function DashboardEmptyState() {
   return (
@@ -166,6 +256,27 @@ export function ChartEmptyState() {
         "Les visualisations se génèrent automatiquement à partir de vos imports.",
         "Comparez vos performances sur différentes périodes.",
       ]}
+    />
+  );
+}
+
+// Pre-configured error variants
+export function DataLoadErrorState({ onRetry }: { onRetry?: () => void }) {
+  return (
+    <ErrorState
+      title="Erreur de chargement"
+      description="Impossible de récupérer les données. Vérifiez votre connexion et réessayez."
+      onRetry={onRetry}
+    />
+  );
+}
+
+export function NetworkErrorState({ onRetry }: { onRetry?: () => void }) {
+  return (
+    <ErrorState
+      title="Problème de connexion"
+      description="Votre connexion semble instable. Veuillez vérifier votre réseau."
+      onRetry={onRetry}
     />
   );
 }
