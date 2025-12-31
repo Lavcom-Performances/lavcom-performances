@@ -3,7 +3,29 @@
     "badge": "La dashboard delle performance per lavanderie automatiche",
     "optimizeLaundries": "Voglio ottimizzare le mie lavanderie",
     "openLaundry": "Voglio aprire una lavanderia",
-    "viewDemo": "Vedi demo interattiva • 2 min"
+    "viewDemo": "Vedi demo interattiva • 2 min",
+    "slides": {
+      "slide1": {
+        "title": "Guadagna di più con le tue lavanderie, senza cambiare tutto",
+        "subtitle": "Lavcom Performances ti mostra a colpo d'occhio quanto portano le tue macchine e dove sono nascosti i tuoi margini di crescita.",
+        "cta": "Voglio ottimizzare le mie lavanderie"
+      },
+      "slide2": {
+        "title": "Le tue lavanderie stanno davvero performando?",
+        "subtitle": "Monitora le tue entrate, i periodi di punta e le macchine con prestazioni inferiori. Finalmente sai dove agire.",
+        "cta": "Vedi esempio di dashboard"
+      },
+      "slide3": {
+        "title": "Uno strumento semplice che ti mostra dove migliorare",
+        "subtitle": "Lavcom Performances trasforma i tuoi incassi in idee concrete: modificare un prezzo, aggiungere un'asciugatrice, rivedere un orario.",
+        "cta": "Scopri come funziona"
+      },
+      "slide4": {
+        "title": "Sai davvero quanto guadagna ogni macchina?",
+        "subtitle": "Identifica le tue macchine migliori, quelle che lavorano meno e le fasce orarie ad alto potenziale.",
+        "cta": "Analizza le mie macchine"
+      }
+    }
   },
   "twoProfiles": {
     "title": "Due profili, due soluzioni",

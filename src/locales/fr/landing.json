@@ -3,7 +3,29 @@
     "badge": "Le tableau de bord performance des laveries automatiques",
     "optimizeLaundries": "Je veux optimiser mes laveries",
     "openLaundry": "Je veux ouvrir une laverie",
-    "viewDemo": "Voir une démo interactive • 2 min"
+    "viewDemo": "Voir une démo interactive • 2 min",
+    "slides": {
+      "slide1": {
+        "title": "Gagnez plus avec vos laveries, sans changer tout votre quotidien",
+        "subtitle": "Lavcom Performances vous montre en un clin d'œil ce que rapportent vos machines et où se cachent vos marges de progression.",
+        "cta": "Je veux optimiser mes laveries"
+      },
+      "slide2": {
+        "title": "Vos laveries sont-elles vraiment performantes ?",
+        "subtitle": "Suivez vos recettes, vos périodes fortes et vos machines moins performantes. Vous savez enfin où agir.",
+        "cta": "Voir un exemple de tableau de bord"
+      },
+      "slide3": {
+        "title": "Un outil simple qui vous dit où améliorer vos résultats",
+        "subtitle": "Lavcom Performances transforme vos encaissements en idées concrètes : ajuster un prix, ajouter un séchoir, revoir un horaire.",
+        "cta": "Comprendre comment ça marche"
+      },
+      "slide4": {
+        "title": "Savez-vous vraiment combien vous rapporte chaque machine ?",
+        "subtitle": "Identifiez vos meilleures machines, celles qui tournent moins, et les créneaux horaires à fort potentiel.",
+        "cta": "Analyser mes machines"
+      }
+    }
   },
   "twoProfiles": {
     "title": "Deux profils, deux solutions",

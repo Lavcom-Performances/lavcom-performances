@@ -3,7 +3,29 @@
     "badge": "The performance dashboard for laundromats",
     "optimizeLaundries": "I want to optimize my laundries",
     "openLaundry": "I want to open a laundry",
-    "viewDemo": "See an interactive demo • 2 min"
+    "viewDemo": "See an interactive demo • 2 min",
+    "slides": {
+      "slide1": {
+        "title": "Earn more with your laundromats, without changing everything",
+        "subtitle": "Lavcom Performances shows you at a glance what your machines bring in and where your growth margins are hidden.",
+        "cta": "I want to optimize my laundries"
+      },
+      "slide2": {
+        "title": "Are your laundromats really performing?",
+        "subtitle": "Track your revenue, peak periods, and underperforming machines. You finally know where to act.",
+        "cta": "See a dashboard example"
+      },
+      "slide3": {
+        "title": "A simple tool that shows you where to improve",
+        "subtitle": "Lavcom Performances turns your earnings into concrete ideas: adjust a price, add a dryer, review a schedule.",
+        "cta": "See how it works"
+      },
+      "slide4": {
+        "title": "Do you really know how much each machine earns?",
+        "subtitle": "Identify your best machines, those that run less, and high-potential time slots.",
+        "cta": "Analyze my machines"
+      }
+    }
   },
   "twoProfiles": {
     "title": "Two profiles, two solutions",
