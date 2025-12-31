@@ -1215,6 +1215,24 @@
     "monthlyEvolution": "Monthly profitability evolution",
     "avgMonthlyRevenue": "Avg. monthly revenue",
     "avgMonthlyCosts": "Avg. monthly costs",
-    "avgMonthlyProfit": "Avg. monthly profit"
+    "avgMonthlyProfit": "Avg. monthly profit",
+    "exportPdf": "Export PDF",
+    "exportSuccess": "PDF report generated successfully",
+    "exportError": "Error generating PDF",
+    "exportNoData": "No data to export",
+    "pdfTitle": "MONTHLY PROFITABILITY REPORT",
+    "pdfDisclaimer": "This report is based on configured costs. Actual values may vary.",
+    "address": "Address",
+    "generatedOn": "Generated on",
+    "tableMonth": "Month",
+    "marginAlert": {
+      "title": "Margin below threshold",
+      "description": "Your current margin ({{current}}%) is below the configured threshold ({{threshold}}%). Analyze your costs to identify optimizations.",
+      "configure": "Configure alert",
+      "settingsTitle": "Margin alert settings",
+      "settingsDescription": "Set the threshold below which you want to be alerted",
+      "thresholdLabel": "Minimum margin threshold",
+      "currentMargin": "Current margin"
+    }
   }
 }

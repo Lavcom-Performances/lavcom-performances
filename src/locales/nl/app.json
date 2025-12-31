@@ -864,6 +864,24 @@
     "monthlyEvolution": "Maandelijkse winstgevendheidsontwikkeling",
     "avgMonthlyRevenue": "Gem. maandomzet",
     "avgMonthlyCosts": "Gem. maandkosten",
-    "avgMonthlyProfit": "Gem. maandwinst"
+    "avgMonthlyProfit": "Gem. maandwinst",
+    "exportPdf": "Exporteer PDF",
+    "exportSuccess": "PDF-rapport succesvol gegenereerd",
+    "exportError": "Fout bij het genereren van PDF",
+    "exportNoData": "Geen gegevens om te exporteren",
+    "pdfTitle": "MAANDELIJKS WINSTGEVENDHEIDSRAPPORT",
+    "pdfDisclaimer": "Dit rapport is gebaseerd op geconfigureerde kosten. Werkelijke waarden kunnen afwijken.",
+    "address": "Adres",
+    "generatedOn": "Gegenereerd op",
+    "tableMonth": "Maand",
+    "marginAlert": {
+      "title": "Marge onder drempel",
+      "description": "Uw huidige marge ({{current}}%) ligt onder de geconfigureerde drempel ({{threshold}}%). Analyseer uw kosten om optimalisaties te identificeren.",
+      "configure": "Waarschuwing configureren",
+      "settingsTitle": "Instellingen margewaarschuwing",
+      "settingsDescription": "Stel de drempel in waaronder u wilt worden gewaarschuwd",
+      "thresholdLabel": "Minimale margedrempel",
+      "currentMargin": "Huidige marge"
+    }
   }
 }

@@ -864,6 +864,24 @@
     "monthlyEvolution": "Monatliche Rentabilitätsentwicklung",
     "avgMonthlyRevenue": "Durchschn. Monatsumsatz",
     "avgMonthlyCosts": "Durchschn. Monatskosten",
-    "avgMonthlyProfit": "Durchschn. Monatsgewinn"
+    "avgMonthlyProfit": "Durchschn. Monatsgewinn",
+    "exportPdf": "PDF exportieren",
+    "exportSuccess": "PDF-Bericht erfolgreich erstellt",
+    "exportError": "Fehler beim Erstellen des PDFs",
+    "exportNoData": "Keine Daten zum Exportieren",
+    "pdfTitle": "MONATLICHER RENTABILITÄTSBERICHT",
+    "pdfDisclaimer": "Dieser Bericht basiert auf den konfigurierten Kosten. Die tatsächlichen Werte können abweichen.",
+    "address": "Adresse",
+    "generatedOn": "Erstellt am",
+    "tableMonth": "Monat",
+    "marginAlert": {
+      "title": "Marge unter Schwellenwert",
+      "description": "Ihre aktuelle Marge ({{current}}%) liegt unter dem konfigurierten Schwellenwert ({{threshold}}%). Analysieren Sie Ihre Kosten, um Optimierungen zu identifizieren.",
+      "configure": "Alarm konfigurieren",
+      "settingsTitle": "Margenalarm-Einstellungen",
+      "settingsDescription": "Legen Sie den Schwellenwert fest, unter dem Sie benachrichtigt werden möchten",
+      "thresholdLabel": "Mindestmargenschwellenwert",
+      "currentMargin": "Aktuelle Marge"
+    }
   }
 }

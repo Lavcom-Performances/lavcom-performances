@@ -864,6 +864,24 @@
     "monthlyEvolution": "Evolución mensual de la rentabilidad",
     "avgMonthlyRevenue": "Ingresos mensuales prom.",
     "avgMonthlyCosts": "Costes mensuales prom.",
-    "avgMonthlyProfit": "Beneficio mensual prom."
+    "avgMonthlyProfit": "Beneficio mensual prom.",
+    "exportPdf": "Exportar PDF",
+    "exportSuccess": "Informe PDF generado con éxito",
+    "exportError": "Error al generar el PDF",
+    "exportNoData": "No hay datos para exportar",
+    "pdfTitle": "INFORME DE RENTABILIDAD MENSUAL",
+    "pdfDisclaimer": "Este informe se basa en los costes configurados. Los valores reales pueden variar.",
+    "address": "Dirección",
+    "generatedOn": "Generado el",
+    "tableMonth": "Mes",
+    "marginAlert": {
+      "title": "Margen por debajo del umbral",
+      "description": "Su margen actual ({{current}}%) está por debajo del umbral configurado ({{threshold}}%). Analice sus costes para identificar optimizaciones.",
+      "configure": "Configurar alerta",
+      "settingsTitle": "Configuración de alerta de margen",
+      "settingsDescription": "Establezca el umbral por debajo del cual desea recibir alertas",
+      "thresholdLabel": "Umbral mínimo de margen",
+      "currentMargin": "Margen actual"
+    }
   }
 }

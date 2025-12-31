@@ -50,6 +50,7 @@ import { ProfitabilityEmptyState } from "@/components/ui/empty-state";
 import { CostsConfigBanner } from "@/components/dashboard/CostsConfigBanner";
 import { useProfitability } from "@/hooks/useProfitability";
 import { MonthlyProfitabilityChart } from "@/components/dashboard/MonthlyProfitabilityChart";
+import { MarginAlertBanner } from "@/components/dashboard/MarginAlertBanner";
 
 // Mock data - CA perdu estimé par machine (will be replaced later with real data)
 const lostRevenueData = [
@@ -188,6 +189,9 @@ export default function ProfitabilityPage() {
         noindex={true}
       />
       <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+      {/* Margin alert banner */}
+      <MarginAlertBanner dateRange={dateRange} />
+      
       {/* Costs config banner */}
       <CostsConfigBanner />
       

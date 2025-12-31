@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, Download } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -21,9 +22,12 @@ import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteCosts } from "@/hooks/useSiteCosts";
+import { useSites } from "@/hooks/useSites";
 import { format, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths } from "date-fns";
 import { fr, enUS, de, es, it, nl } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { generateProfitabilityChartPdf } from "@/utils/profitabilityChartPdfExport";
 
 const chartConfig = {
   revenue: { label: "CA", color: "hsl(var(--primary))" },
@@ -35,6 +39,9 @@ export function MonthlyProfitabilityChart() {
   const { t, i18n } = useTranslation("app");
   const { currentSiteId } = useCurrentSite();
   const { costs, hasCosts } = useSiteCosts(currentSiteId);
+  const { sites } = useSites();
+  const currentSite = sites?.find(s => s.id === currentSiteId);
+  const profitability = useProfitability();
 
   // Get locale for date formatting
   const getLocale = () => {
@@ -128,13 +135,40 @@ export function MonthlyProfitabilityChart() {
     );
   }
 
+  const handleExportPdf = () => {
+    if (!monthlyData || monthlyData.length === 0) {
+      toast.error(t("profitability.exportNoData"));
+      return;
+    }
+
+    try {
+      generateProfitabilityChartPdf({
+        siteName: currentSite?.name || "-",
+        address: currentSite?.address || "-",
+        generatedDate: format(new Date(), "dd/MM/yyyy HH:mm"),
+        monthlyData,
+        avgMonthlyRevenue: Math.round(monthlyData.reduce((acc, d) => acc + d.revenue, 0) / monthlyData.length),
+        avgMonthlyCosts: Math.round(monthlyData.reduce((acc, d) => acc + d.costs, 0) / monthlyData.length),
+        avgMonthlyProfit: Math.round(monthlyData.reduce((acc, d) => acc + d.profit, 0) / monthlyData.length),
+        currentProfitMargin: profitability.profitMargin,
+      }, t);
+      toast.success(t("profitability.exportSuccess"));
+    } catch (error) {
+      toast.error(t("profitability.exportError"));
+    }
+  };
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-primary" />
           {t("profitability.monthlyEvolution")}
         </CardTitle>
+        <Button variant="outline" size="sm" onClick={handleExportPdf}>
+          <Download className="h-4 w-4 mr-2" />
+          {t("profitability.exportPdf")}
+        </Button>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px] w-full">
