@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, UserPlus, Mail, Trash2, Loader2, Crown, Shield, Eye, Edit, ChevronDown, Check, X, Info } from "lucide-react";
+import { Users, UserPlus, Mail, Trash2, Loader2, Crown, Shield, Eye, Edit, ChevronDown, Check, X, Info, Settings } from "lucide-react";
 import { useOrganization, UserRole } from "@/hooks/useOrganization";
+import { useUserPermissions, PermissionKey } from "@/hooks/useUserPermissions";
 import { InviteUserDialog } from "@/components/admin/InviteUserDialog";
 import { CreateOrganizationDialog } from "@/components/admin/CreateOrganizationDialog";
 import {
@@ -17,6 +18,15 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 type RoleType = UserRole['role'];
@@ -49,9 +59,9 @@ const PERMISSIONS = [
   { key: 'manage_billing', label: 'Gérer l\'abonnement', category: 'Facturation' },
 ] as const;
 
-type PermissionKey = typeof PERMISSIONS[number]['key'];
+type PermissionKeyType = typeof PERMISSIONS[number]['key'];
 
-const ROLE_PERMISSIONS: Record<RoleType, PermissionKey[]> = {
+const ROLE_PERMISSIONS: Record<RoleType, PermissionKeyType[]> = {
   super_admin: [
     'view_sites', 'edit_sites', 'create_sites', 'delete_sites',
     'view_operations', 'import_data', 'export_data', 'delete_operations',
@@ -86,6 +96,22 @@ const ROLE_PERMISSIONS: Record<RoleType, PermissionKey[]> = {
   ]
 };
 
+// Mapping from display permission keys to DB permission keys
+const PERMISSION_DB_MAP: Partial<Record<PermissionKeyType, PermissionKey>> = {
+  'view_sites': 'can_view_sites',
+  'edit_sites': 'can_edit_sites',
+  'delete_sites': 'can_delete_sites',
+  'import_data': 'can_import_data',
+  'export_data': 'can_export_data',
+  'delete_operations': 'can_delete_data',
+  'view_reports': 'can_view_reports',
+  'generate_pdf': 'can_export_reports',
+  'invite_members': 'can_invite_members',
+  'manage_roles': 'can_manage_roles',
+  'view_billing': 'can_view_billing',
+  'manage_billing': 'can_manage_billing',
+};
+
 export default function TeamContent() {
   const { 
     organization, 
@@ -101,10 +127,19 @@ export default function TeamContent() {
     createOrganization,
     userRole
   } = useOrganization();
+
+  const {
+    getUserPermissions,
+    updatePermission,
+    isLoading: permissionsLoading
+  } = useUserPermissions(organization?.id || null);
   
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [createOrgDialogOpen, setCreateOrgDialogOpen] = useState(false);
   const [updatingRole, setUpdatingRole] = useState<string | null>(null);
+  const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<typeof teamMembers[0] | null>(null);
+  const [savingPermission, setSavingPermission] = useState<string | null>(null);
 
   const handleSendInvitation = async (email: string, role: RoleType) => {
     try {
@@ -158,6 +193,33 @@ export default function TeamContent() {
       toast.error("Erreur lors de la création");
       return { error: "Erreur" };
     }
+  };
+
+  const handleOpenPermissions = (member: typeof teamMembers[0]) => {
+    setSelectedMember(member);
+    setPermissionsDialogOpen(true);
+  };
+
+  const handleTogglePermission = async (userId: string, permissionKey: PermissionKey, currentValue: boolean) => {
+    setSavingPermission(permissionKey);
+    const result = await updatePermission(userId, permissionKey, !currentValue);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success("Permission mise à jour");
+    }
+    setSavingPermission(null);
+  };
+
+  const getMemberPermissionValue = (userId: string, permKey: PermissionKeyType): boolean => {
+    const dbKey = PERMISSION_DB_MAP[permKey];
+    if (!dbKey) return false;
+    
+    const userPerms = getUserPermissions(userId);
+    if (userPerms) {
+      return userPerms[dbKey] ?? false;
+    }
+    return false;
   };
 
   const getRoleOption = (role: string) => ROLE_OPTIONS.find(r => r.value === role);
@@ -407,16 +469,28 @@ export default function TeamContent() {
                   </div>
                 </div>
               </div>
-              {isAdmin && member.role !== 'super_admin' && member.user_id !== userRole?.user_id && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-destructive hover:text-destructive"
-                  onClick={() => handleRemoveMember(member.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
+              <div className="flex items-center gap-2">
+                {isAdmin && canEditRole(member.role) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleOpenPermissions(member)}
+                  >
+                    <Settings className="h-4 w-4 mr-1" />
+                    Permissions
+                  </Button>
+                )}
+                {isAdmin && member.role !== 'super_admin' && member.user_id !== userRole?.user_id && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => handleRemoveMember(member.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
         </CardContent>
@@ -472,6 +546,78 @@ export default function TeamContent() {
         onInvite={handleSendInvitation}
         isSuperAdmin={isSuperAdmin}
       />
+
+      {/* Custom Permissions Dialog */}
+      <Dialog open={permissionsDialogOpen} onOpenChange={setPermissionsDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5 text-primary" />
+              Permissions personnalisées
+            </DialogTitle>
+            <DialogDescription>
+              {selectedMember?.email} - Ajustez les permissions spécifiques pour ce membre
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedMember && (
+            <div className="space-y-4 max-h-[400px] overflow-y-auto">
+              {(() => {
+                const categories = [...new Set(Object.values(PERMISSION_DB_MAP).map((_, i) => 
+                  PERMISSIONS.find(p => PERMISSION_DB_MAP[p.key])?.category
+                ).filter(Boolean))];
+                
+                const editablePerms = PERMISSIONS.filter(p => PERMISSION_DB_MAP[p.key]);
+                const groupedPerms = editablePerms.reduce((acc, perm) => {
+                  if (!acc[perm.category]) acc[perm.category] = [];
+                  acc[perm.category].push(perm);
+                  return acc;
+                }, {} as Record<string, typeof PERMISSIONS[number][]>);
+
+                return Object.entries(groupedPerms).map(([category, perms]) => (
+                  <div key={category} className="space-y-2">
+                    <h4 className="text-sm font-medium text-muted-foreground">{category}</h4>
+                    <div className="space-y-2">
+                      {perms.map((perm) => {
+                        const dbKey = PERMISSION_DB_MAP[perm.key];
+                        if (!dbKey) return null;
+                        
+                        const userPerms = getUserPermissions(selectedMember.user_id);
+                        const currentValue = userPerms?.[dbKey] ?? false;
+                        const isSaving = savingPermission === dbKey;
+
+                        return (
+                          <div 
+                            key={perm.key} 
+                            className="flex items-center justify-between py-2 px-3 rounded-lg border bg-card"
+                          >
+                            <Label htmlFor={perm.key} className="flex-1 cursor-pointer">
+                              {perm.label}
+                            </Label>
+                            <div className="flex items-center gap-2">
+                              {isSaving && <Loader2 className="h-3 w-3 animate-spin" />}
+                              <Switch
+                                id={perm.key}
+                                checked={currentValue}
+                                disabled={isSaving || permissionsLoading}
+                                onCheckedChange={() => handleTogglePermission(
+                                  selectedMember.user_id, 
+                                  dbKey, 
+                                  currentValue
+                                )}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
