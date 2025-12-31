@@ -34,6 +34,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { SubscriptionMetricsExport } from '@/components/admin/SubscriptionMetricsExport';
 import { ChurnAlertSettings } from '@/components/admin/ChurnAlertSettings';
 import { RetentionDashboard } from '@/components/admin/RetentionDashboard';
+import { SystemStatusWidget } from '@/components/admin/SystemStatusWidget';
 import { ChurnPredictionsDashboard } from '@/components/admin/ChurnPredictionsDashboard';
 
 interface GlobalStats {
@@ -324,8 +325,13 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Quick Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* System Status Widget + Quick Stats Cards */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          {/* System Status Widget - Admin site uniquement */}
+          <div className="lg:col-span-1">
+            <SystemStatusWidget />
+          </div>
+          
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Utilisateurs</CardTitle>

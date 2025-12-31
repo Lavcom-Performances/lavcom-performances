@@ -33,7 +33,7 @@ const logStep = (step: string, details?: unknown) => {
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
 };
 
-// Helper to log system events
+// Helper to log system events and send alerts for critical ones
 async function logSystemEvent(
   supabaseAdmin: SupabaseClient,
   severity: 'info' | 'warn' | 'error' | 'critical',
@@ -41,9 +41,11 @@ async function logSystemEvent(
   message: string,
   meta?: Record<string, unknown>
 ) {
+  const env = Deno.env.get('STRIPE_SECRET_KEY')?.startsWith('sk_test_') ? 'preview' : 'prod';
+  
   try {
     await supabaseAdmin.rpc('rpc_log_system_event', {
-      p_env: Deno.env.get('STRIPE_SECRET_KEY')?.startsWith('sk_test_') ? 'preview' : 'prod',
+      p_env: env,
       p_source: 'stripe-webhook',
       p_severity: severity,
       p_code: code,
@@ -52,6 +54,32 @@ async function logSystemEvent(
     });
   } catch (err) {
     console.error('[STRIPE-WEBHOOK] Failed to log system event:', err);
+  }
+
+  // Send email alert for critical and error events
+  if (severity === 'critical' || severity === 'error') {
+    try {
+      await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-system-alert`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`,
+        },
+        body: JSON.stringify({
+          id: 0,
+          created_at: new Date().toISOString(),
+          env,
+          source: 'stripe-webhook',
+          severity,
+          code,
+          message,
+          meta: meta || {}
+        })
+      });
+      logStep('Alert email sent', { severity, code });
+    } catch (alertError) {
+      console.error('[STRIPE-WEBHOOK] Failed to send alert:', alertError);
+    }
   }
 }
 
