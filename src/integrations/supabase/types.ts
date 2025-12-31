@@ -837,6 +837,38 @@ export type Database = {
           },
         ]
       }
+      site_analytics_state: {
+        Row: {
+          analytics_version: number
+          last_import_at: string | null
+          last_import_status: string | null
+          site_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          analytics_version?: number
+          last_import_at?: string | null
+          last_import_status?: string | null
+          site_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          analytics_version?: number
+          last_import_at?: string | null
+          last_import_status?: string | null
+          site_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_analytics_state_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: true
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_costs: {
         Row: {
           created_at: string
@@ -1278,6 +1310,10 @@ export type Database = {
       }
     }
     Functions: {
+      bump_analytics_version: {
+        Args: { p_site_id: string; p_status?: string }
+        Returns: number
+      }
       cleanup_old_cron_logs: { Args: never; Returns: undefined }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       cleanup_old_system_events: { Args: never; Returns: undefined }
