@@ -795,5 +795,38 @@
     "allModes": "Alle Arten",
     "transactionsCb": "CB Transaktionen",
     "transactionsEsp": "ESP Transaktionen"
+  },
+  "onboarding": {
+    "dashboard": {
+      "title": "Entdecken Sie Ihr Dashboard",
+      "subtitle": "Alles bereit! Hier ist, was Sie mit Lavcom Performances machen können.",
+      "readyToStart": "Bereit zu starten?",
+      "readyToStartDescription": "Greifen Sie auf Ihr Dashboard zu und erkunden Sie Ihre Daten.",
+      "goToDashboard": "Zum Dashboard",
+      "features": {
+        "revenue": {
+          "title": "Umsatz",
+          "description": "Überblick über Ihre täglichen, monatlichen und jährlichen Einnahmen."
+        },
+        "payments": {
+          "title": "Zahlungsverteilung",
+          "description": "Analyse nach Zahlungsmethode (CB, ESP, FI)."
+        },
+        "heatmap": {
+          "title": "Verkaufs-Heatmap",
+          "description": "Visualisieren Sie Ihre besten Zeitfenster."
+        },
+        "goals": {
+          "title": "Ziele",
+          "description": "Setzen und verfolgen Sie Ihre Leistungsziele."
+        }
+      }
+    },
+    "steps": {
+      "welcome": "Willkommen",
+      "laundry": "Waschsalon",
+      "import": "Import",
+      "dashboard": "Dashboard"
+    }
   }
 }

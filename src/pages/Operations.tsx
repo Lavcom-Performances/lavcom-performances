@@ -674,7 +674,7 @@ export default function Operations() {
                   disabled={operations.length === 0 || isExporting}
                 >
                   <Download className="h-4 w-4 mr-2" />
-                  {isExporting ? t('app:operations.exporting') : "Exporter"}
+                  {isExporting ? t('app:operations.exporting') : t('app:operations.export')}
                   <ChevronDown className="h-4 w-4 ml-2" />
                 </Button>
               </DropdownMenuTrigger>
