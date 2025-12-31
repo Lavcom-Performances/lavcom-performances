@@ -23,11 +23,13 @@ MODES DE PAIEMENT :
 - Ces modes sont détectés automatiquement à l'import
 
 PAGES PRINCIPALES :
-- Tableau de bord : vue globale des KPIs et chiffre d'affaires
-- Opérations : liste des transactions et import CSV
-- Graphiques : analyses détaillées par période, machine, mode de paiement
-- Rentabilité : marges et coûts par site
-- Recommandations : conseils d'optimisation basés sur les données
+- Tableau de bord (/dashboard) : vue globale des KPIs et chiffre d'affaires
+- Opérations (/operations) : liste des transactions et import CSV
+- Graphiques (/charts/*) : analyses détaillées par période, machine, mode de paiement
+- Rentabilité (/profitability) : marges et coûts par site
+- Recommandations (/recommendations) : conseils d'optimisation basés sur les données
+- Paramètres (/settings) : gestion du compte, abonnement, équipe
+- Aide (/help) : FAQ et support
 
 FONCTIONNALITÉS :
 - Export PDF disponible sur le Tableau de bord et les pages Graphiques
@@ -40,12 +42,28 @@ ABONNEMENT :
 - Plans mensuels ou annuels disponibles
 - Gestion de l'abonnement depuis les Paramètres
 
-RÈGLES :
+RÈGLES IMPORTANTES :
 - Sois bref (2-4 phrases max par réponse)
 - Si tu ne connais pas la réponse, suggère de contacter le support via le formulaire de la page Aide
 - Ne donne pas d'informations techniques (code, API, base de données)
 - Ne parle pas de Supabase, edge functions, ou détails d'implémentation
-- Reste focalisé sur l'utilisation de la plateforme`;
+- Reste focalisé sur l'utilisation de la plateforme
+
+FORMAT DES ACTIONS :
+Quand ta réponse inclut une suggestion d'aller sur une page, ajoute une action à la fin de ton message sous ce format exact :
+[ACTION:nom_de_page:/chemin]
+
+Exemples :
+- Pour l'import CSV : [ACTION:Importer un CSV:/operations]
+- Pour le tableau de bord : [ACTION:Voir le tableau de bord:/dashboard]
+- Pour les paramètres : [ACTION:Aller aux paramètres:/settings]
+- Pour la rentabilité : [ACTION:Voir la rentabilité:/profitability]
+- Pour les graphiques : [ACTION:Voir les graphiques:/charts/daily-revenue]
+- Pour les recommandations : [ACTION:Voir les recommandations:/recommendations]
+- Pour l'aide : [ACTION:Aller à l'aide:/help]
+
+Tu peux inclure jusqu'à 2 actions maximum par réponse si pertinent.
+N'ajoute une action que si elle est vraiment utile pour l'utilisateur (pas systématiquement).`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -61,9 +79,14 @@ serve(async (req) => {
       throw new Error("AI service not configured");
     }
 
-    const systemPrompt = language === 'en' 
-      ? SYSTEM_PROMPT.replace('Tu parles français par défaut', 'You speak English by default')
-      : SYSTEM_PROMPT;
+    let systemPrompt = SYSTEM_PROMPT;
+    if (language === 'en') {
+      systemPrompt = systemPrompt
+        .replace('Tu parles français par défaut', 'You speak English by default')
+        .replace('Sois bref', 'Be brief')
+        .replace('Si tu ne connais pas la réponse', 'If you don\'t know the answer')
+        .replace('Reste focalisé sur', 'Stay focused on');
+    }
 
     console.log("Calling Lovable AI Gateway with", messages.length, "messages");
 
@@ -122,8 +145,25 @@ serve(async (req) => {
 
     console.log("AI response received successfully");
 
+    // Parse actions from the message
+    const actionRegex = /\[ACTION:([^:]+):([^\]]+)\]/g;
+    const actions: Array<{ label: string; path: string }> = [];
+    let cleanMessage = assistantMessage;
+    
+    let match;
+    while ((match = actionRegex.exec(assistantMessage)) !== null) {
+      actions.push({
+        label: match[1].trim(),
+        path: match[2].trim(),
+      });
+    }
+    
+    // Remove action tags from the message
+    cleanMessage = cleanMessage.replace(actionRegex, '').trim();
+
     return new Response(JSON.stringify({ 
-      message: assistantMessage 
+      message: cleanMessage,
+      actions: actions.length > 0 ? actions : undefined,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
