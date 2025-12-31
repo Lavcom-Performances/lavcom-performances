@@ -1053,6 +1053,74 @@ export type Database = {
           },
         ]
       }
+      user_permissions: {
+        Row: {
+          can_delete_data: boolean
+          can_delete_sites: boolean
+          can_edit_sites: boolean
+          can_export_data: boolean
+          can_export_reports: boolean
+          can_import_data: boolean
+          can_invite_members: boolean
+          can_manage_billing: boolean
+          can_manage_roles: boolean
+          can_view_billing: boolean
+          can_view_reports: boolean
+          can_view_sites: boolean
+          created_at: string
+          id: string
+          organization_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_delete_data?: boolean
+          can_delete_sites?: boolean
+          can_edit_sites?: boolean
+          can_export_data?: boolean
+          can_export_reports?: boolean
+          can_import_data?: boolean
+          can_invite_members?: boolean
+          can_manage_billing?: boolean
+          can_manage_roles?: boolean
+          can_view_billing?: boolean
+          can_view_reports?: boolean
+          can_view_sites?: boolean
+          created_at?: string
+          id?: string
+          organization_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_delete_data?: boolean
+          can_delete_sites?: boolean
+          can_edit_sites?: boolean
+          can_export_data?: boolean
+          can_export_reports?: boolean
+          can_import_data?: boolean
+          can_invite_members?: boolean
+          can_manage_billing?: boolean
+          can_manage_roles?: boolean
+          can_view_billing?: boolean
+          can_view_reports?: boolean
+          can_view_sites?: boolean
+          created_at?: string
+          id?: string
+          organization_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_permissions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
