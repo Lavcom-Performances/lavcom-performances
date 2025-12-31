@@ -11,6 +11,7 @@ import {
   round2,
   centsToEurosValue 
 } from "@/lib/csv/businessRules";
+import { useAnalyticsRefresh } from "@/hooks/useAnalyticsRefresh";
 
 // Type guard to check if row is EventsParsedRow
 function isEventsParsedRow(row: ParsedRow): row is EventsParsedRow {
@@ -31,6 +32,7 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 export function useOperationsImport() {
   const { user } = useAuth();
   const [isImporting, setIsImporting] = useState(false);
+  const { refreshWithNotification } = useAnalyticsRefresh();
 
   const importOperations = useCallback(
     async (
@@ -256,6 +258,14 @@ export function useOperationsImport() {
           resultMessages.push(...errors);
         }
 
+        // Trigger global analytics refresh if any rows were imported
+        if (insertedCount > 0) {
+          // Don't await - let it run in background
+          refreshWithNotification(siteId, insertedCount).catch((err) => {
+            console.warn("Analytics refresh failed:", err);
+          });
+        }
+
         return {
           success: insertedCount > 0,
           imported: insertedCount,
@@ -280,7 +290,7 @@ export function useOperationsImport() {
         setIsImporting(false);
       }
     },
-    [user]
+    [user, refreshWithNotification]
   );
 
   return {
