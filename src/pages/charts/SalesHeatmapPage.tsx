@@ -1,19 +1,30 @@
 import { useDateRange } from "@/hooks/useDateRange";
 import { useHeatmapData } from "@/hooks/useChartsData";
 import { useChartPreferences } from "@/hooks/useChartPreferences";
+import { useHasData } from "@/hooks/useHasData";
 import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { SalesHeatmap } from "@/components/dashboard/SalesHeatmap";
+import { ChartEmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SalesHeatmapPage() {
   const { dateRange, setDateRange } = useDateRange();
   const { filters, setFilters, isLoaded } = useChartPreferences("heatmap");
   const { data: heatmapData, isLoading } = useHeatmapData(filters);
+  const { hasData, isLoading: isLoadingHasData } = useHasData();
 
-  if (!isLoaded) {
+  if (!isLoaded || isLoadingHasData) {
     return (
       <div className="p-6 lg:p-8">
         <Skeleton className="h-[500px]" />
+      </div>
+    );
+  }
+
+  if (!hasData) {
+    return (
+      <div className="p-6 lg:p-8">
+        <ChartEmptyState />
       </div>
     );
   }
