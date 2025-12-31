@@ -3,7 +3,29 @@
     "badge": "El panel de rendimiento para lavanderías automáticas",
     "optimizeLaundries": "Quiero optimizar mis lavanderías",
     "openLaundry": "Quiero abrir una lavandería",
-    "viewDemo": "Ver demo interactiva • 2 min"
+    "viewDemo": "Ver demo interactiva • 2 min",
+    "slides": {
+      "slide1": {
+        "title": "Gana más con tus lavanderías, sin cambiarlo todo",
+        "subtitle": "Lavcom Performances te muestra de un vistazo lo que generan tus máquinas y dónde están ocultos tus márgenes de crecimiento.",
+        "cta": "Quiero optimizar mis lavanderías"
+      },
+      "slide2": {
+        "title": "¿Tus lavanderías realmente rinden?",
+        "subtitle": "Sigue tus ingresos, períodos pico y máquinas con bajo rendimiento. Finalmente sabes dónde actuar.",
+        "cta": "Ver ejemplo de panel"
+      },
+      "slide3": {
+        "title": "Una herramienta simple que te muestra dónde mejorar",
+        "subtitle": "Lavcom Performances convierte tus ingresos en ideas concretas: ajustar un precio, añadir una secadora, revisar un horario.",
+        "cta": "Ver cómo funciona"
+      },
+      "slide4": {
+        "title": "¿Sabes realmente cuánto genera cada máquina?",
+        "subtitle": "Identifica tus mejores máquinas, las que funcionan menos y las franjas horarias de alto potencial.",
+        "cta": "Analizar mis máquinas"
+      }
+    }
   },
   "twoProfiles": {
     "title": "Dos perfiles, dos soluciones",

@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import heroSlide1 from "@/assets/hero-slide-new.png";
 import heroSlide2 from "@/assets/hero-slide-2-new.png";
@@ -13,39 +14,39 @@ type HeroSlideId = "slide1" | "slide2" | "slide3" | "slide4";
 
 type HeroSlide = {
   id: HeroSlideId;
-  title: string;
-  subtitle: string;
-  ctaLabel: string;
+  titleKey: string;
+  subtitleKey: string;
+  ctaLabelKey: string;
   image: string;
 };
 
-const heroSlides: HeroSlide[] = [
+const heroSlidesConfig: HeroSlide[] = [
   {
     id: "slide1",
-    title: "Gagnez plus avec vos laveries, sans changer tout votre quotidien",
-    subtitle: "Lavcom Performances vous montre en un clin d'œil ce que rapportent vos machines et où se cachent vos marges de progression.",
-    ctaLabel: "Je veux optimiser mes laveries",
+    titleKey: "hero.slides.slide1.title",
+    subtitleKey: "hero.slides.slide1.subtitle",
+    ctaLabelKey: "hero.slides.slide1.cta",
     image: heroSlide1
   },
   {
     id: "slide2",
-    title: "Vos laveries sont-elles vraiment performantes ?",
-    subtitle: "Suivez vos recettes, vos périodes fortes et vos machines moins performantes. Vous savez enfin où agir.",
-    ctaLabel: "Voir un exemple de tableau de bord",
+    titleKey: "hero.slides.slide2.title",
+    subtitleKey: "hero.slides.slide2.subtitle",
+    ctaLabelKey: "hero.slides.slide2.cta",
     image: heroSlide2
   },
   {
     id: "slide3",
-    title: "Un outil simple qui vous dit où améliorer vos résultats",
-    subtitle: "Lavcom Performances transforme vos encaissements en idées concrètes : ajuster un prix, ajouter un séchoir, revoir un horaire.",
-    ctaLabel: "Comprendre comment ça marche",
+    titleKey: "hero.slides.slide3.title",
+    subtitleKey: "hero.slides.slide3.subtitle",
+    ctaLabelKey: "hero.slides.slide3.cta",
     image: heroSlide3
   },
   {
     id: "slide4",
-    title: "Savez-vous vraiment combien vous rapporte chaque machine ?",
-    subtitle: "Identifiez vos meilleures machines, celles qui tournent moins, et les créneaux horaires à fort potentiel.",
-    ctaLabel: "Analyser mes machines",
+    titleKey: "hero.slides.slide4.title",
+    subtitleKey: "hero.slides.slide4.subtitle",
+    ctaLabelKey: "hero.slides.slide4.cta",
     image: heroSlide4
   }
 ];
@@ -79,6 +80,7 @@ function getHeroCtaHref(slideId: HeroSlideId, user?: UserContext): string {
 }
 
 export const HeroValueSlider = () => {
+  const { t } = useTranslation("landing");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [previousIndex, setPreviousIndex] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -105,12 +107,12 @@ export const HeroValueSlider = () => {
   };
 
   const goToNext = () => {
-    const nextIndex = (currentIndex + 1) % heroSlides.length;
+    const nextIndex = (currentIndex + 1) % heroSlidesConfig.length;
     goToSlide(nextIndex);
   };
 
   const goToPrev = () => {
-    const prevIndex = (currentIndex - 1 + heroSlides.length) % heroSlides.length;
+    const prevIndex = (currentIndex - 1 + heroSlidesConfig.length) % heroSlidesConfig.length;
     goToSlide(prevIndex);
   };
 
@@ -149,11 +151,10 @@ export const HeroValueSlider = () => {
     return () => clearInterval(interval);
   }, [currentIndex, isTransitioning]);
 
-  const currentSlide = heroSlides[currentIndex];
-  const previousSlide = previousIndex !== null ? heroSlides[previousIndex] : null;
+  const currentSlide = heroSlidesConfig[currentIndex];
+  const previousSlide = previousIndex !== null ? heroSlidesConfig[previousIndex] : null;
   const ctaHref = getHeroCtaHref(currentSlide.id, user);
   const isAnchorLink = ctaHref.startsWith("/#");
-
   return (
     <section 
       className="relative w-full min-h-[400px] md:min-h-[480px] lg:min-h-[520px] overflow-hidden touch-pan-y"
@@ -162,7 +163,7 @@ export const HeroValueSlider = () => {
       onTouchEnd={onTouchEnd}
     >
       {/* Layer 1: Background images with crossfade */}
-      {heroSlides.map((slide, index) => (
+      {heroSlidesConfig.map((slide, index) => (
         <div 
           key={slide.id}
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700 ease-in-out"
@@ -223,10 +224,10 @@ export const HeroValueSlider = () => {
             {previousSlide && (
               <div className="absolute inset-0 animate-fade-out pointer-events-none">
                 <h1 className="text-lg sm:text-xl md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.2] md:leading-[1.15] max-w-full md:max-w-[500px]">
-                  {previousSlide.title}
+                  {t(previousSlide.titleKey)}
                 </h1>
                 <p className="hidden md:block text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed max-w-[460px]">
-                  {previousSlide.subtitle}
+                  {t(previousSlide.subtitleKey)}
                 </p>
               </div>
             )}
@@ -237,7 +238,7 @@ export const HeroValueSlider = () => {
               isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
             )} style={{ transitionDelay: isTransitioning ? "0ms" : "100ms" }}>
               <h1 className="text-lg sm:text-xl md:text-3xl lg:text-[2.5rem] xl:text-[2.6rem] font-bold text-foreground mb-4 md:mb-6 leading-[1.2] md:leading-[1.15] max-w-full md:max-w-[500px]">
-                {currentSlide.title}
+                {t(currentSlide.titleKey)}
               </h1>
             </div>
             
@@ -247,7 +248,7 @@ export const HeroValueSlider = () => {
               isTransitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
             )} style={{ transitionDelay: isTransitioning ? "0ms" : "200ms" }}>
               <p className="text-base md:text-lg text-muted-foreground mb-8 md:mb-10 leading-relaxed max-w-[460px]">
-                {currentSlide.subtitle}
+                {t(currentSlide.subtitleKey)}
               </p>
             </div>
 
@@ -258,14 +259,14 @@ export const HeroValueSlider = () => {
               {isAnchorLink ? (
                 <Button asChild size="default" className="group rounded-full px-4 md:px-8 text-sm md:text-base">
                   <a href={ctaHref}>
-                    {currentSlide.ctaLabel}
+                    {t(currentSlide.ctaLabelKey)}
                     <ArrowRight className="ml-2 h-3 w-3 md:h-4 md:w-4 transition-transform group-hover:translate-x-1" />
                   </a>
                 </Button>
               ) : (
                 <Button asChild size="default" className="group rounded-full px-4 md:px-8 text-sm md:text-base">
                   <Link to={ctaHref}>
-                    {currentSlide.ctaLabel}
+                    {t(currentSlide.ctaLabelKey)}
                     <ArrowRight className="ml-2 h-3 w-3 md:h-4 md:w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
@@ -274,7 +275,7 @@ export const HeroValueSlider = () => {
 
             {/* Dots indicator */}
             <div className="flex items-center gap-1.5 md:gap-2 mt-8 md:mt-14">
-              {heroSlides.map((_, index) => (
+              {heroSlidesConfig.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}

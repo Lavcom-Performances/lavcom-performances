@@ -3,7 +3,29 @@
     "badge": "Das Performance-Dashboard für Waschsalons",
     "optimizeLaundries": "Ich möchte meine Waschsalons optimieren",
     "openLaundry": "Ich möchte einen Waschsalon eröffnen",
-    "viewDemo": "Interaktive Demo ansehen • 2 Min"
+    "viewDemo": "Interaktive Demo ansehen • 2 Min",
+    "slides": {
+      "slide1": {
+        "title": "Verdienen Sie mehr mit Ihren Waschsalons, ohne alles zu ändern",
+        "subtitle": "Lavcom Performances zeigt Ihnen auf einen Blick, was Ihre Maschinen einbringen und wo Ihre Wachstumsmargen versteckt sind.",
+        "cta": "Ich möchte meine Waschsalons optimieren"
+      },
+      "slide2": {
+        "title": "Sind Ihre Waschsalons wirklich leistungsstark?",
+        "subtitle": "Verfolgen Sie Ihre Einnahmen, Spitzenzeiten und unterperformende Maschinen. Sie wissen endlich, wo Sie handeln müssen.",
+        "cta": "Dashboard-Beispiel ansehen"
+      },
+      "slide3": {
+        "title": "Ein einfaches Tool, das Ihnen zeigt, wo Sie sich verbessern können",
+        "subtitle": "Lavcom Performances verwandelt Ihre Einnahmen in konkrete Ideen: einen Preis anpassen, einen Trockner hinzufügen, einen Zeitplan überprüfen.",
+        "cta": "So funktioniert es"
+      },
+      "slide4": {
+        "title": "Wissen Sie wirklich, wie viel jede Maschine einbringt?",
+        "subtitle": "Identifizieren Sie Ihre besten Maschinen, diejenigen, die weniger laufen, und Zeitfenster mit hohem Potenzial.",
+        "cta": "Meine Maschinen analysieren"
+      }
+    }
   },
   "twoProfiles": {
     "title": "Zwei Profile, zwei Lösungen",

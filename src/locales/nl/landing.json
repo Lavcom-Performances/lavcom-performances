@@ -3,7 +3,29 @@
     "badge": "Het prestatie-dashboard voor wasserettes",
     "optimizeLaundries": "Ik wil mijn wasserettes optimaliseren",
     "openLaundry": "Ik wil een wasserette openen",
-    "viewDemo": "Bekijk interactieve demo • 2 min"
+    "viewDemo": "Bekijk interactieve demo • 2 min",
+    "slides": {
+      "slide1": {
+        "title": "Verdien meer met uw wasserettes, zonder alles te veranderen",
+        "subtitle": "Lavcom Performances laat u in één oogopslag zien wat uw machines opleveren en waar uw groeimogelijkheden verborgen liggen.",
+        "cta": "Ik wil mijn wasserettes optimaliseren"
+      },
+      "slide2": {
+        "title": "Presteren uw wasserettes echt?",
+        "subtitle": "Volg uw inkomsten, piekperiodes en ondermaats presterende machines. U weet eindelijk waar u actie moet ondernemen.",
+        "cta": "Bekijk dashboard voorbeeld"
+      },
+      "slide3": {
+        "title": "Een eenvoudige tool die laat zien waar u kunt verbeteren",
+        "subtitle": "Lavcom Performances zet uw inkomsten om in concrete ideeën: een prijs aanpassen, een droger toevoegen, een schema herzien.",
+        "cta": "Ontdek hoe het werkt"
+      },
+      "slide4": {
+        "title": "Weet u echt hoeveel elke machine verdient?",
+        "subtitle": "Identificeer uw beste machines, degenen die minder draaien en tijdslots met veel potentieel.",
+        "cta": "Analyseer mijn machines"
+      }
+    }
   },
   "twoProfiles": {
     "title": "Twee profielen, twee oplossingen",
