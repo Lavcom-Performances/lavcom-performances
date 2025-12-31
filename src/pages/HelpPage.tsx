@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { HelpCircle, Upload, CreditCard, FileDown, Send, Loader2, CheckCircle, Mail, MessageSquare, ChevronDown } from "lucide-react";
 import { SupportChatbot } from "@/components/help/SupportChatbot";
@@ -20,6 +20,8 @@ import { useSites } from "@/hooks/useSites";
 export default function HelpPage() {
   const { t, i18n } = useTranslation("app");
   const navigate = useNavigate();
+  const routerLocation = useLocation();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { user, profile } = useAuth();
   const { sites, getDefaultSite } = useSites();
@@ -34,19 +36,35 @@ export default function HelpPage() {
   const scrollToContactForm = () => {
     contactFormRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  // Get URL params for pre-filling
+  const urlTopic = searchParams.get('topic');
+  const urlPage = searchParams.get('page');
+  const urlSite = searchParams.get('site');
   
   const [form, setForm] = useState({
     name: profile?.first_name ? `${profile.first_name} ${profile.last_name || ""}`.trim() : "",
     email: user?.email || "",
-    topic: "",
+    topic: urlTopic || "",
     message: "",
-    siteName: defaultSite?.name || "",
+    siteName: urlSite || defaultSite?.name || "",
+    pageUrl: urlPage || "",
   });
+
+  // Scroll to contact form if hash is present and topic is bug
+  useEffect(() => {
+    if (routerLocation.hash === '#contact-form' && urlTopic === 'bug') {
+      setTimeout(() => {
+        scrollToContactForm();
+      }, 100);
+    }
+  }, [routerLocation.hash, urlTopic]);
 
   const lang = i18n.language?.startsWith("en") ? "en" : "fr";
 
   const topics = lang === "fr" 
     ? [
+        { value: "bug", label: t('reportIssue.topic') },
         { value: "csv_import", label: "Import CSV" },
         { value: "data_dashboard", label: "Données / Tableaux de bord" },
         { value: "subscription", label: "Abonnement & Factures" },
@@ -54,6 +72,7 @@ export default function HelpPage() {
         { value: "other", label: "Autre" },
       ]
     : [
+        { value: "bug", label: t('reportIssue.topic') },
         { value: "csv_import", label: "CSV Import" },
         { value: "data_dashboard", label: "Data & Dashboards" },
         { value: "subscription", label: "Subscription & Invoices" },
@@ -139,12 +158,23 @@ export default function HelpPage() {
     try {
       const topicLabel = topics.find(t => t.value === form.topic)?.label || form.topic;
       
+      // Build context info for bug reports
+      let contextInfo = "";
+      if (form.siteName) {
+        contextInfo += `\n---\n${lang === "fr" ? "Site concerné" : "Related site"}: ${form.siteName}`;
+      }
+      if (form.pageUrl) {
+        contextInfo += `\n${lang === "fr" ? "Page" : "Page"}: ${form.pageUrl}`;
+      }
+      contextInfo += `\n${lang === "fr" ? "Langue" : "Language"}: ${lang.toUpperCase()}`;
+      contextInfo += `\n${lang === "fr" ? "Date" : "Date"}: ${new Date().toLocaleString(lang === "fr" ? "fr-FR" : "en-US")}`;
+      
       const { error } = await supabase.functions.invoke('send-contact', {
         body: {
           topic: `[Support] ${topicLabel}`,
           topicValue: form.topic,
           email: form.email,
-          message: `${form.message}${form.siteName ? `\n\n---\nSite concerné: ${form.siteName}` : ""}`,
+          message: `${form.message}${contextInfo}`,
           name: form.name,
           language: lang,
         },
@@ -153,11 +183,15 @@ export default function HelpPage() {
       if (error) throw error;
 
       setSubmitted(true);
+      
+      // Custom success message for bug reports
+      const successMessage = form.topic === 'bug' 
+        ? t('reportIssue.successMessage')
+        : (lang === "fr" ? "Nous revenons vers vous au plus vite." : "We'll get back to you as soon as possible.");
+      
       toast({
         title: lang === "fr" ? "Message envoyé" : "Message sent",
-        description: lang === "fr" 
-          ? "Nous revenons vers vous au plus vite."
-          : "We'll get back to you as soon as possible.",
+        description: successMessage,
       });
     } catch (error) {
       console.error("Support form error:", error);
@@ -382,7 +416,9 @@ export default function HelpPage() {
                       id="help-message"
                       value={form.message}
                       onChange={(e) => setForm(prev => ({ ...prev, message: e.target.value }))}
-                      placeholder={lang === "fr" ? "Décrivez votre demande..." : "Describe your request..."}
+                      placeholder={form.topic === 'bug' 
+                        ? t('reportIssue.messagePlaceholder')
+                        : (lang === "fr" ? "Décrivez votre demande..." : "Describe your request...")}
                       rows={5}
                       maxLength={2000}
                     />

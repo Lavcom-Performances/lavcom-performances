@@ -1,4 +1,10 @@
 {
+  "reportIssue": {
+    "title": "Report an issue",
+    "topic": "Issue / Bug",
+    "messagePlaceholder": "Describe what you tried to do and what happened (1–2 sentences).",
+    "successMessage": "Thanks, your report has been sent."
+  },
   "profile": {
     "avatar": {
       "rotateLeft": "Rotate -90°",

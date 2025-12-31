@@ -27,7 +27,8 @@ import {
   CreditCard,
   ShieldCheck,
   AlertTriangle,
-  HelpCircle
+  HelpCircle,
+  Bug
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,7 @@ import { TrialBanner } from "@/components/trial/TrialBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useSites } from "@/hooks/useSites";
 import { useState, useEffect, useMemo } from "react";
 
 interface AppSidebarProps {
@@ -81,6 +83,18 @@ export function AppSidebar({
   const { signOut, profile } = useAuth();
   const { daysRemaining, trialStatus, planType } = useSubscription();
   const { isAdmin } = useIsAdmin();
+  const { getDefaultSite } = useSites();
+
+  // Generate report issue URL with pre-filled params
+  const getReportIssueUrl = () => {
+    const defaultSite = getDefaultSite();
+    const params = new URLSearchParams({
+      topic: 'bug',
+      page: location.pathname,
+      ...(defaultSite?.name && { site: defaultSite.name }),
+    });
+    return `/help?${params.toString()}#contact-form`;
+  };
 
   const getInitials = () => {
     const first = profile?.first_name?.charAt(0)?.toUpperCase() || "";
@@ -467,6 +481,14 @@ export function AppSidebar({
         >
           <HelpCircle className="h-4 w-4 shrink-0" />
           {!collapsed && <span>{t('app:nav.help')}</span>}
+        </NavLink>
+        {/* Report issue link */}
+        <NavLink
+          to={getReportIssueUrl()}
+          className="sidebar-item !py-1.5 text-sidebar-foreground/70 hover:text-sidebar-foreground"
+        >
+          <Bug className="h-4 w-4 shrink-0" />
+          {!collapsed && <span className="text-sm">{t('app:reportIssue.title')}</span>}
         </NavLink>
         <NavLink
           to="/profile"

@@ -1,4 +1,10 @@
 {
+  "reportIssue": {
+    "title": "Een probleem melden",
+    "topic": "Probleem / Bug",
+    "messagePlaceholder": "Beschrijf wat u probeerde te doen en wat er gebeurde (1–2 zinnen).",
+    "successMessage": "Bedankt, uw melding is verzonden."
+  },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overzicht van de prestaties van uw wasserettes",
