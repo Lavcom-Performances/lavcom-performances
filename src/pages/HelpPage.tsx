@@ -76,7 +76,7 @@ export default function HelpPage() {
         { q: "Where do I import my CSV?", a: "Go to the Operations page and click the \"Import\" button. You can drop one or multiple CSV files there." },
         { q: "What does \"duplicates ignored\" mean?", a: "Duplicates are rows already present in your data. They are automatically detected and skipped to prevent counting errors." },
         { q: "Why don't I see data on some pages?", a: "Pages like Dashboard, Recommendations, or Profitability require a CSV import first. Import your data on the Operations page to enable these analyses." },
-        { q: "Card vs Cash: what's the difference?", a: "Card = credit/debit card payment. Cash = cash payment (coins/bills). These payment modes are automatically detected during import." },
+        { q: "CB vs ESP: what's the difference?", a: "CB = card payments. ESP = cash payments (coins/bills). These payment modes are automatically detected during import." },
         { q: "Are amounts shown in euros?", a: "Yes, all displayed amounts are in euros (€). Conversion from cents is automatic when needed." },
         { q: "Can I import multiple CSV files?", a: "Yes, you can import up to 5 CSV files at once. Data will be merged automatically." },
         { q: "How do I update my data?", a: "Simply import a new CSV file with the new data. Duplicates will be ignored, only new rows will be added." },
@@ -95,10 +95,10 @@ export default function HelpPage() {
     },
     {
       icon: CreditCard,
-      title: lang === "fr" ? "Comprendre CB vs ESP" : "Understand Card vs Cash",
+      title: lang === "fr" ? "Comprendre CB vs ESP" : "Understanding CB vs ESP",
       description: lang === "fr"
-        ? "CB = carte bancaire, ESP = espèces. Ces modes sont détectés automatiquement à l'import."
-        : "Card = credit/debit card, Cash = coins/bills. These modes are detected automatically during import.",
+        ? "CB = carte bancaire. ESP = espèces (monnaie/billets). Ces modes sont détectés automatiquement à l'import."
+        : "CB = card payments. ESP = cash payments (coins/bills). These modes are detected automatically during import.",
       action: null,
       buttonText: null,
     },

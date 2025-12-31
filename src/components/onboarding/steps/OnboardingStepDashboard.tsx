@@ -16,7 +16,7 @@ export function OnboardingStepDashboard({ onComplete, onNavigate }: OnboardingSt
     {
       icon: PieChart,
       title: "Répartition des paiements",
-      description: "Analyse par mode de paiement (CB, espèces, jeton, app)."
+      description: "Analyse par mode de paiement (CB, ESP, FI)."
     },
     {
       icon: Calendar,

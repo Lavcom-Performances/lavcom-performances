@@ -919,8 +919,8 @@
     },
     "kpi": {
       "totalRevenue": "Total Revenue",
-      "revenueCard": "Card Revenue",
-      "revenueCash": "Cash Revenue",
+      "revenueCard": "CB Revenue",
+      "revenueCash": "ESP Revenue",
       "transactions": "Transactions",
       "avgBasket": "Avg. Basket",
       "occupancyRate": "Occupancy Rate",
@@ -934,8 +934,8 @@
     },
     "help": {
       "totalRevenue": "Total revenue for the selected period, all payment methods combined.",
-      "revenueCard": "Amount collected by card. Includes contactless and chip payments.",
-      "revenueCash": "Amount collected in cash via the coin acceptor.",
+      "revenueCard": "Amount collected by CB (card). Includes contactless and chip payments.",
+      "revenueCash": "Amount collected in ESP (cash) via the coin acceptor.",
       "transactions": "Total number of machine cycles performed during the period.",
       "avgBasket": "Average amount spent per transaction. Calculated by dividing revenue by number of transactions.",
       "occupancyRate": "Percentage of machine usage compared to theoretical maximum capacity.",
@@ -1067,5 +1067,23 @@
         }
       }
     }
+  },
+  "paymentModes": {
+    "cb": "CB",
+    "esp": "ESP",
+    "fi": "FI",
+    "all": "All",
+    "cbLabel": "CB Revenue",
+    "espLabel": "ESP Revenue",
+    "fiLabel": "FI Revenue",
+    "cbTooltip": "Card payments.",
+    "espTooltip": "Cash payments.",
+    "fiTooltip": "Loyalty payments (bonus/free).",
+    "allTooltip": "All payment methods.",
+    "legend": "CB = card | ESP = cash",
+    "filterLabel": "Payment method",
+    "allModes": "All methods",
+    "transactionsCb": "CB Transactions",
+    "transactionsEsp": "ESP Transactions"
   }
 }

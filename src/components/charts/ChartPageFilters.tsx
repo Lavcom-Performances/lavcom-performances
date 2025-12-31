@@ -30,9 +30,9 @@ interface ChartPageFiltersProps {
 }
 
 export const PAYMENT_MODES = [
-  { value: "CB", label: "Carte bancaire" },
-  { value: "ESP", label: "Espèces" },
-  { value: "FI", label: "Fidélité" },
+  { value: "CB", label: "CB" },
+  { value: "ESP", label: "ESP" },
+  { value: "FI", label: "FI" },
 ];
 
 export const MACHINE_TYPES = [

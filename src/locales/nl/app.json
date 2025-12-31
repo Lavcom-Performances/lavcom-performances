@@ -777,5 +777,23 @@
         }
       }
     }
+  },
+  "paymentModes": {
+    "cb": "CB",
+    "esp": "ESP",
+    "fi": "FI",
+    "all": "Alle",
+    "cbLabel": "CA CB",
+    "espLabel": "CA ESP",
+    "fiLabel": "CA FI",
+    "cbTooltip": "Kaartbetalingen.",
+    "espTooltip": "Contante betalingen (munten/biljetten).",
+    "fiTooltip": "Loyaliteitsbetalingen (bonus/gratis).",
+    "allTooltip": "Alle betaalmethoden.",
+    "legend": "CB = kaart | ESP = contant",
+    "filterLabel": "Betaalmethode",
+    "allModes": "Alle methoden",
+    "transactionsCb": "CB Transacties",
+    "transactionsEsp": "ESP Transacties"
   }
 }

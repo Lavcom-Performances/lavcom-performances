@@ -201,7 +201,7 @@ export function YearComparisonSection({ operations }: YearComparisonSectionProps
           </div>
 
           <div className="bg-muted/50 rounded-lg p-4">
-            <p className="text-xs text-muted-foreground uppercase mb-1">CA Espèces</p>
+            <p className="text-xs text-muted-foreground uppercase mb-1">CA ESP</p>
             <div className="space-y-1">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">{selectedYear}</span>

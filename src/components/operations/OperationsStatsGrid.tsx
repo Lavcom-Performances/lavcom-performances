@@ -54,7 +54,7 @@ export function OperationsStatsGrid({ hourlyData, machineCounts }: OperationsSta
                 }}
                 formatter={(value: number, name: string) => [
                   `${value.toFixed(2)} €`,
-                  name === 'cb' ? 'Carte bancaire' : 'Espèces'
+                  name === 'cb' ? 'CB' : 'ESP'
                 ]}
                 labelStyle={{ fontWeight: 600 }}
               />
