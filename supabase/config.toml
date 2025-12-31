@@ -80,3 +80,6 @@ verify_jwt = false
 
 [functions.send-system-alert]
 verify_jwt = false
+
+[functions.smoke-tests-cron]
+verify_jwt = false
