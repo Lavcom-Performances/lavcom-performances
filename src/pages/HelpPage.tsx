@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { HelpCircle, Upload, CreditCard, FileDown, Send, Loader2, CheckCircle, Mail, MessageSquare, ChevronDown } from "lucide-react";
@@ -23,12 +23,17 @@ export default function HelpPage() {
   const { toast } = useToast();
   const { user, profile } = useAuth();
   const { sites, getDefaultSite } = useSites();
+  const contactFormRef = useRef<HTMLDivElement>(null);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const defaultSite = getDefaultSite();
+  
+  const scrollToContactForm = () => {
+    contactFormRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   
   const [form, setForm] = useState({
     name: profile?.first_name ? `${profile.first_name} ${profile.last_name || ""}`.trim() : "",
@@ -253,7 +258,7 @@ export default function HelpPage() {
         </section>
 
         {/* Contact Form */}
-        <section>
+        <section ref={contactFormRef} id="contact-form">
           <h2 className="text-lg font-semibold mb-4">
             {lang === "fr" ? "Contacter le support" : "Contact Support"}
           </h2>
@@ -407,7 +412,7 @@ export default function HelpPage() {
         </section>
       </div>
       
-      <SupportChatbot language={lang as "fr" | "en"} />
+      <SupportChatbot language={lang as "fr" | "en"} onScrollToContact={scrollToContactForm} />
     </>
   );
 }
