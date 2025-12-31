@@ -43,6 +43,7 @@ import { useViewMode } from "@/hooks/useViewMode";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useHasData } from "@/hooks/useHasData";
 import { ProfitabilityEmptyState } from "@/components/ui/empty-state";
+import { CostsConfigBanner } from "@/components/dashboard/CostsConfigBanner";
 
 // Mock data - CA perdu estimé par machine
 const lostRevenueData = [
@@ -177,6 +178,9 @@ export default function ProfitabilityPage() {
         noindex={true}
       />
       <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+      {/* Costs config banner */}
+      <CostsConfigBanner />
+      
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div>

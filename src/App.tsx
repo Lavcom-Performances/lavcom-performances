@@ -70,6 +70,8 @@ import SettingsPage from "./pages/SettingsPage";
 import RolesManagement from "./pages/RolesManagement";
 import GettingStarted from "./pages/GettingStarted";
 import HelpPage from "./pages/HelpPage";
+import CostsSettingsPage from "./pages/settings/CostsSettingsPage";
+import GoalsSettingsPage from "./pages/settings/GoalsSettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -128,6 +130,8 @@ const App = () => (
             <Route path="/billing-history" element={<BillingHistory />} />
             <Route path="/laundromat-settings" element={<LaundromatSettings />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/settings/charges" element={<CostsSettingsPage />} />
+            <Route path="/settings/objectives" element={<GoalsSettingsPage />} />
             <Route path="/roles-management" element={<RolesManagement />} />
             <Route path="/help" element={<HelpPage />} />
             <Route path="/aide" element={<HelpPage />} />
