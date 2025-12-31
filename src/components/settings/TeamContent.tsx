@@ -2,11 +2,27 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, UserPlus, Mail, Trash2, Loader2, Crown, Shield } from "lucide-react";
-import { useOrganization } from "@/hooks/useOrganization";
+import { Users, UserPlus, Mail, Trash2, Loader2, Crown, Shield, Eye, Edit, ChevronDown } from "lucide-react";
+import { useOrganization, UserRole } from "@/hooks/useOrganization";
 import { InviteUserDialog } from "@/components/admin/InviteUserDialog";
 import { CreateOrganizationDialog } from "@/components/admin/CreateOrganizationDialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+
+type RoleType = UserRole['role'];
+
+const ROLE_OPTIONS: { value: RoleType; label: string; description: string; icon: React.ReactNode }[] = [
+  { value: 'super_admin', label: 'Super Admin', description: 'Accès complet et gestion des admins', icon: <Crown className="h-4 w-4 text-amber-500" /> },
+  { value: 'admin', label: 'Admin', description: 'Gestion complète de l\'organisation', icon: <Shield className="h-4 w-4 text-blue-500" /> },
+  { value: 'checker', label: 'Éditeur', description: 'Peut modifier les données', icon: <Edit className="h-4 w-4 text-emerald-500" /> },
+  { value: 'user', label: 'Utilisateur', description: 'Peut voir et exporter', icon: <Eye className="h-4 w-4 text-primary" /> },
+  { value: 'guest', label: 'Lecteur', description: 'Lecture seule', icon: <Eye className="h-4 w-4 text-muted-foreground" /> },
+];
 
 export default function TeamContent() {
   const { 
@@ -15,16 +31,20 @@ export default function TeamContent() {
     invitations, 
     isLoading, 
     isAdmin,
+    isSuperAdmin,
     sendInvitation,
     cancelInvitation,
+    updateMemberRole,
     removeMember,
-    createOrganization
+    createOrganization,
+    userRole
   } = useOrganization();
   
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [createOrgDialogOpen, setCreateOrgDialogOpen] = useState(false);
+  const [updatingRole, setUpdatingRole] = useState<string | null>(null);
 
-  const handleSendInvitation = async (email: string, role: 'super_admin' | 'admin' | 'checker' | 'user' | 'guest') => {
+  const handleSendInvitation = async (email: string, role: RoleType) => {
     try {
       await sendInvitation(email, role);
       toast.success("Invitation envoyée");
@@ -54,6 +74,18 @@ export default function TeamContent() {
     }
   };
 
+  const handleUpdateRole = async (memberId: string, newRole: RoleType) => {
+    setUpdatingRole(memberId);
+    try {
+      await updateMemberRole(memberId, newRole);
+      toast.success("Rôle mis à jour");
+    } catch (error) {
+      toast.error("Erreur lors de la mise à jour du rôle");
+    } finally {
+      setUpdatingRole(null);
+    }
+  };
+
   const handleCreateOrganization = async (name: string) => {
     try {
       await createOrganization(name);
@@ -66,21 +98,38 @@ export default function TeamContent() {
     }
   };
 
+  const getRoleOption = (role: string) => ROLE_OPTIONS.find(r => r.value === role);
+
   const getRoleBadge = (role: string) => {
+    const option = getRoleOption(role);
+    if (!option) return <Badge variant="outline">{role}</Badge>;
+    
     switch (role) {
       case 'super_admin':
-        return <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30"><Crown className="h-3 w-3 mr-1" />Super Admin</Badge>;
+        return <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30">{option.icon}<span className="ml-1">{option.label}</span></Badge>;
       case 'admin':
-        return <Badge className="bg-blue-500/20 text-blue-500 border-blue-500/30"><Shield className="h-3 w-3 mr-1" />Admin</Badge>;
+        return <Badge className="bg-blue-500/20 text-blue-500 border-blue-500/30">{option.icon}<span className="ml-1">{option.label}</span></Badge>;
       case 'checker':
-        return <Badge variant="secondary">Vérificateur</Badge>;
+        return <Badge className="bg-emerald-500/20 text-emerald-500 border-emerald-500/30">{option.icon}<span className="ml-1">{option.label}</span></Badge>;
       case 'user':
-        return <Badge variant="outline">Utilisateur</Badge>;
+        return <Badge variant="secondary">{option.icon}<span className="ml-1">{option.label}</span></Badge>;
       case 'guest':
-        return <Badge variant="outline" className="text-muted-foreground">Invité</Badge>;
+        return <Badge variant="outline" className="text-muted-foreground">{option.icon}<span className="ml-1">{option.label}</span></Badge>;
       default:
         return <Badge variant="outline">{role}</Badge>;
     }
+  };
+
+  const canEditRole = (memberRole: RoleType) => {
+    if (isSuperAdmin) return memberRole !== 'super_admin'; // Super admin can edit all except other super admins
+    if (isAdmin) return memberRole !== 'super_admin' && memberRole !== 'admin'; // Admin can edit non-admins
+    return false;
+  };
+
+  const getAvailableRoles = (): RoleType[] => {
+    if (isSuperAdmin) return ['admin', 'checker', 'user', 'guest'];
+    if (isAdmin) return ['checker', 'user', 'guest'];
+    return [];
   };
 
   if (isLoading) {
@@ -128,6 +177,29 @@ export default function TeamContent() {
 
   return (
     <div className="space-y-6 max-w-4xl">
+      {/* Roles Legend */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Shield className="h-4 w-4 text-primary" />
+            Rôles disponibles
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {ROLE_OPTIONS.map((role) => (
+              <div key={role.value} className="flex items-start gap-2 p-2 rounded-lg border bg-muted/30">
+                <div className="mt-0.5">{role.icon}</div>
+                <div>
+                  <p className="font-medium text-sm">{role.label}</p>
+                  <p className="text-xs text-muted-foreground">{role.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Team Members */}
       <Card>
         <CardHeader>
@@ -163,10 +235,56 @@ export default function TeamContent() {
                 </div>
                 <div>
                   <p className="font-medium">{member.email}</p>
-                  {getRoleBadge(member.role)}
+                  <div className="flex items-center gap-2 mt-1">
+                    {canEditRole(member.role) ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-auto p-0 hover:bg-transparent"
+                            disabled={updatingRole === member.id}
+                          >
+                            <div className="flex items-center gap-1">
+                              {getRoleBadge(member.role)}
+                              {updatingRole === member.id ? (
+                                <Loader2 className="h-3 w-3 ml-1 animate-spin" />
+                              ) : (
+                                <ChevronDown className="h-3 w-3 ml-1 text-muted-foreground" />
+                              )}
+                            </div>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-56">
+                          {getAvailableRoles().map((roleValue) => {
+                            const option = getRoleOption(roleValue);
+                            if (!option) return null;
+                            return (
+                              <DropdownMenuItem
+                                key={roleValue}
+                                onClick={() => handleUpdateRole(member.id, roleValue)}
+                                className="flex items-start gap-2 py-2"
+                              >
+                                {option.icon}
+                                <div>
+                                  <p className="font-medium">{option.label}</p>
+                                  <p className="text-xs text-muted-foreground">{option.description}</p>
+                                </div>
+                              </DropdownMenuItem>
+                            );
+                          })}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      getRoleBadge(member.role)
+                    )}
+                    {member.user_id === userRole?.user_id && (
+                      <Badge variant="outline" className="text-xs">Vous</Badge>
+                    )}
+                  </div>
                 </div>
               </div>
-              {isAdmin && member.role !== 'super_admin' && (
+              {isAdmin && member.role !== 'super_admin' && member.user_id !== userRole?.user_id && (
                 <Button
                   variant="ghost"
                   size="icon"
@@ -229,7 +347,7 @@ export default function TeamContent() {
         open={inviteDialogOpen}
         onOpenChange={setInviteDialogOpen}
         onInvite={handleSendInvitation}
-        isSuperAdmin={false}
+        isSuperAdmin={isSuperAdmin}
       />
     </div>
   );
