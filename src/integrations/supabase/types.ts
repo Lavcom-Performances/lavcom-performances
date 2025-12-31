@@ -1266,7 +1266,16 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_data_quality_operations: {
+        Row: {
+          esp_topup_missing_sales_candidates: number | null
+          missing_operation_date: number | null
+          missing_site_id: number | null
+          suspicious_amounts_centimes: number | null
+          total_operations: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cleanup_old_cron_logs: { Args: never; Returns: undefined }
@@ -1317,6 +1326,16 @@ export type Database = {
           total_revenue: number
           total_transactions: number
           unique_machines: number
+        }[]
+      }
+      rpc_data_quality_check: {
+        Args: never
+        Returns: {
+          esp_topup_missing_sales_candidates: number
+          missing_operation_date: number
+          missing_site_id: number
+          suspicious_amounts_centimes: number
+          total_operations: number
         }[]
       }
       rpc_date_bounds: {
@@ -1378,6 +1397,14 @@ export type Database = {
           rec_key: string
           severity: string
           title: string
+        }[]
+      }
+      rpc_run_smoke_tests: {
+        Args: { p_site_id: string }
+        Returns: {
+          details: string
+          ok: boolean
+          test_key: string
         }[]
       }
       rpc_stripe_last_event: {
