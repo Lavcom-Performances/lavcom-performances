@@ -864,6 +864,24 @@
     "monthlyEvolution": "Evoluzione mensile della redditività",
     "avgMonthlyRevenue": "Fatturato mensile medio",
     "avgMonthlyCosts": "Costi mensili medi",
-    "avgMonthlyProfit": "Profitto mensile medio"
+    "avgMonthlyProfit": "Profitto mensile medio",
+    "exportPdf": "Esporta PDF",
+    "exportSuccess": "Report PDF generato con successo",
+    "exportError": "Errore nella generazione del PDF",
+    "exportNoData": "Nessun dato da esportare",
+    "pdfTitle": "REPORT MENSILE DI REDDITIVITÀ",
+    "pdfDisclaimer": "Questo report si basa sui costi configurati. I valori effettivi possono variare.",
+    "address": "Indirizzo",
+    "generatedOn": "Generato il",
+    "tableMonth": "Mese",
+    "marginAlert": {
+      "title": "Margine sotto la soglia",
+      "description": "Il tuo margine attuale ({{current}}%) è inferiore alla soglia configurata ({{threshold}}%). Analizza i tuoi costi per identificare ottimizzazioni.",
+      "configure": "Configura avviso",
+      "settingsTitle": "Impostazioni avviso margine",
+      "settingsDescription": "Imposta la soglia sotto la quale vuoi essere avvisato",
+      "thresholdLabel": "Soglia minima del margine",
+      "currentMargin": "Margine attuale"
+    }
   }
 }

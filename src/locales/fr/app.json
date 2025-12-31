@@ -1215,6 +1215,24 @@
     "monthlyEvolution": "Évolution mensuelle de la rentabilité",
     "avgMonthlyRevenue": "CA mensuel moyen",
     "avgMonthlyCosts": "Charges mensuelles moy.",
-    "avgMonthlyProfit": "Bénéfice mensuel moy."
+    "avgMonthlyProfit": "Bénéfice mensuel moy.",
+    "exportPdf": "Exporter PDF",
+    "exportSuccess": "Rapport PDF généré avec succès",
+    "exportError": "Erreur lors de la génération du PDF",
+    "exportNoData": "Aucune donnée à exporter",
+    "pdfTitle": "RAPPORT DE RENTABILITÉ MENSUELLE",
+    "pdfDisclaimer": "Ce rapport est basé sur les charges renseignées. Les valeurs réelles peuvent varier.",
+    "address": "Adresse",
+    "generatedOn": "Généré le",
+    "tableMonth": "Mois",
+    "marginAlert": {
+      "title": "Marge en dessous du seuil",
+      "description": "Votre marge actuelle ({{current}}%) est inférieure au seuil configuré ({{threshold}}%). Analysez vos charges pour identifier des optimisations.",
+      "configure": "Configurer l'alerte",
+      "settingsTitle": "Paramètres d'alerte de marge",
+      "settingsDescription": "Configurez le seuil en dessous duquel vous souhaitez être alerté",
+      "thresholdLabel": "Seuil de marge minimum",
+      "currentMargin": "Marge actuelle"
+    }
   }
 }
