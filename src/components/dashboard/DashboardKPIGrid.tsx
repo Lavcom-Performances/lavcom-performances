@@ -9,12 +9,14 @@ import {
   TrendingUp,
   Percent,
   Clock,
+  RefreshCw,
 } from "lucide-react";
 import { KPICard } from "./KPICard";
 import { useDashboardKpis } from "@/hooks/useAnalyticsRpc";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
+import { useRefreshState } from "@/hooks/useRefreshState";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -48,15 +50,19 @@ interface DashboardKPIGridProps {
 export function DashboardKPIGrid({ dateRange }: DashboardKPIGridProps) {
   const { t } = useTranslation(['app']);
   const { currentSiteId } = useCurrentSite();
+  const { isRefreshing } = useRefreshState();
 
   const startDate = dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : '';
   const endDate = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : '';
 
-  const { data: kpis, isLoading } = useDashboardKpis(
+  const { data: kpis, isLoading, isFetching } = useDashboardKpis(
     currentSiteId ?? '',
     startDate,
     endDate
   );
+
+  // Show skeleton if loading, fetching, or site is being refreshed
+  const showRefreshingState = isLoading || isFetching || (currentSiteId ? isRefreshing(currentSiteId) : false);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('fr-FR', { 
@@ -95,12 +101,28 @@ export function DashboardKPIGrid({ dateRange }: DashboardKPIGridProps) {
     ? Math.round((stats.revenueByCash / stats.totalRevenue) * 100) 
     : 0;
 
-  if (isLoading) {
+  // Skeleton with "Mise à jour en cours" indicator
+  if (showRefreshingState) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        {[...Array(6)].map((_, i) => (
-          <Skeleton key={i} className="h-[120px] rounded-lg" />
-        ))}
+      <div className="space-y-2">
+        {(isFetching || (currentSiteId && isRefreshing(currentSiteId))) && !isLoading && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground animate-pulse">
+            <RefreshCw className="h-4 w-4 animate-spin" />
+            <span>Mise à jour en cours...</span>
+          </div>
+        )}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="relative">
+              <Skeleton className="h-[120px] rounded-lg" />
+              {(isFetching || (currentSiteId && isRefreshing(currentSiteId))) && !isLoading && (
+                <div className="absolute inset-0 bg-background/50 backdrop-blur-[1px] rounded-lg flex items-center justify-center">
+                  <RefreshCw className="h-5 w-5 text-muted-foreground animate-spin" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
