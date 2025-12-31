@@ -32,6 +32,9 @@ import { generateMarketingRecommendations, getMockAnalyticsData } from "@/utils/
 import { trackPdfDownload } from "@/lib/analytics";
 import type { Recommendation } from "@/types/recommendations";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { useHasData } from "@/hooks/useHasData";
+import { RecommendationsEmptyState } from "@/components/ui/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Map recommendation IDs to specific icons
 const getMarketingIcon = (recoId: string): LucideIcon => {
@@ -165,6 +168,7 @@ export default function RecommendationsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
   const { dateRange, setDateRange } = useDateRange();
+  const { hasData, isLoading: dataLoading } = useHasData();
 
   const handleExportPDF = async () => {
     setIsGenerating(true);
@@ -289,6 +293,48 @@ export default function RecommendationsPage() {
     financialImpact: reco.impactEstimate ? parseInt(reco.impactEstimate.replace(/[^\d]/g, "")) : undefined,
     effort: (reco.difficulty === "Faible" ? "low" : reco.difficulty === "Moyen" ? "medium" : "high") as EffortLevel,
   }));
+
+  // Loading state
+  if (dataLoading) {
+    return (
+      <div className="p-6 lg:p-8 space-y-6">
+        <Skeleton className="h-10 w-64" />
+        <Skeleton className="h-6 w-96" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Skeleton className="h-48" />
+          <Skeleton className="h-48" />
+          <Skeleton className="h-48" />
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state - no data imported
+  if (!hasData) {
+    return (
+      <>
+        <SEOHead 
+          title="Recommandations"
+          description="Recommandations et actions pour optimiser votre laverie automatique."
+          url="/recommendations"
+          noindex={true}
+        />
+        <div className="p-6 lg:p-8">
+          <div className="mb-6">
+            <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+              Recommandations
+            </h1>
+            <p className="text-muted-foreground">
+              Insights et actions recommandées basées sur vos données
+            </p>
+          </div>
+          <div className="card-lavcom">
+            <RecommendationsEmptyState />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
