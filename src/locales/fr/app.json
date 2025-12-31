@@ -97,7 +97,8 @@
     "features": "Fonctionnalités",
     "simulationOpening": "Simulation ouverture",
     "profile": "Mon profil",
-    "subscription": "Abonnement"
+    "subscription": "Abonnement",
+    "help": "Aide"
   },
   "profile": {
     "title": "Mon profil",

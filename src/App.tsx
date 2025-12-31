@@ -69,6 +69,7 @@ import ProfitabilityPage from "./pages/ProfitabilityPage";
 import SettingsPage from "./pages/SettingsPage";
 import RolesManagement from "./pages/RolesManagement";
 import GettingStarted from "./pages/GettingStarted";
+import HelpPage from "./pages/HelpPage";
 
 const queryClient = new QueryClient();
 
@@ -128,6 +129,8 @@ const App = () => (
             <Route path="/laundromat-settings" element={<LaundromatSettings />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/roles-management" element={<RolesManagement />} />
+            <Route path="/help" element={<HelpPage />} />
+            <Route path="/aide" element={<HelpPage />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
             <Route path="/admin" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />

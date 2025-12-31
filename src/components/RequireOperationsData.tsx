@@ -15,6 +15,8 @@ interface RequireOperationsDataProps {
 const EXCLUDED_ROUTES = [
   "/operations",
   "/getting-started",
+  "/help",
+  "/aide",
   "/admin",
   "/profile",
   "/security",

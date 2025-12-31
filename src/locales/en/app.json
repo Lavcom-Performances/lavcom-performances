@@ -97,7 +97,8 @@
     "features": "Features",
     "simulationOpening": "Opening simulation",
     "profile": "My profile",
-    "subscription": "Subscription"
+    "subscription": "Subscription",
+    "help": "Help"
   },
   "profile": {
     "title": "My profile",
