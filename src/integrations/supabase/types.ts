@@ -1335,6 +1335,13 @@ export type Database = {
           title: string
         }[]
       }
+      rpc_stripe_last_event: {
+        Args: never
+        Returns: {
+          created_at: string
+          event_type: string
+        }[]
+      }
       trigger_compute_analytics_cron: { Args: never; Returns: undefined }
       user_belongs_to_org: {
         Args: { _org_id: string; _user_id: string }
