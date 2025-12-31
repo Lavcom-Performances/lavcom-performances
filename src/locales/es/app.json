@@ -1,4 +1,10 @@
 {
+  "reportIssue": {
+    "title": "Reportar un problema",
+    "topic": "Problema / Bug",
+    "messagePlaceholder": "Describa lo que intentó hacer y lo que ocurrió (1–2 frases).",
+    "successMessage": "Gracias, su informe ha sido enviado."
+  },
   "dashboard": {
     "title": "Panel de control",
     "subtitle": "Resumen del rendimiento de sus lavanderías",

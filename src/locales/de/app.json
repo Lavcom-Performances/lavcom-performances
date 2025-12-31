@@ -1,4 +1,10 @@
 {
+  "reportIssue": {
+    "title": "Problem melden",
+    "topic": "Problem / Fehler",
+    "messagePlaceholder": "Beschreiben Sie, was Sie tun wollten und was passiert ist (1–2 Sätze).",
+    "successMessage": "Danke, Ihre Meldung wurde gesendet."
+  },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Übersicht über die Leistung Ihrer Waschsalons",

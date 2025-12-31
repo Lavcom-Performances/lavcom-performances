@@ -1,4 +1,10 @@
 {
+  "reportIssue": {
+    "title": "Segnala un problema",
+    "topic": "Problema / Bug",
+    "messagePlaceholder": "Descrivi cosa volevi fare e cosa è successo (1–2 frasi).",
+    "successMessage": "Grazie, la tua segnalazione è stata inviata."
+  },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Panoramica delle prestazioni delle tue lavanderie",

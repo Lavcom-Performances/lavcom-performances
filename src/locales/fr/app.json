@@ -1,4 +1,10 @@
 {
+  "reportIssue": {
+    "title": "Signaler un problème",
+    "topic": "Problème / Bug",
+    "messagePlaceholder": "Décrivez ce que vous vouliez faire et ce qui s'est passé (1–2 phrases).",
+    "successMessage": "Merci, votre signalement a bien été envoyé."
+  },
   "profile": {
     "avatar": {
       "rotateLeft": "Rotation -90°",
