@@ -335,8 +335,20 @@ export default function LaundromatSettings() {
     }
   };
 
+  const canEdit = permissions.can_edit_sites;
+
   return (
     <div className="space-y-6">
+      {/* Read-only Mode Alert */}
+      {!canEdit && (
+        <Alert className="border-amber-200 bg-amber-50/50">
+          <Lock className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-800">
+            <span className="font-medium">Mode lecture seule</span> — Vous n'avez pas les permissions pour modifier les paramètres de cette laverie.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Header with Site Selector */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -372,10 +384,26 @@ export default function LaundromatSettings() {
             </Select>
           )}
         </div>
-        <Button onClick={handleSave} className="gap-2">
-          <Save className="h-4 w-4" />
-          Enregistrer
-        </Button>
+        {canEdit ? (
+          <Button onClick={handleSave} className="gap-2">
+            <Save className="h-4 w-4" />
+            Enregistrer
+          </Button>
+        ) : (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button disabled className="gap-2 opacity-50 cursor-not-allowed">
+                  <Lock className="h-4 w-4" />
+                  Enregistrer
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Vous n'avez pas la permission de modifier</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
 
       {/* Maintenance Alert */}
@@ -422,6 +450,8 @@ export default function LaundromatSettings() {
                     id="name"
                     value={laundryInfo.name}
                     onChange={(e) => setLaundryInfo({ ...laundryInfo, name: e.target.value })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -430,6 +460,8 @@ export default function LaundromatSettings() {
                     id="address"
                     value={laundryInfo.address}
                     onChange={(e) => setLaundryInfo({ ...laundryInfo, address: e.target.value })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -439,6 +471,8 @@ export default function LaundromatSettings() {
                       id="city"
                       value={laundryInfo.city}
                       onChange={(e) => setLaundryInfo({ ...laundryInfo, city: e.target.value })}
+                      disabled={!canEdit}
+                      className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                     />
                   </div>
                   <div className="space-y-2">
@@ -447,6 +481,8 @@ export default function LaundromatSettings() {
                       id="postalCode"
                       value={laundryInfo.postalCode}
                       onChange={(e) => setLaundryInfo({ ...laundryInfo, postalCode: e.target.value })}
+                      disabled={!canEdit}
+                      className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                     />
                   </div>
                 </div>
@@ -458,6 +494,8 @@ export default function LaundromatSettings() {
                       type="tel"
                       value={laundryInfo.phone}
                       onChange={(e) => setLaundryInfo({ ...laundryInfo, phone: e.target.value })}
+                      disabled={!canEdit}
+                      className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                     />
                   </div>
                   <div className="space-y-2">
@@ -467,6 +505,8 @@ export default function LaundromatSettings() {
                       type="email"
                       value={laundryInfo.email}
                       onChange={(e) => setLaundryInfo({ ...laundryInfo, email: e.target.value })}
+                      disabled={!canEdit}
+                      className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                     />
                   </div>
                 </div>
@@ -489,6 +529,8 @@ export default function LaundromatSettings() {
                     type="number"
                     value={laundryInfo.surface}
                     onChange={(e) => setLaundryInfo({ ...laundryInfo, surface: parseInt(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                   <p className="text-xs text-muted-foreground">
                     Utilisé pour calculer le CA/m²
@@ -501,6 +543,8 @@ export default function LaundromatSettings() {
                     type="date"
                     value={laundryInfo.openingDate}
                     onChange={(e) => setLaundryInfo({ ...laundryInfo, openingDate: e.target.value })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -511,6 +555,8 @@ export default function LaundromatSettings() {
                       id="responsible"
                       value={laundryInfo.responsibleName}
                       onChange={(e) => setLaundryInfo({ ...laundryInfo, responsibleName: e.target.value })}
+                      disabled={!canEdit}
+                      className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                     />
                   </div>
                 </div>
@@ -522,6 +568,8 @@ export default function LaundromatSettings() {
                     onChange={(e) => setLaundryInfo({ ...laundryInfo, notes: e.target.value })}
                     placeholder="Informations complémentaires..."
                     rows={3}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
               </CardContent>
@@ -548,6 +596,8 @@ export default function LaundromatSettings() {
                     type="time"
                     value={operatingHours.opening}
                     onChange={(e) => setOperatingHours({ ...operatingHours, opening: e.target.value })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -557,6 +607,8 @@ export default function LaundromatSettings() {
                     type="time"
                     value={operatingHours.closing}
                     onChange={(e) => setOperatingHours({ ...operatingHours, closing: e.target.value })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="p-4 bg-muted/50 rounded-lg flex flex-col justify-center">
@@ -622,14 +674,23 @@ export default function LaundromatSettings() {
                   </CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => addMachine("LL")} className="gap-1">
-                    <Plus className="h-4 w-4" />
-                    Lave-linge
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => addMachine("SL")} className="gap-1">
-                    <Plus className="h-4 w-4" />
-                    Sèche-linge
-                  </Button>
+                  {canEdit ? (
+                    <>
+                      <Button variant="outline" size="sm" onClick={() => addMachine("LL")} className="gap-1">
+                        <Plus className="h-4 w-4" />
+                        Lave-linge
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => addMachine("SL")} className="gap-1">
+                        <Plus className="h-4 w-4" />
+                        Sèche-linge
+                      </Button>
+                    </>
+                  ) : (
+                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Lock className="h-3 w-3" />
+                      Lecture seule
+                    </span>
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -658,7 +719,8 @@ export default function LaundromatSettings() {
                             <Input
                               value={machine.name}
                               onChange={(e) => updateMachine(machine.id, "name", e.target.value)}
-                              className="h-8"
+                              className={`h-8 ${!canEdit ? "bg-muted cursor-not-allowed" : ""}`}
+                              disabled={!canEdit}
                             />
                           </TableCell>
                           <TableCell>
@@ -675,7 +737,8 @@ export default function LaundromatSettings() {
                               type="number"
                               value={machine.capacity}
                               onChange={(e) => updateMachine(machine.id, "capacity", parseInt(e.target.value) || 0)}
-                              className="h-8 w-16"
+                              className={`h-8 w-16 ${!canEdit ? "bg-muted cursor-not-allowed" : ""}`}
+                              disabled={!canEdit}
                             />
                           </TableCell>
                           <TableCell>
@@ -683,7 +746,8 @@ export default function LaundromatSettings() {
                               type="number"
                               value={machine.cycleDuration}
                               onChange={(e) => updateMachine(machine.id, "cycleDuration", parseInt(e.target.value) || 0)}
-                              className="h-8 w-16"
+                              className={`h-8 w-16 ${!canEdit ? "bg-muted cursor-not-allowed" : ""}`}
+                              disabled={!canEdit}
                             />
                           </TableCell>
                           <TableCell>
@@ -692,7 +756,8 @@ export default function LaundromatSettings() {
                               step="0.5"
                               value={machine.pricePerCycle}
                               onChange={(e) => updateMachine(machine.id, "pricePerCycle", parseFloat(e.target.value) || 0)}
-                              className="h-8 w-16"
+                              className={`h-8 w-16 ${!canEdit ? "bg-muted cursor-not-allowed" : ""}`}
+                              disabled={!canEdit}
                             />
                           </TableCell>
                           <TableCell>
@@ -700,7 +765,8 @@ export default function LaundromatSettings() {
                               type="number"
                               value={machine.maintenanceThreshold}
                               onChange={(e) => updateMachine(machine.id, "maintenanceThreshold", parseInt(e.target.value) || 0)}
-                              className="h-8 w-20"
+                              className={`h-8 w-20 ${!canEdit ? "bg-muted cursor-not-allowed" : ""}`}
+                              disabled={!canEdit}
                             />
                           </TableCell>
                           <TableCell>
@@ -709,7 +775,8 @@ export default function LaundromatSettings() {
                                 type="number"
                                 value={machine.cyclesSinceLastMaintenance}
                                 onChange={(e) => updateMachine(machine.id, "cyclesSinceLastMaintenance", parseInt(e.target.value) || 0)}
-                                className={`h-8 w-16 ${maintenanceCritical ? "border-red-300" : maintenanceWarning ? "border-amber-300" : ""}`}
+                                className={`h-8 w-16 ${maintenanceCritical ? "border-red-300" : maintenanceWarning ? "border-amber-300" : ""} ${!canEdit ? "bg-muted cursor-not-allowed" : ""}`}
+                                disabled={!canEdit}
                               />
                               {maintenanceCritical && <AlertTriangle className="h-4 w-4 text-red-500" />}
                               {!maintenanceCritical && maintenanceWarning && <AlertTriangle className="h-4 w-4 text-amber-500" />}
@@ -778,6 +845,8 @@ export default function LaundromatSettings() {
                     step="0.01"
                     value={costs.fixed_rent}
                     onChange={(e) => setCosts({ ...costs, fixed_rent: parseFloat(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -788,6 +857,8 @@ export default function LaundromatSettings() {
                     step="0.01"
                     value={costs.fixed_lease}
                     onChange={(e) => setCosts({ ...costs, fixed_lease: parseFloat(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -798,6 +869,8 @@ export default function LaundromatSettings() {
                     step="0.01"
                     value={costs.fixed_subscriptions}
                     onChange={(e) => setCosts({ ...costs, fixed_subscriptions: parseFloat(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -808,6 +881,8 @@ export default function LaundromatSettings() {
                     step="0.01"
                     value={costs.fixed_insurance}
                     onChange={(e) => setCosts({ ...costs, fixed_insurance: parseFloat(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -818,6 +893,8 @@ export default function LaundromatSettings() {
                     step="0.01"
                     value={costs.fixed_cleaning}
                     onChange={(e) => setCosts({ ...costs, fixed_cleaning: parseFloat(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -828,6 +905,8 @@ export default function LaundromatSettings() {
                     step="0.01"
                     value={costs.fixed_other}
                     onChange={(e) => setCosts({ ...costs, fixed_other: parseFloat(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 
@@ -863,6 +942,8 @@ export default function LaundromatSettings() {
                     max="100"
                     value={costs.var_energy_water_percent}
                     onChange={(e) => setCosts({ ...costs, var_energy_water_percent: parseFloat(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -875,6 +956,8 @@ export default function LaundromatSettings() {
                     max="100"
                     value={costs.var_detergent_percent}
                     onChange={(e) => setCosts({ ...costs, var_detergent_percent: parseFloat(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                   <p className="text-xs text-muted-foreground">
                     Si la lessive est incluse dans vos tarifs
@@ -988,6 +1071,8 @@ export default function LaundromatSettings() {
                     type="number"
                     value={objectives.monthlyRevenue}
                     onChange={(e) => setObjectives({ ...objectives, monthlyRevenue: parseInt(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
                 <div className="space-y-2">
@@ -997,6 +1082,8 @@ export default function LaundromatSettings() {
                     type="number"
                     value={objectives.annualRevenue}
                     onChange={(e) => setObjectives({ ...objectives, annualRevenue: parseInt(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                   <p className="text-xs text-muted-foreground">
                     Objectif mensuel moyen : {(objectives.annualRevenue / 12).toLocaleString('fr-FR')} €
@@ -1025,6 +1112,8 @@ export default function LaundromatSettings() {
                     max="100"
                     value={objectives.targetOccupancyRate}
                     onChange={(e) => setObjectives({ ...objectives, targetOccupancyRate: parseInt(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                   <p className="text-xs text-muted-foreground">
                     Recommandé : 65-75% pour une laverie bien optimisée
@@ -1038,6 +1127,8 @@ export default function LaundromatSettings() {
                     step="0.5"
                     value={objectives.targetBasket}
                     onChange={(e) => setObjectives({ ...objectives, targetBasket: parseFloat(e.target.value) || 0 })}
+                    disabled={!canEdit}
+                    className={!canEdit ? "bg-muted cursor-not-allowed" : ""}
                   />
                 </div>
               </CardContent>
