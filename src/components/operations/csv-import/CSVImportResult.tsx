@@ -1,87 +1,156 @@
-import { Link } from "react-router-dom";
-import { CheckCircle2, AlertCircle, ArrowRight, Copy, Zap, Euro } from "lucide-react";
+import { CheckCircle2, AlertCircle, AlertTriangle, ArrowDown, RotateCcw, FileCheck, FileX, Files, Ban } from "lucide-react";
 import { ImportResult } from "./types";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface CSVImportResultProps {
   result: ImportResult;
   onClose: () => void;
+  onRetry?: () => void;
+  onScrollToTable?: () => void;
 }
 
-export function CSVImportResult({ result, onClose }: CSVImportResultProps) {
+// Calculate total lines read from result
+function getTotalRead(result: ImportResult): number {
+  return result.imported + result.ignored + result.duplicates + result.errors.length;
+}
+
+// Determine import status
+function getImportStatus(result: ImportResult): 'success' | 'partial' | 'failed' {
+  const hasErrors = result.errors.length > 0;
+  const hasImported = result.imported > 0;
+  
+  if (!hasErrors) return 'success';
+  if (hasImported) return 'partial';
+  return 'failed';
+}
+
+export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: CSVImportResultProps) {
+  const status = getImportStatus(result);
+  const totalRead = getTotalRead(result);
+  const hasErrors = result.errors.length > 0;
+  const hasDuplicates = result.duplicates > 0;
+  
+  // Status config
+  const statusConfig = {
+    success: {
+      icon: CheckCircle2,
+      title: "Import terminé",
+      bgColor: "bg-lavcom-green/10",
+      textColor: "text-lavcom-green-dark dark:text-lavcom-green",
+      iconColor: "text-lavcom-green",
+    },
+    partial: {
+      icon: AlertTriangle,
+      title: "Import terminé (partiel)",
+      bgColor: "bg-amber-50 dark:bg-amber-900/20",
+      textColor: "text-amber-800 dark:text-amber-300",
+      iconColor: "text-amber-600 dark:text-amber-400",
+    },
+    failed: {
+      icon: AlertCircle,
+      title: "Import échoué",
+      bgColor: "bg-destructive/10",
+      textColor: "text-destructive",
+      iconColor: "text-destructive",
+    },
+  };
+  
+  const config = statusConfig[status];
+  const StatusIcon = config.icon;
+
   return (
     <div className="space-y-4">
-      <div className={`
-        flex items-center gap-3 p-4 rounded-lg
-        ${result.success 
-          ? "bg-lavcom-green/10 text-lavcom-green-dark dark:text-lavcom-green" 
-          : "bg-destructive/10 text-destructive"
-        }
-      `}>
-        {result.success ? (
-          <CheckCircle2 className="h-6 w-6 shrink-0" />
-        ) : (
-          <AlertCircle className="h-6 w-6 shrink-0" />
-        )}
-        <div className="flex-1">
-          <p className="font-medium">
-            {result.success ? "Import terminé avec succès !" : "Erreur lors de l'import"}
-          </p>
-          {result.success && (
-            <div className="flex flex-wrap items-center gap-2 mt-2">
-              <Badge variant="default" className="bg-lavcom-green text-white">
-                {result.imported} importées
-              </Badge>
-              {result.duplicates > 0 && (
-                <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
-                  <Copy className="h-3 w-3 mr-1" />
-                  {result.duplicates} doublons ignorés
-                </Badge>
-              )}
-              {result.ignored > 0 && (
-                <Badge variant="outline" className="text-muted-foreground">
-                  {result.ignored} lignes ignorées
-                </Badge>
-              )}
-              {result.rechEspFixed !== undefined && result.rechEspFixed > 0 && (
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                  <Zap className="h-3 w-3 mr-1" />
-                  {result.rechEspFixed} rech ESP corrigés
-                </Badge>
-              )}
-              {result.centimesConverted && (
-                <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
-                  <Euro className="h-3 w-3 mr-1" />
-                  Centimes détectés → Euros
-                </Badge>
-              )}
-            </div>
-          )}
+      {/* Status header */}
+      <div className={`flex items-center gap-3 p-4 rounded-lg ${config.bgColor}`}>
+        <StatusIcon className={`h-6 w-6 shrink-0 ${config.iconColor}`} />
+        <p className={`font-semibold ${config.textColor}`}>{config.title}</p>
+      </div>
+
+      {/* Summary stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
+          <Files className="h-4 w-4 text-muted-foreground shrink-0" />
+          <div>
+            <p className="text-lg font-semibold">{totalRead}</p>
+            <p className="text-xs text-muted-foreground">Lignes lues</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-lavcom-green/10 border border-lavcom-green/20">
+          <FileCheck className="h-4 w-4 text-lavcom-green shrink-0" />
+          <div>
+            <p className="text-lg font-semibold text-lavcom-green-dark dark:text-lavcom-green">{result.imported}</p>
+            <p className="text-xs text-muted-foreground">Lignes importées</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
+          <Ban className="h-4 w-4 text-muted-foreground shrink-0" />
+          <div>
+            <p className="text-lg font-semibold">{result.duplicates}</p>
+            <p className="text-xs text-muted-foreground">Doublons ignorés</p>
+          </div>
+        </div>
+        
+        <div className={`flex items-center gap-2 p-3 rounded-lg border ${
+          hasErrors 
+            ? "bg-destructive/10 border-destructive/20" 
+            : "bg-muted/50 border-border/50"
+        }`}>
+          <FileX className={`h-4 w-4 shrink-0 ${hasErrors ? "text-destructive" : "text-muted-foreground"}`} />
+          <div>
+            <p className={`text-lg font-semibold ${hasErrors ? "text-destructive" : ""}`}>{result.errors.length}</p>
+            <p className="text-xs text-muted-foreground">Erreurs</p>
+          </div>
         </div>
       </div>
 
-      {result.errors.length > 0 && (
-        <div className="bg-muted/50 rounded-lg p-3">
-          <p className="text-xs font-medium text-muted-foreground mb-2">Détails :</p>
-          <ul className="text-xs text-muted-foreground space-y-1 max-h-20 overflow-y-auto">
-            {result.errors.slice(0, 5).map((error, i) => (
-              <li key={i}>• {error}</li>
-            ))}
-            {result.errors.length > 5 && (
-              <li className="italic">... et {result.errors.length - 5} autres</li>
-            )}
-          </ul>
+      {/* Duplicates message */}
+      {hasDuplicates && (
+        <p className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-3">
+          Doublons détectés : {result.duplicates} lignes ignorées (aucune donnée dupliquée importée).
+        </p>
+      )}
+
+      {/* Errors section */}
+      {hasErrors && (
+        <div className="bg-destructive/5 rounded-lg p-3 border border-destructive/20">
+          <p className="text-sm font-medium text-destructive mb-2">
+            Certaines lignes n'ont pas pu être importées.
+          </p>
+          {result.errors.length > 0 && (
+            <ul className="text-xs text-muted-foreground space-y-1">
+              {result.errors.slice(0, 3).map((error, i) => (
+                <li key={i} className="truncate">• {error}</li>
+              ))}
+              {result.errors.length > 3 && (
+                <li className="text-muted-foreground/70 italic">
+                  ... et {result.errors.length - 3} autre{result.errors.length - 3 > 1 ? 's' : ''}
+                </li>
+              )}
+            </ul>
+          )}
         </div>
       )}
 
+      {/* Actions */}
       <div className="flex gap-3 justify-between items-center pt-2">
-        <Link to="/dashboard">
-          <Button variant="outline" size="sm" className="text-lavcom-green border-lavcom-green/30 hover:bg-lavcom-green/10">
-            Voir le tableau de bord
-            <ArrowRight className="h-4 w-4 ml-1.5" />
+        {status === 'failed' ? (
+          <Button variant="outline" onClick={onRetry} className="gap-2">
+            <RotateCcw className="h-4 w-4" />
+            Réessayer
           </Button>
-        </Link>
+        ) : (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onScrollToTable}
+            className="text-lavcom-green border-lavcom-green/30 hover:bg-lavcom-green/10 gap-1.5"
+          >
+            <ArrowDown className="h-4 w-4" />
+            Voir les nouvelles lignes
+          </Button>
+        )}
         <Button onClick={onClose}>
           Fermer
         </Button>
