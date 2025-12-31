@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Navigate } from "react-router-dom";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -47,8 +47,9 @@ import { toast } from "sonner";
 import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
 import { useOrganization, TeamMember } from "@/hooks/useOrganization";
 import { useUserPermissions, PermissionKey } from "@/hooks/useUserPermissions";
-import { usePermissionAuditLogs } from "@/hooks/usePermissionAuditLogs";
+import { usePermissionAuditLogs, PermissionAuditLog } from "@/hooks/usePermissionAuditLogs";
 import { PermissionsDashboard } from "@/components/admin/PermissionsDashboard";
+import { AuditLogsFilters } from "@/components/admin/AuditLogsFilters";
 import { supabase } from "@/integrations/supabase/client";
 
 const ROLE_LABELS: Record<string, { label: string; color: string; description: string }> = {
@@ -122,9 +123,14 @@ export default function RolesManagement() {
   const { organization, teamMembers, isLoading: orgLoading, updateMemberRole } = useOrganization();
   const { permissions: allPermissions, getUserPermissions, updatePermission, setUserPermissions, refresh: refreshPermissions } = useUserPermissions(organization?.id || null);
   const { logs, isLoading: logsLoading, logPermissionChange } = usePermissionAuditLogs(organization?.id || null);
+  const [filteredLogs, setFilteredLogs] = useState<PermissionAuditLog[]>([]);
 
   const [expandedMembers, setExpandedMembers] = useState<Set<string>>(new Set());
   const [updatingPermissions, setUpdatingPermissions] = useState<Set<string>>(new Set());
+
+  const handleFilteredLogsChange = useCallback((logs: PermissionAuditLog[]) => {
+    setFilteredLogs(logs);
+  }, []);
 
   // Redirect non super-admins
   if (!permLoading && !isSuperAdmin) {
@@ -466,22 +472,25 @@ export default function RolesManagement() {
                 Toutes les modifications de permissions et de rôles sont enregistrées
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              {/* Filters */}
+              <AuditLogsFilters logs={logs} onFilteredLogsChange={handleFilteredLogsChange} />
+
               {logsLoading ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
                     <Skeleton key={i} className="h-16 w-full" />
                   ))}
                 </div>
-              ) : logs.length === 0 ? (
+              ) : filteredLogs.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Aucune modification enregistrée</p>
+                  <p>{logs.length === 0 ? "Aucune modification enregistrée" : "Aucun résultat pour ces filtres"}</p>
                 </div>
               ) : (
                 <ScrollArea className="h-[400px]">
                   <div className="space-y-3">
-                    {logs.map((log) => (
+                    {filteredLogs.map((log) => (
                       <div
                         key={log.id}
                         className="p-4 border rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors"
