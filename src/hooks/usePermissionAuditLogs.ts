@@ -116,6 +116,37 @@ export function usePermissionAuditLogs(organizationId: string | null) {
 
       // Refresh logs
       fetchLogs();
+
+      // Send email notification to super admins for sensitive actions
+      const sensitiveActions = ['role_changed', 'all_permissions_granted', 'all_permissions_revoked', 'can_manage_roles', 'can_manage_billing'];
+      const isSensitive = sensitiveActions.includes(action) || 
+        (newValues && ('can_manage_roles' in newValues || 'can_manage_billing' in newValues));
+
+      if (isSensitive) {
+        // Get performer and target emails
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, email')
+          .in('id', [user.id, targetUserId]);
+
+        const emailMap = new Map(profiles?.map(p => [p.id, p.email]) || []);
+        const performerEmail = emailMap.get(user.id) || 'Utilisateur inconnu';
+        const targetEmail = emailMap.get(targetUserId) || 'Utilisateur inconnu';
+
+        // Send notification via edge function (fire and forget)
+        supabase.functions.invoke('send-permission-alert', {
+          body: {
+            organizationId,
+            action,
+            performerEmail,
+            targetEmail,
+            oldValues,
+            newValues,
+          },
+        }).catch(err => {
+          console.error('Failed to send permission alert:', err);
+        });
+      }
     } catch (error) {
       console.error('Error logging permission change:', error);
     }
