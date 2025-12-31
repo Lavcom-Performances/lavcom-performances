@@ -21,6 +21,7 @@ import {
 import { format, Locale } from "date-fns";
 import { fr, enUS, de, es, it, nl } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
+import { PaymentStatusIndicators } from "./PaymentStatusIndicators";
 
 const localeMap: Record<string, Locale> = { fr, en: enUS, de, es, it, nl };
 
@@ -99,6 +100,9 @@ export default function SubscriptionContent() {
 
   return (
     <div className="space-y-6 max-w-4xl">
+      {/* Payment Status Indicators */}
+      <PaymentStatusIndicators />
+
       {/* Current Plan Card */}
       <Card>
         <CardHeader>
