@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Upload, ExternalLink, AlertCircle, RefreshCw, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,20 +30,27 @@ interface EmptyStateProps {
 
 export function EmptyState({
   icon: Icon,
-  title = "Importez vos données pour activer l'analyse",
-  benefits = [
-    "Vos indicateurs et graphiques se mettront à jour automatiquement.",
-    "Les recommandations seront basées sur vos opérations (CB/ESP).",
-  ],
+  title,
+  benefits,
   description,
-  primaryLabel = "Importer mon CSV",
+  primaryLabel,
   primaryRoute = "/operations",
   showSecondary = true,
   secondaryRoute = "/getting-started",
-  secondaryLabel = "Voir comment ça marche",
+  secondaryLabel,
   className,
 }: EmptyStateProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation("app");
+
+  // Use translations as defaults
+  const resolvedTitle = title || t("emptyState.title");
+  const resolvedBenefits = benefits || [
+    t("emptyState.benefit1"),
+    t("emptyState.benefit2"),
+  ];
+  const resolvedPrimaryLabel = primaryLabel || t("emptyState.primaryLabel");
+  const resolvedSecondaryLabel = secondaryLabel || t("emptyState.secondaryLabel");
 
   return (
     <motion.div
@@ -64,7 +72,7 @@ export function EmptyState({
 
       {/* Title */}
       <h2 className="text-xl sm:text-2xl font-display font-semibold text-foreground mb-4 max-w-md">
-        {title}
+        {resolvedTitle}
       </h2>
 
       {/* Description */}
@@ -75,9 +83,9 @@ export function EmptyState({
       )}
 
       {/* Benefits as bullet points */}
-      {benefits.length > 0 && (
+      {resolvedBenefits.length > 0 && (
         <ul className="text-sm text-muted-foreground max-w-md mb-8 space-y-2">
-          {benefits.slice(0, 2).map((benefit, index) => (
+          {resolvedBenefits.slice(0, 2).map((benefit, index) => (
             <li key={index} className="flex items-start gap-2">
               <span className="text-primary mt-0.5">•</span>
               <span className="text-left">{benefit}</span>
@@ -94,7 +102,7 @@ export function EmptyState({
           className="gap-2 min-w-[200px]"
         >
           <Upload className="h-4 w-4" />
-          {primaryLabel}
+          {resolvedPrimaryLabel}
         </Button>
 
         {showSecondary && (
@@ -105,7 +113,7 @@ export function EmptyState({
             className="gap-2 text-muted-foreground hover:text-foreground"
           >
             <ExternalLink className="h-4 w-4" />
-            {secondaryLabel}
+            {resolvedSecondaryLabel}
           </Button>
         )}
       </div>

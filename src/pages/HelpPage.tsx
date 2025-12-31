@@ -62,23 +62,14 @@ export default function HelpPage() {
 
   const lang = i18n.language?.startsWith("en") ? "en" : "fr";
 
-  const topics = lang === "fr" 
-    ? [
-        { value: "bug", label: t('reportIssue.topic') },
-        { value: "csv_import", label: "Import CSV" },
-        { value: "data_dashboard", label: "Données / Tableaux de bord" },
-        { value: "subscription", label: "Abonnement & Factures" },
-        { value: "account", label: "Compte & Connexion" },
-        { value: "other", label: "Autre" },
-      ]
-    : [
-        { value: "bug", label: t('reportIssue.topic') },
-        { value: "csv_import", label: "CSV Import" },
-        { value: "data_dashboard", label: "Data & Dashboards" },
-        { value: "subscription", label: "Subscription & Invoices" },
-        { value: "account", label: "Account & Login" },
-        { value: "other", label: "Other" },
-      ];
+  const topics = [
+    { value: "bug", label: t('help.topics.bug') },
+    { value: "csv_import", label: t('help.topics.csvImport') },
+    { value: "data_dashboard", label: t('help.topics.dataDashboard') },
+    { value: "subscription", label: t('help.topics.subscription') },
+    { value: "account", label: t('help.topics.account') },
+    { value: "other", label: t('help.topics.other') },
+  ];
 
   const faq = lang === "fr"
     ? [
@@ -187,7 +178,7 @@ export default function HelpPage() {
       // Custom success message for bug reports
       const successMessage = form.topic === 'bug' 
         ? t('reportIssue.successMessage')
-        : (lang === "fr" ? "Nous revenons vers vous au plus vite." : "We'll get back to you as soon as possible.");
+        : t('help.successMessage');
       
       toast({
         title: lang === "fr" ? "Message envoyé" : "Message sent",
@@ -418,7 +409,7 @@ export default function HelpPage() {
                       onChange={(e) => setForm(prev => ({ ...prev, message: e.target.value }))}
                       placeholder={form.topic === 'bug' 
                         ? t('reportIssue.messagePlaceholder')
-                        : (lang === "fr" ? "Décrivez votre demande..." : "Describe your request...")}
+                        : t('help.messagePlaceholder')}
                       rows={5}
                       maxLength={2000}
                     />
