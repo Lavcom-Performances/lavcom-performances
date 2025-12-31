@@ -623,6 +623,50 @@ export type Database = {
         }
         Relationships: []
       }
+      permission_webhooks: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          is_enabled: boolean
+          name: string
+          organization_id: string
+          type: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          is_enabled?: boolean
+          name: string
+          organization_id: string
+          type?: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_enabled?: boolean
+          name?: string
+          organization_id?: string
+          type?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permission_webhooks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           access_expires_at: string | null

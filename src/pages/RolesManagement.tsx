@@ -22,6 +22,7 @@ import {
   CreditCard,
   FileText,
   BarChart3,
+  Webhook,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,6 +51,7 @@ import { useUserPermissions, PermissionKey } from "@/hooks/useUserPermissions";
 import { usePermissionAuditLogs, PermissionAuditLog } from "@/hooks/usePermissionAuditLogs";
 import { PermissionsDashboard } from "@/components/admin/PermissionsDashboard";
 import { AuditLogsFilters } from "@/components/admin/AuditLogsFilters";
+import { WebhookSettings } from "@/components/admin/WebhookSettings";
 import { supabase } from "@/integrations/supabase/client";
 
 const ROLE_LABELS: Record<string, { label: string; color: string; description: string }> = {
@@ -287,6 +289,10 @@ export default function RolesManagement() {
           <TabsTrigger value="audit" className="gap-2">
             <History className="h-4 w-4" />
             Logs d'audit
+          </TabsTrigger>
+          <TabsTrigger value="webhooks" className="gap-2">
+            <Webhook className="h-4 w-4" />
+            Webhooks
           </TabsTrigger>
         </TabsList>
 
@@ -527,6 +533,11 @@ export default function RolesManagement() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Webhooks Tab */}
+        <TabsContent value="webhooks">
+          <WebhookSettings organizationId={organization?.id || null} />
         </TabsContent>
       </Tabs>
     </div>
