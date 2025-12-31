@@ -31,15 +31,15 @@ export function EmptyState({
   icon: Icon,
   title = "Importez vos données pour activer l'analyse",
   benefits = [
-    "Votre tableau de bord s'actualise automatiquement après chaque import.",
-    "Les recommandations s'appuient sur vos opérations (CB/ESP) et vos périodes d'activité.",
+    "Vos indicateurs et graphiques se mettront à jour automatiquement.",
+    "Les recommandations seront basées sur vos opérations (CB/ESP).",
   ],
   description,
   primaryLabel = "Importer mon CSV",
   primaryRoute = "/operations",
   showSecondary = true,
   secondaryRoute = "/getting-started",
-  secondaryLabel = "Voir un exemple de résultat",
+  secondaryLabel = "Voir comment ça marche",
   className,
 }: EmptyStateProps) {
   const navigate = useNavigate();
@@ -110,10 +110,6 @@ export function EmptyState({
         )}
       </div>
 
-      {/* Subtle hint */}
-      <p className="text-xs text-muted-foreground/60 mt-6">
-        Format supporté : export CSV de votre logiciel de caisse
-      </p>
     </motion.div>
   );
 }
@@ -208,56 +204,21 @@ export function ErrorState({
 // Pre-configured variants
 // ============================================
 
-// Pre-configured variants for common pages
+// Pre-configured variants for common pages - all use unified copy per TAEX-153
 export function DashboardEmptyState() {
-  return (
-    <EmptyState
-      icon={Upload}
-      benefits={[
-        "Votre tableau de bord s'actualise automatiquement après chaque import.",
-        "Visualisez vos revenus, transactions et tendances en temps réel.",
-      ]}
-    />
-  );
+  return <EmptyState icon={Upload} />;
 }
 
 export function RecommendationsEmptyState() {
-  return (
-    <EmptyState
-      icon={Upload}
-      title="Importez vos données pour générer des recommandations"
-      benefits={[
-        "Recevez des conseils personnalisés basés sur vos opérations réelles.",
-        "Identifiez les leviers d'optimisation pour augmenter votre CA.",
-      ]}
-    />
-  );
+  return <EmptyState icon={Upload} />;
 }
 
 export function ProfitabilityEmptyState() {
-  return (
-    <EmptyState
-      icon={Upload}
-      title="Importez vos données pour analyser votre rentabilité"
-      benefits={[
-        "Identifiez les machines sous-performantes et le CA perdu.",
-        "Optimisez vos créneaux horaires et vos tarifs.",
-      ]}
-    />
-  );
+  return <EmptyState icon={Upload} />;
 }
 
 export function ChartEmptyState() {
-  return (
-    <EmptyState
-      icon={Upload}
-      title="Importez vos données pour afficher ce graphique"
-      benefits={[
-        "Les visualisations se génèrent automatiquement à partir de vos imports.",
-        "Comparez vos performances sur différentes périodes.",
-      ]}
-    />
-  );
+  return <EmptyState icon={Upload} />;
 }
 
 // Pre-configured error variants

@@ -2,6 +2,8 @@ import { useDateRange } from "@/hooks/useDateRange";
 import { useDailyFrequency } from "@/hooks/useChartsData";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useHasData } from "@/hooks/useHasData";
+import { ChartEmptyState, DataLoadErrorState } from "@/components/ui/empty-state";
 import {
   BarChart,
   Bar,
@@ -22,9 +24,55 @@ import {
 
 export default function DailyFrequencyPage() {
   const { dateRange, setDateRange } = useDateRange();
-  const { data: dailyData, isLoading } = useDailyFrequency();
+  const { data: dailyData, isLoading, error, refetch } = useDailyFrequency();
+  const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
   const total = dailyData?.reduce((sum, d) => sum + d.count, 0) ?? 0;
+
+  // Loading state
+  if (dataLoading) {
+    return (
+      <div className="p-6 lg:p-8">
+        <Skeleton className="h-10 w-64 mb-4" />
+        <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
+
+  // No data imported - show premium empty state
+  if (!hasImportedData) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+            Fréquentation par Jour
+          </h1>
+          <p className="text-muted-foreground">
+            Nombre de cycles par jour de la semaine
+          </p>
+        </div>
+        <div className="card-lavcom">
+          <ChartEmptyState />
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+            Fréquentation par Jour
+          </h1>
+        </div>
+        <div className="card-lavcom">
+          <DataLoadErrorState onRetry={() => refetch()} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6">

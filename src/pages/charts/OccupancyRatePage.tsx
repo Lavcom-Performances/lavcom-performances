@@ -3,6 +3,8 @@ import { useOccupancyRate } from "@/hooks/useChartsData";
 import { useChartPreferences } from "@/hooks/useChartPreferences";
 import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useHasData } from "@/hooks/useHasData";
+import { ChartEmptyState, DataLoadErrorState } from "@/components/ui/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -23,7 +25,8 @@ function getOccupancyTextColor(rate: number): string {
 export default function OccupancyRatePage() {
   const { dateRange, setDateRange } = useDateRange();
   const { filters, setFilters, isLoaded } = useChartPreferences("occupancy_rate");
-  const { data: machineData, isLoading } = useOccupancyRate(filters);
+  const { data: machineData, isLoading, error, refetch } = useOccupancyRate(filters);
+  const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
   const washingMachines = machineData?.filter(m => m.type === "LL") ?? [];
   const dryerMachines = machineData?.filter(m => m.type === "SL") ?? [];
@@ -40,10 +43,47 @@ export default function OccupancyRatePage() {
   const totalAllOptimal = totalWashingOptimal + totalDryerOptimal;
   const avgTotalRate = totalAllOptimal > 0 ? Math.round((totalAllCycles / totalAllOptimal) * 100) : 0;
 
-  if (!isLoaded) {
+  // Loading state
+  if (!isLoaded || dataLoading) {
     return (
       <div className="p-6 lg:p-8">
+        <Skeleton className="h-10 w-64 mb-4" />
         <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
+
+  // No data imported - show premium empty state
+  if (!hasImportedData) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="font-display text-2xl font-bold text-foreground">
+            Taux d'occupation
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Analyse du taux d'occupation par machine
+          </p>
+        </div>
+        <div className="card-lavcom">
+          <ChartEmptyState />
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="font-display text-2xl font-bold text-foreground">
+            Taux d'occupation
+          </h1>
+        </div>
+        <div className="card-lavcom">
+          <DataLoadErrorState onRetry={() => refetch()} />
+        </div>
       </div>
     );
   }
