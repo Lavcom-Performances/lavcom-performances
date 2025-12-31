@@ -79,6 +79,105 @@ const formatChangesForSlack = (oldValues: Record<string, unknown> | null, newVal
   return changes.join('\n');
 };
 
+interface CustomWebhook {
+  id: string;
+  name: string;
+  url: string;
+  type: string;
+}
+
+const sendCustomWebhook = async (
+  webhook: CustomWebhook,
+  action: string,
+  performerEmail: string,
+  targetEmail: string,
+  oldValues: Record<string, unknown> | null,
+  newValues: Record<string, unknown> | null
+): Promise<boolean> => {
+  const actionLabel = ACTION_LABELS[action] || action;
+  const timestamp = new Date().toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' });
+
+  let payload: unknown;
+
+  if (webhook.type === 'discord') {
+    // Discord webhook format
+    const changesText = formatChangesForSlack(oldValues, newValues);
+    payload = {
+      username: "Lavcom Sécurité",
+      avatar_url: "https://lavcom.fr/favicon.ico",
+      embeds: [{
+        title: "🔐 Modification de permissions",
+        color: 0x7c3aed, // Purple
+        fields: [
+          { name: "Action", value: actionLabel, inline: true },
+          { name: "Date", value: timestamp, inline: true },
+          { name: "Effectué par", value: performerEmail, inline: false },
+          { name: "Utilisateur cible", value: targetEmail, inline: false },
+          ...(changesText ? [{ name: "Modifications", value: changesText, inline: false }] : []),
+        ],
+        footer: { text: "⚠️ Vérifiez si vous n'êtes pas à l'origine de cette modification" }
+      }]
+    };
+  } else if (webhook.type === 'teams') {
+    // Microsoft Teams webhook format (Adaptive Card)
+    const changesText = formatChangesForSlack(oldValues, newValues);
+    payload = {
+      "@type": "MessageCard",
+      "@context": "http://schema.org/extensions",
+      themeColor: "7c3aed",
+      summary: `Alerte Sécurité - ${actionLabel}`,
+      sections: [{
+        activityTitle: "🔐 Modification de permissions",
+        facts: [
+          { name: "Action", value: actionLabel },
+          { name: "Date", value: timestamp },
+          { name: "Effectué par", value: performerEmail },
+          { name: "Utilisateur cible", value: targetEmail },
+          ...(changesText ? [{ name: "Modifications", value: changesText }] : []),
+        ],
+        markdown: true
+      }],
+      potentialAction: [{
+        "@type": "OpenUri",
+        name: "Voir les logs",
+        targets: [{ os: "default", uri: "https://lavcom.fr/roles-management" }]
+      }]
+    };
+  } else {
+    // Generic JSON payload for custom webhooks
+    payload = {
+      event: "permission_change",
+      action,
+      actionLabel,
+      timestamp,
+      performerEmail,
+      targetEmail,
+      oldValues,
+      newValues,
+      source: "lavcom"
+    };
+  }
+
+  try {
+    const response = await fetch(webhook.url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      logStep(`Custom webhook ${webhook.name} failed`, { status: response.status, type: webhook.type });
+      return false;
+    }
+
+    logStep(`Custom webhook ${webhook.name} sent successfully`, { type: webhook.type });
+    return true;
+  } catch (error) {
+    logStep(`Custom webhook ${webhook.name} error`, { error: String(error), type: webhook.type });
+    return false;
+  }
+};
+
 const sendSlackAlert = async (
   action: string,
   performerEmail: string,
@@ -213,6 +312,22 @@ serve(async (req) => {
     // Send Slack notification (fire and forget, don't block on it)
     const slackPromise = sendSlackAlert(action, performerEmail, targetEmail, oldValues, newValues);
 
+    // Fetch custom webhooks for the organization
+    const { data: customWebhooks, error: webhooksError } = await supabase
+      .from('permission_webhooks')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .eq('is_enabled', true);
+
+    if (webhooksError) {
+      logStep("Error fetching custom webhooks", webhooksError);
+    }
+
+    // Send to custom webhooks
+    const customWebhookPromises = (customWebhooks || []).map(webhook => 
+      sendCustomWebhook(webhook, action, performerEmail, targetEmail, oldValues, newValues)
+    );
+
     // Fetch super admin emails from the organization
     const { data: superAdminRoles, error: rolesError } = await supabase
       .from('user_roles')
@@ -227,8 +342,9 @@ serve(async (req) => {
 
     if (!superAdminRoles || superAdminRoles.length === 0) {
       logStep("No super admins found");
-      const slackSent = await slackPromise;
-      return new Response(JSON.stringify({ success: true, message: "No super admins to notify", slackSent }), {
+      const [slackSent, ...webhookResults] = await Promise.all([slackPromise, ...customWebhookPromises]);
+      const webhooksSent = webhookResults.filter(Boolean).length;
+      return new Response(JSON.stringify({ success: true, message: "No super admins to notify", slackSent, webhooksSent }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
@@ -251,8 +367,9 @@ serve(async (req) => {
 
     if (recipientEmails.length === 0) {
       logStep("No recipient emails found");
-      const slackSent = await slackPromise;
-      return new Response(JSON.stringify({ success: true, message: "No valid recipient emails", slackSent }), {
+      const [slackSent, ...webhookResults] = await Promise.all([slackPromise, ...customWebhookPromises]);
+      const webhooksSent = webhookResults.filter(Boolean).length;
+      return new Response(JSON.stringify({ success: true, message: "No valid recipient emails", slackSent, webhooksSent }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
@@ -319,17 +436,19 @@ serve(async (req) => {
       })
     );
 
-    const [emailResults, slackSent] = await Promise.all([
+    const [emailResults, slackSent, ...webhookResults] = await Promise.all([
       Promise.allSettled(emailPromises),
-      slackPromise
+      slackPromise,
+      ...customWebhookPromises
     ]);
 
     const successCount = emailResults.filter(r => r.status === 'fulfilled').length;
     const failCount = emailResults.filter(r => r.status === 'rejected').length;
+    const webhooksSent = webhookResults.filter(Boolean).length;
 
-    logStep("Notifications sent", { emailSuccessCount: successCount, emailFailCount: failCount, slackSent });
+    logStep("Notifications sent", { emailSuccessCount: successCount, emailFailCount: failCount, slackSent, webhooksSent });
 
-    return new Response(JSON.stringify({ success: true, successCount, failCount, slackSent }), {
+    return new Response(JSON.stringify({ success: true, successCount, failCount, slackSent, webhooksSent }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
