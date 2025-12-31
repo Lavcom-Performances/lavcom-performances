@@ -54,7 +54,9 @@ import { useHasData } from "@/hooks/useHasData";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { generateDashboardPdf } from "@/utils/dashboardPdfExport";
 import { QuickStartBanner } from "@/components/onboarding/QuickStartBanner";
+import { SetupProgressCard } from "@/components/dashboard/SetupProgressCard";
 import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
+import { useSetupProgress } from "@/hooks/useSetupProgress";
 import { useTutorial } from "@/hooks/useTutorial";
 import { InteractiveTutorial } from "@/components/onboarding/InteractiveTutorial";
 
@@ -155,6 +157,7 @@ export default function Dashboard() {
   const { goals } = useUserGoals(selectedSite?.id);
   const [isRecalculating, setIsRecalculating] = useState(false);
   const onboardingStatus = useOnboardingStatus();
+  const setupProgress = useSetupProgress();
   const tutorial = useTutorial();
   const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
@@ -420,13 +423,9 @@ export default function Dashboard() {
 
         {/* Vue d'ensemble */}
         <TabsContent value="overview" className="space-y-6">
-          {/* Quick Start Banner for new users */}
-          {!onboardingStatus.isComplete && !onboardingStatus.isLoading && (
-            <QuickStartBanner
-              hasSite={onboardingStatus.hasSite}
-              hasImport={onboardingStatus.hasImport}
-              hasData={onboardingStatus.hasData}
-            />
+          {/* Setup Progress Card - shows remaining steps */}
+          {!setupProgress.isComplete && !setupProgress.isLoading && (
+            <SetupProgressCard />
           )}
 
           {/* KPI Cards principales - Using RPC function */}
