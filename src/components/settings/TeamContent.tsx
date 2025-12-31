@@ -470,7 +470,8 @@ export default function TeamContent() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {isAdmin && canEditRole(member.role) && (
+                {/* Only super admins can distribute permissions */}
+                {isSuperAdmin && canEditRole(member.role) && (
                   <Button
                     variant="outline"
                     size="sm"

@@ -5,7 +5,7 @@ import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO, getDa
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -31,6 +31,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { OperationsKPIRow } from "@/components/operations/OperationsKPIRow";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
 import { ImportHistoryDialog } from "@/components/operations/ImportHistoryDialog";
@@ -44,6 +45,7 @@ import { useViewMode } from "@/hooks/useViewMode";
 import { useOperations } from "@/hooks/useOperations";
 import { useSites } from "@/hooks/useSites";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
 
 const paymentModeBadge = (mode: string | null) => {
   if (!mode) return <span className="text-muted-foreground">—</span>;
@@ -78,6 +80,7 @@ export default function Operations() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { sites, getDefaultSite } = useSites();
+  const { canImport, canExport, permissions } = useCurrentUserPermissions();
   
   // Get site from URL or default
   const urlSiteId = searchParams.get('site');
@@ -631,13 +634,31 @@ export default function Operations() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button 
-            onClick={() => setIsImportDialogOpen(true)}
-            className="bg-lavcom-green hover:bg-lavcom-green-dark text-white"
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            {t('app:operations.importCsv')}
-          </Button>
+          {canImport ? (
+            <Button 
+              onClick={() => setIsImportDialogOpen(true)}
+              className="bg-lavcom-green hover:bg-lavcom-green-dark text-white"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {t('app:operations.importCsv')}
+            </Button>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline"
+                  disabled
+                  className="opacity-50"
+                >
+                  <Lock className="h-4 w-4 mr-2" />
+                  {t('app:operations.importCsv')}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Vous n'avez pas la permission d'importer des données
+              </TooltipContent>
+            </Tooltip>
+          )}
           <Button 
             variant="outline"
             onClick={() => setIsHistoryDialogOpen(true)}
@@ -645,32 +666,46 @@ export default function Operations() {
             <History className="h-4 w-4 mr-2" />
             {t('app:operations.history')}
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline"
-                disabled={operations.length === 0 || isExporting}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                {isExporting ? t('app:operations.exporting') : "Exporter"}
-                <ChevronDown className="h-4 w-4 ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-background">
-              <DropdownMenuItem onClick={handleExportCsv}>
-                <FileSpreadsheet className="h-4 w-4 mr-2" />
-                CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleExportExcel}>
-                <FileText className="h-4 w-4 mr-2" />
-                Excel
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleExportPdf}>
-                <FileText className="h-4 w-4 mr-2" />
-                PDF
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {canExport ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="outline"
+                  disabled={operations.length === 0 || isExporting}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {isExporting ? t('app:operations.exporting') : "Exporter"}
+                  <ChevronDown className="h-4 w-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-background">
+                <DropdownMenuItem onClick={handleExportCsv}>
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportExcel}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Excel
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportPdf}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  PDF
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" disabled className="opacity-50">
+                  <Lock className="h-4 w-4 mr-2" />
+                  Exporter
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Vous n'avez pas la permission d'exporter des données
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
 
