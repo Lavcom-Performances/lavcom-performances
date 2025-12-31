@@ -5,12 +5,12 @@ import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { PaymentPieChart } from "@/components/dashboard/PaymentPieChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHasData } from "@/hooks/useHasData";
-import { ChartEmptyState } from "@/components/ui/empty-state";
+import { ChartEmptyState, DataLoadErrorState } from "@/components/ui/empty-state";
 
 export default function PaymentDistributionPage() {
   const { dateRange, setDateRange } = useDateRange();
   const { filters, setFilters, isLoaded } = useChartPreferences("payment_distribution");
-  const { data: paymentData, isLoading } = usePaymentDistribution(filters);
+  const { data: paymentData, isLoading, isError, refetch } = usePaymentDistribution(filters);
   const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
   if (!isLoaded || dataLoading) {
@@ -36,6 +36,15 @@ export default function PaymentDistributionPage() {
         <div className="card-lavcom">
           <ChartEmptyState />
         </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="p-6 lg:p-8">
+        <DataLoadErrorState onRetry={() => refetch()} />
       </div>
     );
   }

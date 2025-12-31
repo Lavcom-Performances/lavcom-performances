@@ -3,7 +3,7 @@ import { useAnnualComparison } from "@/hooks/useChartsData";
 import { useChartPreferences } from "@/hooks/useChartPreferences";
 import { useHasData } from "@/hooks/useHasData";
 import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
-import { ChartEmptyState } from "@/components/ui/empty-state";
+import { ChartEmptyState, DataLoadErrorState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -17,7 +17,7 @@ import {
 export default function AnnualComparisonPage() {
   const { dateRange, setDateRange } = useDateRange();
   const { filters, setFilters, isLoaded } = useChartPreferences("annual_comparison");
-  const { data, isLoading } = useAnnualComparison(filters);
+  const { data, isLoading, isError, refetch } = useAnnualComparison(filters);
   const { hasData, isLoading: isLoadingHasData } = useHasData();
   const { monthlyData, yearTotals, years } = data ?? { monthlyData: [], yearTotals: {}, years: [] };
 
@@ -46,6 +46,14 @@ export default function AnnualComparisonPage() {
     return (
       <div className="p-6 lg:p-8">
         <ChartEmptyState />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6 lg:p-8">
+        <DataLoadErrorState onRetry={() => refetch()} />
       </div>
     );
   }

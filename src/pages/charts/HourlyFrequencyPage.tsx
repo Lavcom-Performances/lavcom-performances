@@ -4,7 +4,7 @@ import { useHourlyFrequency } from "@/hooks/useChartsData";
 import { ChartPageFilters, defaultChartFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHasData } from "@/hooks/useHasData";
-import { ChartEmptyState } from "@/components/ui/empty-state";
+import { ChartEmptyState, DataLoadErrorState } from "@/components/ui/empty-state";
 import {
   BarChart,
   Bar,
@@ -26,7 +26,7 @@ import {
 export default function HourlyFrequencyPage() {
   const { dateRange, setDateRange } = useDateRange();
   const [filters, setFilters] = useState(defaultChartFilters);
-  const { data: hourlyData, isLoading } = useHourlyFrequency(filters);
+  const { data: hourlyData, isLoading, isError, refetch } = useHourlyFrequency(filters);
   const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
   const total = hourlyData?.reduce((sum, d) => sum + d.count, 0) ?? 0;
@@ -55,6 +55,15 @@ export default function HourlyFrequencyPage() {
         <div className="card-lavcom">
           <ChartEmptyState />
         </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="p-6 lg:p-8">
+        <DataLoadErrorState onRetry={() => refetch()} />
       </div>
     );
   }

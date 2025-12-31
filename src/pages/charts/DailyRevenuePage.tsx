@@ -5,12 +5,12 @@ import { ChartPageFilters, defaultChartFilters } from "@/components/charts/Chart
 import { DailyRevenueChart } from "@/components/dashboard/DailyRevenueChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHasData } from "@/hooks/useHasData";
-import { ChartEmptyState } from "@/components/ui/empty-state";
+import { ChartEmptyState, DataLoadErrorState } from "@/components/ui/empty-state";
 
 export default function DailyRevenuePage() {
   const { dateRange, setDateRange } = useDateRange();
   const [filters, setFilters] = useState(defaultChartFilters);
-  const { data: dailyData, isLoading } = useDailyRevenue(filters);
+  const { data: dailyData, isLoading, isError, refetch } = useDailyRevenue(filters);
   const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
   const chartData = dailyData?.map(d => ({
@@ -42,6 +42,15 @@ export default function DailyRevenuePage() {
         <div className="card-lavcom">
           <ChartEmptyState />
         </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="p-6 lg:p-8">
+        <DataLoadErrorState onRetry={() => refetch()} />
       </div>
     );
   }
