@@ -1024,6 +1024,39 @@ export type Database = {
         }
         Relationships: []
       }
+      system_events: {
+        Row: {
+          code: string | null
+          created_at: string | null
+          env: string
+          id: number
+          message: string
+          meta: Json | null
+          severity: string
+          source: string
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string | null
+          env?: string
+          id?: number
+          message: string
+          meta?: Json | null
+          severity: string
+          source: string
+        }
+        Update: {
+          code?: string | null
+          created_at?: string | null
+          env?: string
+          id?: number
+          message?: string
+          meta?: Json | null
+          severity?: string
+          source?: string
+        }
+        Relationships: []
+      }
       team_invitations: {
         Row: {
           accepted_at: string | null
@@ -1292,6 +1325,17 @@ export type Database = {
           min_date: string
           total_count: number
         }[]
+      }
+      rpc_log_system_event: {
+        Args: {
+          p_code: string
+          p_env: string
+          p_message: string
+          p_meta: Json
+          p_severity: string
+          p_source: string
+        }
+        Returns: undefined
       }
       rpc_monthly_revenue: {
         Args: { p_site_id: string; p_year: number }

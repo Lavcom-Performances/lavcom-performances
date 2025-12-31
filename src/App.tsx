@@ -32,6 +32,7 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminExpertRequests from "./pages/AdminExpertRequests";
 import AdminCronLogs from "./pages/AdminCronLogs";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminSystemStatus from "./pages/AdminSystemStatus";
 import { AdminProtectedRoute } from "./components/admin/AdminProtectedRoute";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
@@ -131,6 +132,7 @@ const App = () => (
             <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
             <Route path="/admin/expert-requests" element={<AdminProtectedRoute><AdminExpertRequests /></AdminProtectedRoute>} />
             <Route path="/admin/cron-logs" element={<AdminProtectedRoute><AdminCronLogs /></AdminProtectedRoute>} />
+            <Route path="/admin/status" element={<AdminProtectedRoute><AdminSystemStatus /></AdminProtectedRoute>} />
             
             {/* Chart pages */}
             <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />
