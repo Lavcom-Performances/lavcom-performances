@@ -62,3 +62,15 @@ verify_jwt = true
 
 [functions.send-subscription-email]
 verify_jwt = false
+
+[functions.send-permission-alert]
+verify_jwt = true
+
+[functions.accept-invitation]
+verify_jwt = true
+
+[functions.send-cron-alert]
+verify_jwt = false
+
+[functions.check-churn-alert]
+verify_jwt = false

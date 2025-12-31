@@ -21,6 +21,7 @@ import {
   UserPlus,
   CreditCard,
   FileText,
+  BarChart3,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -47,6 +48,7 @@ import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
 import { useOrganization, TeamMember } from "@/hooks/useOrganization";
 import { useUserPermissions, PermissionKey } from "@/hooks/useUserPermissions";
 import { usePermissionAuditLogs } from "@/hooks/usePermissionAuditLogs";
+import { PermissionsDashboard } from "@/components/admin/PermissionsDashboard";
 import { supabase } from "@/integrations/supabase/client";
 
 const ROLE_LABELS: Record<string, { label: string; color: string; description: string }> = {
@@ -266,8 +268,12 @@ export default function RolesManagement() {
         </AlertDescription>
       </Alert>
 
-      <Tabs defaultValue="members" className="space-y-6">
+      <Tabs defaultValue="dashboard" className="space-y-6">
         <TabsList>
+          <TabsTrigger value="dashboard" className="gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Dashboard
+          </TabsTrigger>
           <TabsTrigger value="members" className="gap-2">
             <Users className="h-4 w-4" />
             Membres ({teamMembers.length})
@@ -277,6 +283,15 @@ export default function RolesManagement() {
             Logs d'audit
           </TabsTrigger>
         </TabsList>
+
+        {/* Dashboard Tab */}
+        <TabsContent value="dashboard">
+          <PermissionsDashboard
+            teamMembers={teamMembers}
+            getUserPermissions={getUserPermissions}
+            logs={logs}
+          />
+        </TabsContent>
 
         {/* Members Tab */}
         <TabsContent value="members" className="space-y-4">
