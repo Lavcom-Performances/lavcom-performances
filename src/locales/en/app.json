@@ -1211,6 +1211,10 @@
     "perTransaction": "Per transaction",
     "avgRevenue": "Avg. revenue",
     "avgCost": "Avg. cost",
-    "avgProfit": "Avg. profit"
+    "avgProfit": "Avg. profit",
+    "monthlyEvolution": "Monthly profitability evolution",
+    "avgMonthlyRevenue": "Avg. monthly revenue",
+    "avgMonthlyCosts": "Avg. monthly costs",
+    "avgMonthlyProfit": "Avg. monthly profit"
   }
 }

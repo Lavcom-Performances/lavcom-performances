@@ -49,6 +49,7 @@ import { useHasData } from "@/hooks/useHasData";
 import { ProfitabilityEmptyState } from "@/components/ui/empty-state";
 import { CostsConfigBanner } from "@/components/dashboard/CostsConfigBanner";
 import { useProfitability } from "@/hooks/useProfitability";
+import { MonthlyProfitabilityChart } from "@/components/dashboard/MonthlyProfitabilityChart";
 
 // Mock data - CA perdu estimé par machine (will be replaced later with real data)
 const lostRevenueData = [
@@ -282,6 +283,9 @@ export default function ProfitabilityPage() {
         {/* Onglet Rentabilité */}
         {profitability.hasCosts && (
           <TabsContent value="profitability" className="space-y-6">
+            {/* Monthly evolution chart */}
+            <MonthlyProfitabilityChart />
+            
             <div className="grid lg:grid-cols-2 gap-6">
               {/* Répartition des charges */}
               <Card>

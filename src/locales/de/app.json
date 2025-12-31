@@ -834,5 +834,36 @@
       "import": "Import",
       "dashboard": "Dashboard"
     }
+  },
+  "profitability": {
+    "revenue": "Umsatz",
+    "totalCosts": "Gesamtkosten",
+    "netProfit": "Nettogewinn",
+    "margin": "Marge",
+    "profitMargin": "Gewinnmarge",
+    "periodSelected": "Ausgewählter Zeitraum",
+    "fixed": "fest",
+    "variable": "variabel",
+    "afterCosts": "Nach Kosten",
+    "tabProfitability": "Rentabilität",
+    "tabLosses": "Verluste",
+    "tabEfficiency": "Effizienz",
+    "tabMachines": "Maschinen",
+    "tabTrends": "Trends",
+    "costsBreakdown": "Kostenaufteilung",
+    "totalCostsLabel": "Gesamtkosten",
+    "summary": "Rentabilitätsübersicht",
+    "fixedCosts": "Fixkosten",
+    "variableCosts": "Variable Kosten",
+    "netResult": "Nettoergebnis",
+    "marginLabel": "Nettomarge",
+    "perTransaction": "Pro Transaktion",
+    "avgRevenue": "Durchschn. Umsatz",
+    "avgCost": "Durchschn. Kosten",
+    "avgProfit": "Durchschn. Gewinn",
+    "monthlyEvolution": "Monatliche Rentabilitätsentwicklung",
+    "avgMonthlyRevenue": "Durchschn. Monatsumsatz",
+    "avgMonthlyCosts": "Durchschn. Monatskosten",
+    "avgMonthlyProfit": "Durchschn. Monatsgewinn"
   }
 }

@@ -1211,6 +1211,10 @@
     "perTransaction": "Par transaction",
     "avgRevenue": "CA moy.",
     "avgCost": "Coût moy.",
-    "avgProfit": "Profit moy."
+    "avgProfit": "Profit moy.",
+    "monthlyEvolution": "Évolution mensuelle de la rentabilité",
+    "avgMonthlyRevenue": "CA mensuel moyen",
+    "avgMonthlyCosts": "Charges mensuelles moy.",
+    "avgMonthlyProfit": "Bénéfice mensuel moy."
   }
 }
