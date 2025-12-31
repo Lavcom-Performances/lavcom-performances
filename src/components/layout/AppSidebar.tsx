@@ -26,7 +26,8 @@ import {
   Shield,
   CreditCard,
   ShieldCheck,
-  AlertTriangle
+  AlertTriangle,
+  HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -456,6 +457,17 @@ export function AppSidebar({
 
       {/* User Section - Compact */}
       <div className="px-3 py-2 border-t border-sidebar-border space-y-0.5">
+        {/* Help link */}
+        <NavLink
+          to="/help"
+          className={cn(
+            "sidebar-item !py-1.5",
+            location.pathname === "/help" && "sidebar-item-active"
+          )}
+        >
+          <HelpCircle className="h-4 w-4 shrink-0" />
+          {!collapsed && <span>{t('app:nav.help')}</span>}
+        </NavLink>
         <NavLink
           to="/profile"
           className={cn(
