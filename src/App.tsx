@@ -65,6 +65,7 @@ import OccupancyRatePage from "./pages/charts/OccupancyRatePage";
 import RecommendationsPage from "./pages/RecommendationsPage";
 import PredictiveMaintenance from "./pages/PredictiveMaintenance";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -121,6 +122,7 @@ const App = () => (
             <Route path="/subscription" element={<SubscriptionManagement />} />
             <Route path="/billing-history" element={<BillingHistory />} />
             <Route path="/laundromat-settings" element={<LaundromatSettings />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
             <Route path="/admin" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
