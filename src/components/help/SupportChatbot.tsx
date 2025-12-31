@@ -1,22 +1,29 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bot, Send, X, Loader2, History, Trash2, ArrowRight } from "lucide-react";
+import { Bot, Send, X, Loader2, History, Trash2, ArrowRight, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 interface ChatAction {
   label: string;
   path: string;
 }
 
+interface TicketRequest {
+  subject: string;
+  message: string;
+}
+
 interface Message {
   role: "user" | "assistant";
   content: string;
   actions?: ChatAction[];
+  ticketRequest?: TicketRequest;
 }
 
 interface Conversation {
@@ -28,13 +35,15 @@ interface Conversation {
 
 interface SupportChatbotProps {
   language?: "fr" | "en";
+  onScrollToContact?: () => void;
 }
 
 const STORAGE_KEY = "lavcom_chatbot_history";
 const MAX_CONVERSATIONS = 10;
 
-export function SupportChatbot({ language = "fr" }: SupportChatbotProps) {
+export function SupportChatbot({ language = "fr", onScrollToContact }: SupportChatbotProps) {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -42,6 +51,7 @@ export function SupportChatbot({ language = "fr" }: SupportChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingTicket, setIsCreatingTicket] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -81,7 +91,6 @@ export function SupportChatbot({ language = "fr" }: SupportChatbotProps) {
   // Save conversations to localStorage
   const saveConversations = useCallback((convs: Conversation[]) => {
     try {
-      // Keep only the last MAX_CONVERSATIONS
       const toSave = convs.slice(0, MAX_CONVERSATIONS);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
       setConversations(toSave);
@@ -122,7 +131,7 @@ export function SupportChatbot({ language = "fr" }: SupportChatbotProps) {
   };
 
   const saveCurrentConversation = useCallback((msgs: Message[]) => {
-    if (msgs.length <= 1) return; // Don't save if only welcome message
+    if (msgs.length <= 1) return;
 
     const convId = currentConversationId || generateConversationId();
     
@@ -148,6 +157,67 @@ export function SupportChatbot({ language = "fr" }: SupportChatbotProps) {
       setCurrentConversationId(convId);
     }
   }, [currentConversationId, conversations, saveConversations, language]);
+
+  const createSupportTicket = async (ticketRequest: TicketRequest) => {
+    setIsCreatingTicket(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const userEmail = userData?.user?.email || "";
+      const userName = userData?.user?.user_metadata?.first_name || 
+                       userData?.user?.email?.split("@")[0] || 
+                       (language === "fr" ? "Utilisateur" : "User");
+
+      // Get conversation context
+      const conversationContext = messages
+        .filter(m => m.role === "user")
+        .map(m => m.content)
+        .join("\n---\n");
+
+      const fullMessage = `${ticketRequest.message}\n\n--- Contexte de la conversation ---\n${conversationContext}`;
+
+      const { error } = await supabase
+        .from("contact_messages")
+        .insert({
+          name: userName,
+          email: userEmail,
+          subject: `[Chatbot] ${ticketRequest.subject}`,
+          message: fullMessage,
+          status: "new",
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: language === "fr" ? "Ticket créé" : "Ticket created",
+        description: language === "fr" 
+          ? "Votre demande a été transmise. Nous vous répondrons rapidement."
+          : "Your request has been submitted. We'll get back to you shortly.",
+      });
+
+      // Add confirmation message to chat
+      const confirmationMsg: Message = {
+        role: "assistant",
+        content: language === "fr"
+          ? "✅ Votre ticket de support a été créé avec succès. Notre équipe vous contactera sous peu."
+          : "✅ Your support ticket has been created successfully. Our team will contact you shortly.",
+      };
+      const updatedMessages = [...messages, confirmationMsg];
+      setMessages(updatedMessages);
+      saveCurrentConversation(updatedMessages);
+
+    } catch (error) {
+      console.error("Failed to create ticket:", error);
+      toast({
+        title: language === "fr" ? "Erreur" : "Error",
+        description: language === "fr" 
+          ? "Impossible de créer le ticket. Veuillez utiliser le formulaire ci-dessous."
+          : "Could not create ticket. Please use the form below.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingTicket(false);
+    }
+  };
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
@@ -180,6 +250,7 @@ export function SupportChatbot({ language = "fr" }: SupportChatbotProps) {
           role: "assistant", 
           content: data.message,
           actions: data.actions,
+          ticketRequest: data.ticketRequest,
         };
         const updatedMessages = [...newMessages, assistantMsg];
         setMessages(updatedMessages);
@@ -211,8 +282,13 @@ export function SupportChatbot({ language = "fr" }: SupportChatbotProps) {
   };
 
   const handleActionClick = (action: ChatAction) => {
-    setIsOpen(false);
-    navigate(action.path);
+    if (action.path === "#contact-form") {
+      setIsOpen(false);
+      onScrollToContact?.();
+    } else {
+      setIsOpen(false);
+      navigate(action.path);
+    }
   };
 
   const startNewConversation = () => {
@@ -244,14 +320,21 @@ export function SupportChatbot({ language = "fr" }: SupportChatbotProps) {
 
   if (!isOpen) {
     return (
-      <Button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 bg-primary hover:bg-primary/90"
-        size="icon"
-        aria-label={language === "fr" ? "Ouvrir l'assistant" : "Open assistant"}
-      >
-        <Bot className="h-6 w-6" />
-      </Button>
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+        <div className="bg-background/95 backdrop-blur-sm border rounded-lg px-3 py-2 shadow-md max-w-[200px] text-xs text-muted-foreground">
+          {language === "fr" 
+            ? "Besoin d'une réponse rapide ? Essayez l'assistant."
+            : "Need a quick answer? Try the assistant."}
+        </div>
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+          size="icon"
+          aria-label={language === "fr" ? "Ouvrir l'assistant" : "Open assistant"}
+        >
+          <Bot className="h-6 w-6" />
+        </Button>
+      </div>
     );
   }
 
@@ -389,6 +472,25 @@ export function SupportChatbot({ language = "fr" }: SupportChatbotProps) {
                             <ArrowRight className="h-3 w-3" />
                           </Button>
                         ))}
+                      </div>
+                    )}
+                    {/* Ticket creation button */}
+                    {message.ticketRequest && (
+                      <div className="mt-2 ml-1">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="text-xs h-7 gap-1"
+                          onClick={() => createSupportTicket(message.ticketRequest!)}
+                          disabled={isCreatingTicket}
+                        >
+                          {isCreatingTicket ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Ticket className="h-3 w-3" />
+                          )}
+                          {language === "fr" ? "Créer un ticket" : "Create ticket"}
+                        </Button>
                       </div>
                     )}
                   </div>
