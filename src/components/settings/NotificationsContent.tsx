@@ -1,37 +1,143 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Bell, Mail, Smartphone, TrendingDown, AlertTriangle, Calendar } from "lucide-react";
+import { Bell, Mail, Smartphone, TrendingDown, AlertTriangle, Calendar, Loader2, Save } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+
+interface NotificationPreferences {
+  email_alerts: boolean;
+  push_alerts: boolean;
+  weekly_report: boolean;
+  maintenance_alerts: boolean;
+  revenue_alerts: boolean;
+  trial_reminder: boolean;
+}
+
+const defaultPreferences: NotificationPreferences = {
+  email_alerts: true,
+  push_alerts: false,
+  weekly_report: true,
+  maintenance_alerts: true,
+  revenue_alerts: false,
+  trial_reminder: true,
+};
 
 export default function NotificationsContent() {
-  const [notifications, setNotifications] = useState({
-    emailAlerts: true,
-    pushAlerts: false,
-    weeklyReport: true,
-    maintenanceAlerts: true,
-    revenueAlerts: false,
-    trialReminder: true,
-  });
+  const { user } = useAuth();
+  const [preferences, setPreferences] = useState<NotificationPreferences>(defaultPreferences);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [originalPreferences, setOriginalPreferences] = useState<NotificationPreferences>(defaultPreferences);
 
-  const handleToggle = (key: keyof typeof notifications) => {
-    setNotifications(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+  useEffect(() => {
+    if (user) {
+      fetchPreferences();
+    }
+  }, [user]);
+
+  const fetchPreferences = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('notification_preferences')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        const prefs: NotificationPreferences = {
+          email_alerts: data.email_alerts,
+          push_alerts: data.push_alerts,
+          weekly_report: data.weekly_report,
+          maintenance_alerts: data.maintenance_alerts,
+          revenue_alerts: data.revenue_alerts,
+          trial_reminder: data.trial_reminder,
+        };
+        setPreferences(prefs);
+        setOriginalPreferences(prefs);
+      }
+    } catch (error) {
+      console.error('Error fetching preferences:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleToggle = (key: keyof NotificationPreferences) => {
+    const newPrefs = { ...preferences, [key]: !preferences[key] };
+    setPreferences(newPrefs);
+    setHasChanges(JSON.stringify(newPrefs) !== JSON.stringify(originalPreferences));
+  };
+
+  const handleSave = async () => {
+    if (!user) return;
+
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('notification_preferences')
+        .upsert({
+          user_id: user.id,
+          ...preferences,
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) throw error;
+
+      setOriginalPreferences(preferences);
+      setHasChanges(false);
+      toast.success("Préférences enregistrées");
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      toast.error("Erreur lors de l'enregistrement");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[300px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-2xl">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5 text-primary" />
-            Préférences de notification
-          </CardTitle>
-          <CardDescription>
-            Configurez comment et quand vous souhaitez être notifié
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Bell className="h-5 w-5 text-primary" />
+              <div>
+                <CardTitle>Préférences de notification</CardTitle>
+                <CardDescription>
+                  Configurez comment et quand vous souhaitez être notifié
+                </CardDescription>
+              </div>
+            </div>
+            {hasChanges && (
+              <Button onClick={handleSave} disabled={saving} size="sm">
+                {saving ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
+                Enregistrer
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Email Notifications */}
@@ -54,12 +160,12 @@ export default function NotificationsContent() {
               </div>
               <Switch
                 id="emailAlerts"
-                checked={notifications.emailAlerts}
-                onCheckedChange={() => handleToggle('emailAlerts')}
+                checked={preferences.email_alerts}
+                onCheckedChange={() => handleToggle('email_alerts')}
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center justify-between p-4 border rounded-lg opacity-50">
               <div className="flex items-center gap-3">
                 <Smartphone className="h-5 w-5 text-muted-foreground" />
                 <div>
@@ -73,8 +179,8 @@ export default function NotificationsContent() {
               </div>
               <Switch
                 id="pushAlerts"
-                checked={notifications.pushAlerts}
-                onCheckedChange={() => handleToggle('pushAlerts')}
+                checked={preferences.push_alerts}
+                onCheckedChange={() => handleToggle('push_alerts')}
                 disabled
               />
             </div>
@@ -100,8 +206,8 @@ export default function NotificationsContent() {
               </div>
               <Switch
                 id="weeklyReport"
-                checked={notifications.weeklyReport}
-                onCheckedChange={() => handleToggle('weeklyReport')}
+                checked={preferences.weekly_report}
+                onCheckedChange={() => handleToggle('weekly_report')}
               />
             </div>
 
@@ -119,8 +225,8 @@ export default function NotificationsContent() {
               </div>
               <Switch
                 id="maintenanceAlerts"
-                checked={notifications.maintenanceAlerts}
-                onCheckedChange={() => handleToggle('maintenanceAlerts')}
+                checked={preferences.maintenance_alerts}
+                onCheckedChange={() => handleToggle('maintenance_alerts')}
               />
             </div>
 
@@ -138,8 +244,8 @@ export default function NotificationsContent() {
               </div>
               <Switch
                 id="revenueAlerts"
-                checked={notifications.revenueAlerts}
-                onCheckedChange={() => handleToggle('revenueAlerts')}
+                checked={preferences.revenue_alerts}
+                onCheckedChange={() => handleToggle('revenue_alerts')}
               />
             </div>
 
@@ -157,8 +263,8 @@ export default function NotificationsContent() {
               </div>
               <Switch
                 id="trialReminder"
-                checked={notifications.trialReminder}
-                onCheckedChange={() => handleToggle('trialReminder')}
+                checked={preferences.trial_reminder}
+                onCheckedChange={() => handleToggle('trial_reminder')}
               />
             </div>
           </div>
