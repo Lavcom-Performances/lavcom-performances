@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useDateRange } from "@/hooks/useDateRange";
 import { useMachineStats } from "@/hooks/useChartsData";
 import { useChartPreferences } from "@/hooks/useChartPreferences";
+import { useHasData } from "@/hooks/useHasData";
 import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
+import { ChartEmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -19,6 +21,7 @@ export default function MachineTypePage() {
   const { dateRange, setDateRange } = useDateRange();
   const { filters, setFilters, isLoaded } = useChartPreferences("machine_type");
   const { data: machineData, isLoading } = useMachineStats(filters);
+  const { hasData, isLoading: isLoadingHasData } = useHasData();
   const [selectedView, setSelectedView] = useState<ViewType>("ca");
 
   const caTotals = {
@@ -36,10 +39,18 @@ export default function MachineTypePage() {
   const formatCurrency = (value: number) => 
     new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
 
-  if (!isLoaded) {
+  if (!isLoaded || isLoadingHasData) {
     return (
       <div className="p-6 lg:p-8">
         <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
+
+  if (!hasData) {
+    return (
+      <div className="p-6 lg:p-8">
+        <ChartEmptyState />
       </div>
     );
   }
