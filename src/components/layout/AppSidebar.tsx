@@ -25,7 +25,8 @@ import {
   Calculator,
   Shield,
   CreditCard,
-  ShieldCheck
+  ShieldCheck,
+  AlertTriangle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -117,6 +118,7 @@ export function AppSidebar({
     { name: t('app:nav.users'), href: "/admin/users", icon: Users, permission: "MANAGE_USERS" },
     { name: "Demandes experts", href: "/admin/expert-requests", icon: Handshake, permission: "MANAGE_USERS" },
     { name: "Gestion des rôles", href: "/roles-management", icon: ShieldCheck, permission: "MANAGE_USERS" },
+    { name: "Statut système", href: "/admin/status", icon: AlertTriangle, permission: "MANAGE_USERS" },
     { name: t('app:nav.settings'), href: "/settings", icon: Settings, permission: "READ_VIEWS" },
     { name: t('app:nav.security'), href: "/settings?tab=security", icon: Shield, permission: "MANAGE_OPTIONS" },
   ];

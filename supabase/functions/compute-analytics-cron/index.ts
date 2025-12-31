@@ -1,10 +1,32 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitResponse, hashIP } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
+
+// Helper to log system events
+async function logSystemEvent(
+  supabase: SupabaseClient,
+  severity: 'info' | 'warn' | 'error' | 'critical',
+  code: string,
+  message: string,
+  meta?: Record<string, unknown>
+) {
+  try {
+    await supabase.rpc('rpc_log_system_event', {
+      p_env: 'prod',
+      p_source: 'cron',
+      p_severity: severity,
+      p_code: code,
+      p_message: message,
+      p_meta: meta || {}
+    });
+  } catch (err) {
+    console.error('[compute-analytics-cron] Failed to log system event:', err);
+  }
+}
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -116,6 +138,7 @@ Deno.serve(async (req) => {
 
     if (sitesError) {
       console.error("[compute-analytics-cron] Error fetching active sites:", sitesError);
+      await logSystemEvent(supabase, 'error', 'CRON_SITES_FETCH_FAIL', 'Failed to fetch active sites', { error: sitesError.message });
       
       // Update log with error
       if (logId) {
@@ -235,6 +258,7 @@ Deno.serve(async (req) => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("[compute-analytics-cron] Unexpected error:", errorMessage);
+    await logSystemEvent(supabase, 'critical', 'CRON_FAIL', 'Analytics cron job failed', { error: errorMessage });
     
     // Update log entry with error
     if (logId) {

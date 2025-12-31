@@ -33,6 +33,28 @@ const logStep = (step: string, details?: unknown) => {
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
 };
 
+// Helper to log system events
+async function logSystemEvent(
+  supabaseAdmin: SupabaseClient,
+  severity: 'info' | 'warn' | 'error' | 'critical',
+  code: string,
+  message: string,
+  meta?: Record<string, unknown>
+) {
+  try {
+    await supabaseAdmin.rpc('rpc_log_system_event', {
+      p_env: Deno.env.get('STRIPE_SECRET_KEY')?.startsWith('sk_test_') ? 'preview' : 'prod',
+      p_source: 'stripe-webhook',
+      p_severity: severity,
+      p_code: code,
+      p_message: message,
+      p_meta: meta || {}
+    });
+  } catch (err) {
+    console.error('[STRIPE-WEBHOOK] Failed to log system event:', err);
+  }
+}
+
 // Helper to send subscription emails
 async function sendSubscriptionEmail(
   type: "activation" | "renewal" | "payment_failed" | "cancellation",
@@ -556,7 +578,9 @@ serve(async (req) => {
     try {
       event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
     } catch (err) {
-      logStep("Signature verification failed", { error: err instanceof Error ? err.message : String(err) });
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      logStep("Signature verification failed", { error: errorMsg });
+      await logSystemEvent(supabaseAdmin, 'critical', 'WEBHOOK_SIG_FAIL', 'Stripe signature verification failed', { error: errorMsg });
       return new Response(JSON.stringify({ error: "Invalid signature" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
@@ -657,6 +681,7 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
+    await logSystemEvent(supabaseAdmin, 'error', 'WEBHOOK_ERROR', 'Stripe webhook processing error', { error: errorMessage });
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
