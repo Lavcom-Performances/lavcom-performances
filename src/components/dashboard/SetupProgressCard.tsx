@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { 
   Building2, 
@@ -25,6 +26,7 @@ const iconMap = {
 
 function StepItem({ step, index }: { step: SetupStep; index: number }) {
   const navigate = useNavigate();
+  const { t } = useTranslation("app");
   const Icon = iconMap[step.icon];
 
   return (
@@ -68,7 +70,7 @@ function StepItem({ step, index }: { step: SetupStep; index: number }) {
           {step.label}
         </p>
         <p className="text-xs text-muted-foreground truncate">
-          {step.completed ? "Complété" : step.description}
+          {step.completed ? t("setupProgress.completed") : step.description}
         </p>
       </div>
 
@@ -81,6 +83,7 @@ function StepItem({ step, index }: { step: SetupStep; index: number }) {
 }
 
 export function SetupProgressCard() {
+  const { t } = useTranslation("app");
   const { steps, completedCount, totalSteps, progressPercent, isComplete, isLoading } = useSetupProgress();
   const navigate = useNavigate();
 
@@ -104,11 +107,11 @@ export function SetupProgressCard() {
           <div className="flex items-center gap-2 mb-1">
             <Sparkles className="h-4 w-4 text-primary" />
             <h3 className="font-display font-semibold text-foreground">
-              Configuration du compte
+              {t("setupProgress.title")}
             </h3>
           </div>
           <p className="text-sm text-muted-foreground">
-            {completedCount} sur {totalSteps} étapes complétées
+            {t("setupProgress.stepsCompleted", { count: completedCount, total: totalSteps })}
           </p>
         </div>
         <div className="text-right">

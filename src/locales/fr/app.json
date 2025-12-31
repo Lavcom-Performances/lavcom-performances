@@ -1124,5 +1124,66 @@
       "import": "Import",
       "dashboard": "Dashboard"
     }
+  },
+  "setupProgress": {
+    "title": "Configuration du compte",
+    "stepsCompleted": "{{count}} sur {{total}} étapes complétées",
+    "completed": "Complété",
+    "steps": {
+      "site": {
+        "label": "Créer une laverie",
+        "description": "Ajoutez votre première laverie pour commencer"
+      },
+      "import": {
+        "label": "Importer vos données",
+        "description": "Importez un fichier CSV avec vos opérations"
+      },
+      "costs": {
+        "label": "Configurer les charges",
+        "description": "Définissez vos charges pour calculer la rentabilité"
+      },
+      "goals": {
+        "label": "Définir vos objectifs",
+        "description": "Fixez des objectifs de CA et de cycles mensuels"
+      }
+    }
+  },
+  "costs": {
+    "pageTitle": "Configurer les charges",
+    "pageDescription": "Définissez vos charges mensuelles pour calculer la rentabilité de votre laverie.",
+    "title": "Charges mensuelles",
+    "description": "Renseignez vos charges fixes et variables.",
+    "helper": "Commencez simple : vous pourrez ajuster plus tard.",
+    "fixedCosts": "Charges fixes (€/mois)",
+    "variableCosts": "Charges variables (% du CA)",
+    "rent": "Loyer",
+    "lease": "Crédit-bail (leasing)",
+    "subscriptions": "Abonnements (internet, alarme...)",
+    "insurance": "Assurance",
+    "cleaning": "Nettoyage",
+    "other": "Autres charges",
+    "energyWater": "Énergie & eau",
+    "detergent": "Lessive",
+    "successMessage": "Charges enregistrées",
+    "errorMessage": "Erreur lors de l'enregistrement",
+    "noSiteSelected": "Aucune laverie sélectionnée",
+    "bannerMessage": "Pour calculer la rentabilité, configurez vos charges.",
+    "bannerCta": "Configurer les charges"
+  },
+  "goals": {
+    "pageTitle": "Définir vos objectifs",
+    "pageDescription": "Fixez vos objectifs de chiffre d'affaires et de transactions.",
+    "title": "Mes objectifs",
+    "description": "Définissez vos objectifs pour suivre vos performances.",
+    "helper": "Commencez simple : vous pourrez ajuster plus tard.",
+    "monthlyRevenue": "Objectif CA mensuel",
+    "annualRevenue": "Objectif CA annuel",
+    "monthlyTransactions": "Objectif cycles mensuels",
+    "autoCalculated": "Calculé automatiquement (mensuel × 12)",
+    "monthlyRevenueRequired": "L'objectif de CA mensuel est requis",
+    "successMessage": "Objectifs enregistrés",
+    "errorMessage": "Erreur lors de l'enregistrement",
+    "bannerMessage": "Définissez vos objectifs pour suivre vos performances.",
+    "bannerCta": "Définir mes objectifs"
   }
 }

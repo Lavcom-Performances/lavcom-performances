@@ -1124,5 +1124,66 @@
       "import": "Import",
       "dashboard": "Dashboard"
     }
+  },
+  "setupProgress": {
+    "title": "Account setup",
+    "stepsCompleted": "{{count}} of {{total}} steps completed",
+    "completed": "Completed",
+    "steps": {
+      "site": {
+        "label": "Create a laundromat",
+        "description": "Add your first laundromat to get started"
+      },
+      "import": {
+        "label": "Import your data",
+        "description": "Import a CSV file with your operations"
+      },
+      "costs": {
+        "label": "Configure expenses",
+        "description": "Set your expenses to calculate profitability"
+      },
+      "goals": {
+        "label": "Set your goals",
+        "description": "Set revenue and monthly cycle goals"
+      }
+    }
+  },
+  "costs": {
+    "pageTitle": "Configure expenses",
+    "pageDescription": "Set your monthly expenses to calculate your laundromat's profitability.",
+    "title": "Monthly expenses",
+    "description": "Enter your fixed and variable expenses.",
+    "helper": "Start simple — you can refine later.",
+    "fixedCosts": "Fixed costs (€/month)",
+    "variableCosts": "Variable costs (% of revenue)",
+    "rent": "Rent",
+    "lease": "Lease (equipment)",
+    "subscriptions": "Subscriptions (internet, alarm...)",
+    "insurance": "Insurance",
+    "cleaning": "Cleaning",
+    "other": "Other expenses",
+    "energyWater": "Energy & water",
+    "detergent": "Detergent",
+    "successMessage": "Expenses saved",
+    "errorMessage": "Error saving expenses",
+    "noSiteSelected": "No laundromat selected",
+    "bannerMessage": "To calculate profitability, set your expenses.",
+    "bannerCta": "Set expenses"
+  },
+  "goals": {
+    "pageTitle": "Set your goals",
+    "pageDescription": "Set your revenue and transaction goals.",
+    "title": "My goals",
+    "description": "Set your goals to track your performance.",
+    "helper": "Start simple — you can refine later.",
+    "monthlyRevenue": "Monthly revenue goal",
+    "annualRevenue": "Annual revenue goal",
+    "monthlyTransactions": "Monthly cycles goal",
+    "autoCalculated": "Auto-calculated (monthly × 12)",
+    "monthlyRevenueRequired": "Monthly revenue goal is required",
+    "successMessage": "Goals saved",
+    "errorMessage": "Error saving goals",
+    "bannerMessage": "Set your goals to track your performance.",
+    "bannerCta": "Set my goals"
   }
 }

@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useImportBatches } from "@/hooks/useImportBatches";
@@ -28,6 +29,7 @@ interface SetupProgress {
  * Tracks: site creation, CSV import, costs configuration, goals setup
  */
 export function useSetupProgress(): SetupProgress {
+  const { t } = useTranslation("app");
   const { user } = useAuth();
   const { sites, isLoading: sitesLoading } = useSites();
   const { batches, isLoading: batchesLoading } = useImportBatches();
@@ -103,34 +105,34 @@ export function useSetupProgress(): SetupProgress {
     const steps: SetupStep[] = [
       {
         id: "site",
-        label: "Créer une laverie",
-        description: "Ajoutez votre première laverie pour commencer",
+        label: t("setupProgress.steps.site.label"),
+        description: t("setupProgress.steps.site.description"),
         completed: hasSite,
         route: "/laundromat-settings",
         icon: "building",
       },
       {
         id: "import",
-        label: "Importer vos données",
-        description: "Importez un fichier CSV avec vos opérations",
+        label: t("setupProgress.steps.import.label"),
+        description: t("setupProgress.steps.import.description"),
         completed: hasImport,
         route: "/operations",
         icon: "upload",
       },
       {
         id: "costs",
-        label: "Configurer les charges",
-        description: "Définissez vos charges pour calculer la rentabilité",
+        label: t("setupProgress.steps.costs.label"),
+        description: t("setupProgress.steps.costs.description"),
         completed: hasCosts,
-        route: "/profitability",
+        route: "/settings/charges",
         icon: "calculator",
       },
       {
         id: "goals",
-        label: "Définir vos objectifs",
-        description: "Fixez des objectifs de CA et de cycles mensuels",
+        label: t("setupProgress.steps.goals.label"),
+        description: t("setupProgress.steps.goals.description"),
         completed: hasGoals,
-        route: "/dashboard",
+        route: "/settings/objectives",
         icon: "target",
       },
     ];
@@ -147,7 +149,7 @@ export function useSetupProgress(): SetupProgress {
       isComplete: completedCount === totalSteps,
       isLoading: sitesLoading || batchesLoading || costsLoading || goalsLoading,
     };
-  }, [sites, batches, hasCosts, hasGoals, sitesLoading, batchesLoading, costsLoading, goalsLoading]);
+  }, [sites, batches, hasCosts, hasGoals, sitesLoading, batchesLoading, costsLoading, goalsLoading, t]);
 
   return progress;
 }
