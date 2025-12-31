@@ -43,12 +43,14 @@ import { SiteComparisonSection } from "@/components/dashboard/SiteComparisonSect
 import { PdfPreviewDialog } from "@/components/dashboard/PdfPreviewDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { calculateProfitabilityMetrics, LaundryCosts } from "@/types/costs";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useSites } from "@/hooks/useSites";
 import { useUserGoals } from "@/hooks/useUserGoals";
 import { useDateRange } from "@/hooks/useDateRange";
+import { useHasData } from "@/hooks/useHasData";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { generateDashboardPdf } from "@/utils/dashboardPdfExport";
 import { QuickStartBanner } from "@/components/onboarding/QuickStartBanner";
@@ -154,6 +156,7 @@ export default function Dashboard() {
   const [isRecalculating, setIsRecalculating] = useState(false);
   const onboardingStatus = useOnboardingStatus();
   const tutorial = useTutorial();
+  const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
   // Handle analytics recalculation
   const handleRecalculateAnalytics = async () => {
@@ -202,7 +205,7 @@ export default function Dashboard() {
   );
 
   // Loading state
-  if (isLoading) {
+  if (isLoading || dataLoading) {
     return (
       <div className="p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -213,8 +216,8 @@ export default function Dashboard() {
     );
   }
 
-  // Empty state
-  if (isEmpty) {
+  // Empty state - no data imported
+  if (!hasImportedData || isEmpty) {
     return (
       <div className="p-6 lg:p-8">
         <div className="flex flex-col gap-4 mb-8">

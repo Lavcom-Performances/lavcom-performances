@@ -3,6 +3,8 @@ import { useHalfHourlyFrequency } from "@/hooks/useChartsData";
 import { useChartPreferences } from "@/hooks/useChartPreferences";
 import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useHasData } from "@/hooks/useHasData";
+import { ChartEmptyState, DataLoadErrorState } from "@/components/ui/empty-state";
 import {
   BarChart,
   Bar,
@@ -24,14 +26,52 @@ import {
 export default function HalfHourlyFrequencyPage() {
   const { dateRange, setDateRange } = useDateRange();
   const { filters, setFilters, isLoaded } = useChartPreferences("half_hourly_frequency");
-  const { data: halfHourlyData, isLoading } = useHalfHourlyFrequency(filters);
+  const { data: halfHourlyData, isLoading, error, refetch } = useHalfHourlyFrequency(filters);
+  const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
   const total = halfHourlyData?.reduce((sum, d) => sum + d.count, 0) ?? 0;
 
-  if (!isLoaded) {
+  // Loading state
+  if (!isLoaded || dataLoading) {
     return (
       <div className="p-6 lg:p-8">
+        <Skeleton className="h-10 w-64 mb-4" />
         <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
+
+  // No data imported - show premium empty state
+  if (!hasImportedData) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+            Fréquentation par 30 min
+          </h1>
+          <p className="text-muted-foreground">
+            Nombre de cycles par tranche de 30 minutes
+          </p>
+        </div>
+        <div className="card-lavcom">
+          <ChartEmptyState />
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+            Fréquentation par 30 min
+          </h1>
+        </div>
+        <div className="card-lavcom">
+          <DataLoadErrorState onRetry={() => refetch()} />
+        </div>
       </div>
     );
   }

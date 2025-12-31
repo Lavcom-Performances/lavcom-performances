@@ -3,6 +3,8 @@ import { useMachineStats } from "@/hooks/useChartsData";
 import { useChartPreferences } from "@/hooks/useChartPreferences";
 import { ChartPageFilters } from "@/components/charts/ChartPageFilters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useHasData } from "@/hooks/useHasData";
+import { ChartEmptyState, DataLoadErrorState } from "@/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -15,7 +17,8 @@ import {
 export default function ProductsRevenuePage() {
   const { dateRange, setDateRange } = useDateRange();
   const { filters, setFilters, isLoaded } = useChartPreferences("products_revenue");
-  const { data: machineData, isLoading } = useMachineStats(filters);
+  const { data: machineData, isLoading, error, refetch } = useMachineStats(filters);
+  const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
 
   const formatCurrency = (value: number) => 
     new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value);
@@ -27,10 +30,47 @@ export default function ProductsRevenuePage() {
     ventes: machineData?.reduce((sum, m) => sum + m.ventesTotal, 0) ?? 0,
   };
 
-  if (!isLoaded) {
+  // Loading state
+  if (!isLoaded || dataLoading) {
     return (
       <div className="p-6 lg:p-8">
+        <Skeleton className="h-10 w-64 mb-4" />
         <Skeleton className="h-[400px]" />
+      </div>
+    );
+  }
+
+  // No data imported - show premium empty state
+  if (!hasImportedData) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+            CA Produits & Machines
+          </h1>
+          <p className="text-muted-foreground">
+            Chiffre d'affaires par machine
+          </p>
+        </div>
+        <div className="card-lavcom">
+          <ChartEmptyState />
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="p-6 lg:p-8">
+        <div className="mb-6">
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+            CA Produits & Machines
+          </h1>
+        </div>
+        <div className="card-lavcom">
+          <DataLoadErrorState onRetry={() => refetch()} />
+        </div>
       </div>
     );
   }
