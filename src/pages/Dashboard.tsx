@@ -50,6 +50,8 @@ import { useUserGoals } from "@/hooks/useUserGoals";
 import { useDateRange } from "@/hooks/useDateRange";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { generateDashboardPdf } from "@/utils/dashboardPdfExport";
+import { QuickStartBanner } from "@/components/onboarding/QuickStartBanner";
+import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
 
 // Animation variants for staggered cards
 const containerVariants = {
@@ -147,6 +149,7 @@ export default function Dashboard() {
   const { stats, isLoading, isEmpty, refetch, dataSource } = useDashboardStats(dateRange, selectedSite?.id);
   const { goals } = useUserGoals(selectedSite?.id);
   const [isRecalculating, setIsRecalculating] = useState(false);
+  const onboardingStatus = useOnboardingStatus();
 
   // Handle analytics recalculation
   const handleRecalculateAnalytics = async () => {
@@ -387,6 +390,15 @@ export default function Dashboard() {
 
         {/* Vue d'ensemble */}
         <TabsContent value="overview" className="space-y-6">
+          {/* Quick Start Banner for new users */}
+          {!onboardingStatus.isComplete && !onboardingStatus.isLoading && (
+            <QuickStartBanner
+              hasSite={onboardingStatus.hasSite}
+              hasImport={onboardingStatus.hasImport}
+              hasData={onboardingStatus.hasData}
+            />
+          )}
+
           {/* KPI Cards principales - Using RPC function */}
           <DashboardKPIGrid dateRange={dateRange?.from && dateRange?.to ? { from: dateRange.from, to: dateRange.to } : undefined} />
 
