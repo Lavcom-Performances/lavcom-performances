@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BarChart3, TrendingUp, TrendingDown, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BarChart3, TrendingUp, TrendingDown, Building2, Download, FileSpreadsheet } from "lucide-react";
 import { useSites } from "@/hooks/useSites";
 import { useMultipleSitesCosts } from "@/hooks/useSiteCosts";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,6 +24,12 @@ import {
   Legend,
 } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { toast } from "sonner";
+import { 
+  exportProfitabilityComparisonPDF, 
+  exportProfitabilityComparisonCSV,
+  type ProfitabilitySiteData 
+} from "@/utils/comparisonExport";
 
 interface MultiSiteProfitabilityComparisonProps {
   dateRange?: DateRange;
@@ -175,13 +182,63 @@ export function MultiSiteProfitabilityComparison({ dateRange }: MultiSiteProfita
   const bestSite = siteStats[0];
   const worstSite = siteStats[siteStats.length - 1];
 
+  const handleExportPDF = () => {
+    const exportData = {
+      sites: siteStats.map(s => ({
+        siteName: s.siteName,
+        city: s.city,
+        revenue: s.revenue,
+        costs: s.costs,
+        profit: s.profit,
+        margin: s.margin,
+      })),
+      dateStart: dateRange?.from || new Date(new Date().setMonth(new Date().getMonth() - 1)),
+      dateEnd: dateRange?.to || new Date(),
+      periodDays: dateRange?.from && dateRange?.to 
+        ? differenceInDays(dateRange.to, dateRange.from) + 1 
+        : 30,
+    };
+    exportProfitabilityComparisonPDF(exportData, t);
+    toast.success(t("profitability.pdfExported"));
+  };
+
+  const handleExportCSV = () => {
+    const exportData = {
+      sites: siteStats.map(s => ({
+        siteName: s.siteName,
+        city: s.city,
+        revenue: s.revenue,
+        costs: s.costs,
+        profit: s.profit,
+        margin: s.margin,
+      })),
+      dateStart: dateRange?.from || new Date(new Date().setMonth(new Date().getMonth() - 1)),
+      dateEnd: dateRange?.to || new Date(),
+      periodDays: dateRange?.from && dateRange?.to 
+        ? differenceInDays(dateRange.to, dateRange.from) + 1 
+        : 30,
+    };
+    exportProfitabilityComparisonCSV(exportData, t);
+    toast.success(t("profitability.csvExported"));
+  };
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="flex items-center gap-2">
           <Building2 className="h-5 w-5 text-primary" />
           {t("profitability.multiSiteComparison")}
         </CardTitle>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={handleExportCSV}>
+            <FileSpreadsheet className="h-4 w-4 mr-1" />
+            Excel
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleExportPDF}>
+            <Download className="h-4 w-4 mr-1" />
+            PDF
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Summary badges */}

@@ -172,3 +172,255 @@ export function exportComparisonExcel(data: ComparisonExportData): void {
   link.click();
   document.body.removeChild(link);
 }
+
+// === PROFITABILITY COMPARISON EXPORT ===
+
+export interface ProfitabilitySiteData {
+  siteName: string;
+  city: string;
+  revenue: number;
+  costs: number;
+  profit: number;
+  margin: number;
+}
+
+export interface ProfitabilityComparisonData {
+  sites: ProfitabilitySiteData[];
+  dateStart: Date;
+  dateEnd: Date;
+  periodDays: number;
+}
+
+const PROFITABILITY_COLORS = {
+  green: [165, 200, 0] as [number, number, number],
+  yellow: [252, 210, 89] as [number, number, number],
+  teal: [109, 191, 184] as [number, number, number],
+  darkGray: [56, 56, 56] as [number, number, number],
+  lightGray: [245, 245, 245] as [number, number, number],
+  white: [255, 255, 255] as [number, number, number],
+  red: [220, 53, 69] as [number, number, number],
+};
+
+export function exportProfitabilityComparisonPDF(data: ProfitabilityComparisonData, t: (key: string) => string): void {
+  const doc = new jsPDF({ orientation: "landscape" });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 15;
+  const contentWidth = pageWidth - margin * 2;
+  
+  // Header
+  doc.setFillColor(...PROFITABILITY_COLORS.green);
+  doc.rect(0, 0, pageWidth, 25, 'F');
+  
+  doc.setTextColor(...PROFITABILITY_COLORS.white);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text(t("profitability.comparisonPdfTitle"), pageWidth / 2, 12, { align: "center" });
+  
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+  doc.text(`${format(data.dateStart, "dd/MM/yyyy")} - ${format(data.dateEnd, "dd/MM/yyyy")}`, pageWidth / 2, 20, { align: "center" });
+  
+  // Subheader
+  let yPos = 32;
+  doc.setTextColor(...PROFITABILITY_COLORS.darkGray);
+  doc.setFontSize(9);
+  doc.text(`${t("profitability.period")}: ${data.periodDays} ${t("profitability.days")}`, margin, yPos);
+  doc.text(`${t("profitability.generatedOn")}: ${format(new Date(), "dd/MM/yyyy", { locale: fr })}`, pageWidth - margin, yPos, { align: "right" });
+  
+  yPos += 10;
+  
+  // Summary KPIs
+  const totalRevenue = data.sites.reduce((sum, s) => sum + s.revenue, 0);
+  const totalCosts = data.sites.reduce((sum, s) => sum + s.costs, 0);
+  const totalProfit = data.sites.reduce((sum, s) => sum + s.profit, 0);
+  const avgMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+  const bestSite = data.sites[0];
+  
+  doc.setFillColor(...PROFITABILITY_COLORS.lightGray);
+  doc.roundedRect(margin, yPos, contentWidth, 28, 3, 3, "F");
+  
+  const kpiWidth = contentWidth / 4;
+  const kpiY = yPos + 12;
+  
+  // KPI 1: Total Revenue
+  doc.setFontSize(9);
+  doc.setTextColor(100, 100, 100);
+  doc.text(t("profitability.totalRevenueLabel"), margin + kpiWidth * 0.5, kpiY - 2, { align: "center" });
+  doc.setFontSize(13);
+  doc.setTextColor(...PROFITABILITY_COLORS.darkGray);
+  doc.setFont("helvetica", "bold");
+  doc.text(formatCurrency(totalRevenue), margin + kpiWidth * 0.5, kpiY + 6, { align: "center" });
+  
+  // KPI 2: Total Costs
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(100, 100, 100);
+  doc.text(t("profitability.totalCostsLabel"), margin + kpiWidth * 1.5, kpiY - 2, { align: "center" });
+  doc.setFontSize(13);
+  doc.setTextColor(...PROFITABILITY_COLORS.teal);
+  doc.setFont("helvetica", "bold");
+  doc.text(formatCurrency(totalCosts), margin + kpiWidth * 1.5, kpiY + 6, { align: "center" });
+  
+  // KPI 3: Total Profit
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(100, 100, 100);
+  doc.text(t("profitability.totalProfitLabel"), margin + kpiWidth * 2.5, kpiY - 2, { align: "center" });
+  doc.setFontSize(13);
+  const profitColor = totalProfit >= 0 ? PROFITABILITY_COLORS.green : PROFITABILITY_COLORS.red;
+  doc.setTextColor(profitColor[0], profitColor[1], profitColor[2]);
+  doc.setFont("helvetica", "bold");
+  doc.text(formatCurrency(totalProfit), margin + kpiWidth * 2.5, kpiY + 6, { align: "center" });
+  
+  // KPI 4: Avg Margin
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(100, 100, 100);
+  doc.text(t("profitability.avgMargin"), margin + kpiWidth * 3.5, kpiY - 2, { align: "center" });
+  doc.setFontSize(13);
+  const marginColor = avgMargin >= 15 ? PROFITABILITY_COLORS.green : avgMargin >= 0 ? PROFITABILITY_COLORS.yellow : PROFITABILITY_COLORS.red;
+  doc.setTextColor(marginColor[0], marginColor[1], marginColor[2]);
+  doc.setFont("helvetica", "bold");
+  doc.text(`${avgMargin.toFixed(1)}%`, margin + kpiWidth * 3.5, kpiY + 6, { align: "center" });
+  
+  yPos += 38;
+  
+  // Sites table header
+  doc.setFillColor(...PROFITABILITY_COLORS.green);
+  doc.rect(margin, yPos, contentWidth, 8, "F");
+  doc.setTextColor(...PROFITABILITY_COLORS.white);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text(t("profitability.siteDetails"), margin + 4, yPos + 5.5);
+  
+  yPos += 12;
+  
+  const tableData = data.sites.map((site, idx) => [
+    idx === 0 ? `🏆 ${site.siteName}` : site.siteName,
+    site.city || "-",
+    formatCurrency(site.revenue),
+    formatCurrency(site.costs),
+    formatCurrency(site.profit),
+    `${site.margin.toFixed(1)}%`
+  ]);
+  
+  autoTable(doc, {
+    startY: yPos,
+    head: [[
+      t("profitability.site"),
+      t("profitability.city"),
+      t("profitability.revenue"),
+      t("profitability.totalCosts"),
+      t("profitability.netProfit"),
+      t("profitability.margin")
+    ]],
+    body: tableData,
+    theme: "striped",
+    headStyles: {
+      fillColor: PROFITABILITY_COLORS.darkGray,
+      textColor: PROFITABILITY_COLORS.white,
+      fontSize: 9,
+      fontStyle: "bold",
+    },
+    bodyStyles: {
+      fontSize: 9,
+      textColor: PROFITABILITY_COLORS.darkGray,
+    },
+    columnStyles: {
+      0: { cellWidth: 55 },
+      1: { cellWidth: 40 },
+      2: { halign: "right", cellWidth: 35 },
+      3: { halign: "right", cellWidth: 35 },
+      4: { halign: "right", cellWidth: 35 },
+      5: { halign: "right", cellWidth: 30 },
+    },
+    margin: { left: margin, right: margin },
+    alternateRowStyles: {
+      fillColor: PROFITABILITY_COLORS.lightGray,
+    },
+    didParseCell: (cellData) => {
+      if (cellData.column.index === 4 && cellData.section === "body") {
+        const value = parseFloat(cellData.cell.raw?.toString().replace(/[^\d,-]/g, "").replace(",", ".") || "0");
+        if (value < 0) {
+          cellData.cell.styles.textColor = PROFITABILITY_COLORS.red;
+        } else if (value > 0) {
+          cellData.cell.styles.textColor = PROFITABILITY_COLORS.green;
+        }
+      }
+      if (cellData.column.index === 5 && cellData.section === "body") {
+        const value = parseFloat(cellData.cell.raw?.toString().replace("%", "").replace(",", ".") || "0");
+        if (value >= 30) {
+          cellData.cell.styles.textColor = PROFITABILITY_COLORS.green;
+        } else if (value < 15) {
+          cellData.cell.styles.textColor = PROFITABILITY_COLORS.red;
+        }
+      }
+    }
+  });
+  
+  // Footer
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.setFont("helvetica", "normal");
+  doc.text(
+    t("profitability.comparisonPdfDisclaimer"),
+    pageWidth / 2,
+    pageHeight - 10,
+    { align: "center" }
+  );
+  doc.text(
+    `Lavcom Performances | ${format(new Date(), "dd/MM/yyyy", { locale: fr })}`,
+    pageWidth / 2,
+    pageHeight - 5,
+    { align: "center" }
+  );
+  
+  const filename = `Comparatif_Rentabilite_${format(data.dateStart, "yyyyMMdd")}_${format(data.dateEnd, "yyyyMMdd")}.pdf`;
+  doc.save(filename);
+}
+
+export function exportProfitabilityComparisonCSV(data: ProfitabilityComparisonData, t: (key: string) => string): void {
+  const headers = [
+    t("profitability.site"),
+    t("profitability.city"),
+    t("profitability.revenue"),
+    t("profitability.totalCosts"),
+    t("profitability.netProfit"),
+    t("profitability.margin")
+  ];
+  
+  const rows = data.sites.map(site => [
+    `"${site.siteName}"`,
+    `"${site.city || '-'}"`,
+    site.revenue.toFixed(2),
+    site.costs.toFixed(2),
+    site.profit.toFixed(2),
+    site.margin.toFixed(1) + "%"
+  ]);
+  
+  const metaRows = [
+    [t("profitability.comparisonPdfTitle")],
+    [`${t("profitability.period")}: ${format(data.dateStart, "dd/MM/yyyy")} - ${format(data.dateEnd, "dd/MM/yyyy")} (${data.periodDays} ${t("profitability.days")})`],
+    [`${t("profitability.generatedOn")}: ${format(new Date(), "dd/MM/yyyy", { locale: fr })}`],
+    [],
+  ];
+  
+  const csvContent = [
+    ...metaRows.map(row => row.join(';')),
+    headers.join(';'),
+    ...rows.map(row => row.join(';')),
+  ].join('\n');
+  
+  const BOM = '\uFEFF';
+  const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `Comparatif_Rentabilite_${format(data.dateStart, "yyyyMMdd")}_${format(data.dateEnd, "yyyyMMdd")}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
