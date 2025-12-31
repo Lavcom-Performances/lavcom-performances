@@ -1271,6 +1271,7 @@ export type Database = {
     Functions: {
       cleanup_old_cron_logs: { Args: never; Returns: undefined }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      cleanup_old_system_events: { Args: never; Returns: undefined }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       has_org_role: {
         Args: {
