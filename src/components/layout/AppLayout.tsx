@@ -8,6 +8,7 @@ import { DemoBanner } from "@/components/demo/DemoBanner";
 import { DemoTutorial } from "@/components/demo/DemoTutorial";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
 import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
+import { RequireOperationsData } from "@/components/RequireOperationsData";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { useOnboarding } from "@/hooks/useOnboarding";
@@ -113,7 +114,9 @@ export function AppLayout({
                 variants={pageVariants}
                 className="h-full"
               >
-                <Outlet />
+                <RequireOperationsData>
+                  <Outlet />
+                </RequireOperationsData>
               </motion.div>
             </AnimatePresence>
           </main>
