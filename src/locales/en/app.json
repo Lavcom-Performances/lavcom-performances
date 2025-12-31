@@ -1185,5 +1185,32 @@
     "errorMessage": "Error saving goals",
     "bannerMessage": "Set your goals to track your performance.",
     "bannerCta": "Set my goals"
+  },
+  "profitability": {
+    "revenue": "Revenue",
+    "totalCosts": "Total costs",
+    "netProfit": "Net profit",
+    "margin": "Margin",
+    "profitMargin": "Profit margin",
+    "periodSelected": "Selected period",
+    "fixed": "fixed",
+    "variable": "variable",
+    "afterCosts": "After costs",
+    "tabProfitability": "Profitability",
+    "tabLosses": "Losses",
+    "tabEfficiency": "Efficiency",
+    "tabMachines": "Machines",
+    "tabTrends": "Trends",
+    "costsBreakdown": "Costs breakdown",
+    "totalCostsLabel": "Total costs",
+    "summary": "Profitability summary",
+    "fixedCosts": "Fixed costs",
+    "variableCosts": "Variable costs",
+    "netResult": "Net result",
+    "marginLabel": "Net margin",
+    "perTransaction": "Per transaction",
+    "avgRevenue": "Avg. revenue",
+    "avgCost": "Avg. cost",
+    "avgProfit": "Avg. profit"
   }
 }

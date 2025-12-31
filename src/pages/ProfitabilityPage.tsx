@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -17,6 +18,7 @@ import {
   Percent,
   Timer,
   Activity,
+  Calculator,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { KPISection } from "@/components/dashboard/KPISection";
@@ -38,14 +40,17 @@ import {
   LineChart,
   Line,
   Legend,
+  PieChart,
+  Pie,
 } from "recharts";
 import { useViewMode } from "@/hooks/useViewMode";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useHasData } from "@/hooks/useHasData";
 import { ProfitabilityEmptyState } from "@/components/ui/empty-state";
 import { CostsConfigBanner } from "@/components/dashboard/CostsConfigBanner";
+import { useProfitability } from "@/hooks/useProfitability";
 
-// Mock data - CA perdu estimé par machine
+// Mock data - CA perdu estimé par machine (will be replaced later with real data)
 const lostRevenueData = [
   { machine: "LL 8kg #1", hoursDown: 12, lostRevenue: 97, reason: "Panne pompe" },
   { machine: "SL 18kg #1", hoursDown: 8, lostRevenue: 52, reason: "Maintenance" },
@@ -114,12 +119,16 @@ const chartConfig = {
   caParMachine: { label: "CA/Machine", color: "hsl(var(--primary))" },
   caParHeure: { label: "CA/Heure", color: "hsl(var(--chart-cb))" },
   tauxOccupation: { label: "Taux occupation", color: "hsl(var(--chart-seche))" },
+  fixed: { label: "Charges fixes", color: "hsl(var(--primary))" },
+  variable: { label: "Charges variables", color: "hsl(var(--chart-cb))" },
 };
 
 export default function ProfitabilityPage() {
+  const { t } = useTranslation("app");
   const { isExpert } = useViewMode();
   const { dateRange, setDateRange } = useDateRange();
   const { hasData, isLoading: dataLoading } = useHasData();
+  const profitability = useProfitability(dateRange);
   
   const totalLostRevenue = lostRevenueData.reduce((acc, d) => acc + d.lostRevenue, 0);
   const avgRotation = rotationData.reduce((acc, d) => acc + d.cyclesPerDay, 0) / rotationData.length;
@@ -197,44 +206,182 @@ export default function ProfitabilityPage() {
         />
       </div>
 
-      {/* KPIs Principaux */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <KPICard
-          title="CA Perdu (mois)"
-          value={`${totalLostRevenue} €`}
-          icon={TrendingDown}
-          variant="warning"
-          subtitle="Pannes & indisponibilités"
-        />
-        <KPICard
-          title="Rotation moy."
-          value={`${avgRotation.toFixed(1)} cycles/j`}
-          icon={Activity}
-          trend={{ value: 5.2, isPositive: true }}
-        />
-        <KPICard
-          title="Saturation max"
-          value={`${peakSaturation}%`}
-          icon={Zap}
-          variant="primary"
-          subtitle="16h-19h"
-        />
-        <KPICard
-          title="Gain potentiel"
-          value={`${potentialGain} €/mois`}
-          icon={Target}
-          variant="success"
-          subtitle="Machines sous-perf."
-        />
-      </div>
+      {/* KPIs Principaux - Rentabilité réelle */}
+      {profitability.hasCosts ? (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <KPICard
+            title={t("profitability.revenue")}
+            value={`${Math.round(profitability.totalRevenue).toLocaleString("fr-FR")} €`}
+            icon={Euro}
+            variant="primary"
+            subtitle={t("profitability.periodSelected")}
+          />
+          <KPICard
+            title={t("profitability.totalCosts")}
+            value={`${Math.round(profitability.totalCosts).toLocaleString("fr-FR")} €`}
+            icon={Calculator}
+            variant="warning"
+            subtitle={`${Math.round(profitability.totalFixedCosts).toLocaleString("fr-FR")} € ${t("profitability.fixed")} + ${Math.round(profitability.totalVariableCosts).toLocaleString("fr-FR")} € ${t("profitability.variable")}`}
+          />
+          <KPICard
+            title={t("profitability.netProfit")}
+            value={`${Math.round(profitability.netProfit).toLocaleString("fr-FR")} €`}
+            icon={profitability.netProfit >= 0 ? TrendingUp : TrendingDown}
+            variant={profitability.netProfit >= 0 ? "success" : "warning"}
+            subtitle={t("profitability.afterCosts")}
+          />
+          <KPICard
+            title={t("profitability.margin")}
+            value={`${profitability.profitMargin.toFixed(1)}%`}
+            icon={Percent}
+            variant={profitability.profitMargin >= 30 ? "success" : profitability.profitMargin >= 15 ? "primary" : "warning"}
+            subtitle={t("profitability.profitMargin")}
+          />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <KPICard
+            title="CA Perdu (mois)"
+            value={`${totalLostRevenue} €`}
+            icon={TrendingDown}
+            variant="warning"
+            subtitle="Pannes & indisponibilités"
+          />
+          <KPICard
+            title="Rotation moy."
+            value={`${avgRotation.toFixed(1)} cycles/j`}
+            icon={Activity}
+            trend={{ value: 5.2, isPositive: true }}
+          />
+          <KPICard
+            title="Saturation max"
+            value={`${peakSaturation}%`}
+            icon={Zap}
+            variant="primary"
+            subtitle="16h-19h"
+          />
+          <KPICard
+            title="Gain potentiel"
+            value={`${potentialGain} €/mois`}
+            icon={Target}
+            variant="success"
+            subtitle="Machines sous-perf."
+          />
+        </div>
+      )}
 
-      <Tabs defaultValue="losses" className="space-y-6">
-        <TabsList className={isExpert ? "grid w-full grid-cols-4" : "grid w-full grid-cols-2"}>
-          <TabsTrigger value="losses">Pertes</TabsTrigger>
-          <TabsTrigger value="efficiency">Efficacité</TabsTrigger>
-          {isExpert && <TabsTrigger value="machines">Machines</TabsTrigger>}
-          {isExpert && <TabsTrigger value="trends">Tendances</TabsTrigger>}
+      <Tabs defaultValue={profitability.hasCosts ? "profitability" : "losses"} className="space-y-6">
+        <TabsList className={isExpert ? "grid w-full grid-cols-5" : "grid w-full grid-cols-3"}>
+          {profitability.hasCosts && <TabsTrigger value="profitability">{t("profitability.tabProfitability")}</TabsTrigger>}
+          <TabsTrigger value="losses">{t("profitability.tabLosses")}</TabsTrigger>
+          <TabsTrigger value="efficiency">{t("profitability.tabEfficiency")}</TabsTrigger>
+          {isExpert && <TabsTrigger value="machines">{t("profitability.tabMachines")}</TabsTrigger>}
+          {isExpert && <TabsTrigger value="trends">{t("profitability.tabTrends")}</TabsTrigger>}
         </TabsList>
+
+        {/* Onglet Rentabilité */}
+        {profitability.hasCosts && (
+          <TabsContent value="profitability" className="space-y-6">
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Répartition des charges */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                    {t("profitability.costsBreakdown")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {profitability.costsBreakdown.map((cost, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Badge variant={cost.type === "fixed" ? "default" : "secondary"}>
+                              {cost.type === "fixed" ? t("profitability.fixed") : t("profitability.variable")}
+                            </Badge>
+                            <span className="text-sm font-medium">{cost.label}</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="font-bold text-foreground">{Math.round(cost.value).toLocaleString("fr-FR")} €</span>
+                            <span className="text-xs text-muted-foreground ml-2">
+                              ({cost.percentage.toFixed(1)}%)
+                            </span>
+                          </div>
+                        </div>
+                        <Progress 
+                          value={cost.percentage} 
+                          className="h-2"
+                        />
+                      </div>
+                    ))}
+                    
+                    <div className="pt-4 border-t">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold">{t("profitability.totalCostsLabel")}</span>
+                        <span className="text-xl font-bold text-amber-600">
+                          {Math.round(profitability.totalCosts).toLocaleString("fr-FR")} €
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Résumé rentabilité */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Euro className="h-5 w-5 text-primary" />
+                    {t("profitability.summary")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
+                      <span className="text-muted-foreground">{t("profitability.revenue")}</span>
+                      <span className="text-2xl font-bold text-foreground">
+                        {Math.round(profitability.totalRevenue).toLocaleString("fr-FR")} €
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">- {t("profitability.fixedCosts")}</span>
+                        <span className="text-foreground">{Math.round(profitability.totalFixedCosts).toLocaleString("fr-FR")} €</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">- {t("profitability.variableCosts")}</span>
+                        <span className="text-foreground">{Math.round(profitability.totalVariableCosts).toLocaleString("fr-FR")} €</span>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t pt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold">{t("profitability.netResult")}</span>
+                        <span className={`text-3xl font-bold ${profitability.netProfit >= 0 ? "text-green-600" : "text-red-600"}`}>
+                          {profitability.netProfit >= 0 ? "+" : ""}{Math.round(profitability.netProfit).toLocaleString("fr-FR")} €
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {t("profitability.marginLabel")}: <span className="font-medium">{profitability.profitMargin.toFixed(1)}%</span>
+                      </p>
+                    </div>
+                    
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="text-sm font-medium text-foreground">💡 {t("profitability.perTransaction")}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {t("profitability.avgRevenue")}: {profitability.revenuePerTransaction.toFixed(2)} € | 
+                        {t("profitability.avgCost")}: {profitability.costPerTransaction.toFixed(2)} € | 
+                        {t("profitability.avgProfit")}: {profitability.profitPerTransaction.toFixed(2)} €
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        )}
 
         {/* Onglet Pertes */}
         <TabsContent value="losses" className="space-y-6">

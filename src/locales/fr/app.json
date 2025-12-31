@@ -1185,5 +1185,32 @@
     "errorMessage": "Erreur lors de l'enregistrement",
     "bannerMessage": "Définissez vos objectifs pour suivre vos performances.",
     "bannerCta": "Définir mes objectifs"
+  },
+  "profitability": {
+    "revenue": "Chiffre d'affaires",
+    "totalCosts": "Charges totales",
+    "netProfit": "Bénéfice net",
+    "margin": "Marge",
+    "profitMargin": "Marge bénéficiaire",
+    "periodSelected": "Période sélectionnée",
+    "fixed": "fixe",
+    "variable": "variable",
+    "afterCosts": "Après charges",
+    "tabProfitability": "Rentabilité",
+    "tabLosses": "Pertes",
+    "tabEfficiency": "Efficacité",
+    "tabMachines": "Machines",
+    "tabTrends": "Tendances",
+    "costsBreakdown": "Répartition des charges",
+    "totalCostsLabel": "Total des charges",
+    "summary": "Résumé rentabilité",
+    "fixedCosts": "Charges fixes",
+    "variableCosts": "Charges variables",
+    "netResult": "Résultat net",
+    "marginLabel": "Marge nette",
+    "perTransaction": "Par transaction",
+    "avgRevenue": "CA moy.",
+    "avgCost": "Coût moy.",
+    "avgProfit": "Profit moy."
   }
 }
