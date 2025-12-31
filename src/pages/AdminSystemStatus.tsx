@@ -5,10 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
-import { RefreshCw, AlertTriangle, AlertCircle, Info, XCircle, CheckCircle2 } from 'lucide-react';
+import { 
+  RefreshCw, AlertTriangle, AlertCircle, Info, XCircle, CheckCircle2, 
+  PlayCircle, Database, ShieldAlert 
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { toast } from 'sonner';
 
 interface SystemEvent {
   id: number;
@@ -19,6 +23,26 @@ interface SystemEvent {
   code: string | null;
   message: string;
   meta: Record<string, unknown> | null;
+}
+
+interface DataQuality {
+  total_operations: number;
+  missing_site_id: number;
+  missing_operation_date: number;
+  suspicious_amounts_centimes: number;
+  esp_topup_missing_sales_candidates: number;
+}
+
+interface SmokeTestResult {
+  test_key: string;
+  ok: boolean;
+  details: string;
+}
+
+interface Site {
+  id: string;
+  name: string;
+  city: string | null;
 }
 
 const severityConfig = {
@@ -32,6 +56,15 @@ const sourceLabels: Record<string, string> = {
   'stripe-webhook': 'Stripe Webhook',
   'import': 'Import CSV',
   'cron': 'Analytics Cron',
+  'smoke-test': 'Smoke Test',
+};
+
+const testLabels: Record<string, string> = {
+  'T1_ops_exist': 'T1: Opérations existent',
+  'T2_calendar_kpis': 'T2: KPIs Calendrier',
+  'T3_dashboard_kpis': 'T3: Dashboard KPIs',
+  'T4_monthly_revenue': 'T4: Revenus mensuels',
+  'T5_recommendations': 'T5: Recommandations',
 };
 
 export default function AdminSystemStatus() {
@@ -40,6 +73,16 @@ export default function AdminSystemStatus() {
   const [refreshing, setRefreshing] = useState(false);
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [severityFilter, setSeverityFilter] = useState<string>('all');
+
+  // Data quality state
+  const [dataQuality, setDataQuality] = useState<DataQuality | null>(null);
+  const [loadingQuality, setLoadingQuality] = useState(true);
+
+  // Smoke test state
+  const [sites, setSites] = useState<Site[]>([]);
+  const [selectedSiteId, setSelectedSiteId] = useState<string>('');
+  const [smokeTestResults, setSmokeTestResults] = useState<SmokeTestResult[]>([]);
+  const [runningSmokeTest, setRunningSmokeTest] = useState(false);
 
   const fetchEvents = async () => {
     try {
@@ -68,13 +111,97 @@ export default function AdminSystemStatus() {
     }
   };
 
+  const fetchDataQuality = async () => {
+    try {
+      setLoadingQuality(true);
+      const { data, error } = await supabase.rpc('rpc_data_quality_check');
+      
+      if (error) throw error;
+      if (data && data.length > 0) {
+        setDataQuality(data[0]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch data quality:', err);
+    } finally {
+      setLoadingQuality(false);
+    }
+  };
+
+  const fetchSites = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('sites')
+        .select('id, name, city')
+        .eq('is_demo', false)
+        .order('name')
+        .limit(50);
+
+      if (error) throw error;
+      setSites(data || []);
+      if (data && data.length > 0) {
+        setSelectedSiteId(data[0].id);
+      }
+    } catch (err) {
+      console.error('Failed to fetch sites:', err);
+    }
+  };
+
+  const runSmokeTest = async () => {
+    if (!selectedSiteId) {
+      toast.error('Sélectionnez un site');
+      return;
+    }
+
+    setRunningSmokeTest(true);
+    setSmokeTestResults([]);
+
+    try {
+      const { data, error } = await supabase.rpc('rpc_run_smoke_tests', {
+        p_site_id: selectedSiteId
+      });
+
+      if (error) throw error;
+
+      const results = data as SmokeTestResult[];
+      setSmokeTestResults(results);
+
+      // Check for failures
+      const failures = results.filter(r => !r.ok);
+      if (failures.length > 0) {
+        // Log system event for failures
+        await supabase.rpc('rpc_log_system_event', {
+          p_env: 'prod',
+          p_source: 'smoke-test',
+          p_severity: 'error',
+          p_code: 'SMOKE_FAIL',
+          p_message: `Smoke test failed: ${failures.length} test(s) en échec`,
+          p_meta: { site_id: selectedSiteId, failures: failures.map(f => f.test_key) }
+        });
+        toast.error(`${failures.length} test(s) en échec`);
+      } else {
+        toast.success('Tous les tests sont passés');
+      }
+    } catch (err) {
+      console.error('Smoke test failed:', err);
+      toast.error('Erreur lors du smoke test');
+    } finally {
+      setRunningSmokeTest(false);
+    }
+  };
+
   useEffect(() => {
     fetchEvents();
   }, [sourceFilter, severityFilter]);
 
+  useEffect(() => {
+    fetchDataQuality();
+    fetchSites();
+  }, []);
+
   const handleRefresh = () => {
     setRefreshing(true);
     fetchEvents();
+    fetchDataQuality();
   };
 
   // Count by severity for summary
@@ -85,6 +212,12 @@ export default function AdminSystemStatus() {
 
   const hasRecentCritical = events.some(
     e => e.severity === 'critical' && new Date(e.created_at) > new Date(Date.now() - 60 * 60 * 1000)
+  );
+
+  const hasDataQualityIssues = dataQuality && (
+    dataQuality.missing_site_id > 0 ||
+    dataQuality.missing_operation_date > 0 ||
+    dataQuality.suspicious_amounts_centimes > 0
   );
 
   return (
@@ -159,6 +292,135 @@ export default function AdminSystemStatus() {
           </Card>
         </div>
 
+        {/* Data Quality Section */}
+        <Card className={hasDataQualityIssues ? 'border-orange-500' : ''}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Database className="h-5 w-5" />
+              Qualité des Données
+            </CardTitle>
+            <CardDescription>
+              Vérification de la cohérence des opérations (Data Contract)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loadingQuality ? (
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+              </div>
+            ) : dataQuality ? (
+              <div className="grid gap-4 md:grid-cols-5">
+                <div className="p-4 rounded-lg bg-muted/50 text-center">
+                  <div className="text-2xl font-bold">{dataQuality.total_operations.toLocaleString()}</div>
+                  <p className="text-xs text-muted-foreground">Total opérations</p>
+                </div>
+                <div className={`p-4 rounded-lg text-center ${dataQuality.missing_site_id > 0 ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
+                  <div className={`text-2xl font-bold ${dataQuality.missing_site_id > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                    {dataQuality.missing_site_id}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Site ID manquant</p>
+                </div>
+                <div className={`p-4 rounded-lg text-center ${dataQuality.missing_operation_date > 0 ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
+                  <div className={`text-2xl font-bold ${dataQuality.missing_operation_date > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                    {dataQuality.missing_operation_date}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Date manquante</p>
+                </div>
+                <div className={`p-4 rounded-lg text-center ${dataQuality.suspicious_amounts_centimes > 0 ? 'bg-orange-500/10' : 'bg-green-500/10'}`}>
+                  <div className={`text-2xl font-bold ${dataQuality.suspicious_amounts_centimes > 0 ? 'text-orange-500' : 'text-green-500'}`}>
+                    {dataQuality.suspicious_amounts_centimes}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Montants suspects (centimes?)</p>
+                </div>
+                <div className={`p-4 rounded-lg text-center ${dataQuality.esp_topup_missing_sales_candidates > 0 ? 'bg-yellow-500/10' : 'bg-green-500/10'}`}>
+                  <div className={`text-2xl font-bold ${dataQuality.esp_topup_missing_sales_candidates > 0 ? 'text-yellow-500' : 'text-green-500'}`}>
+                    {dataQuality.esp_topup_missing_sales_candidates}
+                  </div>
+                  <p className="text-xs text-muted-foreground">ESP topup sans vente</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">Données non disponibles</p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Smoke Test Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldAlert className="h-5 w-5" />
+              Smoke Test (Tests Anti-Régression)
+            </CardTitle>
+            <CardDescription>
+              Exécuter les 5 tests de cohérence sur un site
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Select value={selectedSiteId} onValueChange={setSelectedSiteId}>
+                <SelectTrigger className="w-[300px]">
+                  <SelectValue placeholder="Sélectionner un site" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sites.map((site) => (
+                    <SelectItem key={site.id} value={site.id}>
+                      {site.name} {site.city && `(${site.city})`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button 
+                onClick={runSmokeTest} 
+                disabled={runningSmokeTest || !selectedSiteId}
+              >
+                <PlayCircle className={`h-4 w-4 mr-2 ${runningSmokeTest ? 'animate-spin' : ''}`} />
+                {runningSmokeTest ? 'Exécution...' : 'Lancer Smoke Test'}
+              </Button>
+            </div>
+
+            {smokeTestResults.length > 0 && (
+              <div className="mt-4 border rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-muted">
+                    <tr>
+                      <th className="px-4 py-2 text-left font-medium">Test</th>
+                      <th className="px-4 py-2 text-left font-medium">Statut</th>
+                      <th className="px-4 py-2 text-left font-medium">Détails</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {smokeTestResults.map((result) => (
+                      <tr key={result.test_key} className="border-t">
+                        <td className="px-4 py-3 font-medium">
+                          {testLabels[result.test_key] || result.test_key}
+                        </td>
+                        <td className="px-4 py-3">
+                          {result.ok ? (
+                            <Badge variant="default" className="bg-green-500">
+                              <CheckCircle2 className="h-3 w-3 mr-1" />
+                              OK
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive">
+                              <XCircle className="h-3 w-3 mr-1" />
+                              KO
+                            </Badge>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-muted-foreground font-mono">
+                          {result.details}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Filters */}
         <div className="flex gap-4">
           <Select value={sourceFilter} onValueChange={setSourceFilter}>
@@ -170,6 +432,7 @@ export default function AdminSystemStatus() {
               <SelectItem value="stripe-webhook">Stripe Webhook</SelectItem>
               <SelectItem value="import">Import CSV</SelectItem>
               <SelectItem value="cron">Analytics Cron</SelectItem>
+              <SelectItem value="smoke-test">Smoke Test</SelectItem>
             </SelectContent>
           </Select>
 
