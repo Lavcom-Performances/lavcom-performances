@@ -52,6 +52,7 @@ import { usePermissionAuditLogs, PermissionAuditLog } from "@/hooks/usePermissio
 import { PermissionsDashboard } from "@/components/admin/PermissionsDashboard";
 import { AuditLogsFilters } from "@/components/admin/AuditLogsFilters";
 import { WebhookSettings } from "@/components/admin/WebhookSettings";
+import { PermissionTemplates, PermissionTemplateMatch, PERMISSION_TEMPLATES } from "@/components/admin/PermissionTemplates";
 import { supabase } from "@/integrations/supabase/client";
 
 const ROLE_LABELS: Record<string, { label: string; color: string; description: string }> = {
@@ -240,6 +241,24 @@ export default function RolesManagement() {
     }
   };
 
+  const handleApplyTemplate = async (userId: string, permissions: Partial<Record<PermissionKey, boolean>>) => {
+    const member = teamMembers.find(m => m.user_id === userId);
+    if (!member) return;
+
+    const templateName = PERMISSION_TEMPLATES.find(t => 
+      Object.entries(t.permissions).every(([key, value]) => permissions[key as PermissionKey] === value)
+    )?.name || "Template personnalisé";
+
+    try {
+      await setUserPermissions(userId, permissions);
+      await logPermissionChange(userId, "template_applied", null, { template: templateName, ...permissions });
+      await refreshPermissions();
+      toast.success(`Template "${templateName}" appliqué avec succès`);
+    } catch (error) {
+      toast.error("Erreur lors de l'application du template");
+    }
+  };
+
   const getMemberPermissionValue = (member: TeamMember, permKey: PermissionKey): boolean => {
     const perms = getUserPermissions(member.user_id);
     return perms?.[permKey] ?? false;
@@ -386,7 +405,13 @@ export default function RolesManagement() {
 
                         {/* Quick Actions */}
                         {member.role !== "super_admin" && (
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <PermissionTemplates
+                              userId={member.user_id}
+                              userName={`${member.first_name} ${member.last_name}`}
+                              onApplyTemplate={handleApplyTemplate}
+                            />
+                            <div className="h-6 w-px bg-border" />
                             <Button
                               variant="outline"
                               size="sm"
@@ -405,6 +430,9 @@ export default function RolesManagement() {
                               <X className="h-4 w-4" />
                               Tout révoquer
                             </Button>
+                            {memberPerms && (
+                              <PermissionTemplateMatch currentPermissions={memberPerms} />
+                            )}
                           </div>
                         )}
 
