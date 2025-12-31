@@ -55,6 +55,141 @@ const formatChanges = (oldValues: Record<string, unknown> | null, newValues: Rec
   return changes.length > 0 ? `<ul style="margin: 10px 0; padding-left: 20px;">${changes.join('')}</ul>` : "";
 };
 
+const formatChangesForSlack = (oldValues: Record<string, unknown> | null, newValues: Record<string, unknown> | null): string => {
+  if (!oldValues && !newValues) return "";
+  
+  const changes: string[] = [];
+  
+  if (oldValues && newValues) {
+    Object.keys(newValues).forEach(key => {
+      const oldVal = oldValues[key];
+      const newVal = newValues[key];
+      if (oldVal !== newVal) {
+        const label = key.replace(/^can_/, '').replace(/_/g, ' ');
+        changes.push(`• *${label}*: ${oldVal ? '✅' : '❌'} → ${newVal ? '✅' : '❌'}`);
+      }
+    });
+  } else if (newValues) {
+    Object.entries(newValues).forEach(([key, value]) => {
+      const label = key.replace(/^can_/, '').replace(/_/g, ' ');
+      changes.push(`• *${label}*: ${value ? '✅ Accordé' : '❌ Révoqué'}`);
+    });
+  }
+  
+  return changes.join('\n');
+};
+
+const sendSlackAlert = async (
+  action: string,
+  performerEmail: string,
+  targetEmail: string,
+  oldValues: Record<string, unknown> | null,
+  newValues: Record<string, unknown> | null
+): Promise<boolean> => {
+  const slackWebhookUrl = Deno.env.get("SLACK_WEBHOOK_URL");
+  
+  if (!slackWebhookUrl) {
+    logStep("Slack webhook URL not configured, skipping Slack notification");
+    return false;
+  }
+
+  const actionLabel = ACTION_LABELS[action] || action;
+  const changesText = formatChangesForSlack(oldValues, newValues);
+  const timestamp = new Date().toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' });
+
+  const slackMessage = {
+    blocks: [
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: "🔐 Alerte Sécurité - Modification de permissions",
+          emoji: true
+        }
+      },
+      {
+        type: "section",
+        fields: [
+          {
+            type: "mrkdwn",
+            text: `*Action:*\n${actionLabel}`
+          },
+          {
+            type: "mrkdwn",
+            text: `*Date:*\n${timestamp}`
+          },
+          {
+            type: "mrkdwn",
+            text: `*Effectué par:*\n${performerEmail}`
+          },
+          {
+            type: "mrkdwn",
+            text: `*Utilisateur cible:*\n${targetEmail}`
+          }
+        ]
+      },
+      ...(changesText ? [
+        {
+          type: "divider"
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Modifications:*\n${changesText}`
+          }
+        }
+      ] : []),
+      {
+        type: "divider"
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "📋 Voir les logs d'audit",
+              emoji: true
+            },
+            url: "https://lavcom.fr/roles-management",
+            style: "primary"
+          }
+        ]
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: "⚠️ Si vous n'êtes pas à l'origine de cette modification, veuillez vérifier immédiatement."
+          }
+        ]
+      }
+    ]
+  };
+
+  try {
+    const response = await fetch(slackWebhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(slackMessage),
+    });
+
+    if (!response.ok) {
+      logStep("Slack webhook failed", { status: response.status });
+      return false;
+    }
+
+    logStep("Slack notification sent successfully");
+    return true;
+  } catch (error) {
+    logStep("Slack notification error", { error: String(error) });
+    return false;
+  }
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -75,6 +210,9 @@ serve(async (req) => {
 
     logStep("Processing alert", { organizationId, action, performerEmail, targetEmail });
 
+    // Send Slack notification (fire and forget, don't block on it)
+    const slackPromise = sendSlackAlert(action, performerEmail, targetEmail, oldValues, newValues);
+
     // Fetch super admin emails from the organization
     const { data: superAdminRoles, error: rolesError } = await supabase
       .from('user_roles')
@@ -89,7 +227,8 @@ serve(async (req) => {
 
     if (!superAdminRoles || superAdminRoles.length === 0) {
       logStep("No super admins found");
-      return new Response(JSON.stringify({ success: true, message: "No super admins to notify" }), {
+      const slackSent = await slackPromise;
+      return new Response(JSON.stringify({ success: true, message: "No super admins to notify", slackSent }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
@@ -112,7 +251,8 @@ serve(async (req) => {
 
     if (recipientEmails.length === 0) {
       logStep("No recipient emails found");
-      return new Response(JSON.stringify({ success: true, message: "No valid recipient emails" }), {
+      const slackSent = await slackPromise;
+      return new Response(JSON.stringify({ success: true, message: "No valid recipient emails", slackSent }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
@@ -179,13 +319,17 @@ serve(async (req) => {
       })
     );
 
-    const results = await Promise.allSettled(emailPromises);
-    const successCount = results.filter(r => r.status === 'fulfilled').length;
-    const failCount = results.filter(r => r.status === 'rejected').length;
+    const [emailResults, slackSent] = await Promise.all([
+      Promise.allSettled(emailPromises),
+      slackPromise
+    ]);
 
-    logStep("Emails sent", { successCount, failCount });
+    const successCount = emailResults.filter(r => r.status === 'fulfilled').length;
+    const failCount = emailResults.filter(r => r.status === 'rejected').length;
 
-    return new Response(JSON.stringify({ success: true, successCount, failCount }), {
+    logStep("Notifications sent", { emailSuccessCount: successCount, emailFailCount: failCount, slackSent });
+
+    return new Response(JSON.stringify({ success: true, successCount, failCount, slackSent }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
