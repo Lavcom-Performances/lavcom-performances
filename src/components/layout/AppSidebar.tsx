@@ -116,6 +116,7 @@ export function AppSidebar({
   const adminNavigation = [
     { name: t('app:nav.users'), href: "/admin/users", icon: Users, permission: "MANAGE_USERS" },
     { name: "Demandes experts", href: "/admin/expert-requests", icon: Handshake, permission: "MANAGE_USERS" },
+    { name: "Gestion des rôles", href: "/roles-management", icon: ShieldCheck, permission: "MANAGE_USERS" },
     { name: t('app:nav.settings'), href: "/settings", icon: Settings, permission: "READ_VIEWS" },
     { name: t('app:nav.security'), href: "/settings?tab=security", icon: Shield, permission: "MANAGE_OPTIONS" },
   ];

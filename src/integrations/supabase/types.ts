@@ -584,6 +584,45 @@ export type Database = {
         }
         Relationships: []
       }
+      permission_audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_hash: string | null
+          new_values: Json | null
+          old_values: Json | null
+          organization_id: string
+          performed_by: string
+          target_user_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          organization_id: string
+          performed_by: string
+          target_user_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          organization_id?: string
+          performed_by?: string
+          target_user_id?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           access_expires_at: string | null

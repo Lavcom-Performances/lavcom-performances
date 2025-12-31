@@ -66,6 +66,7 @@ import RecommendationsPage from "./pages/RecommendationsPage";
 import PredictiveMaintenance from "./pages/PredictiveMaintenance";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
 import SettingsPage from "./pages/SettingsPage";
+import RolesManagement from "./pages/RolesManagement";
 
 const queryClient = new QueryClient();
 
@@ -123,6 +124,7 @@ const App = () => (
             <Route path="/billing-history" element={<BillingHistory />} />
             <Route path="/laundromat-settings" element={<LaundromatSettings />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/roles-management" element={<RolesManagement />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
             <Route path="/admin" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
