@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, UserPlus, Mail, Trash2, Loader2, Crown, Shield, Eye, Edit, ChevronDown } from "lucide-react";
+import { Users, UserPlus, Mail, Trash2, Loader2, Crown, Shield, Eye, Edit, ChevronDown, Check, X, Info } from "lucide-react";
 import { useOrganization, UserRole } from "@/hooks/useOrganization";
 import { InviteUserDialog } from "@/components/admin/InviteUserDialog";
 import { CreateOrganizationDialog } from "@/components/admin/CreateOrganizationDialog";
@@ -12,6 +12,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { toast } from "sonner";
 
 type RoleType = UserRole['role'];
@@ -23,6 +28,63 @@ const ROLE_OPTIONS: { value: RoleType; label: string; description: string; icon:
   { value: 'user', label: 'Utilisateur', description: 'Peut voir et exporter', icon: <Eye className="h-4 w-4 text-primary" /> },
   { value: 'guest', label: 'Lecteur', description: 'Lecture seule', icon: <Eye className="h-4 w-4 text-muted-foreground" /> },
 ];
+
+// Permissions matrix
+const PERMISSIONS = [
+  { key: 'view_sites', label: 'Voir les laveries', category: 'Laveries' },
+  { key: 'edit_sites', label: 'Modifier les laveries', category: 'Laveries' },
+  { key: 'create_sites', label: 'Créer des laveries', category: 'Laveries' },
+  { key: 'delete_sites', label: 'Supprimer des laveries', category: 'Laveries' },
+  { key: 'view_operations', label: 'Voir les opérations', category: 'Données' },
+  { key: 'import_data', label: 'Importer des données', category: 'Données' },
+  { key: 'export_data', label: 'Exporter des données', category: 'Données' },
+  { key: 'delete_operations', label: 'Supprimer des opérations', category: 'Données' },
+  { key: 'view_reports', label: 'Voir les rapports', category: 'Rapports' },
+  { key: 'generate_pdf', label: 'Générer des PDF', category: 'Rapports' },
+  { key: 'view_team', label: 'Voir l\'équipe', category: 'Équipe' },
+  { key: 'invite_members', label: 'Inviter des membres', category: 'Équipe' },
+  { key: 'manage_roles', label: 'Gérer les rôles', category: 'Équipe' },
+  { key: 'remove_members', label: 'Retirer des membres', category: 'Équipe' },
+  { key: 'view_billing', label: 'Voir la facturation', category: 'Facturation' },
+  { key: 'manage_billing', label: 'Gérer l\'abonnement', category: 'Facturation' },
+] as const;
+
+type PermissionKey = typeof PERMISSIONS[number]['key'];
+
+const ROLE_PERMISSIONS: Record<RoleType, PermissionKey[]> = {
+  super_admin: [
+    'view_sites', 'edit_sites', 'create_sites', 'delete_sites',
+    'view_operations', 'import_data', 'export_data', 'delete_operations',
+    'view_reports', 'generate_pdf',
+    'view_team', 'invite_members', 'manage_roles', 'remove_members',
+    'view_billing', 'manage_billing'
+  ],
+  admin: [
+    'view_sites', 'edit_sites', 'create_sites', 'delete_sites',
+    'view_operations', 'import_data', 'export_data', 'delete_operations',
+    'view_reports', 'generate_pdf',
+    'view_team', 'invite_members', 'manage_roles', 'remove_members',
+    'view_billing', 'manage_billing'
+  ],
+  checker: [
+    'view_sites', 'edit_sites',
+    'view_operations', 'import_data', 'export_data',
+    'view_reports', 'generate_pdf',
+    'view_team'
+  ],
+  user: [
+    'view_sites',
+    'view_operations', 'export_data',
+    'view_reports', 'generate_pdf',
+    'view_team'
+  ],
+  guest: [
+    'view_sites',
+    'view_operations',
+    'view_reports',
+    'view_team'
+  ]
+};
 
 export default function TeamContent() {
   const { 
@@ -177,27 +239,88 @@ export default function TeamContent() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      {/* Roles Legend */}
+      {/* Permissions Matrix */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
-            Rôles disponibles
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {ROLE_OPTIONS.map((role) => (
-              <div key={role.value} className="flex items-start gap-2 p-2 rounded-lg border bg-muted/30">
-                <div className="mt-0.5">{role.icon}</div>
-                <div>
-                  <p className="font-medium text-sm">{role.label}</p>
-                  <p className="text-xs text-muted-foreground">{role.description}</p>
+        <Collapsible>
+          <CardHeader className="pb-3">
+            <CollapsibleTrigger className="flex items-center justify-between w-full group">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary" />
+                Permissions par rôle
+              </CardTitle>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Info className="h-4 w-4" />
+                <span className="text-sm">Cliquez pour voir les détails</span>
+                <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+              </div>
+            </CollapsibleTrigger>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent className="pt-0">
+              {/* Role headers */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-3 pr-4 font-medium text-muted-foreground">Permission</th>
+                      {ROLE_OPTIONS.map((role) => (
+                        <th key={role.value} className="text-center px-2 py-3 min-w-[80px]">
+                          <div className="flex flex-col items-center gap-1">
+                            {role.icon}
+                            <span className="text-xs font-medium">{role.label}</span>
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      const categories = [...new Set(PERMISSIONS.map(p => p.category))];
+                      return categories.map((category) => (
+                        <>
+                          <tr key={`cat-${category}`} className="bg-muted/50">
+                            <td colSpan={ROLE_OPTIONS.length + 1} className="py-2 px-2 font-medium text-xs uppercase tracking-wide text-muted-foreground">
+                              {category}
+                            </td>
+                          </tr>
+                          {PERMISSIONS.filter(p => p.category === category).map((permission) => (
+                            <tr key={permission.key} className="border-b border-border/50 hover:bg-muted/30">
+                              <td className="py-2 pr-4 text-sm">{permission.label}</td>
+                              {ROLE_OPTIONS.map((role) => {
+                                const hasPermission = ROLE_PERMISSIONS[role.value].includes(permission.key);
+                                return (
+                                  <td key={`${permission.key}-${role.value}`} className="text-center py-2">
+                                    {hasPermission ? (
+                                      <Check className="h-4 w-4 text-emerald-500 mx-auto" />
+                                    ) : (
+                                      <X className="h-4 w-4 text-muted-foreground/40 mx-auto" />
+                                    )}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                        </>
+                      ));
+                    })()}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Quick legend */}
+              <div className="flex items-center gap-4 mt-4 pt-4 border-t text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Check className="h-3 w-3 text-emerald-500" />
+                  <span>Autorisé</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <X className="h-3 w-3 text-muted-foreground/40" />
+                  <span>Non autorisé</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
       </Card>
 
       {/* Team Members */}
