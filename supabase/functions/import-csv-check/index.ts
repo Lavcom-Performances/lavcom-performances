@@ -11,7 +11,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Helper to log system events
+// Helper to log system events and send alerts for critical ones
 async function logSystemEvent(
   supabase: SupabaseClient,
   severity: 'info' | 'warn' | 'error' | 'critical',
@@ -30,6 +30,31 @@ async function logSystemEvent(
     });
   } catch (err) {
     console.error('[import-csv-check] Failed to log system event:', err);
+  }
+
+  // Send email alert for critical and error events
+  if (severity === 'critical' || severity === 'error') {
+    try {
+      await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/send-system-alert`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`,
+        },
+        body: JSON.stringify({
+          id: 0,
+          created_at: new Date().toISOString(),
+          env: 'prod',
+          source: 'import',
+          severity,
+          code,
+          message,
+          meta: meta || {}
+        })
+      });
+    } catch (alertError) {
+      console.error('[import-csv-check] Failed to send alert:', alertError);
+    }
   }
 }
 

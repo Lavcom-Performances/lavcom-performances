@@ -77,3 +77,6 @@ verify_jwt = false
 
 [functions.check-webhook-status]
 verify_jwt = false
+
+[functions.send-system-alert]
+verify_jwt = false
