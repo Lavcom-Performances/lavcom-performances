@@ -822,7 +822,7 @@ export default function Operations() {
       )}
 
       {/* Table */}
-      <div className="card-lavcom overflow-hidden">
+      <div className="card-lavcom overflow-hidden" data-operations-table>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>

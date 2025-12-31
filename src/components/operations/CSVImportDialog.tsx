@@ -18,6 +18,7 @@ import { useImportRateLimit } from "@/hooks/useImportRateLimit";
 
 import { SiteSelector } from "./csv-import/SiteSelector";
 import { CSVImportResult } from "./csv-import/CSVImportResult";
+import { ImportRulesCard } from "./csv-import/ImportRulesCard";
 import { MultiCsvLinesPreview } from "./multi-csv/MultiCsvLinesPreview";
 import { MultiCsvSummaryCard } from "./multi-csv/MultiCsvSummaryCard";
 import { ImportResult } from "./csv-import/types";
@@ -419,6 +420,9 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
           {/* Step: Upload */}
           {currentStep === "upload" && (
             <>
+              {/* Import rules info */}
+              <ImportRulesCard />
+              
               <SiteSelector
                 sites={sites}
                 selectedSiteId={selectedSiteId}
@@ -609,7 +613,22 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
 
           {/* Step: Result */}
           {currentStep === "result" && importResult && (
-            <CSVImportResult result={importResult} onClose={handleClose} />
+            <CSVImportResult 
+              result={importResult} 
+              onClose={handleClose}
+              onRetry={() => {
+                setImportResult(null);
+                setCurrentStep("upload");
+              }}
+              onScrollToTable={() => {
+                handleClose();
+                // Scroll to table after dialog closes
+                setTimeout(() => {
+                  const tableEl = document.querySelector('[data-operations-table]');
+                  tableEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+              }}
+            />
           )}
         </div>
       </DialogContent>
