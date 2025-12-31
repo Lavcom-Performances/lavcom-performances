@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useRefreshState } from "@/hooks/useRefreshState";
 
 /**
  * Hook to manage global analytics refresh after data changes (e.g., CSV import)
@@ -9,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
  */
 export function useAnalyticsRefresh() {
   const queryClient = useQueryClient();
+  const { setRefreshing } = useRefreshState();
 
   /**
    * Invalidate all analytics-related queries for a specific site
@@ -114,6 +116,9 @@ export function useAnalyticsRefresh() {
    */
   const refreshWithNotification = useCallback(
     async (siteId: string, importedCount: number) => {
+      // Mark site as refreshing
+      setRefreshing(siteId, true);
+      
       // Show "updating" toast
       const { dismiss } = toast({
         title: "Mise à jour des analytics...",
@@ -141,9 +146,14 @@ export function useAnalyticsRefresh() {
           variant: "destructive",
         });
         return { success: false, error: err };
+      } finally {
+        // Clear refreshing state after a short delay to allow queries to settle
+        setTimeout(() => {
+          setRefreshing(siteId, false);
+        }, 1000);
       }
     },
-    [refreshAnalytics]
+    [refreshAnalytics, setRefreshing]
   );
 
   return {
