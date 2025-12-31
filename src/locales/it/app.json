@@ -882,6 +882,17 @@
       "settingsDescription": "Imposta la soglia sotto la quale vuoi essere avvisato",
       "thresholdLabel": "Soglia minima del margine",
       "currentMargin": "Margine attuale"
-    }
+    },
+    "multiSiteComparison": "Confronto multi-sito",
+    "bestPerformer": "Miglior performance",
+    "needsAttention": "Richiede attenzione",
+    "site": "Sito",
+    "forecast": "Previsioni di redditività",
+    "next3Months": "Prossimi 3 mesi",
+    "expectedTrend": "Tendenza attesa",
+    "avgForecastProfit": "Profitto prev. medio",
+    "forecastLabel": "Previsione",
+    "insufficientDataForForecast": "Dati storici insufficienti per generare previsioni affidabili. Importa almeno 6 mesi di dati.",
+    "forecastDisclaimer": "Queste previsioni si basano su tendenze storiche e possono variare in base alle condizioni reali."
   }
 }

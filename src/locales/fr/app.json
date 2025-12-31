@@ -1233,6 +1233,17 @@
       "settingsDescription": "Configurez le seuil en dessous duquel vous souhaitez être alerté",
       "thresholdLabel": "Seuil de marge minimum",
       "currentMargin": "Marge actuelle"
-    }
+    },
+    "multiSiteComparison": "Comparatif multi-sites",
+    "bestPerformer": "Meilleure performance",
+    "needsAttention": "Nécessite attention",
+    "site": "Site",
+    "forecast": "Prévisions de rentabilité",
+    "next3Months": "3 prochains mois",
+    "expectedTrend": "Tendance attendue",
+    "avgForecastProfit": "Bénéfice mensuel prévu",
+    "forecastLabel": "Prévision",
+    "insufficientDataForForecast": "Données historiques insuffisantes pour générer des prévisions fiables. Importez au moins 6 mois de données.",
+    "forecastDisclaimer": "Ces prévisions sont basées sur les tendances historiques et peuvent varier en fonction des conditions réelles."
   }
 }
