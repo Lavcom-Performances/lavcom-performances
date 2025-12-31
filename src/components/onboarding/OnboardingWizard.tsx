@@ -32,18 +32,20 @@ interface OnboardingWizardProps {
   onSkip: () => void;
 }
 
-const STEPS = [
-  { id: "welcome", icon: Sparkles, label: "Bienvenue" },
-  { id: "laundry", icon: Building2, label: "Laverie" },
-  { id: "import", icon: FileSpreadsheet, label: "Import" },
-  { id: "dashboard", icon: BarChart3, label: "Dashboard" },
-];
+const STEP_IDS = ["welcome", "laundry", "import", "dashboard"] as const;
+const STEP_ICONS = [Sparkles, Building2, FileSpreadsheet, BarChart3];
 
 export function OnboardingWizard({ open, onComplete, onSkip }: OnboardingWizardProps) {
   const { t } = useTranslation(['app']);
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+
+  const STEPS = STEP_IDS.map((id, index) => ({
+    id,
+    icon: STEP_ICONS[index],
+    label: t(`app:onboarding.steps.${id}`)
+  }));
 
   const progress = ((currentStep + 1) / STEPS.length) * 100;
 

@@ -1,5 +1,6 @@
 import { BarChart3, PieChart, Calendar, TrendingUp, Zap, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface OnboardingStepDashboardProps {
   onComplete: () => void;
@@ -7,26 +8,28 @@ interface OnboardingStepDashboardProps {
 }
 
 export function OnboardingStepDashboard({ onComplete, onNavigate }: OnboardingStepDashboardProps) {
+  const { t } = useTranslation("app");
+
   const dashboardFeatures = [
     {
       icon: TrendingUp,
-      title: "Chiffre d'affaires",
-      description: "Vue d'ensemble de vos revenus journaliers, mensuels et annuels."
+      title: t("onboarding.dashboard.features.revenue.title"),
+      description: t("onboarding.dashboard.features.revenue.description")
     },
     {
       icon: PieChart,
-      title: "Répartition des paiements",
-      description: "Analyse par mode de paiement (CB, ESP, FI)."
+      title: t("onboarding.dashboard.features.payments.title"),
+      description: t("onboarding.dashboard.features.payments.description")
     },
     {
       icon: Calendar,
-      title: "Heatmap des ventes",
-      description: "Visualisez vos meilleurs créneaux horaires."
+      title: t("onboarding.dashboard.features.heatmap.title"),
+      description: t("onboarding.dashboard.features.heatmap.description")
     },
     {
       icon: Target,
-      title: "Objectifs",
-      description: "Définissez et suivez vos objectifs de performance."
+      title: t("onboarding.dashboard.features.goals.title"),
+      description: t("onboarding.dashboard.features.goals.description")
     }
   ];
 
@@ -37,10 +40,10 @@ export function OnboardingStepDashboard({ onComplete, onNavigate }: OnboardingSt
           <BarChart3 className="h-8 w-8 text-green-600" />
         </div>
         <h2 className="text-2xl font-bold font-display mb-2">
-          Découvrez votre dashboard
+          {t("onboarding.dashboard.title")}
         </h2>
         <p className="text-muted-foreground">
-          Tout est prêt ! Voici ce que vous pouvez faire avec Lavcom Performances.
+          {t("onboarding.dashboard.subtitle")}
         </p>
       </div>
 
@@ -68,9 +71,9 @@ export function OnboardingStepDashboard({ onComplete, onNavigate }: OnboardingSt
             <Zap className="h-5 w-5 text-primary" />
           </div>
           <div className="flex-1">
-            <p className="font-medium">Prêt à commencer ?</p>
+            <p className="font-medium">{t("onboarding.dashboard.readyToStart")}</p>
             <p className="text-sm text-muted-foreground">
-              Accédez à votre tableau de bord et explorez vos données.
+              {t("onboarding.dashboard.readyToStartDescription")}
             </p>
           </div>
         </div>
@@ -83,7 +86,7 @@ export function OnboardingStepDashboard({ onComplete, onNavigate }: OnboardingSt
           className="min-w-[250px]"
         >
           <BarChart3 className="mr-2 h-5 w-5" />
-          Aller au dashboard
+          {t("onboarding.dashboard.goToDashboard")}
         </Button>
       </div>
     </div>

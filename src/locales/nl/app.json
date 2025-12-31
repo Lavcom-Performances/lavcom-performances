@@ -795,5 +795,38 @@
     "allModes": "Alle methoden",
     "transactionsCb": "CB Transacties",
     "transactionsEsp": "ESP Transacties"
+  },
+  "onboarding": {
+    "dashboard": {
+      "title": "Ontdek je dashboard",
+      "subtitle": "Alles klaar! Dit is wat je kunt doen met Lavcom Performances.",
+      "readyToStart": "Klaar om te beginnen?",
+      "readyToStartDescription": "Ga naar je dashboard en verken je gegevens.",
+      "goToDashboard": "Ga naar dashboard",
+      "features": {
+        "revenue": {
+          "title": "Omzet",
+          "description": "Overzicht van je dagelijkse, maandelijkse en jaarlijkse inkomsten."
+        },
+        "payments": {
+          "title": "Betalingsverdeling",
+          "description": "Analyse per betaalmethode (CB, ESP, FI)."
+        },
+        "heatmap": {
+          "title": "Verkoop heatmap",
+          "description": "Visualiseer je beste tijdslots."
+        },
+        "goals": {
+          "title": "Doelen",
+          "description": "Stel je prestatiedoelen in en volg ze."
+        }
+      }
+    },
+    "steps": {
+      "welcome": "Welkom",
+      "laundry": "Wasserette",
+      "import": "Importeren",
+      "dashboard": "Dashboard"
+    }
   }
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,7 @@ export function ReportVariantDialog({
   onDownload,
   isLoading = false,
 }: ReportVariantDialogProps) {
+  const { t } = useTranslation("common");
   const [selectedVariant, setSelectedVariant] = useState<ReportVariant>("full");
 
   const handleDownload = () => {
@@ -93,11 +95,11 @@ export function ReportVariantDialog({
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
           >
-            Annuler
+            {t("cancel")}
           </Button>
           <Button onClick={handleDownload} disabled={isLoading} className="gap-2">
             <Download className="h-4 w-4" />
-            {isLoading ? "Génération..." : "Télécharger"}
+            {isLoading ? t("loading") : t("download", "Télécharger")}
           </Button>
         </DialogFooter>
       </DialogContent>
