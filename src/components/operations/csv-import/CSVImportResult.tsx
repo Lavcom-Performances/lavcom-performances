@@ -1,4 +1,5 @@
 import { CheckCircle2, AlertCircle, AlertTriangle, ArrowDown, RotateCcw, FileCheck, FileX, Files, Ban } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ImportResult } from "./types";
 import { Button } from "@/components/ui/button";
 
@@ -25,6 +26,7 @@ function getImportStatus(result: ImportResult): 'success' | 'partial' | 'failed'
 }
 
 export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: CSVImportResultProps) {
+  const { t } = useTranslation("app");
   const status = getImportStatus(result);
   const totalRead = getTotalRead(result);
   const hasErrors = result.errors.length > 0;
@@ -34,21 +36,21 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
   const statusConfig = {
     success: {
       icon: CheckCircle2,
-      title: "Import terminé",
+      title: t("csvImport.success"),
       bgColor: "bg-lavcom-green/10",
       textColor: "text-lavcom-green-dark dark:text-lavcom-green",
       iconColor: "text-lavcom-green",
     },
     partial: {
       icon: AlertTriangle,
-      title: "Import terminé (partiel)",
+      title: t("csvImport.partial"),
       bgColor: "bg-amber-50 dark:bg-amber-900/20",
       textColor: "text-amber-800 dark:text-amber-300",
       iconColor: "text-amber-600 dark:text-amber-400",
     },
     failed: {
       icon: AlertCircle,
-      title: "Import échoué",
+      title: t("csvImport.failed"),
       bgColor: "bg-destructive/10",
       textColor: "text-destructive",
       iconColor: "text-destructive",
@@ -72,7 +74,7 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
           <Files className="h-4 w-4 text-muted-foreground shrink-0" />
           <div>
             <p className="text-lg font-semibold">{totalRead}</p>
-            <p className="text-xs text-muted-foreground">Lignes lues</p>
+            <p className="text-xs text-muted-foreground">{t("csvImport.linesRead")}</p>
           </div>
         </div>
         
@@ -80,7 +82,7 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
           <FileCheck className="h-4 w-4 text-lavcom-green shrink-0" />
           <div>
             <p className="text-lg font-semibold text-lavcom-green-dark dark:text-lavcom-green">{result.imported}</p>
-            <p className="text-xs text-muted-foreground">Lignes importées</p>
+            <p className="text-xs text-muted-foreground">{t("csvImport.linesImported")}</p>
           </div>
         </div>
         
@@ -88,7 +90,7 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
           <Ban className="h-4 w-4 text-muted-foreground shrink-0" />
           <div>
             <p className="text-lg font-semibold">{result.duplicates}</p>
-            <p className="text-xs text-muted-foreground">Doublons ignorés</p>
+            <p className="text-xs text-muted-foreground">{t("csvImport.duplicatesIgnored")}</p>
           </div>
         </div>
         
@@ -100,7 +102,7 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
           <FileX className={`h-4 w-4 shrink-0 ${hasErrors ? "text-destructive" : "text-muted-foreground"}`} />
           <div>
             <p className={`text-lg font-semibold ${hasErrors ? "text-destructive" : ""}`}>{result.errors.length}</p>
-            <p className="text-xs text-muted-foreground">Erreurs</p>
+            <p className="text-xs text-muted-foreground">{t("csvImport.errors")}</p>
           </div>
         </div>
       </div>
@@ -108,7 +110,7 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
       {/* Duplicates message */}
       {hasDuplicates && (
         <p className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-3">
-          Doublons détectés : {result.duplicates} lignes ignorées (aucune donnée dupliquée importée).
+          {t("csvImport.duplicatesMessage", { count: result.duplicates })}
         </p>
       )}
 
@@ -116,7 +118,7 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
       {hasErrors && (
         <div className="bg-destructive/5 rounded-lg p-3 border border-destructive/20">
           <p className="text-sm font-medium text-destructive mb-2">
-            Certaines lignes n'ont pas pu être importées.
+            {t("csvImport.errorsMessage")}
           </p>
           {result.errors.length > 0 && (
             <ul className="text-xs text-muted-foreground space-y-1">
@@ -125,7 +127,7 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
               ))}
               {result.errors.length > 3 && (
                 <li className="text-muted-foreground/70 italic">
-                  ... et {result.errors.length - 3} autre{result.errors.length - 3 > 1 ? 's' : ''}
+                  {t("csvImport.andMore", { count: result.errors.length - 3, plural: result.errors.length - 3 > 1 ? 's' : '' })}
                 </li>
               )}
             </ul>
@@ -138,7 +140,7 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
         {status === 'failed' ? (
           <Button variant="outline" onClick={onRetry} className="gap-2">
             <RotateCcw className="h-4 w-4" />
-            Réessayer
+            {t("csvImport.retry")}
           </Button>
         ) : (
           <Button 
@@ -148,11 +150,11 @@ export function CSVImportResult({ result, onClose, onRetry, onScrollToTable }: C
             className="text-lavcom-green border-lavcom-green/30 hover:bg-lavcom-green/10 gap-1.5"
           >
             <ArrowDown className="h-4 w-4" />
-            Voir les nouvelles lignes
+            {t("csvImport.viewNewRows")}
           </Button>
         )}
         <Button onClick={onClose}>
-          Fermer
+          {t("csvImport.close")}
         </Button>
       </div>
     </div>

@@ -1274,5 +1274,50 @@
       "highFixedCosts": { "title": "Charges fixes élevées", "description": "Vos charges fixes dépassent 60% du CA. Renégociez vos contrats.", "impact": "Réduction des charges prioritaire" },
       "underperformingMachines": { "title": "Machines sous-performantes", "description": "{{count}} machine(s) génèrent moins de 50% du CA moyen.", "impact": "Maintenance ou remplacement à évaluer" }
     }
+  },
+  "csvImport": {
+    "success": "Import terminé",
+    "partial": "Import terminé (partiel)",
+    "failed": "Import échoué",
+    "linesRead": "Lignes lues",
+    "linesImported": "Lignes importées",
+    "duplicatesIgnored": "Doublons ignorés",
+    "errors": "Erreurs",
+    "duplicatesMessage": "Doublons détectés : {{count}} lignes ignorées (aucune donnée dupliquée importée).",
+    "errorsMessage": "Certaines lignes n'ont pas pu être importées.",
+    "andMore": "... et {{count}} autre{{plural}}",
+    "retry": "Réessayer",
+    "viewNewRows": "Voir les nouvelles lignes",
+    "close": "Fermer"
+  },
+  "emptyState": {
+    "title": "Importez vos données pour activer l'analyse",
+    "benefit1": "Vos indicateurs et graphiques se mettront à jour automatiquement.",
+    "benefit2": "Les recommandations seront basées sur vos opérations (CB/ESP).",
+    "primaryLabel": "Importer mon CSV",
+    "secondaryLabel": "Voir comment ça marche"
+  },
+  "help": {
+    "topics": {
+      "bug": "Problème / Bug",
+      "csvImport": "Import CSV",
+      "dataDashboard": "Données / Tableaux de bord",
+      "subscription": "Abonnement & Factures",
+      "account": "Compte & Connexion",
+      "other": "Autre"
+    },
+    "messagePlaceholder": "Décrivez votre demande...",
+    "successMessage": "Nous revenons vers vous au plus vite."
+  },
+  "charts": {
+    "noDataForPeriod": "Aucune donnée disponible pour la période sélectionnée",
+    "noData": "Aucune donnée disponible",
+    "noComparisonData": "Aucune donnée disponible pour la comparaison"
+  },
+  "errorState": {
+    "loadingError": "Impossible de charger les données",
+    "loadingErrorDescription": "Une erreur est survenue lors du chargement. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "systemStatus": "État du système"
   }
 }

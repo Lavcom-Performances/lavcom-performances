@@ -1274,5 +1274,50 @@
       "highFixedCosts": { "title": "High fixed costs", "description": "Your fixed costs exceed 60% of revenue. Renegotiate contracts.", "impact": "Cost reduction priority" },
       "underperformingMachines": { "title": "Underperforming machines", "description": "{{count}} machine(s) generate less than 50% of average revenue.", "impact": "Maintenance or replacement to evaluate" }
     }
+  },
+  "csvImport": {
+    "success": "Import completed",
+    "partial": "Import completed (partial)",
+    "failed": "Import failed",
+    "linesRead": "Lines read",
+    "linesImported": "Lines imported",
+    "duplicatesIgnored": "Duplicates ignored",
+    "errors": "Errors",
+    "duplicatesMessage": "Duplicates detected: {{count}} lines ignored (no duplicate data imported).",
+    "errorsMessage": "Some lines could not be imported.",
+    "andMore": "... and {{count}} more",
+    "retry": "Retry",
+    "viewNewRows": "View new rows",
+    "close": "Close"
+  },
+  "emptyState": {
+    "title": "Import your data to enable analysis",
+    "benefit1": "Your indicators and charts will update automatically.",
+    "benefit2": "Recommendations will be based on your operations (Card/Cash).",
+    "primaryLabel": "Import my CSV",
+    "secondaryLabel": "See how it works"
+  },
+  "help": {
+    "topics": {
+      "bug": "Issue / Bug",
+      "csvImport": "CSV Import",
+      "dataDashboard": "Data & Dashboards",
+      "subscription": "Subscription & Invoices",
+      "account": "Account & Login",
+      "other": "Other"
+    },
+    "messagePlaceholder": "Describe your request...",
+    "successMessage": "We'll get back to you as soon as possible."
+  },
+  "charts": {
+    "noDataForPeriod": "No data available for the selected period",
+    "noData": "No data available",
+    "noComparisonData": "No data available for comparison"
+  },
+  "errorState": {
+    "loadingError": "Unable to load data",
+    "loadingErrorDescription": "An error occurred while loading. Please try again.",
+    "retry": "Retry",
+    "systemStatus": "System status"
   }
 }
