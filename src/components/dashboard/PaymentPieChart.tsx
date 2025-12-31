@@ -9,9 +9,9 @@ import {
 
 // Payment colors: ESP = vert, CB = bleu, FI = gris
 const COLORS = {
-  esp: "hsl(72, 80%, 43%)",   // Lavcom green for Espèces
-  cb: "#BED7F0",               // Blue for Carte bancaire
-  fi: "#D9D9D9",               // Gray for Fidélité
+  esp: "hsl(72, 80%, 43%)",   // Lavcom green for ESP
+  cb: "#BED7F0",               // Blue for CB
+  fi: "#D9D9D9",               // Gray for FI
 };
 
 interface PaymentPieChartProps {

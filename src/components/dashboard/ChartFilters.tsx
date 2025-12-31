@@ -50,10 +50,10 @@ const machines = [
 ];
 
 const payments = [
-  { value: "all", label: "Tous les paiements" },
-  { value: "cb", label: "Carte bancaire" },
-  { value: "esp", label: "Espèces" },
-  { value: "fi", label: "Fidélité" },
+  { value: "all", label: "Tous" },
+  { value: "cb", label: "CB" },
+  { value: "esp", label: "ESP" },
+  { value: "fi", label: "FI" },
 ];
 
 export function ChartFilters({

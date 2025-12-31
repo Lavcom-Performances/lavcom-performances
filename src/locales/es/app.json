@@ -777,5 +777,23 @@
         }
       }
     }
+  },
+  "paymentModes": {
+    "cb": "CB",
+    "esp": "ESP",
+    "fi": "FI",
+    "all": "Todos",
+    "cbLabel": "CA CB",
+    "espLabel": "CA ESP",
+    "fiLabel": "CA FI",
+    "cbTooltip": "Pagos con tarjeta.",
+    "espTooltip": "Pagos en efectivo (monedas/billetes).",
+    "fiTooltip": "Pagos de fidelidad (bonus/gratis).",
+    "allTooltip": "Todos los métodos de pago.",
+    "legend": "CB = tarjeta | ESP = efectivo",
+    "filterLabel": "Método de pago",
+    "allModes": "Todos los métodos",
+    "transactionsCb": "Transacciones CB",
+    "transactionsEsp": "Transacciones ESP"
   }
 }

@@ -51,7 +51,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
           />
           <Bar 
             dataKey="esp" 
-            name="Espèces" 
+            name="ESP" 
             fill="hsl(72, 80%, 43%)" 
             radius={[4, 4, 0, 0]}
           />

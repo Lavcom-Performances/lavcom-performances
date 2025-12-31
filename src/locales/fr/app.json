@@ -920,7 +920,7 @@
     "kpi": {
       "totalRevenue": "CA Total",
       "revenueCard": "CA CB",
-      "revenueCash": "CA Espèces",
+      "revenueCash": "CA ESP",
       "transactions": "Transactions",
       "avgBasket": "Panier moyen",
       "occupancyRate": "Taux occupation",
@@ -934,8 +934,8 @@
     },
     "help": {
       "totalRevenue": "Chiffre d'affaires total sur la période sélectionnée, tous modes de paiement confondus.",
-      "revenueCard": "Montant encaissé par carte bancaire. Inclut les paiements sans contact et par puce.",
-      "revenueCash": "Montant encaissé en espèces via le monnayeur.",
+      "revenueCard": "Montant encaissé par CB (carte bancaire). Inclut les paiements sans contact et par puce.",
+      "revenueCash": "Montant encaissé en ESP (espèces) via le monnayeur.",
       "transactions": "Nombre total de cycles machines effectués sur la période.",
       "avgBasket": "Montant moyen dépensé par transaction. Calculé en divisant le CA par le nombre de transactions.",
       "occupancyRate": "Pourcentage d'utilisation des machines par rapport à leur capacité maximale théorique.",
@@ -1067,5 +1067,23 @@
         }
       }
     }
+  },
+  "paymentModes": {
+    "cb": "CB",
+    "esp": "ESP",
+    "fi": "FI",
+    "all": "Tous",
+    "cbLabel": "CA CB",
+    "espLabel": "CA ESP",
+    "fiLabel": "CA FI",
+    "cbTooltip": "Paiements par carte bancaire.",
+    "espTooltip": "Paiements en espèces (monnaie/billets).",
+    "fiTooltip": "Paiements fidélité (bonus/gratuit).",
+    "allTooltip": "Tous les modes de paiement.",
+    "legend": "CB = carte bancaire | ESP = espèces",
+    "filterLabel": "Mode de paiement",
+    "allModes": "Tous les modes",
+    "transactionsCb": "Transactions CB",
+    "transactionsEsp": "Transactions ESP"
   }
 }

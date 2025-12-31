@@ -772,10 +772,10 @@ export default function Operations() {
               <SelectValue placeholder="Paiement" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous paiements</SelectItem>
-              <SelectItem value="CB">Carte bancaire</SelectItem>
-              <SelectItem value="ESP">Espèces</SelectItem>
-              <SelectItem value="FI">Fidélité</SelectItem>
+              <SelectItem value="all">Tous</SelectItem>
+              <SelectItem value="CB">CB</SelectItem>
+              <SelectItem value="ESP">ESP</SelectItem>
+              <SelectItem value="FI">FI</SelectItem>
             </SelectContent>
           </Select>
           

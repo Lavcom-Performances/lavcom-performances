@@ -267,8 +267,8 @@ export default function AdminDashboard() {
 
   // Prepare chart data
   const paymentChartData = revenueStats ? [
-    { name: 'Carte bancaire', value: revenueStats.revenue_cb },
-    { name: 'Espèces', value: revenueStats.revenue_esp }
+    { name: 'CB', value: revenueStats.revenue_cb },
+    { name: 'ESP', value: revenueStats.revenue_esp }
   ] : [];
 
   const monthlyChartData = (monthlySeries || []).map(item => ({
@@ -709,7 +709,7 @@ export default function AdminDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Répartition des paiements</CardTitle>
-                  <CardDescription>CB vs Espèces sur la période</CardDescription>
+                  <CardDescription>CB vs ESP sur la période</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {loadingRevenue ? (

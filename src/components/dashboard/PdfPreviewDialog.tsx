@@ -286,7 +286,7 @@ export function PdfPreviewDialog({ open, onOpenChange, onConfirm }: PdfPreviewDi
                 {t('app:dashboard.export.kpisIncluded', 'Indicateurs clés inclus')}
               </h4>
               <p className="text-sm text-muted-foreground">
-                {t('app:dashboard.export.kpisDescription', 'CA Total, CA Carte, CA Espèces, Transactions, Panier moyen, CA/Jour')}
+                {t('app:dashboard.export.kpisDescription', 'CA Total, CA CB, CA ESP, Transactions, Panier moyen, CA/Jour')}
               </p>
             </div>
 
