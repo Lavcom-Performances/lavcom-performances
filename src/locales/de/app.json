@@ -893,6 +893,80 @@
     "avgForecastProfit": "Durchschn. progn. Gewinn",
     "forecastLabel": "Prognose",
     "insufficientDataForForecast": "Unzureichende historische Daten für zuverlässige Prognosen. Importieren Sie mindestens 6 Monate Daten.",
-    "forecastDisclaimer": "Diese Prognosen basieren auf historischen Trends und können je nach tatsächlichen Bedingungen variieren."
+    "forecastDisclaimer": "Diese Prognosen basieren auf historischen Trends und können je nach tatsächlichen Bedingungen variieren.",
+    "comparisonPdfTitle": "Multi-Standort Rentabilitätsvergleich",
+    "comparisonPdfDisclaimer": "Daten basierend auf konfigurierten Operationen und Kosten",
+    "totalRevenueLabel": "Gesamtumsatz",
+    "totalCostsLabel": "Gesamtkosten",
+    "totalProfitLabel": "Gesamtgewinn",
+    "avgMargin": "Durchschnittliche Marge",
+    "siteDetails": "Details pro Standort",
+    "city": "Stadt",
+    "period": "Zeitraum",
+    "days": "Tage",
+    "pdfExported": "PDF erfolgreich exportiert",
+    "csvExported": "CSV erfolgreich exportiert",
+    "recommendations": {
+      "title": "Empfehlungen",
+      "count": "Empfehlungen",
+      "noData": "Nicht genügend Daten, um Empfehlungen zu generieren.",
+      "priorityHigh": "Hohe Priorität",
+      "priorityMedium": "Mittlere Priorität",
+      "priorityLow": "Information",
+      "lowMargin": { "title": "Kritische Marge", "description": "Ihre Gewinnmarge liegt unter 10%. Analysieren Sie Ihre fixen und variablen Kosten.", "impact": "Verlustrisiko bei anhaltender Situation" },
+      "moderateMargin": { "title": "Marge optimierbar", "description": "Ihre Marge zwischen 10% und 20% kann verbessert werden.", "impact": "Verbesserungspotenzial von 5-10%" },
+      "excellentMargin": { "title": "Ausgezeichnete Rentabilität", "description": "Ihre Marge über 30% ist ausgezeichnet. Halten Sie diese Leistung.", "impact": "Machen Sie weiter so" },
+      "decliningRevenue": { "title": "Umsatzrückgang", "description": "Der Umsatztrend ist rückläufig. Analysieren Sie die Ursachen.", "impact": "Marketingmaßnahmen empfohlen" },
+      "growingRevenue": { "title": "Umsatzwachstum", "description": "Ihre Einnahmen steigen regelmäßig. Weiter so.", "impact": "Positiver Trend beizubehalten" },
+      "peakConcentration": { "title": "Stundenkonzentration", "description": "Die Aktivität konzentriert sich auf {{hours}} Uhr. Erwägen Sie Aktionen außerhalb der Spitzenzeiten.", "impact": "Mögliche Glättung der Aktivität" },
+      "highVarCosts": { "title": "Hohe variable Kosten", "description": "Ihre variablen Kosten ({{percent}}%) liegen über dem Durchschnitt.", "impact": "Lieferantenverhandlung empfohlen" },
+      "highFixedCosts": { "title": "Hohe Fixkosten", "description": "Ihre Fixkosten übersteigen 60% des Umsatzes. Verhandeln Sie Ihre Verträge neu.", "impact": "Kostenreduzierung prioritär" },
+      "underperformingMachines": { "title": "Unterperformende Maschinen", "description": "{{count}} Maschine(n) generieren weniger als 50% des durchschnittlichen Umsatzes.", "impact": "Wartung oder Austausch zu prüfen" }
+    }
+  },
+  "csvImport": {
+    "success": "Import abgeschlossen",
+    "partial": "Import teilweise abgeschlossen",
+    "failed": "Import fehlgeschlagen",
+    "linesRead": "Gelesene Zeilen",
+    "linesImported": "Importierte Zeilen",
+    "duplicatesIgnored": "Ignorierte Duplikate",
+    "errors": "Fehler",
+    "duplicatesMessage": "Duplikate erkannt: {{count}} Zeilen ignoriert (keine doppelten Daten importiert).",
+    "errorsMessage": "Einige Zeilen konnten nicht importiert werden.",
+    "andMore": "... und {{count}} weitere",
+    "retry": "Erneut versuchen",
+    "viewNewRows": "Neue Zeilen anzeigen",
+    "close": "Schließen"
+  },
+  "emptyState": {
+    "title": "Importieren Sie Ihre Daten, um die Analyse zu aktivieren",
+    "benefit1": "Ihre Kennzahlen und Grafiken werden automatisch aktualisiert.",
+    "benefit2": "Empfehlungen basieren auf Ihren Transaktionen (Karte/Bar).",
+    "primaryLabel": "Meine CSV importieren",
+    "secondaryLabel": "So funktioniert es"
+  },
+  "help": {
+    "topics": {
+      "bug": "Problem / Fehler",
+      "csvImport": "CSV-Import",
+      "dataDashboard": "Daten / Dashboards",
+      "subscription": "Abonnement & Rechnungen",
+      "account": "Konto & Anmeldung",
+      "other": "Sonstiges"
+    },
+    "messagePlaceholder": "Beschreiben Sie Ihre Anfrage...",
+    "successMessage": "Wir melden uns schnellstmöglich bei Ihnen."
+  },
+  "charts": {
+    "noDataForPeriod": "Keine Daten für den ausgewählten Zeitraum verfügbar",
+    "noData": "Keine Daten verfügbar",
+    "noComparisonData": "Keine Vergleichsdaten verfügbar"
+  },
+  "errorState": {
+    "loadingError": "Daten konnten nicht geladen werden",
+    "loadingErrorDescription": "Beim Laden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    "retry": "Erneut versuchen",
+    "systemStatus": "Systemstatus"
   }
 }

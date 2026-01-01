@@ -893,6 +893,80 @@
     "avgForecastProfit": "Gem. voorspelde winst",
     "forecastLabel": "Prognose",
     "insufficientDataForForecast": "Onvoldoende historische gegevens voor betrouwbare prognoses. Importeer minimaal 6 maanden aan gegevens.",
-    "forecastDisclaimer": "Deze prognoses zijn gebaseerd op historische trends en kunnen variëren afhankelijk van de werkelijke omstandigheden."
+    "forecastDisclaimer": "Deze prognoses zijn gebaseerd op historische trends en kunnen variëren afhankelijk van de werkelijke omstandigheden.",
+    "comparisonPdfTitle": "Multi-locatie winstgevendheidsvergelijking",
+    "comparisonPdfDisclaimer": "Gegevens gebaseerd op geconfigureerde operaties en kosten",
+    "totalRevenueLabel": "Totale Omzet",
+    "totalCostsLabel": "Totale Kosten",
+    "totalProfitLabel": "Totale Winst",
+    "avgMargin": "Gemiddelde marge",
+    "siteDetails": "Detail per locatie",
+    "city": "Stad",
+    "period": "Periode",
+    "days": "dagen",
+    "pdfExported": "PDF succesvol geëxporteerd",
+    "csvExported": "CSV succesvol geëxporteerd",
+    "recommendations": {
+      "title": "Aanbevelingen",
+      "count": "aanbevelingen",
+      "noData": "Onvoldoende gegevens om aanbevelingen te genereren.",
+      "priorityHigh": "Hoge prioriteit",
+      "priorityMedium": "Gemiddelde prioriteit",
+      "priorityLow": "Informatie",
+      "lowMargin": { "title": "Kritische marge", "description": "Uw winstmarge is lager dan 10%. Analyseer uw vaste en variabele kosten.", "impact": "Risico op verliezen als de situatie aanhoudt" },
+      "moderateMargin": { "title": "Marge te optimaliseren", "description": "Uw marge tussen 10% en 20% kan worden verbeterd.", "impact": "Verbeteringspotentieel van 5-10%" },
+      "excellentMargin": { "title": "Uitstekende winstgevendheid", "description": "Uw marge boven 30% is uitstekend. Behoud deze prestatie.", "impact": "Ga zo door" },
+      "decliningRevenue": { "title": "Dalende omzet", "description": "De omzettrend is dalend. Analyseer de oorzaken.", "impact": "Marketingacties aanbevolen" },
+      "growingRevenue": { "title": "Groeiende omzet", "description": "Uw inkomsten groeien regelmatig. Ga zo door.", "impact": "Positieve trend te behouden" },
+      "peakConcentration": { "title": "Piekconcentratie", "description": "De activiteit concentreert zich op {{hours}} uur. Overweeg promoties buiten piekuren.", "impact": "Mogelijke spreiding van activiteit" },
+      "highVarCosts": { "title": "Hoge variabele kosten", "description": "Uw variabele kosten ({{percent}}%) liggen boven het gemiddelde.", "impact": "Onderhandeling met leveranciers aanbevolen" },
+      "highFixedCosts": { "title": "Hoge vaste kosten", "description": "Uw vaste kosten overschrijden 60% van de omzet. Heronderhandel uw contracten.", "impact": "Kostenreductie prioritair" },
+      "underperformingMachines": { "title": "Onderpresterende machines", "description": "{{count}} machine(s) genereren minder dan 50% van de gemiddelde omzet.", "impact": "Onderhoud of vervanging te evalueren" }
+    }
+  },
+  "csvImport": {
+    "success": "Import voltooid",
+    "partial": "Import gedeeltelijk voltooid",
+    "failed": "Import mislukt",
+    "linesRead": "Gelezen regels",
+    "linesImported": "Geïmporteerde regels",
+    "duplicatesIgnored": "Duplicaten genegeerd",
+    "errors": "Fouten",
+    "duplicatesMessage": "Duplicaten gedetecteerd: {{count}} regels genegeerd (geen dubbele gegevens geïmporteerd).",
+    "errorsMessage": "Sommige regels konden niet worden geïmporteerd.",
+    "andMore": "... en nog {{count}} andere",
+    "retry": "Opnieuw proberen",
+    "viewNewRows": "Nieuwe rijen bekijken",
+    "close": "Sluiten"
+  },
+  "emptyState": {
+    "title": "Importeer uw gegevens om de analyse te activeren",
+    "benefit1": "Uw indicatoren en grafieken worden automatisch bijgewerkt.",
+    "benefit2": "Aanbevelingen zijn gebaseerd op uw transacties (kaart/contant).",
+    "primaryLabel": "Mijn CSV importeren",
+    "secondaryLabel": "Bekijk hoe het werkt"
+  },
+  "help": {
+    "topics": {
+      "bug": "Probleem / Bug",
+      "csvImport": "CSV-import",
+      "dataDashboard": "Gegevens / Dashboards",
+      "subscription": "Abonnement & Facturen",
+      "account": "Account & Inloggen",
+      "other": "Anders"
+    },
+    "messagePlaceholder": "Beschrijf uw verzoek...",
+    "successMessage": "We nemen zo snel mogelijk contact met u op."
+  },
+  "charts": {
+    "noDataForPeriod": "Geen gegevens beschikbaar voor de geselecteerde periode",
+    "noData": "Geen gegevens beschikbaar",
+    "noComparisonData": "Geen vergelijkingsgegevens beschikbaar"
+  },
+  "errorState": {
+    "loadingError": "Gegevens konden niet worden geladen",
+    "loadingErrorDescription": "Er is een fout opgetreden bij het laden. Probeer het opnieuw.",
+    "retry": "Opnieuw proberen",
+    "systemStatus": "Systeemstatus"
   }
 }

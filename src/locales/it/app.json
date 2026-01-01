@@ -893,6 +893,80 @@
     "avgForecastProfit": "Profitto prev. medio",
     "forecastLabel": "Previsione",
     "insufficientDataForForecast": "Dati storici insufficienti per generare previsioni affidabili. Importa almeno 6 mesi di dati.",
-    "forecastDisclaimer": "Queste previsioni si basano su tendenze storiche e possono variare in base alle condizioni reali."
+    "forecastDisclaimer": "Queste previsioni si basano su tendenze storiche e possono variare in base alle condizioni reali.",
+    "comparisonPdfTitle": "Confronto redditività multi-sito",
+    "comparisonPdfDisclaimer": "Dati basati su operazioni e costi configurati",
+    "totalRevenueLabel": "Fatturato Totale",
+    "totalCostsLabel": "Costi Totali",
+    "totalProfitLabel": "Profitto Totale",
+    "avgMargin": "Margine medio",
+    "siteDetails": "Dettaglio per sito",
+    "city": "Città",
+    "period": "Periodo",
+    "days": "giorni",
+    "pdfExported": "PDF esportato con successo",
+    "csvExported": "CSV esportato con successo",
+    "recommendations": {
+      "title": "Raccomandazioni",
+      "count": "raccomandazioni",
+      "noData": "Dati insufficienti per generare raccomandazioni.",
+      "priorityHigh": "Priorità alta",
+      "priorityMedium": "Priorità media",
+      "priorityLow": "Informazione",
+      "lowMargin": { "title": "Margine critico", "description": "Il tuo margine di profitto è inferiore al 10%. Analizza i costi fissi e variabili.", "impact": "Rischio di perdite se la situazione persiste" },
+      "moderateMargin": { "title": "Margine ottimizzabile", "description": "Il tuo margine tra il 10% e il 20% può essere migliorato.", "impact": "Potenziale di miglioramento del 5-10%" },
+      "excellentMargin": { "title": "Eccellente redditività", "description": "Il tuo margine superiore al 30% è eccellente. Mantieni questa performance.", "impact": "Continua così" },
+      "decliningRevenue": { "title": "Fatturato in calo", "description": "La tendenza dei ricavi è in calo. Analizza le cause.", "impact": "Azioni di marketing raccomandate" },
+      "growingRevenue": { "title": "Fatturato in crescita", "description": "I tuoi ricavi progrediscono regolarmente. Continua così.", "impact": "Tendenza positiva da mantenere" },
+      "peakConcentration": { "title": "Concentrazione oraria", "description": "L'attività si concentra nelle ore {{hours}}. Considera promozioni fuori picco.", "impact": "Possibile livellamento dell'attività" },
+      "highVarCosts": { "title": "Costi variabili elevati", "description": "I tuoi costi variabili ({{percent}}%) sono sopra la media.", "impact": "Negoziazione con i fornitori raccomandata" },
+      "highFixedCosts": { "title": "Costi fissi elevati", "description": "I tuoi costi fissi superano il 60% del fatturato. Rinegozia i tuoi contratti.", "impact": "Riduzione dei costi prioritaria" },
+      "underperformingMachines": { "title": "Macchine sottoperformanti", "description": "{{count}} macchina/e generano meno del 50% del fatturato medio.", "impact": "Manutenzione o sostituzione da valutare" }
+    }
+  },
+  "csvImport": {
+    "success": "Importazione completata",
+    "partial": "Importazione completata (parziale)",
+    "failed": "Importazione fallita",
+    "linesRead": "Righe lette",
+    "linesImported": "Righe importate",
+    "duplicatesIgnored": "Duplicati ignorati",
+    "errors": "Errori",
+    "duplicatesMessage": "Duplicati rilevati: {{count}} righe ignorate (nessun dato duplicato importato).",
+    "errorsMessage": "Alcune righe non sono state importate.",
+    "andMore": "... e altri {{count}}",
+    "retry": "Riprova",
+    "viewNewRows": "Visualizza nuove righe",
+    "close": "Chiudi"
+  },
+  "emptyState": {
+    "title": "Importa i tuoi dati per attivare l'analisi",
+    "benefit1": "I tuoi indicatori e grafici si aggiorneranno automaticamente.",
+    "benefit2": "Le raccomandazioni saranno basate sulle tue operazioni (carta/contanti).",
+    "primaryLabel": "Importa il mio CSV",
+    "secondaryLabel": "Scopri come funziona"
+  },
+  "help": {
+    "topics": {
+      "bug": "Problema / Bug",
+      "csvImport": "Importazione CSV",
+      "dataDashboard": "Dati / Dashboard",
+      "subscription": "Abbonamento e Fatture",
+      "account": "Account e Accesso",
+      "other": "Altro"
+    },
+    "messagePlaceholder": "Descrivi la tua richiesta...",
+    "successMessage": "Ti contatteremo il prima possibile."
+  },
+  "charts": {
+    "noDataForPeriod": "Nessun dato disponibile per il periodo selezionato",
+    "noData": "Nessun dato disponibile",
+    "noComparisonData": "Nessun dato di confronto disponibile"
+  },
+  "errorState": {
+    "loadingError": "Impossibile caricare i dati",
+    "loadingErrorDescription": "Si è verificato un errore durante il caricamento. Riprova.",
+    "retry": "Riprova",
+    "systemStatus": "Stato del sistema"
   }
 }
