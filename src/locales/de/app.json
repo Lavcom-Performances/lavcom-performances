@@ -627,6 +627,43 @@
       "hasSpecial": "Ein Sonderzeichen"
     }
   },
+  "security": {
+    "accountTitle": "Kontosicherheit",
+    "accountDescription": "Überprüfen Sie, ob Ihr Konto gut geschützt ist",
+    "projectTitle": "Projektsicherheit",
+    "projectDescription": "Status des Schutzes Ihres Bereichs",
+    "viewBackend": "Backend anzeigen",
+    "enableMFA": "MFA aktivieren",
+    "score": "Sicherheitspunktzahl",
+    "progress": "Fortschritt",
+    "itemsSecured": "gesicherte Elemente",
+    "secured": "gesichert",
+    "manualCheckNote": "Der Schutz vor kompromittierten Passwörtern muss manuell in den Backend-Einstellungen aktiviert werden (Auth → Security).",
+    "status": {
+      "ok": "Aktiviert",
+      "warning": "Empfohlen",
+      "missing": "Nicht aktiviert",
+      "unknown": "Unbekannt"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "E-Mail verifiziert",
+        "description": "Ihre E-Mail-Adresse wurde bestätigt"
+      },
+      "mfa": {
+        "label": "Zwei-Faktor-Authentifizierung (2FA)",
+        "description": "Schützen Sie Ihr Konto mit einem temporären Code"
+      },
+      "rateLimit": {
+        "label": "Missbrauchsschutz",
+        "description": "Begrenzt Anmelde- und Importversuche"
+      },
+      "leakedPassword": {
+        "label": "Schutz vor kompromittierten Passwörtern",
+        "description": "Prüft, ob Ihr Passwort in Datenlecks offengelegt wurde"
+      }
+    }
+  },
   "securityCenter": {
     "title": "Sicherheitszentrum",
     "description": "Visualisieren und verbessern Sie den Schutz Ihres Kontos und Ihrer Daten",
@@ -728,7 +765,33 @@
       "signOutSuccess": "Sitzungen beendet",
       "signOutSuccessDescription": "Alle Ihre Sitzungen wurden erfolgreich geschlossen",
       "signOutError": "Beim Abmelden ist ein Fehler aufgetreten"
-    }
+    },
+    "loginHistory": {
+      "title": "Anmeldeverlauf",
+      "description": "Aufbewahrt für {{days}} Tage",
+      "entries": "Anmeldungen",
+      "noLogs": "Keine Anmeldungen aufgezeichnet",
+      "newDevice": "Neues Gerät",
+      "unknownBrowser": "Unbekannter Browser",
+      "unknownOS": "Unbekanntes Betriebssystem",
+      "unknownDevice": "Unbekanntes Gerät",
+      "showAll": "Alle anzeigen ({{count}} Anmeldungen)"
+    },
+    "logRetention": {
+      "title": "Aufbewahrungsdauer",
+      "description": "Konfigurieren Sie, wie lange Ihre Anmeldeprotokolle aufbewahrt werden",
+      "daysLabel": "Tage",
+      "days": "{{count}} Tage",
+      "oneWeek": "1 Woche",
+      "oneMonth": "1 Monat",
+      "threeMonths": "3 Monate",
+      "sixMonths": "6 Monate",
+      "oneYear": "1 Jahr",
+      "infoText": "Anmeldeprotokolle, die älter als diese Dauer sind, werden jede Nacht automatisch gelöscht.",
+      "saveSuccess": "Einstellung gespeichert",
+      "saveSuccessDescription": "Ihre Protokolle werden für {{days}} Tage aufbewahrt"
+    },
+    "openBackend": "Backend öffnen"
   },
   "trialExpired": {
     "title": "Ihre kostenlose Testversion ist beendet",

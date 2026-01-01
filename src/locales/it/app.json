@@ -627,6 +627,43 @@
       "hasSpecial": "Un carattere speciale"
     }
   },
+  "security": {
+    "accountTitle": "Sicurezza dell'account",
+    "accountDescription": "Verifica che il tuo account sia ben protetto",
+    "projectTitle": "Sicurezza del progetto",
+    "projectDescription": "Stato delle protezioni del tuo spazio",
+    "viewBackend": "Visualizza backend",
+    "enableMFA": "Attiva MFA",
+    "score": "Punteggio sicurezza",
+    "progress": "Progresso",
+    "itemsSecured": "elementi protetti",
+    "secured": "protetto",
+    "manualCheckNote": "La protezione contro le password compromesse deve essere attivata manualmente nelle impostazioni del backend (Auth → Security).",
+    "status": {
+      "ok": "Attivato",
+      "warning": "Consigliato",
+      "missing": "Non attivato",
+      "unknown": "Sconosciuto"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "Email verificata",
+        "description": "Il tuo indirizzo email è stato confermato"
+      },
+      "mfa": {
+        "label": "Autenticazione a due fattori (2FA)",
+        "description": "Proteggi il tuo account con un codice temporaneo"
+      },
+      "rateLimit": {
+        "label": "Protezione anti-abuso",
+        "description": "Limita i tentativi di accesso e importazione"
+      },
+      "leakedPassword": {
+        "label": "Protezione password compromesse",
+        "description": "Verifica se la tua password è stata esposta in violazioni di dati"
+      }
+    }
+  },
   "securityCenter": {
     "title": "Centro sicurezza",
     "description": "Visualizza e migliora la protezione del tuo account e dei tuoi dati",
@@ -728,7 +765,33 @@
       "signOutSuccess": "Sessioni terminate",
       "signOutSuccessDescription": "Tutte le tue sessioni sono state chiuse con successo",
       "signOutError": "Si è verificato un errore durante la disconnessione"
-    }
+    },
+    "loginHistory": {
+      "title": "Cronologia accessi",
+      "description": "Conservata per {{days}} giorni",
+      "entries": "accessi",
+      "noLogs": "Nessun accesso registrato",
+      "newDevice": "Nuovo dispositivo",
+      "unknownBrowser": "Browser sconosciuto",
+      "unknownOS": "SO sconosciuto",
+      "unknownDevice": "Dispositivo sconosciuto",
+      "showAll": "Mostra tutto ({{count}} accessi)"
+    },
+    "logRetention": {
+      "title": "Durata di conservazione",
+      "description": "Configura per quanto tempo vengono conservati i log di accesso",
+      "daysLabel": "giorni",
+      "days": "{{count}} giorni",
+      "oneWeek": "1 settimana",
+      "oneMonth": "1 mese",
+      "threeMonths": "3 mesi",
+      "sixMonths": "6 mesi",
+      "oneYear": "1 anno",
+      "infoText": "I log di accesso più vecchi di questa durata verranno eliminati automaticamente ogni notte.",
+      "saveSuccess": "Preferenza salvata",
+      "saveSuccessDescription": "I tuoi log verranno conservati per {{days}} giorni"
+    },
+    "openBackend": "Apri backend"
   },
   "trialExpired": {
     "title": "La tua prova gratuita è terminata",
