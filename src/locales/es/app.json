@@ -627,6 +627,43 @@
       "hasSpecial": "Un carácter especial"
     }
   },
+  "security": {
+    "accountTitle": "Seguridad de la cuenta",
+    "accountDescription": "Verifique que su cuenta esté bien protegida",
+    "projectTitle": "Seguridad del proyecto",
+    "projectDescription": "Estado de las protecciones de su espacio",
+    "viewBackend": "Ver backend",
+    "enableMFA": "Activar MFA",
+    "score": "Puntuación de seguridad",
+    "progress": "Progreso",
+    "itemsSecured": "elementos protegidos",
+    "secured": "protegido",
+    "manualCheckNote": "La protección contra contraseñas comprometidas debe activarse manualmente en la configuración del backend (Auth → Security).",
+    "status": {
+      "ok": "Activado",
+      "warning": "Recomendado",
+      "missing": "No activado",
+      "unknown": "Desconocido"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "Email verificado",
+        "description": "Su dirección de correo ha sido confirmada"
+      },
+      "mfa": {
+        "label": "Autenticación de dos factores (2FA)",
+        "description": "Proteja su cuenta con un código temporal"
+      },
+      "rateLimit": {
+        "label": "Protección anti-abuso",
+        "description": "Limita los intentos de conexión e importación"
+      },
+      "leakedPassword": {
+        "label": "Protección contraseñas comprometidas",
+        "description": "Verifica si su contraseña ha sido expuesta en filtraciones de datos"
+      }
+    }
+  },
   "securityCenter": {
     "title": "Centro de seguridad",
     "description": "Visualice y mejore la protección de su cuenta y sus datos",
@@ -728,7 +765,33 @@
       "signOutSuccess": "Sesiones terminadas",
       "signOutSuccessDescription": "Todas sus sesiones han sido cerradas con éxito",
       "signOutError": "Ocurrió un error durante la desconexión"
-    }
+    },
+    "loginHistory": {
+      "title": "Historial de conexiones",
+      "description": "Conservado durante {{days}} días",
+      "entries": "conexiones",
+      "noLogs": "Ninguna conexión registrada",
+      "newDevice": "Nuevo dispositivo",
+      "unknownBrowser": "Navegador desconocido",
+      "unknownOS": "SO desconocido",
+      "unknownDevice": "Dispositivo desconocido",
+      "showAll": "Mostrar todo ({{count}} conexiones)"
+    },
+    "logRetention": {
+      "title": "Duración de conservación",
+      "description": "Configure cuánto tiempo se conservan sus registros de conexión",
+      "daysLabel": "días",
+      "days": "{{count}} días",
+      "oneWeek": "1 semana",
+      "oneMonth": "1 mes",
+      "threeMonths": "3 meses",
+      "sixMonths": "6 meses",
+      "oneYear": "1 año",
+      "infoText": "Los registros de conexión más antiguos que esta duración se eliminarán automáticamente cada noche.",
+      "saveSuccess": "Preferencia guardada",
+      "saveSuccessDescription": "Sus registros se conservarán durante {{days}} días"
+    },
+    "openBackend": "Abrir backend"
   },
   "trialExpired": {
     "title": "Su prueba gratuita ha terminado",

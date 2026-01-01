@@ -627,6 +627,43 @@
       "hasSpecial": "Een speciaal teken"
     }
   },
+  "security": {
+    "accountTitle": "Accountbeveiliging",
+    "accountDescription": "Controleer of uw account goed beveiligd is",
+    "projectTitle": "Projectbeveiliging",
+    "projectDescription": "Status van de beveiligingen van uw ruimte",
+    "viewBackend": "Backend bekijken",
+    "enableMFA": "MFA activeren",
+    "score": "Beveiligingsscore",
+    "progress": "Voortgang",
+    "itemsSecured": "beveiligde elementen",
+    "secured": "beveiligd",
+    "manualCheckNote": "De bescherming tegen gecompromitteerde wachtwoorden moet handmatig worden geactiveerd in de backend-instellingen (Auth → Security).",
+    "status": {
+      "ok": "Geactiveerd",
+      "warning": "Aanbevolen",
+      "missing": "Niet geactiveerd",
+      "unknown": "Onbekend"
+    },
+    "items": {
+      "emailVerified": {
+        "label": "E-mail geverifieerd",
+        "description": "Uw e-mailadres is bevestigd"
+      },
+      "mfa": {
+        "label": "Tweefactorauthenticatie (2FA)",
+        "description": "Bescherm uw account met een tijdelijke code"
+      },
+      "rateLimit": {
+        "label": "Misbruikbeveiliging",
+        "description": "Beperkt aanmeld- en importpogingen"
+      },
+      "leakedPassword": {
+        "label": "Bescherming gecompromitteerde wachtwoorden",
+        "description": "Controleert of uw wachtwoord is blootgesteld in datalekken"
+      }
+    }
+  },
   "securityCenter": {
     "title": "Beveiligingscentrum",
     "description": "Bekijk en verbeter de bescherming van uw account en gegevens",
@@ -728,7 +765,33 @@
       "signOutSuccess": "Sessies beëindigd",
       "signOutSuccessDescription": "Al uw sessies zijn succesvol gesloten",
       "signOutError": "Er is een fout opgetreden bij het uitloggen"
-    }
+    },
+    "loginHistory": {
+      "title": "Aanmeldgeschiedenis",
+      "description": "Bewaard gedurende {{days}} dagen",
+      "entries": "aanmeldingen",
+      "noLogs": "Geen aanmeldingen geregistreerd",
+      "newDevice": "Nieuw apparaat",
+      "unknownBrowser": "Onbekende browser",
+      "unknownOS": "Onbekend besturingssysteem",
+      "unknownDevice": "Onbekend apparaat",
+      "showAll": "Alles tonen ({{count}} aanmeldingen)"
+    },
+    "logRetention": {
+      "title": "Bewaarduur",
+      "description": "Configureer hoe lang uw aanmeldlogboeken worden bewaard",
+      "daysLabel": "dagen",
+      "days": "{{count}} dagen",
+      "oneWeek": "1 week",
+      "oneMonth": "1 maand",
+      "threeMonths": "3 maanden",
+      "sixMonths": "6 maanden",
+      "oneYear": "1 jaar",
+      "infoText": "Aanmeldlogboeken ouder dan deze duur worden elke nacht automatisch verwijderd.",
+      "saveSuccess": "Voorkeur opgeslagen",
+      "saveSuccessDescription": "Uw logboeken worden {{days}} dagen bewaard"
+    },
+    "openBackend": "Backend openen"
   },
   "trialExpired": {
     "title": "Uw gratis proefperiode is beëindigd",
