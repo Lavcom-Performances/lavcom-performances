@@ -166,7 +166,8 @@
     "features": "Funktionen",
     "simulationOpening": "Eröffnungssimulation",
     "profile": "Mein Profil",
-    "subscription": "Abonnement"
+    "subscription": "Abonnement",
+    "help": "Hilfe"
   },
   "profile": {
     "title": "Mein Profil",
