@@ -52,7 +52,7 @@ export const LOCALE_NAMES: Record<SupportedLocale, string> = {
 
 export const LOCALE_FLAGS: Record<SupportedLocale, string> = {
   fr: '🇫🇷',
-  en: '🇺🇸',
+  en: '🇬🇧',
   es: '🇪🇸',
   it: '🇮🇹',
   de: '🇩🇪',
