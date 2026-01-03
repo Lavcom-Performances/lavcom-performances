@@ -583,7 +583,46 @@
       "avgPriceDry": "Durchschn. Trocknungspreis (€)",
       "hoursOpen": "Öffnungszeiten / Tag",
       "capacityPlaceholder": "Kapazität",
-      "submit": "Schätzung berechnen"
+      "submit": "Schätzung berechnen",
+      "machineFleet": "Maschinenpark",
+      "machineFleetDescription": "Wählen Sie eine Vorlage oder passen Sie Ihren Maschinenpark an",
+      "templates": {
+        "small": {
+          "name": "Kleiner Waschsalon",
+          "description": "4-6 Maschinen, < 40m²"
+        },
+        "standard": {
+          "name": "Standard-Waschsalon",
+          "description": "8-12 Maschinen, 40-80m²"
+        },
+        "large": {
+          "name": "Großer Waschsalon",
+          "description": "15+ Maschinen, > 80m²"
+        }
+      },
+      "machineCategories": {
+        "washers": "Waschmaschinen",
+        "dryers": "Trockner",
+        "small": "Klein",
+        "medium": "Mittel",
+        "large": "Groß"
+      },
+      "affluence": {
+        "title": "Besucherstrom",
+        "low": "Niedrig",
+        "normal": "Normal",
+        "high": "Hoch"
+      },
+      "pricing": {
+        "avgWashPrice": "Durchschn. Waschpreis (€)",
+        "avgDryPrice": "Durchschn. Trocknungspreis (€)",
+        "customizePrices": "Preise nach Größe anpassen",
+        "priceSmall": "Preis Klein (€)",
+        "priceMedium": "Preis Mittel (€)",
+        "priceLarge": "Preis Groß (€)",
+        "washPrices": "Waschpreise",
+        "dryPrices": "Trocknungspreise"
+      }
     },
     "results": {
       "title": "Schnellschätzung",
@@ -595,7 +634,10 @@
       "maxCapacity": "Max. Kapazität: {{wash}} Waschgänge + {{dry}} Trocknungen / Tag",
       "pessimistic": "Pessimistisch",
       "central": "Zentral",
-      "optimistic": "Optimistisch"
+      "optimistic": "Optimistisch",
+      "dailyRevenue": "Geschätzter Tagesumsatz",
+      "perDay": "€/Tag",
+      "disclaimer": "Vorläufige Schätzung – Der vollständige Simulator verfeinert mit Kosten, Szenarien und realen Daten."
     },
     "paywall": {
       "title": "Vollständige Analyse freischalten",

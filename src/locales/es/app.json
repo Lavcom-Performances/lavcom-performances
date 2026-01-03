@@ -583,7 +583,46 @@
       "avgPriceDry": "Precio medio secado (€)",
       "hoursOpen": "Horas de apertura / día",
       "capacityPlaceholder": "Capacidad",
-      "submit": "Calcular estimación"
+      "submit": "Calcular estimación",
+      "machineFleet": "Parque de máquinas",
+      "machineFleetDescription": "Elige una plantilla o personaliza tu parque de máquinas",
+      "templates": {
+        "small": {
+          "name": "Lavandería pequeña",
+          "description": "4-6 máquinas, < 40m²"
+        },
+        "standard": {
+          "name": "Lavandería estándar",
+          "description": "8-12 máquinas, 40-80m²"
+        },
+        "large": {
+          "name": "Lavandería grande",
+          "description": "15+ máquinas, > 80m²"
+        }
+      },
+      "machineCategories": {
+        "washers": "Lavadoras",
+        "dryers": "Secadoras",
+        "small": "Pequeña",
+        "medium": "Mediana",
+        "large": "Grande"
+      },
+      "affluence": {
+        "title": "Afluencia",
+        "low": "Baja",
+        "normal": "Normal",
+        "high": "Alta"
+      },
+      "pricing": {
+        "avgWashPrice": "Precio medio lavado (€)",
+        "avgDryPrice": "Precio medio secado (€)",
+        "customizePrices": "Personalizar precios por tamaño",
+        "priceSmall": "Precio Pequeña (€)",
+        "priceMedium": "Precio Mediana (€)",
+        "priceLarge": "Precio Grande (€)",
+        "washPrices": "Precios de lavado",
+        "dryPrices": "Precios de secado"
+      }
     },
     "results": {
       "title": "Estimación rápida",
@@ -595,7 +634,10 @@
       "maxCapacity": "Capacidad máx: {{wash}} lavados + {{dry}} secados / día",
       "pessimistic": "Pesimista",
       "central": "Central",
-      "optimistic": "Optimista"
+      "optimistic": "Optimista",
+      "dailyRevenue": "Facturación diaria estimada",
+      "perDay": "€/día",
+      "disclaimer": "Estimación indicativa – el simulador completo afina con gastos, escenarios y datos reales."
     },
     "paywall": {
       "title": "Desbloquea el análisis completo",
