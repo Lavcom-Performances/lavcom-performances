@@ -583,7 +583,46 @@
       "avgPriceDry": "Gemiddelde droogprijs (€)",
       "hoursOpen": "Openingsuren / dag",
       "capacityPlaceholder": "Capaciteit",
-      "submit": "Schatting berekenen"
+      "submit": "Schatting berekenen",
+      "machineFleet": "Machinepark",
+      "machineFleetDescription": "Kies een sjabloon of pas uw machinepark aan",
+      "templates": {
+        "small": {
+          "name": "Kleine wasserette",
+          "description": "4-6 machines, < 40m²"
+        },
+        "standard": {
+          "name": "Standaard wasserette",
+          "description": "8-12 machines, 40-80m²"
+        },
+        "large": {
+          "name": "Grote wasserette",
+          "description": "15+ machines, > 80m²"
+        }
+      },
+      "machineCategories": {
+        "washers": "Wasmachines",
+        "dryers": "Drogers",
+        "small": "Klein",
+        "medium": "Medium",
+        "large": "Groot"
+      },
+      "affluence": {
+        "title": "Drukte",
+        "low": "Laag",
+        "normal": "Normaal",
+        "high": "Hoog"
+      },
+      "pricing": {
+        "avgWashPrice": "Gemiddelde wasprijs (€)",
+        "avgDryPrice": "Gemiddelde droogprijs (€)",
+        "customizePrices": "Prijzen per grootte aanpassen",
+        "priceSmall": "Prijs Klein (€)",
+        "priceMedium": "Prijs Medium (€)",
+        "priceLarge": "Prijs Groot (€)",
+        "washPrices": "Wasprijzen",
+        "dryPrices": "Droogprijzen"
+      }
     },
     "results": {
       "title": "Snelle schatting",
@@ -595,7 +634,10 @@
       "maxCapacity": "Max. capaciteit: {{wash}} wasbeurten + {{dry}} droogbeurten / dag",
       "pessimistic": "Pessimistisch",
       "central": "Centraal",
-      "optimistic": "Optimistisch"
+      "optimistic": "Optimistisch",
+      "dailyRevenue": "Geschatte dagelijkse omzet",
+      "perDay": "€/dag",
+      "disclaimer": "Indicatieve schatting – de volledige simulator verfijnt met kosten, scenario's en echte gegevens."
     },
     "paywall": {
       "title": "Ontgrendel de volledige analyse",

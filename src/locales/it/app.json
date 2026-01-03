@@ -583,7 +583,46 @@
       "avgPriceDry": "Prezzo medio asciugatura (€)",
       "hoursOpen": "Ore di apertura / giorno",
       "capacityPlaceholder": "Capacità",
-      "submit": "Calcola stima"
+      "submit": "Calcola stima",
+      "machineFleet": "Parco macchine",
+      "machineFleetDescription": "Scegli un modello o personalizza il tuo parco macchine",
+      "templates": {
+        "small": {
+          "name": "Piccola lavanderia",
+          "description": "4-6 macchine, < 40m²"
+        },
+        "standard": {
+          "name": "Lavanderia standard",
+          "description": "8-12 macchine, 40-80m²"
+        },
+        "large": {
+          "name": "Grande lavanderia",
+          "description": "15+ macchine, > 80m²"
+        }
+      },
+      "machineCategories": {
+        "washers": "Lavatrici",
+        "dryers": "Asciugatrici",
+        "small": "Piccola",
+        "medium": "Media",
+        "large": "Grande"
+      },
+      "affluence": {
+        "title": "Affluenza",
+        "low": "Bassa",
+        "normal": "Normale",
+        "high": "Alta"
+      },
+      "pricing": {
+        "avgWashPrice": "Prezzo medio lavaggio (€)",
+        "avgDryPrice": "Prezzo medio asciugatura (€)",
+        "customizePrices": "Personalizza prezzi per dimensione",
+        "priceSmall": "Prezzo Piccola (€)",
+        "priceMedium": "Prezzo Media (€)",
+        "priceLarge": "Prezzo Grande (€)",
+        "washPrices": "Prezzi lavaggio",
+        "dryPrices": "Prezzi asciugatura"
+      }
     },
     "results": {
       "title": "Stima rapida",
@@ -595,7 +634,10 @@
       "maxCapacity": "Capacità max: {{wash}} lavaggi + {{dry}} asciugature / giorno",
       "pessimistic": "Pessimista",
       "central": "Centrale",
-      "optimistic": "Ottimista"
+      "optimistic": "Ottimista",
+      "dailyRevenue": "Fatturato giornaliero stimato",
+      "perDay": "€/giorno",
+      "disclaimer": "Stima indicativa – il simulatore completo affina con costi, scenari e dati reali."
     },
     "paywall": {
       "title": "Sblocca l'analisi completa",
