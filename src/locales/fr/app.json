@@ -1067,7 +1067,30 @@
     "cta": "Souscrire maintenant",
     "priceInfo": "À partir de 29€/mois par laverie",
     "question": "Une question ?",
-    "contact": "Contactez notre équipe"
+    "contact": "Contactez notre équipe",
+    "backToHome": "Retour à l'accueil",
+    "signOut": "Se déconnecter",
+    "alreadyUsed": "Votre essai gratuit a déjà été utilisé avec cette adresse. Connectez-vous ou choisissez une formule."
+  },
+  "auth": {
+    "loggedOut": "Déconnecté",
+    "loggedOutDescription": "Vous avez été déconnecté avec succès",
+    "logoutError": "Erreur lors de la déconnexion",
+    "trialAlreadyUsed": "Votre essai gratuit a déjà été utilisé avec cette adresse. Connectez-vous ou choisissez une formule."
+  },
+  "selectLaundromat": {
+    "title": "Vos laveries",
+    "welcome": "Bienvenue",
+    "subtitle": "Sélectionnez une laverie pour accéder à son tableau de bord",
+    "firstTimeSubtitle": "Configurez votre première laverie pour commencer l'analyse de vos performances",
+    "newBusiness": "Nouvelle entreprise",
+    "laundryCount": "{{count}} laverie",
+    "laundryCount_plural": "{{count}} laveries",
+    "addLaundry": "Ajouter une laverie",
+    "importMultipleCsv": "Importer plusieurs CSV",
+    "access": "Accéder",
+    "loading": "Chargement de vos laveries...",
+    "signOut": "Se déconnecter"
   },
   "demo": {
     "banner": {

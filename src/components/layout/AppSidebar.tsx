@@ -52,6 +52,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useSites } from "@/hooks/useSites";
+import { useLogout } from "@/hooks/useLogout";
 import { useState, useEffect, useMemo } from "react";
 
 interface AppSidebarProps {
@@ -80,10 +81,11 @@ export function AppSidebar({
     return () => clearTimeout(timer);
   }, []);
   
-  const { signOut, profile } = useAuth();
+  const { profile } = useAuth();
   const { daysRemaining, trialStatus, planType } = useSubscription();
   const { isAdmin } = useIsAdmin();
   const { getDefaultSite } = useSites();
+  const { logout } = useLogout();
 
   // Generate report issue URL with pre-filled params
   const getReportIssueUrl = () => {
@@ -139,8 +141,7 @@ export function AppSidebar({
   ];
 
   const handleLogout = async () => {
-    await signOut();
-    navigate("/login");
+    await logout();
   };
 
   useEffect(() => {

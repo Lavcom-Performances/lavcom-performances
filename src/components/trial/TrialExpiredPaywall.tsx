@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { Lock, Sparkles, CheckCircle2, ArrowRight, Clock } from "lucide-react";
+import { Lock, Sparkles, CheckCircle2, ArrowRight, Clock, Home, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { useTranslation } from "react-i18next";
+import { useLogout } from "@/hooks/useLogout";
 
 interface TrialExpiredPaywallProps {
   onContactSupport?: () => void;
@@ -11,6 +12,7 @@ interface TrialExpiredPaywallProps {
 
 export function TrialExpiredPaywall({ onContactSupport }: TrialExpiredPaywallProps) {
   const { t } = useTranslation(['app', 'common']);
+  const { logout } = useLogout();
 
   const features = [
     t('app:trialExpired.features.dashboard'),
@@ -77,6 +79,24 @@ export function TrialExpiredPaywall({ onContactSupport }: TrialExpiredPaywallPro
               <Clock className="h-4 w-4" />
               {t('app:trialExpired.priceInfo')}
             </p>
+
+            {/* Action buttons */}
+            <div className="flex gap-2 pt-2">
+              <Link to="/" className="flex-1">
+                <Button variant="outline" className="w-full gap-2">
+                  <Home className="h-4 w-4" />
+                  {t('app:trialExpired.backToHome')}
+                </Button>
+              </Link>
+              <Button 
+                variant="ghost" 
+                className="flex-1 gap-2 text-muted-foreground hover:text-destructive"
+                onClick={logout}
+              >
+                <LogOut className="h-4 w-4" />
+                {t('app:trialExpired.signOut')}
+              </Button>
+            </div>
 
             <div className="pt-4 border-t border-border">
               <p className="text-center text-sm text-muted-foreground">

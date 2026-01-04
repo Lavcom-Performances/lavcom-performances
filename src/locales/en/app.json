@@ -1067,7 +1067,30 @@
     "cta": "Subscribe now",
     "priceInfo": "Starting at €29/month per laundry",
     "question": "Have a question?",
-    "contact": "Contact our team"
+    "contact": "Contact our team",
+    "backToHome": "Back to home",
+    "signOut": "Sign out",
+    "alreadyUsed": "Your free trial has already been used with this email. Please sign in or choose a plan."
+  },
+  "auth": {
+    "loggedOut": "Signed out",
+    "loggedOutDescription": "You have been successfully signed out",
+    "logoutError": "Error signing out",
+    "trialAlreadyUsed": "Your free trial has already been used with this email. Please sign in or choose a plan."
+  },
+  "selectLaundromat": {
+    "title": "Your laundromats",
+    "welcome": "Welcome",
+    "subtitle": "Select a laundromat to access its dashboard",
+    "firstTimeSubtitle": "Set up your first laundromat to start analyzing your performance",
+    "newBusiness": "New business",
+    "laundryCount": "{{count}} laundromat",
+    "laundryCount_plural": "{{count}} laundromats",
+    "addLaundry": "Add a laundromat",
+    "importMultipleCsv": "Import multiple CSVs",
+    "access": "Access",
+    "loading": "Loading your laundromats...",
+    "signOut": "Sign out"
   },
   "demo": {
     "banner": {

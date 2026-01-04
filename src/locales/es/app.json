@@ -850,7 +850,30 @@
     "cta": "Suscribirse ahora",
     "priceInfo": "Desde 29€/mes por lavandería",
     "question": "¿Tiene preguntas?",
-    "contact": "Contacte nuestro equipo"
+    "contact": "Contacte nuestro equipo",
+    "backToHome": "Volver al inicio",
+    "signOut": "Cerrar sesión",
+    "alreadyUsed": "Su prueba gratuita ya ha sido utilizada con este correo. Por favor, inicie sesión o elija un plan."
+  },
+  "auth": {
+    "loggedOut": "Sesión cerrada",
+    "loggedOutDescription": "Ha cerrado sesión correctamente",
+    "logoutError": "Error al cerrar sesión",
+    "trialAlreadyUsed": "Su prueba gratuita ya ha sido utilizada con este correo. Por favor, inicie sesión o elija un plan."
+  },
+  "selectLaundromat": {
+    "title": "Sus lavanderías",
+    "welcome": "Bienvenido",
+    "subtitle": "Seleccione una lavandería para acceder a su panel",
+    "firstTimeSubtitle": "Configure su primera lavandería para comenzar el análisis de rendimiento",
+    "newBusiness": "Nuevo negocio",
+    "laundryCount": "{{count}} lavandería",
+    "laundryCount_plural": "{{count}} lavanderías",
+    "addLaundry": "Añadir lavandería",
+    "importMultipleCsv": "Importar varios CSV",
+    "access": "Acceder",
+    "loading": "Cargando sus lavanderías...",
+    "signOut": "Cerrar sesión"
   },
   "demo": {
     "banner": {

@@ -16,6 +16,7 @@ interface Subscription {
   stripe_subscription_id: string | null;
   stripe_customer_id: string | null;
   last_invoice_url: string | null;
+  trial_used: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -43,7 +44,7 @@ export function useSubscription() {
       .maybeSingle();
     
     if (!error && data) {
-      setSubscription(data);
+      setSubscription(data as Subscription);
     }
     setLoading(false);
   };
@@ -88,6 +89,11 @@ export function useSubscription() {
     return 'active';
   };
 
+  // Check if user has already used their trial
+  const hasUsedTrial = (): boolean => {
+    return subscription?.trial_used === true;
+  };
+
   return {
     subscription,
     loading,
@@ -100,6 +106,7 @@ export function useSubscription() {
     lastInvoiceUrl: subscription?.last_invoice_url ?? null,
     stripeSubscriptionId: subscription?.stripe_subscription_id ?? null,
     stripeCustomerId: subscription?.stripe_customer_id ?? null,
+    hasUsedTrial: hasUsedTrial(),
     refetch: () => user && fetchSubscription(user.id),
   };
 }

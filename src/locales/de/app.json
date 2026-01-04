@@ -850,7 +850,30 @@
     "cta": "Jetzt abonnieren",
     "priceInfo": "Ab 29€/Monat pro Waschsalon",
     "question": "Haben Sie Fragen?",
-    "contact": "Kontaktieren Sie unser Team"
+    "contact": "Kontaktieren Sie unser Team",
+    "backToHome": "Zurück zur Startseite",
+    "signOut": "Abmelden",
+    "alreadyUsed": "Ihre kostenlose Testversion wurde bereits mit dieser E-Mail verwendet. Bitte melden Sie sich an oder wählen Sie einen Plan."
+  },
+  "auth": {
+    "loggedOut": "Abgemeldet",
+    "loggedOutDescription": "Sie wurden erfolgreich abgemeldet",
+    "logoutError": "Fehler beim Abmelden",
+    "trialAlreadyUsed": "Ihre kostenlose Testversion wurde bereits mit dieser E-Mail verwendet. Bitte melden Sie sich an oder wählen Sie einen Plan."
+  },
+  "selectLaundromat": {
+    "title": "Ihre Waschsalons",
+    "welcome": "Willkommen",
+    "subtitle": "Wählen Sie einen Waschsalon, um auf sein Dashboard zuzugreifen",
+    "firstTimeSubtitle": "Richten Sie Ihren ersten Waschsalon ein, um die Leistungsanalyse zu starten",
+    "newBusiness": "Neues Unternehmen",
+    "laundryCount": "{{count}} Waschsalon",
+    "laundryCount_plural": "{{count}} Waschsalons",
+    "addLaundry": "Waschsalon hinzufügen",
+    "importMultipleCsv": "Mehrere CSVs importieren",
+    "access": "Zugreifen",
+    "loading": "Ihre Waschsalons werden geladen...",
+    "signOut": "Abmelden"
   },
   "demo": {
     "banner": {
