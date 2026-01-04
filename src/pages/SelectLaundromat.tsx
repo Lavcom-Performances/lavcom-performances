@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Search, CheckCircle2, Home, Files } from "lucide-react";
+import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Search, CheckCircle2, Home, Files, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,13 @@ import { useDemoMode } from "@/hooks/useDemoMode";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { MultiCSVImportWizard } from "@/components/operations/multi-csv/MultiCSVImportWizard";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { useLogout } from "@/hooks/useLogout";
+import { useTranslation } from "react-i18next";
+
 export default function SelectLaundromat() {
   const navigate = useNavigate();
+  const { t } = useTranslation(['app', 'common']);
+  const { logout } = useLogout();
   const { sites, isLoading, createSite, fetchSites } = useSites();
   const { createDemoSite, isCreatingDemo } = useDemoMode();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -161,7 +166,7 @@ export default function SelectLaundromat() {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">Chargement de vos laveries...</p>
+          <p className="text-muted-foreground">{t('app:selectLaundromat.loading')}</p>
         </div>
       </div>
     );
@@ -173,8 +178,8 @@ export default function SelectLaundromat() {
   return (
     <>
       <SEOHead 
-        title="Sélection de laverie"
-        description="Sélectionnez ou ajoutez une laverie à gérer."
+        title={t('app:selectLaundromat.title')}
+        description={t('app:selectLaundromat.subtitle')}
         url="/select-laundromat"
         noindex={true}
       />
@@ -187,7 +192,7 @@ export default function SelectLaundromat() {
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <Home className="h-4 w-4" />
-            <span className="hidden sm:inline">Accueil</span>
+            <span className="hidden sm:inline">{t('common:home')}</span>
           </Link>
           
           <div className="flex items-center gap-2">
@@ -201,6 +206,15 @@ export default function SelectLaundromat() {
               <Settings className="h-4 w-4" />
               <span className="hidden sm:inline">Entreprise</span>
             </Button>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="gap-2 text-muted-foreground hover:text-destructive"
+              onClick={logout}
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('app:selectLaundromat.signOut')}</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -212,15 +226,18 @@ export default function SelectLaundromat() {
           <div className="text-center space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
               <Building2 className="h-4 w-4" />
-              {hasSites ? `${sites.length} laverie${sites.length > 1 ? 's' : ''}` : "Nouvelle entreprise"}
+              {hasSites 
+                ? t('app:selectLaundromat.laundryCount', { count: sites.length })
+                : t('app:selectLaundromat.newBusiness')
+              }
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-foreground tracking-tight">
-              {hasSites ? "Vos laveries" : "Bienvenue"}
+              {hasSites ? t('app:selectLaundromat.title') : t('app:selectLaundromat.welcome')}
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto">
               {hasSites 
-                ? "Sélectionnez une laverie pour accéder à son tableau de bord"
-                : "Configurez votre première laverie pour commencer l'analyse de vos performances"
+                ? t('app:selectLaundromat.subtitle')
+                : t('app:selectLaundromat.firstTimeSubtitle')
               }
             </p>
           </div>
@@ -239,16 +256,16 @@ export default function SelectLaundromat() {
               <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <Button onClick={openAddDialog} className="gap-2" size="lg">
                   <Plus className="h-4 w-4" />
-                  Ajouter une laverie
+                  {t('app:selectLaundromat.addLaundry')}
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant="outline"
                   onClick={() => setIsMultiImportOpen(true)} 
                   className="gap-2" 
                   size="lg"
                 >
                   <Files className="h-4 w-4" />
-                  Importer plusieurs CSV
+                  {t('app:selectLaundromat.importMultipleCsv')}
                 </Button>
               </div>
 
@@ -278,7 +295,7 @@ export default function SelectLaundromat() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors hidden sm:block">
-                        Accéder
+                        {t('app:selectLaundromat.access')}
                       </span>
                       <ChevronRight className="h-5 w-5 transition-all text-muted-foreground group-hover:text-primary group-hover:translate-x-1" />
                     </div>

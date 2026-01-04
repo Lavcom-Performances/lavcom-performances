@@ -850,7 +850,30 @@
     "cta": "Nu abonneren",
     "priceInfo": "Vanaf €29/maand per wasserette",
     "question": "Heeft u vragen?",
-    "contact": "Neem contact op met ons team"
+    "contact": "Neem contact op met ons team",
+    "backToHome": "Terug naar home",
+    "signOut": "Uitloggen",
+    "alreadyUsed": "Uw gratis proefperiode is al gebruikt met dit e-mailadres. Log in of kies een abonnement."
+  },
+  "auth": {
+    "loggedOut": "Uitgelogd",
+    "loggedOutDescription": "U bent succesvol uitgelogd",
+    "logoutError": "Fout bij uitloggen",
+    "trialAlreadyUsed": "Uw gratis proefperiode is al gebruikt met dit e-mailadres. Log in of kies een abonnement."
+  },
+  "selectLaundromat": {
+    "title": "Uw wasserettes",
+    "welcome": "Welkom",
+    "subtitle": "Selecteer een wasserette om naar het dashboard te gaan",
+    "firstTimeSubtitle": "Stel uw eerste wasserette in om de prestatie-analyse te starten",
+    "newBusiness": "Nieuw bedrijf",
+    "laundryCount": "{{count}} wasserette",
+    "laundryCount_plural": "{{count}} wasserettes",
+    "addLaundry": "Wasserette toevoegen",
+    "importMultipleCsv": "Meerdere CSV's importeren",
+    "access": "Toegang",
+    "loading": "Uw wasserettes worden geladen...",
+    "signOut": "Uitloggen"
   },
   "demo": {
     "banner": {
