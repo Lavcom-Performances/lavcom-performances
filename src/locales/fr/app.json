@@ -345,7 +345,12 @@
       "feature5": "Sans engagement, sans CB"
     },
     "decorativeText": "Rejoignez les gérants de laveries qui optimisent leurs performances",
-    "continueWithGoogle": "Continuer avec Google"
+    "continueWithGoogle": "Continuer avec Google",
+    "alreadyLoggedIn": {
+      "title": "Vous êtes déjà connecté",
+      "description": "Déconnectez-vous pour créer un autre compte.",
+      "continue": "Continuer vers l'application"
+    }
   },
   "forgotPassword": {
     "title": "Mot de passe oublié",

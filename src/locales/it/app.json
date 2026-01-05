@@ -341,7 +341,12 @@
       "feature5": "Senza impegno, senza carta"
     },
     "decorativeText": "Unisciti agli operatori di lavanderie che ottimizzano le loro performance",
-    "continueWithGoogle": "Continua con Google"
+    "continueWithGoogle": "Continua con Google",
+    "alreadyLoggedIn": {
+      "title": "Hai già effettuato l'accesso",
+      "description": "Esci per creare un altro account.",
+      "continue": "Continua all'app"
+    }
   },
   "forgotPassword": {
     "title": "Password dimenticata",

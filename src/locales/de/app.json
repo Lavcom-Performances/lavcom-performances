@@ -341,7 +341,12 @@
       "feature5": "Ohne Bindung, ohne Kreditkarte"
     },
     "decorativeText": "Schließen Sie sich den Waschsalon-Betreibern an, die ihre Leistung optimieren",
-    "continueWithGoogle": "Mit Google fortfahren"
+    "continueWithGoogle": "Mit Google fortfahren",
+    "alreadyLoggedIn": {
+      "title": "Sie sind bereits angemeldet",
+      "description": "Melden Sie sich ab, um ein anderes Konto zu erstellen.",
+      "continue": "Zur App fortfahren"
+    }
   },
   "forgotPassword": {
     "title": "Passwort vergessen",

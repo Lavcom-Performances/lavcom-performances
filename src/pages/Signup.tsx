@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff, Loader2, Home, CheckCircle2, Gift, Clock } from "lucide-react";
+import { Eye, EyeOff, Loader2, Home, CheckCircle2, Gift, Clock, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useLogout } from "@/hooks/useLogout";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { z } from "zod";
 import { formatFirstName, formatLastName } from "@/lib/textUtils";
@@ -30,15 +31,24 @@ export default function Signup() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [showAlreadyLoggedIn, setShowAlreadyLoggedIn] = useState(false);
   
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle, isAuthenticated, loading: authLoading } = useAuth();
+  const { logout } = useLogout();
 
   const { strength: passwordStrength } = usePasswordStrength(password);
   const { checkPassword, isChecking: isCheckingBreach, isBreached, breachCount, reset: resetBreachCheck } = usePasswordBreachCheck();
 
   const isRateLimited = cooldownSeconds > 0;
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      setShowAlreadyLoggedIn(true);
+    }
+  }, [authLoading, isAuthenticated]);
 
   // Countdown effect for cooldown
   useEffect(() => {
@@ -191,6 +201,54 @@ export default function Signup() {
     t('app:signup.trialFeatures.feature4'),
     t('app:signup.trialFeatures.feature5'),
   ];
+
+  // Show "already logged in" screen
+  if (showAlreadyLoggedIn) {
+    return (
+      <>
+        <SEOHead 
+          title="Inscription - Essai gratuit"
+          description="Créez votre compte Lavcom Performances et profitez de 14 jours d'essai gratuit pour gérer vos laveries automatiques."
+          url="/signup"
+          noindex={true}
+        />
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
+          <div className="w-full max-w-md text-center space-y-6">
+            <img 
+              src={lavcomLogo} 
+              alt="Lavcom Performances" 
+              className="w-48 mx-auto"
+            />
+            <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+              <h2 className="text-xl font-display font-semibold text-foreground">
+                {t('app:signup.alreadyLoggedIn.title')}
+              </h2>
+              <p className="text-muted-foreground">
+                {t('app:signup.alreadyLoggedIn.description')}
+              </p>
+              <div className="flex flex-col gap-3 pt-2">
+                <Button
+                  variant="lavcom"
+                  size="lg"
+                  onClick={() => navigate('/select-laundromat')}
+                >
+                  {t('app:signup.alreadyLoggedIn.continue')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={logout}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {t('common:logout')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
