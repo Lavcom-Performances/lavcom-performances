@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { MapPin, Loader2 } from "lucide-react";
 import { useCitySearch, CitySearchResult } from "@/hooks/useCitySearch";
+import { useTranslation } from "react-i18next";
 
 interface CityAutocompleteProps {
   value: string;
@@ -21,6 +22,7 @@ export function CityAutocomplete({
   country = "FR",
   hasError = false
 }: CityAutocompleteProps) {
+  const { t } = useTranslation(['app']);
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
   const { results, isLoading } = useCitySearch(inputValue, 2, country);
@@ -84,7 +86,7 @@ export function CityAutocomplete({
 
       {isOpen && inputValue.length >= 2 && !isLoading && results.length === 0 && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg p-3 text-sm text-muted-foreground">
-          Aucune ville trouvée
+          {t('app:newLaundry.noCityFound', 'Aucune ville trouvée')}
         </div>
       )}
     </div>
