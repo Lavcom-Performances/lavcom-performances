@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Check, ChevronsUpDown, Search } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { nafCodes, NafCode } from "@/data/nafCodes";
+import { nafCodes } from "@/data/nafCodes";
 import { useTranslation } from "react-i18next";
 
 interface NafCodeSelectProps {
@@ -33,6 +33,7 @@ export function NafCodeSelect({ value, onChange, disabled, hasError }: NafCodeSe
   const [open, setOpen] = useState(false);
   const [customCode, setCustomCode] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const allOptions = [...nafCodes, OTHER_OPTION];
   const selectedNaf = nafCodes.find(n => n.code === value);
@@ -46,7 +47,7 @@ export function NafCodeSelect({ value, onChange, disabled, hasError }: NafCodeSe
         ? t('app:addLaundromat.nafOther', 'Autre code NAF')
         : "";
 
-  const handleSelect = (code: string) => {
+  const handleSelect = useCallback((code: string) => {
     if (code === "OTHER") {
       setShowCustomInput(true);
       onChange("OTHER");
@@ -56,7 +57,9 @@ export function NafCodeSelect({ value, onChange, disabled, hasError }: NafCodeSe
       onChange(code, naf?.label);
     }
     setOpen(false);
-  };
+    // Return focus to trigger after selection
+    setTimeout(() => triggerRef.current?.focus(), 0);
+  }, [onChange]);
 
   const handleCustomCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.toUpperCase();
@@ -64,15 +67,31 @@ export function NafCodeSelect({ value, onChange, disabled, hasError }: NafCodeSe
     onChange(val);
   };
 
+  // Handle keyboard on trigger button
+  const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+      if (!open) {
+        e.preventDefault();
+        setOpen(true);
+      }
+    } else if (e.key === "Escape" && open) {
+      e.preventDefault();
+      setOpen(false);
+    }
+  };
+
   return (
     <div className="space-y-2">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            ref={triggerRef}
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-haspopup="listbox"
             disabled={disabled}
+            onKeyDown={handleTriggerKeyDown}
             className={cn(
               "w-full justify-between font-normal",
               !value && "text-muted-foreground",
@@ -83,9 +102,24 @@ export function NafCodeSelect({ value, onChange, disabled, hasError }: NafCodeSe
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[400px] p-0 z-50" align="start">
-          <Command>
-            <CommandInput placeholder={t('app:addLaundromat.nafSearch', 'Rechercher un code NAF...')} />
+        <PopoverContent 
+          className="w-[400px] p-0 z-50" 
+          align="start"
+          onEscapeKeyDown={() => setOpen(false)}
+          onInteractOutside={() => setOpen(false)}
+        >
+          <Command
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setOpen(false);
+                triggerRef.current?.focus();
+              }
+            }}
+          >
+            <CommandInput 
+              placeholder={t('app:addLaundromat.nafSearch', 'Rechercher un code NAF...')} 
+              autoFocus
+            />
             <CommandList>
               <CommandEmpty>{t('app:addLaundromat.nafNotFound', 'Aucun code trouvé')}</CommandEmpty>
               <CommandGroup>
