@@ -243,4 +243,8 @@ export const COUNTRIES = [
   { code: "CH", name: "Suisse", flag: "🇨🇭" },
   { code: "LU", name: "Luxembourg", flag: "🇱🇺" },
   { code: "MC", name: "Monaco", flag: "🇲🇨" },
+  { code: "DE", name: "Allemagne", flag: "🇩🇪" },
+  { code: "NL", name: "Pays-Bas", flag: "🇳🇱" },
+  { code: "ES", name: "Espagne", flag: "🇪🇸" },
+  { code: "IT", name: "Italie", flag: "🇮🇹" },
 ];

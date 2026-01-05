@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { MapPin, Loader2 } from "lucide-react";
 import { useAddressSearch, AddressSearchResult } from "@/hooks/useAddressSearch";
+import { useTranslation } from "react-i18next";
 
 interface AddressAutocompleteProps {
   value: string;
@@ -11,19 +12,24 @@ interface AddressAutocompleteProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  countryCode?: string;
+  hasError?: boolean;
 }
 
 export function AddressAutocomplete({ 
   value, 
   onSelect,
   onChange,
-  placeholder = "Rechercher une adresse...",
+  placeholder,
   className,
-  disabled = false
+  disabled = false,
+  countryCode = "FR",
+  hasError = false,
 }: AddressAutocompleteProps) {
+  const { t } = useTranslation(['app']);
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
-  const { results, isLoading } = useAddressSearch(inputValue);
+  const { results, isLoading } = useAddressSearch(inputValue, 3, countryCode);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,6 +60,8 @@ export function AddressAutocomplete({
     onChange?.(newValue);
   };
 
+  const defaultPlaceholder = t('app:newLaundry.addressPlaceholder', 'Rechercher une adresse...');
+
   return (
     <div ref={containerRef} className={cn("relative", className)}>
       <div className="relative">
@@ -62,8 +70,8 @@ export function AddressAutocomplete({
           value={inputValue}
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
-          placeholder={placeholder}
-          className="pl-10"
+          placeholder={placeholder || defaultPlaceholder}
+          className={cn("pl-10", hasError && "border-destructive focus-visible:ring-destructive")}
           disabled={disabled}
         />
         {isLoading && (
@@ -75,14 +83,17 @@ export function AddressAutocomplete({
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-auto">
           {results.map((result, index) => (
             <button
-              key={`${result.postalCode}-${index}`}
+              key={`${result.postalCode}-${result.city}-${index}`}
               type="button"
               onClick={() => handleSelect(result)}
-              className="w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-2"
+              className="w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground transition-colors flex items-start gap-2"
             >
-              <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
-              <div className="flex flex-col">
-                <span>{result.label}</span>
+              <MapPin className="h-3 w-3 text-muted-foreground shrink-0 mt-1" />
+              <div className="flex flex-col min-w-0">
+                <span className="font-medium truncate">{result.address}</span>
+                <span className="text-xs text-muted-foreground truncate">
+                  {result.postalCode} {result.city}
+                </span>
               </div>
             </button>
           ))}
@@ -91,7 +102,7 @@ export function AddressAutocomplete({
 
       {isOpen && inputValue.length >= 3 && !isLoading && results.length === 0 && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg p-3 text-sm text-muted-foreground">
-          Aucune adresse trouvée
+          {t('app:newLaundry.noAddressFound', 'Aucune adresse trouvée')}
         </div>
       )}
     </div>
