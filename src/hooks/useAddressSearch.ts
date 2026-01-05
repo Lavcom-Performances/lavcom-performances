@@ -38,41 +38,54 @@ export function useAddressSearch(
 
       if (country === "FR") {
         // French government API - high quality for France
-        const response = await fetch(
-          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchQuery)}&limit=10`
-        );
+        // Use autocomplete endpoint for better results with partial addresses
+        const apiUrl = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchQuery)}&limit=10&autocomplete=1`;
+        
+        console.log("[AddressSearch] Fetching FR addresses:", apiUrl);
+        
+        const response = await fetch(apiUrl);
 
         if (!response.ok) {
-          throw new Error("Erreur lors de la recherche");
+          console.error("[AddressSearch] API error:", response.status, response.statusText);
+          throw new Error(`API error: ${response.status}`);
         }
 
         const data = await response.json();
         
-        formattedResults = data.features.map((feature: any) => ({
-          label: feature.properties.label,
-          address: feature.properties.name,
-          postalCode: feature.properties.postcode || "",
-          city: feature.properties.city || feature.properties.context?.split(",")[0] || "",
-          context: feature.properties.context || "",
-          countryCode: "FR",
-          countryName: "France",
-        }));
+        console.log("[AddressSearch] API response:", data.features?.length || 0, "results");
+        
+        if (data.features && data.features.length > 0) {
+          formattedResults = data.features.map((feature: any) => ({
+            label: feature.properties.label,
+            address: feature.properties.name,
+            postalCode: feature.properties.postcode || "",
+            city: feature.properties.city || feature.properties.municipality || "",
+            context: feature.properties.context || "",
+            countryCode: "FR",
+            countryName: "France",
+          }));
+        }
       } else {
         // Nominatim for international addresses
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&countrycodes=${country.toLowerCase()}&format=json&limit=10&addressdetails=1`,
-          {
-            headers: {
-              'Accept-Language': 'fr,en',
-            }
+        const apiUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&countrycodes=${country.toLowerCase()}&format=json&limit=10&addressdetails=1`;
+        
+        console.log("[AddressSearch] Fetching international addresses:", apiUrl);
+        
+        const response = await fetch(apiUrl, {
+          headers: {
+            'Accept-Language': 'fr,en',
+            'User-Agent': 'LavcomPerformances/1.0',
           }
-        );
+        });
 
         if (!response.ok) {
-          throw new Error("Erreur lors de la recherche");
+          console.error("[AddressSearch] Nominatim error:", response.status, response.statusText);
+          throw new Error(`Nominatim error: ${response.status}`);
         }
 
         const data = await response.json();
+        
+        console.log("[AddressSearch] Nominatim response:", data.length || 0, "results");
         
         formattedResults = data
           .filter((r: any) => r.address)
@@ -99,7 +112,7 @@ export function useAddressSearch(
 
       setResults(formattedResults);
     } catch (err) {
-      console.error("Address search error:", err);
+      console.error("[AddressSearch] Error:", err);
       setError("Impossible de charger les adresses");
       setResults([]);
     } finally {
