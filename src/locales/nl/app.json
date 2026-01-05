@@ -341,7 +341,12 @@
       "feature5": "Zonder verplichtingen, zonder creditcard"
     },
     "decorativeText": "Sluit u aan bij wasserette-exploitanten die hun prestaties optimaliseren",
-    "continueWithGoogle": "Doorgaan met Google"
+    "continueWithGoogle": "Doorgaan met Google",
+    "alreadyLoggedIn": {
+      "title": "U bent al ingelogd",
+      "description": "Log uit om een ander account aan te maken.",
+      "continue": "Doorgaan naar app"
+    }
   },
   "forgotPassword": {
     "title": "Wachtwoord vergeten",

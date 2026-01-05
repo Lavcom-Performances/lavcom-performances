@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { TrialExpiredPaywall } from '@/components/trial/TrialExpiredPaywall';
@@ -12,16 +12,31 @@ interface ProtectedRouteProps {
   requireEmailVerification?: boolean;
 }
 
+// Public routes that should never redirect to /select-laundromat
+const PUBLIC_ROUTES = [
+  '/login',
+  '/signup',
+  '/pricing',
+  '/forgot-password',
+  '/reset-password',
+  '/',
+  '/cgv',
+  '/mentions-legales',
+  '/politique-confidentialite',
+];
+
 export function ProtectedRoute({ 
   children, 
   requireSubscription = true,
   requireEmailVerification = true,
 }: ProtectedRouteProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated, loading: authLoading, signOut, isEmailVerified } = useAuth();
   const { isSubscriptionActive, isExpired, loading: subLoading } = useSubscription();
 
   useEffect(() => {
+    // Guard 1: Not authenticated -> redirect to login
     if (!authLoading && !isAuthenticated) {
       navigate('/login', { replace: true });
     }
@@ -57,7 +72,8 @@ export function ProtectedRoute({
     );
   }
 
-  // Subscription expired - show paywall
+  // Guard 2: Subscription expired - show paywall (BEFORE checking for site selection)
+  // This prevents infinite loops between /select-laundromat and /trial-ended
   if (requireSubscription && isExpired && !isSubscriptionActive) {
     return (
       <TrialExpiredPaywall 

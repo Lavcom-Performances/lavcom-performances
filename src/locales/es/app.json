@@ -341,7 +341,12 @@
       "feature5": "Sin compromiso, sin tarjeta"
     },
     "decorativeText": "Únase a los operadores de lavanderías que optimizan su rendimiento",
-    "continueWithGoogle": "Continuar con Google"
+    "continueWithGoogle": "Continuar con Google",
+    "alreadyLoggedIn": {
+      "title": "Ya ha iniciado sesión",
+      "description": "Cierre sesión para crear otra cuenta.",
+      "continue": "Continuar a la aplicación"
+    }
   },
   "forgotPassword": {
     "title": "Contraseña olvidada",

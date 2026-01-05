@@ -345,7 +345,12 @@
       "feature5": "No commitment, no credit card"
     },
     "decorativeText": "Join laundry operators who optimize their performance",
-    "continueWithGoogle": "Continue with Google"
+    "continueWithGoogle": "Continue with Google",
+    "alreadyLoggedIn": {
+      "title": "You are already logged in",
+      "description": "Sign out to create another account.",
+      "continue": "Continue to app"
+    }
   },
   "forgotPassword": {
     "title": "Forgot password",
