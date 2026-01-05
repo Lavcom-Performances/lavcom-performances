@@ -36,6 +36,9 @@
     "prefilledBadge": "Prellenado via SIRET",
     "invalidFormat": "Formato SIRET inválido (se esperan 14 dígitos)"
   },
+  "siretLookup": {
+    "unavailable": "Servicio SIRET temporalmente no disponible. Puede continuar manualmente."
+  },
   "generic": {
     "somethingWentWrong": "Algo salió mal",
     "pleaseTryAgain": "Por favor intente más tarde"

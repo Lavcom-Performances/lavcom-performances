@@ -1,15 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Search, CheckCircle2, Home, Files, LogOut } from "lucide-react";
+import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Home, Files, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { AddressAutocomplete } from "@/components/laundromat/AddressAutocomplete";
-import { CityAutocomplete } from "@/components/simulation/CityAutocomplete";
 import { LaundryEmptyState } from "@/components/laundromat/LaundryEmptyState";
+import { AddLaundromatDialog } from "@/components/laundromat/AddLaundromatDialog";
 import { useSites } from "@/hooks/useSites";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -17,6 +12,16 @@ import { MultiCSVImportWizard } from "@/components/operations/multi-csv/MultiCSV
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useLogout } from "@/hooks/useLogout";
 import { useTranslation } from "react-i18next";
+
+interface LaundryFormData {
+  name: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  siret: string;
+  nafCode: string;
+}
 
 export default function SelectLaundromat() {
   const navigate = useNavigate();
@@ -26,133 +31,35 @@ export default function SelectLaundromat() {
   const { createDemoSite, isCreatingDemo } = useDemoMode();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMultiImportOpen, setIsMultiImportOpen] = useState(false);
-  const [isLoadingSiret, setIsLoadingSiret] = useState(false);
-  const [siretError, setSiretError] = useState<string | null>(null);
-  const [siretSuccess, setSiretSuccess] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [newLaundromat, setNewLaundromat] = useState({
-    name: "",
-    address: "",
-    city: "",
-    postalCode: "",
-    siret: "",
-    nafCode: "",
-  });
 
   const handleSelectLaundromat = (siteId: string) => {
-    // Store selected site ID in localStorage for now
     localStorage.setItem("selectedSiteId", siteId);
     navigate("/dashboard");
   };
 
-  const handleSiretChange = async (value: string) => {
-    // Only allow digits
-    const cleanValue = value.replace(/\D/g, '').slice(0, 14);
-    setNewLaundromat(prev => ({ ...prev, siret: cleanValue }));
-    setSiretError(null);
-    setSiretSuccess(false);
-
-    // Auto-fetch when 14 digits are entered
-    if (cleanValue.length === 14) {
-      await fetchSiretData(cleanValue);
-    }
-  };
-
-  const fetchSiretData = async (siret: string) => {
-    setIsLoadingSiret(true);
-    setSiretError(null);
-    setSiretSuccess(false);
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-from-siret?siret=${siret}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        setSiretError(result.error || "Erreur lors de la récupération des données");
-        return;
-      }
-
-      // Pre-fill the form with fetched data
-      setNewLaundromat(prev => ({
-        ...prev,
-        name: result.trade_name || result.company_name || prev.name,
-        address: result.address_line1 || prev.address,
-        city: result.city || prev.city,
-        postalCode: result.postal_code || prev.postalCode,
-        nafCode: result.naf_code || prev.nafCode,
-      }));
-      
-      setSiretSuccess(true);
-      toast({
-        title: "Données récupérées",
-        description: "Les informations de l'entreprise ont été pré-remplies.",
-      });
-    } catch (error) {
-      console.error("Error fetching SIRET data:", error);
-      setSiretError("Service indisponible. Veuillez réessayer.");
-    } finally {
-      setIsLoadingSiret(false);
-    }
-  };
-
-  const handleAddLaundromat = async () => {
-    if (!newLaundromat.name || !newLaundromat.address || !newLaundromat.city) {
-      toast({
-        title: "Champs requis",
-        description: "Veuillez remplir le nom, l'adresse et la ville.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsCreating(true);
+  const handleAddLaundromat = async (formData: LaundryFormData) => {
     try {
       await createSite({
-        name: newLaundromat.name,
-        address: newLaundromat.address,
-        city: newLaundromat.city,
-        postal_code: newLaundromat.postalCode,
+        name: formData.name,
+        address: formData.address,
+        city: formData.city,
+        postal_code: formData.postalCode,
       });
-
-      setNewLaundromat({ name: "", address: "", city: "", postalCode: "", siret: "", nafCode: "" });
-      setIsDialogOpen(false);
-      setSiretError(null);
-      setSiretSuccess(false);
       
       toast({
-        title: "Laverie ajoutée",
-        description: `${newLaundromat.name} a été ajoutée avec succès.`,
+        title: t('app:addLaundromat.successTitle', 'Laverie ajoutée'),
+        description: t('app:addLaundromat.successDescription', '{{name}} a été ajoutée avec succès.', { name: formData.name }),
       });
 
-      // Refresh the sites list
       await fetchSites();
     } catch (error) {
       console.error("Error creating site:", error);
       toast({
-        title: "Erreur",
-        description: "Impossible d'ajouter la laverie. Veuillez réessayer.",
+        title: t('app:addLaundromat.errorTitle', 'Erreur'),
+        description: t('app:addLaundromat.errorDescription', 'Impossible d\'ajouter la laverie. Veuillez réessayer.'),
         variant: "destructive",
       });
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  const handleDialogOpenChange = (open: boolean) => {
-    setIsDialogOpen(open);
-    if (!open) {
-      // Reset form when closing
-      setNewLaundromat({ name: "", address: "", city: "", postalCode: "", siret: "", nafCode: "" });
-      setSiretError(null);
-      setSiretSuccess(false);
+      throw error;
     }
   };
 
@@ -308,134 +215,11 @@ export default function SelectLaundromat() {
       </main>
 
       {/* Add Laundry Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Nouvelle laverie</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* SIRET Field */}
-            <div className="space-y-2">
-              <Label htmlFor="siret" className="flex items-center gap-2">
-                N° SIRET
-                <span className="text-xs text-muted-foreground font-normal">(optionnel - pré-remplit les champs)</span>
-              </Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="siret"
-                  placeholder="14 chiffres (ex: 12345678901234)"
-                  value={newLaundromat.siret}
-                  onChange={(e) => handleSiretChange(e.target.value)}
-                  className={`pl-10 pr-10 ${siretError ? 'border-destructive' : siretSuccess ? 'border-green-500' : ''}`}
-                  maxLength={14}
-                />
-                {isLoadingSiret && (
-                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
-                )}
-                {siretSuccess && !isLoadingSiret && (
-                  <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
-                )}
-              </div>
-              {siretError && (
-                <p className="text-xs text-destructive">{siretError}</p>
-              )}
-              {newLaundromat.siret.length > 0 && newLaundromat.siret.length < 14 && (
-                <p className="text-xs text-muted-foreground">
-                  {14 - newLaundromat.siret.length} chiffres restants
-                </p>
-              )}
-            </div>
-
-            {/* Name */}
-            <div className="space-y-2">
-              <Label htmlFor="laundry-name">Nom de la laverie *</Label>
-              <Input
-                id="laundry-name"
-                placeholder="Ex: Laverie Montmartre"
-                value={newLaundromat.name}
-                onChange={(e) => setNewLaundromat(prev => ({ ...prev, name: e.target.value }))}
-              />
-            </div>
-
-            {/* Address with autocomplete */}
-            <div className="space-y-2">
-              <Label>Adresse *</Label>
-              <AddressAutocomplete
-                value={newLaundromat.address}
-                onSelect={(result) => {
-                  setNewLaundromat(prev => ({
-                    ...prev,
-                    address: result.address,
-                    city: result.city,
-                    postalCode: result.postalCode,
-                  }));
-                }}
-                onChange={(value) => setNewLaundromat(prev => ({ ...prev, address: value }))}
-                placeholder="Rechercher une adresse..."
-              />
-            </div>
-
-            {/* City with autocomplete */}
-            <div className="space-y-2">
-              <Label>Ville *</Label>
-              <CityAutocomplete
-                value={newLaundromat.city ? `${newLaundromat.city}${newLaundromat.postalCode ? ` (${newLaundromat.postalCode})` : ''}` : ''}
-                onSelect={(result) => {
-                  setNewLaundromat(prev => ({
-                    ...prev,
-                    city: result.city,
-                    postalCode: result.postalCode,
-                  }));
-                }}
-                placeholder="Rechercher une ville..."
-              />
-            </div>
-
-            {/* Postal Code (read-only, filled by autocomplete) */}
-            <div className="space-y-2">
-              <Label htmlFor="postal-code">Code postal</Label>
-              <Input
-                id="postal-code"
-                placeholder="Rempli automatiquement"
-                value={newLaundromat.postalCode}
-                onChange={(e) => setNewLaundromat(prev => ({ ...prev, postalCode: e.target.value }))}
-                className="bg-muted/50"
-              />
-            </div>
-
-            {/* NAF Code */}
-            <div className="space-y-2">
-              <Label htmlFor="naf-code" className="flex items-center gap-2">
-                Code NAF
-                <span className="text-xs text-muted-foreground font-normal">(optionnel)</span>
-              </Label>
-              <Input
-                id="naf-code"
-                placeholder="Ex: 96.01A"
-                value={newLaundromat.nafCode}
-                onChange={(e) => setNewLaundromat(prev => ({ ...prev, nafCode: e.target.value }))}
-              />
-              {newLaundromat.nafCode && (
-                <p className="text-xs text-muted-foreground">
-                  Code APE/NAF de l'établissement
-                </p>
-              )}
-            </div>
-
-            <Button onClick={handleAddLaundromat} className="w-full" disabled={isCreating}>
-              {isCreating ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Ajout en cours...
-                </>
-              ) : (
-                "Ajouter"
-              )}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AddLaundromatDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSubmit={handleAddLaundromat}
+      />
 
       {/* Multi CSV Import Wizard */}
       <MultiCSVImportWizard 

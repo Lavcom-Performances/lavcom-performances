@@ -36,6 +36,9 @@
     "prefilledBadge": "Vooraf ingevuld via SIRET",
     "invalidFormat": "Ongeldig SIRET-formaat (14 cijfers verwacht)"
   },
+  "siretLookup": {
+    "unavailable": "SIRET-service tijdelijk niet beschikbaar. U kunt handmatig doorgaan."
+  },
   "generic": {
     "somethingWentWrong": "Er is iets misgegaan",
     "pleaseTryAgain": "Probeer het later opnieuw"
