@@ -1,3 +1,15 @@
+/**
+ * AddLaundromatDialog.tsx
+ * 
+ * Modal dialog for adding a new laundromat (site) to the system.
+ * Features:
+ * - Optional SIRET lookup to auto-fill company information (French business ID)
+ * - Address autocomplete with Google/French address API
+ * - City autocomplete with postal code auto-fill
+ * - NAF code selector (French business activity classification)
+ * - Client-side validation before submission
+ */
+
 import { useState, useCallback, useEffect } from "react";
 import { Loader2, Search, CheckCircle2, Info } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -12,22 +24,37 @@ import { CountrySelect } from "@/components/laundromat/CountrySelect";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
+
+/**
+ * Shape of the laundromat form data
+ * All fields that will be collected and submitted to the database
+ */
 interface LaundryFormData {
-  name: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  siret: string;
-  nafCode: string;
+  name: string;        // Business name of the laundromat
+  address: string;     // Street address
+  city: string;        // City name
+  postalCode: string;  // Postal/ZIP code
+  country: string;     // ISO country code (e.g., "FR")
+  siret: string;       // French business identification number (14 digits)
+  nafCode: string;     // French activity classification code
 }
 
+/**
+ * Props for the AddLaundromatDialog component
+ */
 interface AddLaundromatDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (data: LaundryFormData) => Promise<void>;
+  open: boolean;                                    // Controls dialog visibility
+  onOpenChange: (open: boolean) => void;            // Callback when dialog open state changes
+  onSubmit: (data: LaundryFormData) => Promise<void>; // Callback to handle form submission
 }
 
+/**
+ * Default empty state for the form
+ * Country defaults to France ("FR") as primary market
+ */
 const initialFormData: LaundryFormData = {
   name: "",
   address: "",
@@ -38,17 +65,43 @@ const initialFormData: LaundryFormData = {
   nafCode: "",
 };
 
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
 export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundromatDialogProps) {
+  // i18n hook for translations (supports French, English, etc.)
   const { t } = useTranslation(['app', 'errors']);
+  
+  // -------------------------------------------------------------------------
+  // STATE MANAGEMENT
+  // -------------------------------------------------------------------------
+  
+  // Main form data state
   const [formData, setFormData] = useState<LaundryFormData>(initialFormData);
-  const [isLoadingSiret, setIsLoadingSiret] = useState(false);
-  const [siretInfo, setSiretInfo] = useState<string | null>(null);
-  const [siretSuccess, setSiretSuccess] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
+  
+  // SIRET lookup states
+  const [isLoadingSiret, setIsLoadingSiret] = useState(false);  // Loading spinner during API call
+  const [siretInfo, setSiretInfo] = useState<string | null>(null); // Info/error message for SIRET
+  const [siretSuccess, setSiretSuccess] = useState(false);      // Green checkmark when SIRET found
+  
+  // Form submission state
+  const [isCreating, setIsCreating] = useState(false);          // Prevents double-submit
+  
+  // Address lock - prevents editing after auto-fill from SIRET or address selection
   const [addressLocked, setAddressLocked] = useState(false);
+  
+  // Tracks which fields have validation errors (red border)
   const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
 
-  // Reset form when dialog closes
+  // -------------------------------------------------------------------------
+  // EFFECTS
+  // -------------------------------------------------------------------------
+
+  /**
+   * Reset all form state when dialog closes
+   * This ensures a clean slate when reopening the dialog
+   */
   useEffect(() => {
     if (!open) {
       setFormData(initialFormData);
@@ -59,31 +112,55 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     }
   }, [open]);
 
+  // -------------------------------------------------------------------------
+  // FIELD UPDATE HANDLERS
+  // -------------------------------------------------------------------------
+
+  /**
+   * Generic field updater with type safety
+   * Also clears any validation error for the updated field
+   */
   const updateField = useCallback(<K extends keyof LaundryFormData>(field: K, value: LaundryFormData[K]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear validation error when field is updated
+    // Clear validation error when user starts typing
     setValidationErrors(prev => ({ ...prev, [field]: false }));
   }, []);
 
+  // -------------------------------------------------------------------------
+  // SIRET HANDLING
+  // -------------------------------------------------------------------------
+
+  /**
+   * Handles SIRET input changes
+   * - Strips non-digit characters
+   * - Limits to 14 characters
+   * - Auto-triggers API lookup when 14 digits entered
+   */
   const handleSiretChange = async (value: string) => {
-    // Only allow digits
+    // Only allow digits, max 14 characters
     const cleanValue = value.replace(/\D/g, '').slice(0, 14);
     updateField('siret', cleanValue);
     setSiretInfo(null);
     setSiretSuccess(false);
 
-    // Auto-fetch when 14 digits are entered
+    // Auto-fetch when complete SIRET is entered
     if (cleanValue.length === 14) {
       await fetchSiretData(cleanValue);
     }
   };
 
+  /**
+   * Fetches company information from French SIRET registry
+   * Calls our edge function which queries the INSEE API
+   * Pre-fills form fields on success (name, address, city, postal code, NAF code)
+   */
   const fetchSiretData = async (siret: string) => {
     setIsLoadingSiret(true);
     setSiretInfo(null);
     setSiretSuccess(false);
 
     try {
+      // Call our Supabase edge function that wraps the INSEE API
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-from-siret?siret=${siret}`,
         {
@@ -96,7 +173,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       const result = await response.json();
 
       if (!response.ok) {
-        // Non-blocking info message
+        // Non-blocking: user can still fill form manually
         setSiretInfo(t('errors:siretLookup.unavailable', 'Service SIRET temporairement indisponible. Vous pouvez continuer manuellement.'));
         return;
       }
@@ -111,6 +188,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
         nafCode: result.naf_code || prev.nafCode,
       }));
       
+      // Lock address fields if we got valid location data
       if (result.city && result.postal_code) {
         setAddressLocked(true);
       }
@@ -122,22 +200,32 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       });
     } catch (error) {
       console.error("Error fetching SIRET data:", error);
-      // Non-blocking info message
+      // Non-blocking info message - user can continue manually
       setSiretInfo(t('errors:siretLookup.unavailable', 'Service SIRET temporairement indisponible. Vous pouvez continuer manuellement.'));
     } finally {
       setIsLoadingSiret(false);
     }
   };
 
+  // -------------------------------------------------------------------------
+  // ADDRESS/CITY SELECTION HANDLERS
+  // -------------------------------------------------------------------------
+
+  /**
+   * Called when user selects an address from the autocomplete dropdown
+   * Updates address, city, and postal code together
+   * Locks address to prevent accidental changes
+   */
   const handleAddressSelect = useCallback((result: { address: string; city: string; postalCode: string }) => {
     setFormData(prev => ({
       ...prev,
       address: result.address,
       city: result.city,
       postalCode: result.postalCode,
-      country: "FR", // French address API
+      country: "FR", // Address API is French-specific
     }));
     setAddressLocked(true);
+    // Clear any validation errors for these fields
     setValidationErrors(prev => ({
       ...prev,
       address: false,
@@ -146,6 +234,10 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     }));
   }, []);
 
+  /**
+   * Called when user selects a city from the autocomplete dropdown
+   * Updates city and postal code together
+   */
   const handleCitySelect = useCallback((result: { city: string; postalCode: string }) => {
     setFormData(prev => ({
       ...prev,
@@ -159,13 +251,27 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     }));
   }, []);
 
+  /**
+   * Unlocks address fields for manual editing
+   * Used when user wants to change auto-filled address
+   */
   const unlockAddress = () => {
     setAddressLocked(false);
   };
 
+  // -------------------------------------------------------------------------
+  // FORM VALIDATION
+  // -------------------------------------------------------------------------
+
+  /**
+   * Validates required fields before submission
+   * Returns true if form is valid, false otherwise
+   * Sets validationErrors state to highlight invalid fields
+   */
   const validateForm = (): boolean => {
     const errors: Record<string, boolean> = {};
     
+    // Required fields check
     if (!formData.name.trim()) {
       errors.name = true;
     }
@@ -180,10 +286,22 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     }
 
     setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    return Object.keys(errors).length === 0; // Valid if no errors
   };
 
+  // -------------------------------------------------------------------------
+  // FORM SUBMISSION
+  // -------------------------------------------------------------------------
+
+  /**
+   * Handles form submission
+   * 1. Validates form
+   * 2. Shows error toast if invalid
+   * 3. Calls parent's onSubmit callback
+   * 4. Closes dialog on success
+   */
   const handleSubmit = async () => {
+    // Validate before submitting
     if (!validateForm()) {
       toast({
         title: t('app:addLaundromat.validationError', 'Champs requis'),
@@ -195,14 +313,20 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
     setIsCreating(true);
     try {
+      // Call parent's submit handler (handles database insert)
       await onSubmit(formData);
-      onOpenChange(false);
+      onOpenChange(false); // Close dialog on success
     } catch (error) {
       console.error("Error creating site:", error);
+      // Error handling/toast is expected to be done by parent
     } finally {
       setIsCreating(false);
     }
   };
+
+  // -------------------------------------------------------------------------
+  // RENDER
+  // -------------------------------------------------------------------------
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -210,8 +334,15 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
         <DialogHeader>
           <DialogTitle>{t('app:addLaundromat.title', 'Nouvelle laverie')}</DialogTitle>
         </DialogHeader>
+        
         <div className="space-y-4 py-4">
-          {/* SIRET Field - Optional, best-effort */}
+          
+          {/* ============================================================
+              SIRET FIELD (Optional)
+              - French business ID (14 digits)
+              - Auto-fetches company data when complete
+              - Shows loading spinner and success/info states
+              ============================================================ */}
           <div className="space-y-2">
             <Label htmlFor="siret" className="flex items-center gap-2">
               {t('app:addLaundromat.siretLabel', 'N° SIRET')}
@@ -220,6 +351,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
               </span>
             </Label>
             <div className="relative">
+              {/* Search icon on left */}
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="siret"
@@ -229,20 +361,23 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
                 className={cn("pl-10 pr-10", siretSuccess && "border-green-500")}
                 maxLength={14}
               />
+              {/* Loading spinner while fetching */}
               {isLoadingSiret && (
                 <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
               )}
+              {/* Green checkmark on success */}
               {siretSuccess && !isLoadingSiret && (
                 <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
               )}
             </div>
-            {/* Non-blocking info message */}
+            {/* Info message (shown when SIRET service unavailable) */}
             {siretInfo && (
               <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 p-2 rounded-md">
                 <Info className="h-4 w-4 shrink-0 mt-0.5" />
                 <span>{siretInfo}</span>
               </div>
             )}
+            {/* Digits remaining counter */}
             {formData.siret.length > 0 && formData.siret.length < 14 && (
               <p className="text-xs text-muted-foreground">
                 {14 - formData.siret.length} {t('app:addLaundromat.digitsRemaining', 'chiffres restants')}
@@ -250,7 +385,10 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             )}
           </div>
 
-          {/* Name */}
+          {/* ============================================================
+              NAME FIELD (Required)
+              - Business name of the laundromat
+              ============================================================ */}
           <div className="space-y-2">
             <Label htmlFor="laundry-name">
               {t('app:addLaundromat.nameLabel', 'Nom de la laverie')} *
@@ -264,7 +402,11 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             />
           </div>
 
-          {/* Country */}
+          {/* ============================================================
+              COUNTRY FIELD (Required)
+              - Dropdown selector for country
+              - Locked after address selection
+              ============================================================ */}
           <div className="space-y-2">
             <Label>{t('app:addLaundromat.countryLabel', 'Pays')} *</Label>
             <CountrySelect
@@ -284,7 +426,11 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             )}
           </div>
 
-          {/* Address with autocomplete */}
+          {/* ============================================================
+              ADDRESS FIELD (Required)
+              - Autocomplete component for French addresses
+              - Locked after selection to prevent accidental changes
+              ============================================================ */}
           <div className="space-y-2">
             <Label>{t('app:addLaundromat.addressLabel', 'Adresse')} *</Label>
             <AddressAutocomplete
@@ -310,7 +456,11 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             )}
           </div>
 
-          {/* City with autocomplete - Mandatory selection */}
+          {/* ============================================================
+              CITY FIELD (Required)
+              - Autocomplete component
+              - Auto-fills postal code when city is selected
+              ============================================================ */}
           <div className="space-y-2">
             <Label>{t('app:addLaundromat.cityLabel', 'Ville')} *</Label>
             <CityAutocomplete
@@ -325,7 +475,11 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             </p>
           </div>
 
-          {/* Postal Code - Auto-filled, readonly */}
+          {/* ============================================================
+              POSTAL CODE FIELD (Read-only)
+              - Auto-filled from address or city selection
+              - Not manually editable
+              ============================================================ */}
           <div className="space-y-2">
             <Label htmlFor="postal-code">{t('app:addLaundromat.postalCodeLabel', 'Code postal')}</Label>
             <Input
@@ -337,7 +491,11 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             />
           </div>
 
-          {/* NAF Code - Searchable dropdown */}
+          {/* ============================================================
+              NAF CODE FIELD (Optional)
+              - French business activity classification code
+              - Searchable dropdown with common laundromat codes
+              ============================================================ */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               {t('app:addLaundromat.nafLabel', 'Code NAF')}
@@ -351,6 +509,11 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             />
           </div>
 
+          {/* ============================================================
+              SUBMIT BUTTON
+              - Shows loading state during submission
+              - Disabled while creating to prevent double-submit
+              ============================================================ */}
           <Button onClick={handleSubmit} className="w-full" disabled={isCreating}>
             {isCreating ? (
               <>
