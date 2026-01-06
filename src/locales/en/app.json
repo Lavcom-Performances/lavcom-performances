@@ -1136,6 +1136,7 @@
     "errorDescription": "Unable to add laundromat. Please try again."
   },
   "demo": {
+    "creating": "Creating demo...",
     "banner": {
       "title": "Demo mode",
       "description": "You are exploring sample data to discover the platform",
@@ -1171,6 +1172,20 @@
           "description": "Navigate the menu to discover all features: operations, profitability, recommendations and more."
         }
       }
+    },
+    "emptyState": {
+      "importCsv": "Import CSV",
+      "importCsvDescription": "Import your LM Control data in a few clicks",
+      "start": "Start",
+      "addLaundry": "Add a laundromat",
+      "addLaundryDescription": "Create your first laundromat manually",
+      "create": "Create",
+      "importMultipleCsv": "Import multiple CSVs",
+      "importMultipleCsvDescription": "Multi-site or multiple days",
+      "orDiscover": "or discover",
+      "viewInteractiveDemo": "View interactive demo",
+      "viewInteractiveDemoDescription": "Explore with sample data • 2 min",
+      "creatingDemoData": "Creating sample data..."
     }
   },
   "paymentModes": {

@@ -1141,6 +1141,59 @@
     "retry": "Riprova",
     "systemStatus": "Stato del sistema"
   },
+  "demo": {
+    "creating": "Creazione demo...",
+    "banner": {
+      "title": "Modalità demo",
+      "description": "Stai esplorando dati di esempio per scoprire la piattaforma",
+      "delete": "Esci dalla demo",
+      "deleting": "Eliminazione..."
+    },
+    "tutorial": {
+      "restart": "Ripeti tutorial",
+      "skip": "Salta tutorial",
+      "previous": "Precedente",
+      "next": "Successivo",
+      "finish": "Inizia",
+      "stepOf": "Passaggio {{current}} di {{total}}",
+      "steps": {
+        "welcome": {
+          "title": "Benvenuto nella demo!",
+          "description": "Scopri Lavcom Performances con dati di esempio realistici. Questo tutorial ti guida attraverso le funzionalità principali."
+        },
+        "kpis": {
+          "title": "I tuoi indicatori chiave",
+          "description": "Nella parte superiore della dashboard, vedi a colpo d'occhio i tuoi ricavi, numero di transazioni, carrello medio e tendenze."
+        },
+        "charts": {
+          "title": "Analisi visiva",
+          "description": "I grafici mostrano le tendenze dei ricavi, la distribuzione dei pagamenti e le prestazioni per macchina."
+        },
+        "dateRange": {
+          "title": "Filtra per periodo",
+          "description": "Usa il selettore di date per analizzare un periodo specifico: settimana, mese, trimestre o date personalizzate."
+        },
+        "explore": {
+          "title": "Esplora liberamente!",
+          "description": "Naviga nel menu per scoprire tutte le funzionalità: operazioni, redditività, raccomandazioni e altro."
+        }
+      }
+    },
+    "emptyState": {
+      "importCsv": "Importa CSV",
+      "importCsvDescription": "Importa i tuoi dati LM Control in pochi clic",
+      "start": "Inizia",
+      "addLaundry": "Aggiungi una lavanderia",
+      "addLaundryDescription": "Crea la tua prima lavanderia manualmente",
+      "create": "Crea",
+      "importMultipleCsv": "Importa più CSV",
+      "importMultipleCsvDescription": "Multi-sito o più giorni",
+      "orDiscover": "o scopri",
+      "viewInteractiveDemo": "Vedi demo interattiva",
+      "viewInteractiveDemoDescription": "Esplora con dati di esempio • 2 min",
+      "creatingDemoData": "Creazione dati di esempio..."
+    }
+  },
   "newLaundry": {
     "title": "Nuova lavanderia",
     "siretLabel": "N° SIRET",

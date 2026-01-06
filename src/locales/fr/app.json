@@ -1136,6 +1136,7 @@
     "errorDescription": "Impossible d'ajouter la laverie. Veuillez réessayer."
   },
   "demo": {
+    "creating": "Création de la démo...",
     "banner": {
       "title": "Mode démonstration",
       "description": "Vous explorez des données fictives pour découvrir la plateforme",
@@ -1171,6 +1172,20 @@
           "description": "Naviguez dans le menu pour découvrir toutes les fonctionnalités : opérations, rentabilité, recommandations et plus encore."
         }
       }
+    },
+    "emptyState": {
+      "importCsv": "Importer un CSV",
+      "importCsvDescription": "Importez vos données LM Control en quelques clics",
+      "start": "Commencer",
+      "addLaundry": "Ajouter une laverie",
+      "addLaundryDescription": "Créez votre première laverie manuellement",
+      "create": "Créer",
+      "importMultipleCsv": "Importer plusieurs CSV",
+      "importMultipleCsvDescription": "Multi-sites ou plusieurs jours",
+      "orDiscover": "ou découvrir",
+      "viewInteractiveDemo": "Voir une démo interactive",
+      "viewInteractiveDemoDescription": "Explorez avec des données exemple • 2 min",
+      "creatingDemoData": "Création des données d'exemple..."
     }
   },
   "paymentModes": {

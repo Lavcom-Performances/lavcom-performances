@@ -1,6 +1,7 @@
 import { Upload, Plus, Play, Sparkles, Loader2, ArrowRight, Files } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface LaundryEmptyStateProps {
   onAddLaundry: () => void;
@@ -15,6 +16,8 @@ export function LaundryEmptyState({
   onMultiImport,
   isDemoLoading = false 
 }: LaundryEmptyStateProps) {
+  const { t } = useTranslation(['app']);
+  
   return (
     <div className="flex flex-col items-center justify-center px-4 text-center">
       {/* Cards Grid */}
@@ -27,12 +30,14 @@ export function LaundryEmptyState({
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                 <Upload className="h-6 w-6 text-primary group-hover:text-primary-foreground transition-colors" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2 text-left">Importer un CSV</h3>
+              <h3 className="font-semibold text-foreground mb-2 text-left">
+                {t('app:demo.emptyState.importCsv')}
+              </h3>
               <p className="text-sm text-muted-foreground text-left mb-4">
-                Importez vos données LM Control en quelques clics
+                {t('app:demo.emptyState.importCsvDescription')}
               </p>
               <div className="flex items-center text-sm font-medium text-primary group-hover:translate-x-1 transition-transform">
-                Commencer
+                {t('app:demo.emptyState.start')}
                 <ArrowRight className="h-4 w-4 ml-1" />
               </div>
             </div>
@@ -47,12 +52,14 @@ export function LaundryEmptyState({
               <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
                 <Plus className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2">Ajouter une laverie</h3>
+              <h3 className="font-semibold text-foreground mb-2">
+                {t('app:demo.emptyState.addLaundry')}
+              </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Créez votre première laverie manuellement
+                {t('app:demo.emptyState.addLaundryDescription')}
               </p>
               <div className="flex items-center text-sm font-medium text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all">
-                Créer
+                {t('app:demo.emptyState.create')}
                 <ArrowRight className="h-4 w-4 ml-1" />
               </div>
             </div>
@@ -71,10 +78,10 @@ export function LaundryEmptyState({
           </div>
           <div className="text-left flex-1">
             <span className="text-sm font-medium text-foreground block">
-              Importer plusieurs CSV
+              {t('app:demo.emptyState.importMultipleCsv')}
             </span>
             <span className="text-xs text-muted-foreground">
-              Multi-sites ou plusieurs jours
+              {t('app:demo.emptyState.importMultipleCsvDescription')}
             </span>
           </div>
           <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -88,7 +95,9 @@ export function LaundryEmptyState({
             <div className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-4 text-muted-foreground">ou découvrir</span>
+            <span className="bg-background px-4 text-muted-foreground">
+              {t('app:demo.emptyState.orDiscover')}
+            </span>
           </div>
         </div>
 
@@ -100,7 +109,9 @@ export function LaundryEmptyState({
           {isDemoLoading ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin text-primary" />
-              <span className="text-sm font-medium text-foreground">Création des données d'exemple...</span>
+              <span className="text-sm font-medium text-foreground">
+                {t('app:demo.emptyState.creatingDemoData')}
+              </span>
             </>
           ) : (
             <>
@@ -108,8 +119,12 @@ export function LaundryEmptyState({
                 <Sparkles className="h-5 w-5 text-primary" />
               </div>
               <div className="text-left">
-                <span className="text-sm font-medium text-foreground block">Voir une démo interactive</span>
-                <span className="text-xs text-muted-foreground">Explorez avec des données exemple • 2 min</span>
+                <span className="text-sm font-medium text-foreground block">
+                  {t('app:demo.emptyState.viewInteractiveDemo')}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {t('app:demo.emptyState.viewInteractiveDemoDescription')}
+                </span>
               </div>
               <Play className="h-4 w-4 text-muted-foreground group-hover:text-primary ml-auto transition-colors" />
             </>

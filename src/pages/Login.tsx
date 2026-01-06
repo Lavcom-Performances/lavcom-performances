@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useDemoMode } from "@/hooks/useDemoMode";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { useTranslation } from "react-i18next";
 import { 
@@ -28,6 +29,10 @@ export default function Login() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { signIn, signInWithGoogle, isAuthenticated, loading } = useAuth();
+  const { createDemoSite, isCreatingDemo } = useDemoMode();
+
+  // Check if demo mode is requested
+  const isDemoRequested = searchParams.get("demo") === "true";
 
   // Check rate limit cooldown on mount and update countdown
   useEffect(() => {
@@ -49,9 +54,13 @@ export default function Login() {
   const redirectUrl = searchParams.get("redirect");
   const isSimulatorMode = mode === "simulateur";
 
-  // Redirect if already authenticated
+  // Handle demo mode for authenticated users
   useEffect(() => {
-    if (!loading && isAuthenticated) {
+    if (!loading && isAuthenticated && isDemoRequested) {
+      // User is authenticated and wants demo - create demo site
+      createDemoSite();
+    } else if (!loading && isAuthenticated && !isDemoRequested) {
+      // Normal authenticated flow
       if (redirectUrl) {
         navigate(redirectUrl);
       } else if (isSimulatorMode) {
@@ -60,7 +69,7 @@ export default function Login() {
         navigate("/select-laundromat");
       }
     }
-  }, [loading, isAuthenticated, navigate, redirectUrl, isSimulatorMode]);
+  }, [loading, isAuthenticated, navigate, redirectUrl, isSimulatorMode, isDemoRequested, createDemoSite]);
 
   const isRateLimited = cooldownSeconds > 0;
 
@@ -121,11 +130,14 @@ export default function Login() {
 
   const currentMode = isSimulatorMode ? 'simulator' : 'exploitant';
 
-  // Don't render if already authenticated and loading
-  if (loading) {
+  // Don't render if already authenticated and loading, or if demo is being created
+  if (loading || (isAuthenticated && isDemoRequested) || isCreatingDemo) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        {(isDemoRequested || isCreatingDemo) && (
+          <p className="text-muted-foreground">{t('app:demo.creating', 'Création de la démo...')}</p>
+        )}
       </div>
     );
   }
@@ -221,12 +233,28 @@ export default function Login() {
             />
           </div>
 
+          {/* Demo mode banner */}
+          {isDemoRequested && (
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+              <div className="flex items-center gap-2 text-primary">
+                <Sparkles className="h-5 w-5" />
+                <p className="text-sm font-medium">
+                  {t('app:login.demoMode', 'Connectez-vous pour accéder à la démo interactive')}
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-1.5 md:space-y-2">
             <h2 className="text-xl md:text-2xl font-display font-semibold text-foreground">
-              {t(`app:login.${currentMode}.title`)}
+              {isDemoRequested 
+                ? t('app:login.demoTitle', 'Accéder à la démo') 
+                : t(`app:login.${currentMode}.title`)}
             </h2>
             <p className="text-sm md:text-base text-muted-foreground">
-              {t(`app:login.${currentMode}.subtitle`)}
+              {isDemoRequested 
+                ? t('app:login.demoSubtitle', 'Connectez-vous ou créez un compte pour explorer la démo')
+                : t(`app:login.${currentMode}.subtitle`)}
             </p>
           </div>
 

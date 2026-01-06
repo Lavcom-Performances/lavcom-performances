@@ -1141,6 +1141,59 @@
     "retry": "Erneut versuchen",
     "systemStatus": "Systemstatus"
   },
+  "demo": {
+    "creating": "Demo wird erstellt...",
+    "banner": {
+      "title": "Demo-Modus",
+      "description": "Sie erkunden Beispieldaten, um die Plattform kennenzulernen",
+      "delete": "Demo beenden",
+      "deleting": "Wird gelöscht..."
+    },
+    "tutorial": {
+      "restart": "Tutorial wiederholen",
+      "skip": "Tutorial überspringen",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "finish": "Loslegen",
+      "stepOf": "Schritt {{current}} von {{total}}",
+      "steps": {
+        "welcome": {
+          "title": "Willkommen zur Demo!",
+          "description": "Entdecken Sie Lavcom Performances mit realistischen Beispieldaten. Dieses Tutorial führt Sie durch die Hauptfunktionen."
+        },
+        "kpis": {
+          "title": "Ihre Kennzahlen",
+          "description": "Oben im Dashboard sehen Sie auf einen Blick Ihren Umsatz, die Anzahl der Transaktionen, den durchschnittlichen Warenkorb und Trends."
+        },
+        "charts": {
+          "title": "Visuelle Analysen",
+          "description": "Diagramme zeigen Ihnen Umsatztrends, Zahlungsverteilung und Leistung nach Maschine."
+        },
+        "dateRange": {
+          "title": "Nach Zeitraum filtern",
+          "description": "Verwenden Sie die Datumsauswahl, um einen bestimmten Zeitraum zu analysieren: Woche, Monat, Quartal oder benutzerdefinierte Daten."
+        },
+        "explore": {
+          "title": "Frei erkunden!",
+          "description": "Navigieren Sie durch das Menü, um alle Funktionen zu entdecken: Operationen, Rentabilität, Empfehlungen und mehr."
+        }
+      }
+    },
+    "emptyState": {
+      "importCsv": "CSV importieren",
+      "importCsvDescription": "Importieren Sie Ihre LM Control-Daten in wenigen Klicks",
+      "start": "Starten",
+      "addLaundry": "Waschsalon hinzufügen",
+      "addLaundryDescription": "Erstellen Sie Ihren ersten Waschsalon manuell",
+      "create": "Erstellen",
+      "importMultipleCsv": "Mehrere CSVs importieren",
+      "importMultipleCsvDescription": "Multi-Standort oder mehrere Tage",
+      "orDiscover": "oder entdecken",
+      "viewInteractiveDemo": "Interaktive Demo ansehen",
+      "viewInteractiveDemoDescription": "Erkunden Sie mit Beispieldaten • 2 Min",
+      "creatingDemoData": "Beispieldaten werden erstellt..."
+    }
+  },
   "newLaundry": {
     "title": "Neuer Waschsalon",
     "siretLabel": "SIRET-Nr.",
