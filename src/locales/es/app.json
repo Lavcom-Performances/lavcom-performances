@@ -294,7 +294,10 @@
     "freeTrial": "Prueba gratuita 14 días",
     "or": "o",
     "decorativeText": "La solución de gestión para operadores de lavanderías",
-    "continueWithGoogle": "Continuar con Google"
+    "continueWithGoogle": "Continuar con Google",
+    "demoMode": "Inicie sesión para acceder a la demo interactiva",
+    "demoTitle": "Acceder a la demo",
+    "demoSubtitle": "Inicie sesión o cree una cuenta para explorar la demo"
   },
   "signup": {
     "title": "Crear su cuenta",
