@@ -72,6 +72,7 @@ import GettingStarted from "./pages/GettingStarted";
 import HelpPage from "./pages/HelpPage";
 import CostsSettingsPage from "./pages/settings/CostsSettingsPage";
 import GoalsSettingsPage from "./pages/settings/GoalsSettingsPage";
+import DemoPage from "./pages/DemoPage";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +88,7 @@ const App = () => (
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Index />} />
+          <Route path="/demo" element={<DemoPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

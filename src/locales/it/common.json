@@ -63,5 +63,6 @@
     "copyright": "© {{year}} Lavcom. Tutti i diritti riservati.",
     "simulator": "Simulatore",
     "operatorsPricing": "Prezzi per operatori"
-  }
+  },
+  "close": "Chiudi"
 }

@@ -1195,6 +1195,35 @@
       "viewInteractiveDemo": "Interaktive Demo ansehen",
       "viewInteractiveDemoDescription": "Erkunden Sie mit Beispieldaten • 2 Min",
       "creatingDemoData": "Beispieldaten werden erstellt..."
+    },
+    "page": {
+      "badge": "Kostenlose Demo",
+      "title": "Entdecken Sie Lavcom Performances",
+      "subtitle": "Erkunden Sie die Funktionen unserer Waschsalon-Management-Plattform.",
+      "videoTitle": "Präsentationsvideo",
+      "videoDescription": "Erfahren Sie, wie Lavcom Performances Ihnen hilft, die Verwaltung Ihres Waschsalons zu optimieren.",
+      "featuresTitle": "Hauptfunktionen",
+      "ctaTitle": "Bereit, Ihren Waschsalon zu optimieren?",
+      "ctaDescription": "14 Tage kostenlos testen, ohne Bindung und ohne Kreditkarte.",
+      "footer": "Drücken Sie Escape oder klicken Sie auf Schließen, um zur Startseite zurückzukehren"
+    },
+    "features": {
+      "dashboard": {
+        "title": "Intelligentes Dashboard",
+        "description": "Sehen Sie Ihre KPIs in Echtzeit: Umsatz, Transaktionen, durchschnittlicher Warenkorb und Trends."
+      },
+      "analytics": {
+        "title": "Erweiterte Analysen",
+        "description": "Detaillierte Diagramme, um die Leistung jeder Maschine zu verstehen und Ihren Umsatz zu optimieren."
+      },
+      "reports": {
+        "title": "Individuelle Berichte",
+        "description": "Erstellen Sie professionelle PDF-Berichte, um die Rentabilität Ihres Geschäfts zu verfolgen."
+      },
+      "calendar": {
+        "title": "Besucherkalender",
+        "description": "Identifizieren Sie die rentabelsten Zeitfenster und passen Sie Ihre Preise entsprechend an."
+      }
     }
   },
   "newLaundry": {

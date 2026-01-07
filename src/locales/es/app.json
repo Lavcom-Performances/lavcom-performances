@@ -1195,6 +1195,35 @@
       "viewInteractiveDemo": "Ver demo interactiva",
       "viewInteractiveDemoDescription": "Explora con datos de ejemplo • 2 min",
       "creatingDemoData": "Creando datos de ejemplo..."
+    },
+    "page": {
+      "badge": "Demostración gratuita",
+      "title": "Descubre Lavcom Performances",
+      "subtitle": "Explora las funcionalidades de nuestra plataforma de gestión para lavanderías.",
+      "videoTitle": "Vídeo de presentación",
+      "videoDescription": "Descubre cómo Lavcom Performances te ayuda a optimizar la gestión de tu lavandería.",
+      "featuresTitle": "Características principales",
+      "ctaTitle": "¿Listo para optimizar tu lavandería?",
+      "ctaDescription": "Prueba gratis durante 14 días, sin compromiso y sin tarjeta de crédito.",
+      "footer": "Pulsa Escape o haz clic en cerrar para volver al inicio"
+    },
+    "features": {
+      "dashboard": {
+        "title": "Panel inteligente",
+        "description": "Visualiza tus KPIs en tiempo real: ingresos, transacciones, cesta promedio y tendencias."
+      },
+      "analytics": {
+        "title": "Análisis avanzados",
+        "description": "Gráficos detallados para entender el rendimiento de cada máquina y optimizar tus ingresos."
+      },
+      "reports": {
+        "title": "Informes personalizados",
+        "description": "Genera informes PDF profesionales para seguir la rentabilidad de tu negocio."
+      },
+      "calendar": {
+        "title": "Calendario de afluencia",
+        "description": "Identifica los horarios más rentables y ajusta tus tarifas en consecuencia."
+      }
     }
   },
   "newLaundry": {

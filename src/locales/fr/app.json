@@ -1189,6 +1189,35 @@
       "viewInteractiveDemo": "Voir une démo interactive",
       "viewInteractiveDemoDescription": "Explorez avec des données exemple • 2 min",
       "creatingDemoData": "Création des données d'exemple..."
+    },
+    "page": {
+      "badge": "Démonstration gratuite",
+      "title": "Découvrez Lavcom Performances",
+      "subtitle": "Explorez les fonctionnalités de notre plateforme de gestion pour laveries automatiques.",
+      "videoTitle": "Vidéo de présentation",
+      "videoDescription": "Découvrez comment Lavcom Performances vous aide à optimiser la gestion de votre laverie.",
+      "featuresTitle": "Fonctionnalités principales",
+      "ctaTitle": "Prêt à optimiser votre laverie ?",
+      "ctaDescription": "Essayez gratuitement pendant 14 jours, sans engagement et sans carte bancaire.",
+      "footer": "Appuyez sur Échap ou cliquez sur le bouton fermer pour revenir à l'accueil"
+    },
+    "features": {
+      "dashboard": {
+        "title": "Tableau de bord intelligent",
+        "description": "Visualisez vos KPIs en temps réel : chiffre d'affaires, transactions, panier moyen et tendances."
+      },
+      "analytics": {
+        "title": "Analyses avancées",
+        "description": "Graphiques détaillés pour comprendre les performances de chaque machine et optimiser vos revenus."
+      },
+      "reports": {
+        "title": "Rapports personnalisés",
+        "description": "Générez des rapports PDF professionnels pour suivre la rentabilité de votre activité."
+      },
+      "calendar": {
+        "title": "Calendrier d'affluence",
+        "description": "Identifiez les créneaux les plus rentables et adaptez vos tarifs en conséquence."
+      }
     }
   },
   "paymentModes": {
