@@ -413,6 +413,10 @@ export const translations = {
     welcomeExploitant: "Bienvenue sur Lavcom Performances",
     welcomeSimulator: "Bienvenue sur Lavcom Performances Création",
     loginSuccess: "Connexion réussie",
+    // Demo mode
+    demoMode: "Connectez-vous pour accéder à la démo interactive",
+    demoTitle: "Accéder à la démo",
+    demoSubtitle: "Connectez-vous ou créez un compte pour explorer la démo",
   },
 
   // ============================================
