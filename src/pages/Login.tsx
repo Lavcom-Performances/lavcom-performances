@@ -16,6 +16,7 @@ import {
   formatCooldown 
 } from "@/lib/rateLimiter";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { LanguageSelector } from "@/components/ui/language-selector";
 
 export default function Login() {
   const { t } = useTranslation(['app', 'common']);
@@ -160,6 +161,11 @@ export default function Login() {
         <Home className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden="true" />
         <span className="hidden sm:inline">{t('common:home')}</span>
       </Link>
+
+      {/* Language selector */}
+      <div className="absolute top-3 right-3 md:top-4 md:right-4 z-10">
+        <LanguageSelector variant="compact" />
+      </div>
 
       {/* Left side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-8 lg:p-12 bg-gradient-to-br from-muted/30 via-background to-primary/5 border-r border-border">
