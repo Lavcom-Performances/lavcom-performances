@@ -1189,6 +1189,35 @@
       "viewInteractiveDemo": "View interactive demo",
       "viewInteractiveDemoDescription": "Explore with sample data • 2 min",
       "creatingDemoData": "Creating sample data..."
+    },
+    "page": {
+      "badge": "Free demonstration",
+      "title": "Discover Lavcom Performances",
+      "subtitle": "Explore the features of our laundromat management platform.",
+      "videoTitle": "Presentation video",
+      "videoDescription": "Discover how Lavcom Performances helps you optimize your laundromat management.",
+      "featuresTitle": "Main features",
+      "ctaTitle": "Ready to optimize your laundromat?",
+      "ctaDescription": "Try free for 14 days, no commitment and no credit card required.",
+      "footer": "Press Escape or click the close button to return home"
+    },
+    "features": {
+      "dashboard": {
+        "title": "Smart dashboard",
+        "description": "View your KPIs in real-time: revenue, transactions, average basket and trends."
+      },
+      "analytics": {
+        "title": "Advanced analytics",
+        "description": "Detailed charts to understand each machine's performance and optimize your revenue."
+      },
+      "reports": {
+        "title": "Custom reports",
+        "description": "Generate professional PDF reports to track your business profitability."
+      },
+      "calendar": {
+        "title": "Traffic calendar",
+        "description": "Identify the most profitable time slots and adjust your pricing accordingly."
+      }
     }
   },
   "paymentModes": {

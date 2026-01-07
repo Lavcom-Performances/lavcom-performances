@@ -1195,6 +1195,35 @@
       "viewInteractiveDemo": "Bekijk interactieve demo",
       "viewInteractiveDemoDescription": "Verken met voorbeeldgegevens • 2 min",
       "creatingDemoData": "Voorbeeldgegevens aanmaken..."
+    },
+    "page": {
+      "badge": "Gratis demonstratie",
+      "title": "Ontdek Lavcom Performances",
+      "subtitle": "Verken de functies van ons wasserette-beheerplatform.",
+      "videoTitle": "Presentatievideo",
+      "videoDescription": "Ontdek hoe Lavcom Performances je helpt het beheer van je wasserette te optimaliseren.",
+      "featuresTitle": "Belangrijkste functies",
+      "ctaTitle": "Klaar om je wasserette te optimaliseren?",
+      "ctaDescription": "Probeer 14 dagen gratis, zonder verplichtingen en zonder creditcard.",
+      "footer": "Druk op Escape of klik op sluiten om terug te keren naar home"
+    },
+    "features": {
+      "dashboard": {
+        "title": "Slim dashboard",
+        "description": "Bekijk je KPI's in realtime: omzet, transacties, gemiddelde mand en trends."
+      },
+      "analytics": {
+        "title": "Geavanceerde analyses",
+        "description": "Gedetailleerde grafieken om de prestaties van elke machine te begrijpen en je omzet te optimaliseren."
+      },
+      "reports": {
+        "title": "Aangepaste rapporten",
+        "description": "Genereer professionele PDF-rapporten om de winstgevendheid van je bedrijf te volgen."
+      },
+      "calendar": {
+        "title": "Drukte-kalender",
+        "description": "Identificeer de meest winstgevende tijdslots en pas je prijzen dienovereenkomstig aan."
+      }
     }
   },
   "newLaundry": {

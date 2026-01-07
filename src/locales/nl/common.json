@@ -63,5 +63,6 @@
     "copyright": "© {{year}} Lavcom. Alle rechten voorbehouden.",
     "simulator": "Simulator",
     "operatorsPricing": "Prijzen voor operators"
-  }
+  },
+  "close": "Sluiten"
 }

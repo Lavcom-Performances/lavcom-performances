@@ -384,7 +384,7 @@ const LandingPage = () => {
           
           {/* Bouton démo */}
           <div className="mt-4 animate-fade-in">
-            <Link to="/login?demo=true">
+            <Link to="/demo">
               <Button variant="outline" size="sm" className="btn-bounce border-lavcom-green/50 text-lavcom-green hover:bg-lavcom-green/10">
                 <Eye className="mr-2 h-4 w-4" />
                 {t("landing:hero.viewDemo")}
