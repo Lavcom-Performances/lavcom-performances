@@ -294,7 +294,10 @@
     "freeTrial": "14 dagen gratis proberen",
     "or": "of",
     "decorativeText": "De beheeroplossing voor wasserette-exploitanten",
-    "continueWithGoogle": "Doorgaan met Google"
+    "continueWithGoogle": "Doorgaan met Google",
+    "demoMode": "Log in om de interactieve demo te openen",
+    "demoTitle": "Toegang tot de demo",
+    "demoSubtitle": "Log in of maak een account aan om de demo te verkennen"
   },
   "signup": {
     "title": "Account aanmaken",

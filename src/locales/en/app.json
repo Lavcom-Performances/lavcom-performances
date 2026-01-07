@@ -298,7 +298,10 @@
     "freeTrial": "14-day free trial",
     "or": "or",
     "decorativeText": "The management solution for laundry operators",
-    "continueWithGoogle": "Continue with Google"
+    "continueWithGoogle": "Continue with Google",
+    "demoMode": "Sign in to access the interactive demo",
+    "demoTitle": "Access the demo",
+    "demoSubtitle": "Sign in or create an account to explore the demo"
   },
   "signup": {
     "title": "Create your account",

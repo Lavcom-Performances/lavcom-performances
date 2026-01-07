@@ -294,7 +294,10 @@
     "freeTrial": "14 Tage kostenlos testen",
     "or": "oder",
     "decorativeText": "Die Management-Lösung für Waschsalon-Betreiber",
-    "continueWithGoogle": "Mit Google fortfahren"
+    "continueWithGoogle": "Mit Google fortfahren",
+    "demoMode": "Melden Sie sich an, um die interaktive Demo zu öffnen",
+    "demoTitle": "Demo aufrufen",
+    "demoSubtitle": "Melden Sie sich an oder erstellen Sie ein Konto, um die Demo zu erkunden"
   },
   "signup": {
     "title": "Konto erstellen",

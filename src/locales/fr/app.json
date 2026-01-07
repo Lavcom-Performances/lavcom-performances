@@ -298,7 +298,10 @@
     "freeTrial": "Essai gratuit 14 jours",
     "or": "ou",
     "decorativeText": "La solution de pilotage pour les gérants de laveries",
-    "continueWithGoogle": "Continuer avec Google"
+    "continueWithGoogle": "Continuer avec Google",
+    "demoMode": "Connectez-vous pour accéder à la démo interactive",
+    "demoTitle": "Accéder à la démo",
+    "demoSubtitle": "Connectez-vous ou créez un compte pour explorer la démo"
   },
   "signup": {
     "title": "Créer votre compte",
