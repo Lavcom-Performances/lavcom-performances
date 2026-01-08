@@ -1385,24 +1385,27 @@ const LandingPage = () => {
       {/* ========================================== */}
       {/* BLOC D – FOOTER */}
       {/* ========================================== */}
-      <footer className="py-12 px-4 border-t border-border bg-muted/30">
+      <footer className="py-12 md:py-16 px-4 border-t border-border bg-muted/30">
         <div className="container mx-auto max-w-6xl">
           {/* Infos société */}
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            {/* Logo et description */}
-            <div>
-              <Link to="/" className="inline-block mb-4">
-                <img src={lavcomLogo} alt="Lavcom Performances" className="h-8 w-auto" />
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 mb-10">
+            {/* Logo et description - takes more space */}
+            <div className="md:col-span-5 lg:col-span-4">
+              <Link to="/" className="inline-block mb-5">
+                <img src={lavcomLogo} alt="Lavcom Performances" className="h-12 md:h-14 w-auto" />
               </Link>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
                 {t("landing:footer.description")}
               </p>
             </div>
             
+            {/* Spacer for better distribution */}
+            <div className="hidden lg:block lg:col-span-2" />
+            
             {/* Liens rapides */}
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">{t("landing:footer.quickLinks")}</h4>
-              <ul className="space-y-2 text-sm">
+            <div className="md:col-span-4 lg:col-span-3">
+              <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wide">{t("landing:footer.quickLinks")}</h4>
+              <ul className="space-y-3 text-sm">
                 <li>
                   <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
                     {t("landing:footer.pricingOperators")}
@@ -1432,11 +1435,11 @@ const LandingPage = () => {
             </div>
             
             {/* Contact */}
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">{t("landing:footer.contactTitle")}</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
+            <div className="md:col-span-3 lg:col-span-3">
+              <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wide">{t("landing:footer.contactTitle")}</h4>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2.5">
+                  <Mail className="h-4 w-4 shrink-0" />
                   <a href="mailto:contact@lavcom.fr" className="hover:text-foreground transition-colors">
                     contact@lavcom.fr
                   </a>
