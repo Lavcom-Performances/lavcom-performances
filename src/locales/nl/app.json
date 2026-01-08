@@ -24,6 +24,14 @@
       "site": "Wasserette",
       "allSites": "Alle wasserettes"
     },
+    "freshness": {
+      "loading": "Laden...",
+      "lastData": "Laatste gegevens",
+      "details": "Gegevensversheid",
+      "latestOperation": "Laatste operatie",
+      "lastImport": "Laatste import",
+      "totalOperations": "Totaal operaties"
+    },
     "emptyState": {
       "title": "Geen gegevens beschikbaar",
       "description": "Importeer uw gegevens om de analyses te bekijken"

@@ -59,6 +59,7 @@ import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
 import { useSetupProgress } from "@/hooks/useSetupProgress";
 import { useTutorial } from "@/hooks/useTutorial";
 import { InteractiveTutorial } from "@/components/onboarding/InteractiveTutorial";
+import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
 
 // Animation variants for staggered cards
 const containerVariants = {
@@ -346,6 +347,9 @@ export default function Dashboard() {
                 {t('app:dashboard.subtitle')}
                 {selectedSite && <span className="ml-1">• {selectedSite.name}</span>}
               </p>
+              <div className="mt-1">
+                <DataFreshnessIndicator />
+              </div>
             </div>
           </div>
           <div className="flex gap-2 flex-wrap">

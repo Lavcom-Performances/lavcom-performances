@@ -1013,6 +1013,14 @@
       "recalculated": "Analytics recalculated ({{count}} operations processed)",
       "error": "Error recalculating analytics"
     },
+    "freshness": {
+      "loading": "Loading...",
+      "lastData": "Last data",
+      "details": "Data freshness",
+      "latestOperation": "Latest operation",
+      "lastImport": "Last import",
+      "totalOperations": "Total operations"
+    },
     "allSites": "All laundries"
   },
   "operations": {

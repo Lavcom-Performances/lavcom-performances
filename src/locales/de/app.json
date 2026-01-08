@@ -24,6 +24,14 @@
       "site": "Waschsalon",
       "allSites": "Alle Waschsalons"
     },
+    "freshness": {
+      "loading": "Laden...",
+      "lastData": "Letzte Daten",
+      "details": "Datenfrische",
+      "latestOperation": "Letzte Operation",
+      "lastImport": "Letzter Import",
+      "totalOperations": "Gesamt Operationen"
+    },
     "emptyState": {
       "title": "Keine Daten verfügbar",
       "description": "Importieren Sie Ihre Daten, um die Analysen anzuzeigen"

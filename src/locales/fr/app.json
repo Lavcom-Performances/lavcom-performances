@@ -1013,6 +1013,14 @@
       "recalculated": "Analytics recalculés ({{count}} opérations traitées)",
       "error": "Erreur lors du recalcul des analytics"
     },
+    "freshness": {
+      "loading": "Chargement...",
+      "lastData": "Dernières données",
+      "details": "Fraîcheur des données",
+      "latestOperation": "Dernière opération",
+      "lastImport": "Dernier import",
+      "totalOperations": "Total opérations"
+    },
     "allSites": "Toutes les laveries"
   },
   "operations": {
