@@ -119,6 +119,7 @@ const LandingPage = () => {
     { value: "simulator", label: t("landing:contact.topics.simulator") },
     { value: "demo", label: t("landing:contact.topics.demo") },
     { value: "press", label: t("landing:contact.topics.press") },
+    { value: "data_protection", label: t("landing:contact.topics.dataProtection") },
     { value: "other", label: t("landing:contact.topics.other") },
   ];
   
@@ -1450,24 +1451,15 @@ const LandingPage = () => {
             </div>
           </div>
           
-          {/* Séparateur */}
-          <div className="border-t border-border pt-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              {/* Mention légale société */}
-              <p className="text-xs text-muted-foreground text-center md:text-left">
-                {t("landing:footer.legalNotice")}
-              </p>
-              
-              {/* Liens légaux */}
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <Link to="/mentions-legales" className="hover:text-foreground transition-colors">{t("landing:footer.legalLinks")}</Link>
-                <Link to="/mentions-legales#confidentialite" className="hover:text-foreground transition-colors">{t("landing:footer.privacy")}</Link>
-                <Link to="/mentions-legales#cgv" className="hover:text-foreground transition-colors">{t("landing:footer.terms")}</Link>
-              </div>
-            </div>
-            
-            <p className="text-xs text-muted-foreground text-center mt-4">
-              {t("landing:footer.copyright", { year: new Date().getFullYear() })}
+          {/* Footer discret - style minimaliste */}
+          <div className="border-t border-border pt-6">
+            <p className="text-[11px] text-muted-foreground/70 text-center">
+              © 2026 Lavcom. {t("landing:footer.allRightsReserved")}{" "}
+              <Link to="/mentions-legales" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">{t("landing:footer.legalLinks")}</Link>
+              {"   "}
+              <Link to="/politique-confidentialite" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">{t("landing:footer.privacy")}</Link>
+              {"   "}
+              <Link to="/cgv" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">{t("landing:footer.cgvCgu")}</Link>
             </p>
           </div>
         </div>

@@ -174,6 +174,7 @@
       "simulator": "Simulador (preguntas antes de comprar)",
       "demo": "Solicitud de demo / colaboración",
       "press": "Prensa / Asociación / Institucional",
+      "dataProtection": "Protección de datos personales",
       "other": "Otro"
     },
     "namePlaceholder": "Tu nombre",
@@ -272,8 +273,10 @@
     "address": "88 avenue de Grammont, 37000 Tours",
     "legalNotice": "Lavcom Performances es una marca comercial de Lavcom, a su vez marca comercial de My'Po SARL – 88 avenue de Grammont, 37000 Tours",
     "legalLinks": "Aviso legal",
-    "privacy": "Privacidad",
+    "privacy": "Política de privacidad",
     "terms": "Términos",
+    "cgvCgu": "Términos y condiciones",
+    "allRightsReserved": "Todos los derechos reservados.",
     "copyright": "© {{year}} Lavcom Performances. Todos los derechos reservados."
   },
   "cta": {
