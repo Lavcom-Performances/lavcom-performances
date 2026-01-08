@@ -1,7 +1,7 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { X, Play, BarChart3, TrendingUp, PieChart, Calendar, Sparkles, ArrowLeft, Eye } from "lucide-react";
+import { X, Play, BarChart3, TrendingUp, PieChart, Calendar, Sparkles, ArrowLeft, Eye, Zap, Users, Euro } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SEOHead } from "@/components/seo/SEOHead";
@@ -43,6 +43,223 @@ const demoFeatures = [
     bgColor: "bg-purple-500/10",
   },
 ];
+
+// Animated dashboard preview component
+function AnimatedDashboardPreview() {
+  const [activeBar, setActiveBar] = useState(0);
+  const [revenue, setRevenue] = useState(0);
+  const [transactions, setTransactions] = useState(0);
+  
+  // Animate bars
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveBar((prev) => (prev + 1) % 7);
+    }, 800);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Animate counters
+  useEffect(() => {
+    const targetRevenue = 12847;
+    const targetTransactions = 342;
+    const duration = 2000;
+    const steps = 60;
+    let step = 0;
+    
+    const interval = setInterval(() => {
+      step++;
+      const progress = Math.min(step / steps, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setRevenue(Math.floor(targetRevenue * eased));
+      setTransactions(Math.floor(targetTransactions * eased));
+      
+      if (step >= steps) clearInterval(interval);
+    }, duration / steps);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const barHeights = [65, 45, 80, 55, 90, 70, 85];
+  const days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+
+  return (
+    <div className="bg-background rounded-xl border border-border shadow-lg p-4 md:p-6 space-y-4">
+      {/* Header with KPIs */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-lavcom-green/10 rounded-lg p-3 text-center">
+          <Euro className="h-4 w-4 text-lavcom-green mx-auto mb-1" />
+          <div className="text-lg md:text-xl font-bold text-lavcom-green">{revenue.toLocaleString()} €</div>
+          <div className="text-[10px] md:text-xs text-muted-foreground">Chiffre d'affaires</div>
+        </div>
+        <div className="bg-lavcom-blue/10 rounded-lg p-3 text-center">
+          <Users className="h-4 w-4 text-lavcom-blue mx-auto mb-1" />
+          <div className="text-lg md:text-xl font-bold text-lavcom-blue">{transactions}</div>
+          <div className="text-[10px] md:text-xs text-muted-foreground">Transactions</div>
+        </div>
+        <div className="bg-lavcom-orange/10 rounded-lg p-3 text-center">
+          <Zap className="h-4 w-4 text-lavcom-orange mx-auto mb-1" />
+          <div className="text-lg md:text-xl font-bold text-lavcom-orange">+18%</div>
+          <div className="text-[10px] md:text-xs text-muted-foreground">Croissance</div>
+        </div>
+      </div>
+
+      {/* Animated bar chart */}
+      <div className="bg-muted/30 rounded-lg p-4">
+        <div className="text-xs text-muted-foreground mb-3 flex items-center gap-2">
+          <BarChart3 className="h-3 w-3" />
+          CA Hebdomadaire
+        </div>
+        <div className="flex items-end justify-between h-24 gap-2">
+          {barHeights.map((height, index) => (
+            <div key={index} className="flex-1 flex flex-col items-center gap-1">
+              <div 
+                className={`w-full rounded-t transition-all duration-500 ${
+                  index === activeBar 
+                    ? 'bg-lavcom-green shadow-lg shadow-lavcom-green/30' 
+                    : 'bg-lavcom-green/40'
+                }`}
+                style={{ 
+                  height: `${height}%`,
+                  transform: index === activeBar ? 'scaleY(1.1)' : 'scaleY(1)',
+                }}
+              />
+              <span className="text-[10px] text-muted-foreground">{days[index]}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Animated trend line */}
+      <div className="flex items-center gap-4 bg-muted/30 rounded-lg p-3">
+        <TrendingUp className="h-5 w-5 text-lavcom-green animate-pulse" />
+        <div className="flex-1">
+          <div className="h-2 bg-gradient-to-r from-lavcom-green via-lavcom-blue to-lavcom-green bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded-full" />
+        </div>
+        <span className="text-xs font-medium text-lavcom-green">En direct</span>
+      </div>
+    </div>
+  );
+}
+
+// Animated pie chart preview
+function AnimatedPieChartPreview() {
+  const [rotation, setRotation] = useState(0);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRotation((prev) => (prev + 1) % 360);
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="bg-background rounded-xl border border-border shadow-lg p-4 md:p-6">
+      <div className="text-xs text-muted-foreground mb-3 flex items-center gap-2">
+        <PieChart className="h-3 w-3" />
+        Répartition des paiements
+      </div>
+      
+      <div className="flex items-center gap-6">
+        {/* Animated pie */}
+        <div className="relative w-24 h-24">
+          <svg viewBox="0 0 100 100" className="transform -rotate-90" style={{ transform: `rotate(${rotation * 0.1 - 90}deg)` }}>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(var(--muted))" strokeWidth="20" />
+            <circle 
+              cx="50" cy="50" r="40" fill="none" 
+              stroke="hsl(var(--lavcom-green))" 
+              strokeWidth="20" 
+              strokeDasharray="163 251"
+              className="transition-all duration-300"
+            />
+            <circle 
+              cx="50" cy="50" r="40" fill="none" 
+              stroke="hsl(var(--lavcom-blue))" 
+              strokeWidth="20" 
+              strokeDasharray="88 251"
+              strokeDashoffset="-163"
+            />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-xs font-bold">65%</span>
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-lavcom-green" />
+            <span>Carte bancaire (65%)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-lavcom-blue" />
+            <span>Espèces (35%)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Animated heatmap preview
+function AnimatedHeatmapPreview() {
+  const [highlight, setHighlight] = useState({ row: 0, col: 0 });
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHighlight({
+        row: Math.floor(Math.random() * 4),
+        col: Math.floor(Math.random() * 7),
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const hours = ['8h', '12h', '16h', '20h'];
+  const intensity = [
+    [20, 30, 40, 60, 80, 90, 70],
+    [40, 50, 70, 90, 95, 85, 60],
+    [30, 45, 55, 70, 75, 65, 50],
+    [15, 25, 35, 45, 50, 40, 30],
+  ];
+
+  return (
+    <div className="bg-background rounded-xl border border-border shadow-lg p-4 md:p-6">
+      <div className="text-xs text-muted-foreground mb-3 flex items-center gap-2">
+        <Calendar className="h-3 w-3" />
+        Affluence hebdomadaire
+      </div>
+      
+      <div className="space-y-1">
+        {intensity.map((row, rowIndex) => (
+          <div key={rowIndex} className="flex items-center gap-1">
+            <span className="text-[10px] text-muted-foreground w-6">{hours[rowIndex]}</span>
+            {row.map((value, colIndex) => (
+              <div
+                key={colIndex}
+                className={`flex-1 h-6 rounded transition-all duration-300 ${
+                  highlight.row === rowIndex && highlight.col === colIndex
+                    ? 'ring-2 ring-lavcom-green ring-offset-1 scale-110'
+                    : ''
+                }`}
+                style={{
+                  backgroundColor: `hsl(var(--lavcom-green) / ${value / 100})`,
+                }}
+              />
+            ))}
+          </div>
+        ))}
+        <div className="flex items-center gap-1 mt-1">
+          <span className="w-6" />
+          {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((day) => (
+            <span key={day} className="flex-1 text-[10px] text-center text-muted-foreground">
+              {day}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function DemoPage() {
   const { t } = useTranslation(['app', 'common']);
@@ -116,29 +333,25 @@ export default function DemoPage() {
             </p>
           </div>
 
-          {/* Video placeholder / Demo preview */}
-          <div className="max-w-4xl mx-auto mb-16">
-            <Card className="overflow-hidden border-2 border-lavcom-green/20 shadow-xl">
-              <div className="aspect-video bg-gradient-to-br from-lavcom-green/5 via-muted to-lavcom-blue/5 flex items-center justify-center relative">
-                {/* Demo video embed placeholder - replace with actual video */}
-                <div className="text-center p-8">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-lavcom-green/20 flex items-center justify-center">
-                    <Play className="h-10 w-10 text-lavcom-green ml-1" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">
-                    {t('app:demo.page.videoTitle')}
-                  </h3>
-                  <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                    {t('app:demo.page.videoDescription')}
-                  </p>
-                </div>
-                
-                {/* Decorative elements */}
-                <div className="absolute top-4 left-4 w-8 h-8 rounded-full bg-lavcom-green/20 animate-pulse" />
-                <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full bg-lavcom-orange/20 animate-pulse delay-150" />
-                <div className="absolute top-1/4 right-8 w-4 h-4 rounded-full bg-lavcom-blue/20 animate-pulse delay-300" />
+          {/* Animated Dashboard Previews */}
+          <div className="max-w-5xl mx-auto mb-16">
+            <h2 className="text-xl md:text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+              <Play className="h-5 w-5 text-lavcom-green" />
+              {t('app:demo.page.previewTitle')}
+            </h2>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Main dashboard preview */}
+              <div className="lg:col-span-2">
+                <AnimatedDashboardPreview />
               </div>
-            </Card>
+              
+              {/* Pie chart preview */}
+              <AnimatedPieChartPreview />
+              
+              {/* Heatmap preview */}
+              <AnimatedHeatmapPreview />
+            </div>
           </div>
 
           {/* Features grid */}
