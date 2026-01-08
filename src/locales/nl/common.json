@@ -62,7 +62,10 @@
     "contact": "Contact",
     "copyright": "© {{year}} Lavcom. Alle rechten voorbehouden.",
     "simulator": "Simulator",
-    "operatorsPricing": "Prijzen voor operators"
+    "operatorsPricing": "Prijzen voor operators",
+    "quickLinks": "Snelle links",
+    "simulatorPacks": "Simulator pakketten",
+    "allRightsReserved": "Alle rechten voorbehouden."
   },
   "close": "Sluiten"
 }

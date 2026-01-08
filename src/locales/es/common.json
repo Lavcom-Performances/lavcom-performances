@@ -62,7 +62,10 @@
     "contact": "Contacto",
     "copyright": "© {{year}} Lavcom. Todos los derechos reservados.",
     "simulator": "Simulador",
-    "operatorsPricing": "Precios para operadores"
+    "operatorsPricing": "Precios para operadores",
+    "quickLinks": "Enlaces rápidos",
+    "simulatorPacks": "Packs simulador",
+    "allRightsReserved": "Todos los derechos reservados."
   },
   "close": "Cerrar"
 }

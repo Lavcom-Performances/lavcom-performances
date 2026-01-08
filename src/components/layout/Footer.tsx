@@ -1,39 +1,33 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Mail, Linkedin, Instagram, Facebook } from "lucide-react";
+import { Mail } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 
 export function Footer() {
   const { t } = useTranslation('common');
-  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-muted/30 border-t border-border">
       <div className="container mx-auto px-4 py-8 md:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Logo & Description */}
-          <div className="sm:col-span-2 lg:col-span-1">
+          <div>
             <Link to="/" className="inline-block mb-4">
               <img 
                 src={lavcomLogo} 
                 alt="Lavcom Performances" 
-                className="h-14 w-auto"
+                className="h-8 w-auto"
               />
             </Link>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-muted-foreground">
               {t('footer.description')}
             </p>
           </div>
 
-          {/* Navigation */}
+          {/* Liens rapides */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">{t('footer.navigation')}</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  {t('home')}
-                </Link>
-              </li>
               <li>
                 <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   {t('footer.operatorsPricing')}
@@ -45,30 +39,18 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  {t('login')}
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">{t('footer.legal')}</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/mentions-legales" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  {t('footer.legalNotice')}
+                <Link to="/subscribe-simulator" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {t('footer.simulatorPacks')}
                 </Link>
               </li>
               <li>
-                <Link to="/politique-confidentialite" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  {t('footer.privacyPolicy')}
+                <Link to="/#faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {t('faq')}
                 </Link>
               </li>
               <li>
-                <Link to="/cgv" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  {t('footer.termsOfService')}
+                <Link to="/#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {t('contact')}
                 </Link>
               </li>
             </ul>
@@ -77,69 +59,36 @@ export function Footer() {
           {/* Contact */}
           <div>
             <h4 className="font-semibold text-foreground mb-4">{t('footer.contact')}</h4>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+            <ul className="space-y-2">
+              <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Mail className="h-4 w-4" />
                 <a 
                   href="mailto:contact@lavcom.fr" 
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="hover:text-foreground transition-colors"
                 >
                   contact@lavcom.fr
                 </a>
               </li>
             </ul>
-            
-            {/* Social Media */}
-            <div className="mt-4 pt-4 border-t border-border/50">
-              <p className="text-sm font-medium text-foreground mb-3">Suivez-nous</p>
-              <div className="flex items-center gap-3">
-                <a 
-                  href="https://www.linkedin.com/company/110107709" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-4 w-4" />
-                </a>
-                <a 
-                  href="https://www.instagram.com/lavcom_pourvotrelaverie/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="h-4 w-4" />
-                </a>
-                <a 
-                  href="https://www.facebook.com/LavComFR" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-                  aria-label="Facebook"
-                >
-                  <Facebook className="h-4 w-4" />
-                </a>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-muted-foreground text-center sm:text-left">
-            {t('footer.copyright', { year: currentYear })}
+        {/* Footer discret - style minimaliste */}
+        <div className="border-t border-border pt-6">
+          <p className="text-[11px] text-muted-foreground/70 text-center">
+            © 2026 Lavcom. {t('footer.allRightsReserved')}{" "}
+            <Link to="/mentions-legales" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">
+              {t('footer.legalNotice')}
+            </Link>
+            {"   "}
+            <Link to="/politique-confidentialite" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">
+              {t('footer.privacyPolicy')}
+            </Link>
+            {"   "}
+            <Link to="/cgv" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">
+              {t('footer.termsOfService')}
+            </Link>
           </p>
-          <div className="flex items-center gap-4">
-            <a 
-              href="https://lavcom.fr" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              lavcom.fr
-            </a>
-          </div>
         </div>
       </div>
     </footer>

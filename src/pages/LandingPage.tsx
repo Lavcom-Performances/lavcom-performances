@@ -1437,15 +1437,9 @@ const LandingPage = () => {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  {t("landing:contact.emailAddress")}
-                </li>
-                <li className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  {t("landing:footer.address")}
-                </li>
-                <li className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  {t("landing:contact.hours")}
+                  <a href="mailto:contact@lavcom.fr" className="hover:text-foreground transition-colors">
+                    contact@lavcom.fr
+                  </a>
                 </li>
               </ul>
             </div>
