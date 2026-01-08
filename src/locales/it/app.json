@@ -24,6 +24,14 @@
       "site": "Lavanderia",
       "allSites": "Tutte le lavanderie"
     },
+    "freshness": {
+      "loading": "Caricamento...",
+      "lastData": "Ultimi dati",
+      "details": "Freschezza dei dati",
+      "latestOperation": "Ultima operazione",
+      "lastImport": "Ultimo import",
+      "totalOperations": "Totale operazioni"
+    },
     "emptyState": {
       "title": "Nessun dato disponibile",
       "description": "Importa i tuoi dati per visualizzare le analisi"
