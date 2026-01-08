@@ -46,6 +46,7 @@ import { useOperations } from "@/hooks/useOperations";
 import { useSites } from "@/hooks/useSites";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
+import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
 
 const paymentModeBadge = (mode: string | null) => {
   if (!mode) return <span className="text-muted-foreground">—</span>;
@@ -632,6 +633,9 @@ export default function Operations() {
           <p className="text-muted-foreground">
             {t('app:operations.subtitle')}
           </p>
+          <div className="mt-2">
+            <DataFreshnessIndicator />
+          </div>
         </div>
         <div className="flex gap-2">
           {canImport ? (
