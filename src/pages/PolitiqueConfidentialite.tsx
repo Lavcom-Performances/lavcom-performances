@@ -532,9 +532,9 @@ export default function PolitiqueConfidentialite() {
                 </div>
               </section>
 
-              {/* 9. Contact DPO */}
+              {/* 9. Contact */}
               <section id="contact" className="scroll-mt-24">
-                <h2 className="text-xl font-semibold text-foreground mb-4">9. Contact DPO</h2>
+                <h2 className="text-xl font-semibold text-foreground mb-4">9. Contact</h2>
                 <p className="text-muted-foreground mb-4">
                   Pour toute question concernant cette politique ou pour exercer vos droits, 
                   vous pouvez nous contacter :
@@ -544,16 +544,7 @@ export default function PolitiqueConfidentialite() {
                     <li className="flex items-center gap-2">
                       <span className="text-lg">📧</span>
                       <span>
-                        <strong>Email DPO :</strong>{" "}
-                        <a href="mailto:dpo@lavcom.fr" className="text-primary hover:underline">
-                          dpo@lavcom.fr
-                        </a>
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-lg">✉️</span>
-                      <span>
-                        <strong>Email général :</strong>{" "}
+                        <strong>Email :</strong>{" "}
                         <a href="mailto:contact@lavcom.fr" className="text-primary hover:underline">
                           contact@lavcom.fr
                         </a>
@@ -562,7 +553,7 @@ export default function PolitiqueConfidentialite() {
                     <li className="flex items-center gap-2">
                       <span className="text-lg">📮</span>
                       <span>
-                        <strong>Adresse postale :</strong> My'Po SARL - DPO, 88 avenue de Grammont, 37000 Tours
+                        <strong>Adresse postale :</strong> My'Po SARL, 88 avenue de Grammont, 37000 Tours
                       </span>
                     </li>
                   </ul>
