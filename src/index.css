@@ -274,6 +274,14 @@ html {
     @apply bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs font-medium dark:bg-gray-700 dark:text-gray-300;
   }
 
+  .badge-not-counted {
+    @apply bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[10px] font-medium dark:bg-amber-900/30 dark:text-amber-400;
+  }
+
+  .row-not-counted {
+    @apply opacity-60 bg-muted/20;
+  }
+
   .gradient-lavcom {
     @apply bg-gradient-to-br from-primary to-lime-600;
   }
