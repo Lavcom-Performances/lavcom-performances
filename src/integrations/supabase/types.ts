@@ -38,6 +38,45 @@ export type Database = {
         }
         Relationships: []
       }
+      alert_history: {
+        Row: {
+          alert_type: string
+          channel: string
+          created_at: string
+          details: Json | null
+          id: string
+          message: string
+          recipient: string | null
+          sent_at: string
+          severity: string
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          channel: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          message: string
+          recipient?: string | null
+          sent_at?: string
+          severity: string
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          channel?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          message?: string
+          recipient?: string | null
+          sent_at?: string
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
       analytics_daily: {
         Row: {
           average_basket: number | null
