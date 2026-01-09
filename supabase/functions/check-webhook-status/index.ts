@@ -37,6 +37,18 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
 
+    // Get configurable threshold from cron_alert_settings (default: 24h)
+    const { data: alertSettings } = await supabase
+      .from("cron_alert_settings")
+      .select("webhook_alert_threshold_hours")
+      .eq("job_name", "check-webhook-status")
+      .maybeSingle();
+
+    const thresholdHours = alertSettings?.webhook_alert_threshold_hours ?? 24;
+    const ALERT_THRESHOLD_MS = thresholdHours * 60 * 60 * 1000;
+
+    logStep("Alert threshold configured", { thresholdHours });
+
     // Get total event count to check if webhook was ever active
     const { count: totalEvents, error: countError } = await supabase
       .from("stripe_events")
@@ -75,7 +87,6 @@ serve(async (req) => {
     logStep("Last event fetched", lastEvent);
 
     // Check if we need to alert - only if webhook was active before
-    const ALERT_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours (more reasonable for low-traffic periods)
     const now = new Date().getTime();
     
     let shouldAlert = false;

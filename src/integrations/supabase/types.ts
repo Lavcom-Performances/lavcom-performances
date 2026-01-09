@@ -245,6 +245,7 @@ export type Database = {
           slack_enabled: boolean
           updated_at: string
           warning_threshold: number
+          webhook_alert_threshold_hours: number
         }
         Insert: {
           alert_cooldown_minutes?: number
@@ -259,6 +260,7 @@ export type Database = {
           slack_enabled?: boolean
           updated_at?: string
           warning_threshold?: number
+          webhook_alert_threshold_hours?: number
         }
         Update: {
           alert_cooldown_minutes?: number
@@ -273,6 +275,7 @@ export type Database = {
           slack_enabled?: boolean
           updated_at?: string
           warning_threshold?: number
+          webhook_alert_threshold_hours?: number
         }
         Relationships: []
       }
