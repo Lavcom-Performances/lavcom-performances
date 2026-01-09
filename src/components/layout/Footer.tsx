@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Mail } from "lucide-react";
+import { Mail, Linkedin, Instagram, Facebook } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 
 export function Footer() {
@@ -73,6 +73,36 @@ export function Footer() {
                 </a>
               </li>
             </ul>
+            {/* Social Media Icons */}
+            <div className="flex items-center gap-4 mt-4">
+              <a 
+                href="https://www.linkedin.com/company/lavcom" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://www.instagram.com/lavcom" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a 
+                href="https://www.facebook.com/lavcom" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Facebook"
+              >
+                <Facebook className="h-5 w-5" />
+              </a>
+            </div>
           </div>
         </div>
 
