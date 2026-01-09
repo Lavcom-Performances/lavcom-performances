@@ -6,12 +6,19 @@ import { normalizeCsvText, detectSeparator, parseCsvLine } from './normalizeCsvT
 import { normalizePaymentMode, PAYMENT_MODES_ACCEPTED } from './normalizePaymentMode';
 import { parseAmountToCents, getAmountFromColumns } from './parseAmount';
 import { MultiCsvParsedRow, MAX_PREVIEW_ROWS_PER_FILE, CsvFormatType } from './multiCsvTypes';
+import { isWiLineFormat, parseWiLineCsvFile } from './parseWiLine';
 
 /**
  * Detect CSV format type from headers and content
  */
 function detectCsvFormat(headers: string[], columnMap: Record<string, number>): CsvFormatType {
   const headerLower = headers.map(h => h.toLowerCase());
+  
+  // WiLine format: has specific WiLine headers
+  // Check this FIRST before other formats
+  if (isWiLineFormat(headers)) {
+    return 'wiline';
+  }
   
   // Events format: has 'type' column and specific Events headers
   if (columnMap.type !== undefined) {
@@ -151,6 +158,12 @@ export function parseMultiCsvFile(
   
   // Detect CSV format
   const detectedFormat = detectCsvFormat(headers, columnMap);
+  
+  // Route to WiLine parser if detected
+  if (detectedFormat === 'wiline') {
+    return parseWiLineCsvFile(filename, content);
+  }
+  
   const isEventsFormat = detectedFormat === 'events';
   
   const rows: MultiCsvParsedRow[] = [];

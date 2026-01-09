@@ -1,8 +1,8 @@
 /**
- * Normalize payment mode strings to standard format: CB, ESP, FI
+ * Normalize payment mode strings to standard format: CB, ESP, FI, MIX
  */
 
-export const PAYMENT_MODES_ACCEPTED = ['CB', 'ESP', 'FI'] as const;
+export const PAYMENT_MODES_ACCEPTED = ['CB', 'ESP', 'FI', 'MIX'] as const;
 export type NormalizedPaymentMode = typeof PAYMENT_MODES_ACCEPTED[number];
 
 const PAYMENT_MODE_MAP: Record<string, NormalizedPaymentMode> = {
@@ -31,14 +31,21 @@ const PAYMENT_MODE_MAP: Record<string, NormalizedPaymentMode> = {
   'gratuit': 'FI',
   'fidelite': 'FI',
   'fidélité': 'FI',
+  'fidélitée': 'FI',
   'loyalty': 'FI',
   'bonus': 'FI',
+  
+  // MIX variants (multiple payment methods)
+  'mix': 'MIX',
+  'mixed': 'MIX',
+  'mixte': 'MIX',
+  'multiple': 'MIX',
 };
 
 /**
  * Normalize a payment mode string to standard format
  * @param mode - Raw payment mode string
- * @returns Normalized payment mode (CB, ESP, FI) or null if not recognized
+ * @returns Normalized payment mode (CB, ESP, FI, MIX) or null if not recognized
  */
 export function normalizePaymentMode(mode: string | null | undefined): NormalizedPaymentMode | null {
   if (!mode) return null;

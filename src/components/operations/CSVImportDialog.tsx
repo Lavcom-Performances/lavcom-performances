@@ -13,7 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useSites } from "@/hooks/useSites";
-import { useOperationsImport } from "@/hooks/useOperationsImport";
+import { useMultiFormatImport } from "@/hooks/useMultiFormatImport";
 import { useImportRateLimit } from "@/hooks/useImportRateLimit";
 
 import { SiteSelector } from "./csv-import/SiteSelector";
@@ -38,7 +38,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
   const { toast } = useToast();
   const { t } = useTranslation("app");
   const { sites, isLoading: sitesLoading, createSite, getDefaultSite } = useSites();
-  const { importOperations, isImporting } = useOperationsImport();
+  const { importMultiFormatRows, isImporting } = useMultiFormatImport();
   const { validateFile, validateLines, checkRateLimit, showFileError, isChecking } = useImportRateLimit();
   
   // Step management
@@ -319,34 +319,27 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
       return;
     }
 
-    // Convert MultiCsvParsedRow to format expected by importOperations
-    const parsedRows = selectedRows.map(row => ({
-      date: row.date_iso ? new Date(row.date_iso) : undefined,
-      time: row.time || undefined,
-      amount: row.amount_cents ? centsToEuros(row.amount_cents) ?? undefined : undefined,
-      machine: row.machine || undefined,
-      program: row.program || undefined,
-      paymentMode: row.normalized_mode || undefined,
-      isValid: true,
-      errors: [],
-      rawData: row.raw_data,
-      // Extended fields for Events format
-      insertedEur: row.inserted_cents ? centsToEuros(row.inserted_cents) ?? undefined : undefined,
-      priceEur: row.price_cents ? centsToEuros(row.price_cents) ?? undefined : undefined,
-      changeEur: row.change_cents ? centsToEuros(row.change_cents) ?? undefined : undefined,
-      machineName: row.machine_name || undefined,
-      source: 'events_csv' as const,
-    }));
+    // Use the new multi-format import hook directly with MultiCsvParsedRow[]
+    const result = await importMultiFormatRows(selectedSiteId, filename, allRows);
 
-    const result = await importOperations(selectedSiteId, filename, parsedRows);
+    // Convert to legacy ImportResult format for CSVImportResult component
+    const legacyResult: ImportResult = {
+      success: result.success,
+      imported: result.imported,
+      ignored: result.ignored,
+      duplicates: result.duplicates,
+      errors: result.errors,
+      rechEspFixed: 0,
+      centimesConverted: false,
+    };
 
-    setImportResult(result);
+    setImportResult(legacyResult);
     setCurrentStep("result");
 
     if (result.success) {
       toast({
         title: "Import terminé",
-        description: `${result.imported} opérations importées.`,
+        description: `${result.imported} opérations importées.${result.mixedPaymentsWarned > 0 ? ` (${result.mixedPaymentsWarned} paiements mixtes)` : ''}`,
       });
       onImportComplete?.(result.imported);
     } else {
@@ -356,7 +349,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
         variant: "destructive",
       });
     }
-  }, [canImport, selectedSiteId, allRows, selectedFiles, importOperations, toast, onImportComplete, checkRateLimit, t]);
+  }, [canImport, selectedSiteId, allRows, selectedFiles, importMultiFormatRows, toast, onImportComplete, checkRateLimit, t]);
 
   const handleClose = useCallback(() => {
     setCurrentStep("upload");
@@ -487,7 +480,8 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
                               {file.status === 'ready' && file.detected_format !== 'unknown' && (
                                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 shrink-0">
                                   {file.detected_format === 'events' ? 'Events' : 
-                                   file.detected_format === 'lm_control' ? 'LM Control' : 
+                                   file.detected_format === 'lm_control' ? 'LM Control' :
+                                   file.detected_format === 'wiline' ? 'WiLine' :
                                    file.detected_format === 'standard' ? 'Standard' : 'CSV'}
                                 </Badge>
                               )}

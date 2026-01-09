@@ -13,7 +13,7 @@ export const MAX_PREVIEW_ROWS_PER_FILE = 50;
 /**
  * Detected CSV format type
  */
-export type CsvFormatType = 'events' | 'lm_control' | 'standard' | 'unknown';
+export type CsvFormatType = 'events' | 'lm_control' | 'wiline' | 'standard' | 'unknown';
 
 export interface MultiCsvParsedRow {
   // Source tracking
@@ -46,6 +46,20 @@ export interface MultiCsvParsedRow {
   
   // Selection state
   selected: boolean;
+  
+  // WiLine specific (optional)
+  provider?: 'wiline' | 'lmcontrol';
+  external_id?: string;
+  transaction_no?: string;
+  type_raw?: string | null;
+  label?: string | null;
+  operation_type?: string | null;
+  revenue_included?: boolean;
+  prix_cb_cents?: number;
+  prix_esp_cents?: number;
+  prix_fi_cents?: number;
+  metadata_raw?: Record<string, unknown>;
+  is_mixed_payment?: boolean;
 }
 
 /**
