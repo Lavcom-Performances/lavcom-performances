@@ -34,6 +34,12 @@ import AdminCronLogs from "./pages/AdminCronLogs";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminSystemStatus from "./pages/AdminSystemStatus";
 import { AdminProtectedRoute } from "./components/admin/AdminProtectedRoute";
+import { PlatformAdminRoute } from "./components/admin/PlatformAdminRoute";
+import PlatformAdminHome from "./pages/platform/PlatformAdminHome";
+import PlatformAdminUsers from "./pages/platform/PlatformAdminUsers";
+import PlatformAdminSites from "./pages/platform/PlatformAdminSites";
+import PlatformAdminAnalytics from "./pages/platform/PlatformAdminAnalytics";
+import PlatformAdminSales from "./pages/platform/PlatformAdminSales";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
@@ -139,11 +145,14 @@ const App = () => (
             <Route path="/aide" element={<HelpPage />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
-            <Route path="/admin" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
-            <Route path="/admin/users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
+            <Route path="/admin" element={<PlatformAdminRoute><PlatformAdminHome /></PlatformAdminRoute>} />
+            <Route path="/admin/users" element={<PlatformAdminRoute><PlatformAdminUsers /></PlatformAdminRoute>} />
+            <Route path="/admin/sites" element={<PlatformAdminRoute><PlatformAdminSites /></PlatformAdminRoute>} />
+            <Route path="/admin/analytics" element={<PlatformAdminRoute><PlatformAdminAnalytics /></PlatformAdminRoute>} />
+            <Route path="/admin/sales" element={<PlatformAdminRoute requireBilling><PlatformAdminSales /></PlatformAdminRoute>} />
             <Route path="/admin/expert-requests" element={<AdminProtectedRoute><AdminExpertRequests /></AdminProtectedRoute>} />
             <Route path="/admin/cron-logs" element={<AdminProtectedRoute><AdminCronLogs /></AdminProtectedRoute>} />
-            <Route path="/admin/status" element={<AdminProtectedRoute><AdminSystemStatus /></AdminProtectedRoute>} />
+            <Route path="/admin/system-status" element={<PlatformAdminRoute><AdminSystemStatus /></PlatformAdminRoute>} />
             
             {/* Chart pages */}
             <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />
