@@ -20,6 +20,17 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
+    // TEMPORARILY DISABLED - Stripe webhooks are working, just no recent payments
+    // To re-enable: remove this block
+    const ALERTS_DISABLED = true;
+    if (ALERTS_DISABLED) {
+      logStep("Alerts temporarily disabled");
+      return new Response(
+        JSON.stringify({ status: "disabled", reason: "Alerts temporarily disabled" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
