@@ -1050,6 +1050,69 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_invoices: {
+        Row: {
+          amount_subtotal: number | null
+          amount_tax: number | null
+          amount_total: number | null
+          created_at: string | null
+          currency: string | null
+          customer_email: string | null
+          hosted_invoice_url: string | null
+          id: string
+          invoice_pdf: string | null
+          lines: Json | null
+          metadata: Json | null
+          paid_at: string | null
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_invoice_id: string
+          stripe_subscription_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount_subtotal?: number | null
+          amount_tax?: number | null
+          amount_total?: number | null
+          created_at?: string | null
+          currency?: string | null
+          customer_email?: string | null
+          hosted_invoice_url?: string | null
+          id?: string
+          invoice_pdf?: string | null
+          lines?: Json | null
+          metadata?: Json | null
+          paid_at?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_invoice_id: string
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount_subtotal?: number | null
+          amount_tax?: number | null
+          amount_total?: number | null
+          created_at?: string | null
+          currency?: string | null
+          customer_email?: string | null
+          hosted_invoice_url?: string | null
+          id?: string
+          invoice_pdf?: string | null
+          lines?: Json | null
+          metadata?: Json | null
+          paid_at?: string | null
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_invoice_id?: string
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string | null
@@ -1493,6 +1556,28 @@ export type Database = {
         Returns: Json
       }
       rpc_platform_admin_geo: { Args: { p_min_sites?: number }; Returns: Json }
+      rpc_platform_admin_invoices: {
+        Args: {
+          p_end_date?: string
+          p_limit?: number
+          p_offset?: number
+          p_start_date?: string
+          p_status?: string
+        }
+        Returns: Json
+      }
+      rpc_platform_admin_monthly_revenue: {
+        Args: { p_year?: number }
+        Returns: Json
+      }
+      rpc_platform_admin_products_sales: {
+        Args: { p_year?: number }
+        Returns: Json
+      }
+      rpc_platform_admin_sales_overview: {
+        Args: { p_month?: number; p_year?: number }
+        Returns: Json
+      }
       rpc_platform_admin_sites: {
         Args: {
           p_department?: string

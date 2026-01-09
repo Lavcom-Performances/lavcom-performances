@@ -410,13 +410,13 @@ export function AppSidebar({
           );
         })}
 
-        {/* Super Admin Section - Only for platform admins */}
-        {isAdmin && (
+        {/* Platform Admin Section - Only for platform admins */}
+        {isPlatformAdmin && (
           <>
             {!collapsed && (
               <div className="pt-4 pb-2">
                 <span className="px-3 text-xs font-medium text-destructive/70 uppercase tracking-wider">
-                  Super Admin
+                  Plateforme
                 </span>
               </div>
             )}

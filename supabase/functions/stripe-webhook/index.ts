@@ -108,6 +108,73 @@ async function sendSubscriptionEmail(
   }
 }
 
+// Helper to upsert invoice into stripe_invoices for sales dashboard
+async function upsertStripeInvoice(
+  invoice: Stripe.Invoice,
+  supabaseAdmin: SupabaseClient
+) {
+  const stripeInvoiceId = invoice.id;
+  const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
+  const subscriptionId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id;
+
+  // Try to find user_id from subscriptions table
+  let userId: string | null = null;
+  if (subscriptionId) {
+    const { data: sub } = await supabaseAdmin
+      .from('subscriptions')
+      .select('user_id')
+      .eq('stripe_subscription_id', subscriptionId)
+      .maybeSingle();
+    userId = sub?.user_id || null;
+  }
+  if (!userId && customerId) {
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('id')
+      .eq('stripe_customer_id', customerId)
+      .maybeSingle();
+    userId = profile?.id || null;
+  }
+
+  // Build lines array
+  const lines = invoice.lines?.data?.map(line => ({
+    price_id: line.price?.id || null,
+    description: line.description || null,
+    amount: line.amount || 0,
+    quantity: line.quantity || 1,
+  })) || [];
+
+  const invoiceData = {
+    stripe_invoice_id: stripeInvoiceId,
+    stripe_customer_id: customerId || null,
+    stripe_subscription_id: subscriptionId || null,
+    user_id: userId,
+    customer_email: invoice.customer_email || null,
+    status: invoice.status || null,
+    currency: invoice.currency || 'eur',
+    amount_total: invoice.total || null,
+    amount_subtotal: invoice.subtotal || null,
+    amount_tax: invoice.tax || null,
+    created_at: invoice.created ? new Date(invoice.created * 1000).toISOString() : null,
+    paid_at: invoice.status === 'paid' && invoice.status_transitions?.paid_at 
+      ? new Date(invoice.status_transitions.paid_at * 1000).toISOString() 
+      : null,
+    hosted_invoice_url: invoice.hosted_invoice_url || null,
+    invoice_pdf: invoice.invoice_pdf || null,
+    lines: lines,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error } = await supabaseAdmin
+    .from('stripe_invoices')
+    .upsert(invoiceData, { onConflict: 'stripe_invoice_id' });
+
+  if (error) {
+    logStep('Failed to upsert stripe_invoice', { error: error.message, stripeInvoiceId });
+  } else {
+    logStep('Invoice upserted to stripe_invoices', { stripeInvoiceId, status: invoice.status });
+  }
+}
 // Helper to handle simulator one-time purchase
 async function handleSimulatorPurchase(
   session: Stripe.Checkout.Session,
@@ -689,10 +756,13 @@ serve(async (req) => {
         break;
       }
 
-      case "invoice.paid": {
-        // Also handle invoice.paid for invoice URL storage
+      case "invoice.paid":
+      case "invoice.finalized": {
+        // Store invoice in stripe_invoices for sales dashboard
         const invoice = event.data.object as Stripe.Invoice;
-        if (invoice.subscription) {
+        await upsertStripeInvoice(invoice, supabaseAdmin);
+        // Also handle renewal for invoice.paid
+        if (event.type === "invoice.paid" && invoice.subscription) {
           await handleSubscriptionRenewal(invoice, stripe, supabaseAdmin);
         }
         break;
