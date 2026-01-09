@@ -20,17 +20,6 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    // TEMPORARILY DISABLED - Stripe webhooks are working, just no recent payments
-    // To re-enable: remove this block
-    const ALERTS_DISABLED = true;
-    if (ALERTS_DISABLED) {
-      logStep("Alerts temporarily disabled");
-      return new Response(
-        JSON.stringify({ status: "disabled", reason: "Alerts temporarily disabled" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
@@ -48,42 +37,61 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const resend = new Resend(resendApiKey);
 
+    // Get total event count to check if webhook was ever active
+    const { count: totalEvents, error: countError } = await supabase
+      .from("stripe_events")
+      .select("*", { count: "exact", head: true });
+
+    if (countError) {
+      throw countError;
+    }
+
+    logStep("Total events count", { totalEvents });
+
+    // If no events ever received, skip alerting (webhook never set up or no payments yet)
+    if (!totalEvents || totalEvents === 0) {
+      logStep("No events ever received - webhook not yet active, skipping alert");
+      return new Response(
+        JSON.stringify({ 
+          status: "not_active_yet", 
+          reason: "No Stripe events have ever been received. Webhook monitoring will start after first event." 
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Get the last Stripe event
     const { data: lastEvent, error: eventError } = await supabase
       .from("stripe_events")
       .select("event_type, created_at")
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (eventError && eventError.code !== "PGRST116") {
-      // PGRST116 = no rows returned
+    if (eventError) {
       throw eventError;
     }
 
     logStep("Last event fetched", lastEvent);
 
-    // Check if we need to alert
-    const ALERT_THRESHOLD_MS = 15 * 60 * 1000; // 15 minutes
+    // Check if we need to alert - only if webhook was active before
+    const ALERT_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours (more reasonable for low-traffic periods)
     const now = new Date().getTime();
     
     let shouldAlert = false;
     let alertReason = "";
     let minutesSinceLastEvent = 0;
 
-    if (!lastEvent) {
-      shouldAlert = true;
-      alertReason = "Aucun événement Stripe n'a jamais été reçu.";
-      logStep("No events found, should alert");
-    } else {
+    if (lastEvent) {
       const lastEventTime = new Date(lastEvent.created_at).getTime();
       const timeSinceLastEvent = now - lastEventTime;
       minutesSinceLastEvent = Math.round(timeSinceLastEvent / 60000);
+      const hoursSinceLastEvent = Math.round(timeSinceLastEvent / 3600000);
 
       if (timeSinceLastEvent > ALERT_THRESHOLD_MS) {
         shouldAlert = true;
-        alertReason = `Le dernier événement Stripe (${lastEvent.event_type}) a été reçu il y a ${minutesSinceLastEvent} minutes.`;
-        logStep("Event too old, should alert", { minutesSinceLastEvent });
+        alertReason = `Le dernier événement Stripe (${lastEvent.event_type}) a été reçu il y a ${hoursSinceLastEvent} heures (${minutesSinceLastEvent} minutes).`;
+        logStep("Event too old, should alert", { hoursSinceLastEvent, minutesSinceLastEvent });
       } else {
         logStep("Webhook healthy", { minutesSinceLastEvent });
       }
