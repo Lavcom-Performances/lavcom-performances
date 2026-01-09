@@ -20,6 +20,7 @@ export interface Operation {
   change_eur?: number | null;
   machine_name?: string | null;
   source?: string | null;
+  type?: string | null;
 }
 
 export interface OperationsFilters {

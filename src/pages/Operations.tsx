@@ -5,7 +5,7 @@ import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO, getDa
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown, Lock } from "lucide-react";
+import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown, Lock, Ban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -880,6 +880,7 @@ export default function Operations() {
                 <TableHead className="text-right">Rendu</TableHead>
                 <TableHead className="text-right">Prix CB</TableHead>
                 <TableHead className="text-right">Prix ESP</TableHead>
+                <TableHead className="text-center w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -889,8 +890,25 @@ export default function Operations() {
                 const isESP = modeUpper === "ESP";
                 const price = op.price_eur ?? Number(op.amount);
                 
+                // Check if this operation is NOT counted in revenue
+                // For WiLine: only "Démarrage" type is counted
+                // For LM Control: operations are counted if they have a valid sale type
+                const typeValue = op.type?.toLowerCase() || '';
+                const isRechargeOrCredit = typeValue.includes('rechargement') || 
+                                            typeValue.includes('crédit') || 
+                                            typeValue.includes('credit') ||
+                                            typeValue.includes('annulation') ||
+                                            typeValue.includes('remboursement');
+                const isNotCounted = isRechargeOrCredit;
+                
                 return (
-                  <TableRow key={op.id} className="hover:bg-muted/30">
+                  <TableRow 
+                    key={op.id} 
+                    className={cn(
+                      "hover:bg-muted/30",
+                      isNotCounted && "row-not-counted"
+                    )}
+                  >
                     <TableCell className="font-medium whitespace-nowrap">
                       {format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr })}
                     </TableCell>
@@ -913,6 +931,22 @@ export default function Operations() {
                     </TableCell>
                     <TableCell className="text-right">
                       {formatCurrency(isESP ? price : null)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {isNotCounted && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="badge-not-counted inline-flex items-center gap-0.5 cursor-help">
+                              <Ban className="h-3 w-3" />
+                              <span className="hidden sm:inline">Hors CA</span>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Non comptabilisé dans le CA</p>
+                            <p className="text-xs text-muted-foreground">Type: {op.type || 'N/A'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
