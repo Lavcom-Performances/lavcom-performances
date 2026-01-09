@@ -136,8 +136,8 @@ async function upsertStripeInvoice(
     userId = profile?.id || null;
   }
 
-  // Build lines array
-  const lines = invoice.lines?.data?.map(line => ({
+  // Build lines array with proper typing
+  const lines = invoice.lines?.data?.map((line: { price?: { id?: string }; description?: string; amount?: number; quantity?: number }) => ({
     price_id: line.price?.id || null,
     description: line.description || null,
     amount: line.amount || 0,
@@ -700,15 +700,20 @@ serve(async (req) => {
     }
 
     // Record event for idempotence before processing
-    await supabaseAdmin
+    const { error: insertError } = await supabaseAdmin
       .from("stripe_events")
       .insert({
         event_id: event.id,
         event_type: event.type,
         payload: event.data.object,
+        processed_at: new Date().toISOString(),
       });
 
-    logStep("Event recorded for idempotence", { eventId: event.id });
+    if (insertError) {
+      logStep("Failed to record event", { error: insertError.message });
+    } else {
+      logStep("Event recorded for idempotence", { eventId: event.id });
+    }
 
     // Handle different event types
     switch (event.type) {
