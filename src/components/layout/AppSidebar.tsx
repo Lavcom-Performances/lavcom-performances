@@ -51,6 +51,7 @@ import { TrialBanner } from "@/components/trial/TrialBanner";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { usePlatformRole } from "@/hooks/usePlatformRole";
 import { useSites } from "@/hooks/useSites";
 import { useLogout } from "@/hooks/useLogout";
 import { useState, useEffect, useMemo } from "react";
@@ -84,6 +85,7 @@ export function AppSidebar({
   const { profile } = useAuth();
   const { daysRemaining, trialStatus, planType } = useSubscription();
   const { isAdmin } = useIsAdmin();
+  const { isPlatformAdmin } = usePlatformRole();
   const { getDefaultSite } = useSites();
   const { logout } = useLogout();
 

@@ -351,6 +351,27 @@ export type Database = {
         }
         Relationships: []
       }
+      fr_geo_regions: {
+        Row: {
+          department_code: string
+          department_name: string
+          region_code: string
+          region_name: string
+        }
+        Insert: {
+          department_code: string
+          department_name: string
+          region_code: string
+          region_name: string
+        }
+        Update: {
+          department_code?: string
+          department_name?: string
+          region_code?: string
+          region_name?: string
+        }
+        Relationships: []
+      }
       import_batches: {
         Row: {
           created_at: string
@@ -667,6 +688,30 @@ export type Database = {
           },
         ]
       }
+      platform_roles: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["platform_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["platform_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["platform_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           access_expires_at: string | null
@@ -929,7 +974,9 @@ export type Database = {
         Row: {
           address: string | null
           city: string | null
+          country_code: string | null
           created_at: string
+          department_code: string | null
           id: string
           is_default: boolean | null
           is_demo: boolean
@@ -942,7 +989,9 @@ export type Database = {
         Insert: {
           address?: string | null
           city?: string | null
+          country_code?: string | null
           created_at?: string
+          department_code?: string | null
           id?: string
           is_default?: boolean | null
           is_demo?: boolean
@@ -955,7 +1004,9 @@ export type Database = {
         Update: {
           address?: string | null
           city?: string | null
+          country_code?: string | null
           created_at?: string
+          department_code?: string | null
           id?: string
           is_default?: boolean | null
           is_demo?: boolean
@@ -1320,7 +1371,15 @@ export type Database = {
       cleanup_old_cron_logs: { Args: never; Returns: undefined }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       cleanup_old_system_events: { Args: never; Returns: undefined }
+      derive_department_code: { Args: { postal_code: string }; Returns: string }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
+      grant_platform_role: {
+        Args: {
+          p_email: string
+          p_role: Database["public"]["Enums"]["platform_role"]
+        }
+        Returns: Json
+      }
       has_org_role: {
         Args: {
           _org_id: string
@@ -1334,6 +1393,9 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      is_platform_admin: { Args: { uid?: string }; Returns: boolean }
+      is_platform_billing: { Args: { uid?: string }; Returns: boolean }
+      is_platform_super_admin: { Args: { uid?: string }; Returns: boolean }
       owns_operation_site: {
         Args: { _site_id: string; _user_id: string }
         Returns: boolean
@@ -1426,6 +1488,26 @@ export type Database = {
           revenue_total: number
         }[]
       }
+      rpc_platform_admin_billing: {
+        Args: { p_limit?: number; p_offset?: number; p_status?: string }
+        Returns: Json
+      }
+      rpc_platform_admin_geo: { Args: { p_min_sites?: number }; Returns: Json }
+      rpc_platform_admin_sites: {
+        Args: {
+          p_department?: string
+          p_limit?: number
+          p_offset?: number
+          p_region?: string
+          p_search?: string
+        }
+        Returns: Json
+      }
+      rpc_platform_admin_stats: { Args: never; Returns: Json }
+      rpc_platform_admin_users: {
+        Args: { p_limit?: number; p_offset?: number; p_search?: string }
+        Returns: Json
+      }
       rpc_recommendations_v1: {
         Args: { p_end_date: string; p_site_id: string; p_start_date: string }
         Returns: {
@@ -1461,6 +1543,7 @@ export type Database = {
     }
     Enums: {
       app_role: "super_admin" | "admin" | "checker" | "user" | "guest"
+      platform_role: "super_admin" | "admin" | "billing"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1589,6 +1672,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin", "admin", "checker", "user", "guest"],
+      platform_role: ["super_admin", "admin", "billing"],
     },
   },
 } as const
