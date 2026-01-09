@@ -243,3 +243,19 @@ export function buildDedupeKeyHashed(params: {
   const key = buildDedupeKey(params);
   return md5(key);
 }
+
+/**
+ * Build dedupe key specifically for WiLine format
+ * Uses: site_id, provider='wiline', transaction_no
+ */
+export function buildWiLineDedupeKey(params: {
+  siteId: string;
+  transactionNo: string;
+}): string {
+  const parts = [
+    params.siteId,
+    'wiline',
+    params.transactionNo,
+  ];
+  return md5(parts.join('|'));
+}
