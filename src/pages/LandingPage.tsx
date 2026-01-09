@@ -1451,7 +1451,7 @@ const LandingPage = () => {
               {/* Social Media Icons */}
               <div className="flex items-center gap-4 mt-4">
                 <a 
-                  href="https://www.linkedin.com/company/lavcom" 
+                  href="https://www.linkedin.com/company/lavcom/?viewAsMember=true" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
@@ -1460,7 +1460,7 @@ const LandingPage = () => {
                   <Linkedin className="h-5 w-5" />
                 </a>
                 <a 
-                  href="https://www.instagram.com/lavcom" 
+                  href="https://www.instagram.com/lavcom_pourvotrelaverie" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
@@ -1469,7 +1469,7 @@ const LandingPage = () => {
                   <Instagram className="h-5 w-5" />
                 </a>
                 <a 
-                  href="https://www.facebook.com/lavcom" 
+                  href="https://www.facebook.com/LavComFR" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
@@ -1478,6 +1478,15 @@ const LandingPage = () => {
                   <Facebook className="h-5 w-5" />
                 </a>
               </div>
+              {/* Website Link */}
+              <a 
+                href="https://www.lavcom.fr" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors mt-3 inline-block"
+              >
+                www.lavcom.fr
+              </a>
             </div>
           </div>
           
