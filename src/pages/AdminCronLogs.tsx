@@ -14,7 +14,8 @@ import {
   Server,
   AlertTriangle,
   BarChart3,
-  Settings
+  Settings,
+  Bell
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,7 @@ import { ManualCronTrigger } from "@/components/admin/ManualCronTrigger";
 import { CronMonitoringDashboard } from "@/components/admin/CronMonitoringDashboard";
 import { CronLogsExport } from "@/components/admin/CronLogsExport";
 import { CronAlertSettings } from "@/components/admin/CronAlertSettings";
+import { AlertHistoryDashboard } from "@/components/admin/AlertHistoryDashboard";
 
 type CronLog = {
   id: string;
@@ -212,6 +214,10 @@ export default function AdminCronLogs() {
             <Activity className="h-4 w-4" />
             Logs détaillés
           </TabsTrigger>
+          <TabsTrigger value="alerts" className="gap-2">
+            <Bell className="h-4 w-4" />
+            Historique Alertes
+          </TabsTrigger>
           <TabsTrigger value="settings" className="gap-2">
             <Settings className="h-4 w-4" />
             Paramètres
@@ -220,6 +226,10 @@ export default function AdminCronLogs() {
 
         <TabsContent value="monitoring">
           <CronMonitoringDashboard logs={monitoringLogs || []} />
+        </TabsContent>
+
+        <TabsContent value="alerts">
+          <AlertHistoryDashboard />
         </TabsContent>
 
         <TabsContent value="settings">
