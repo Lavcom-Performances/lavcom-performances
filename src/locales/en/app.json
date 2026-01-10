@@ -1506,5 +1506,29 @@
     "creating": "Adding...",
     "validationError": "Required fields",
     "validationErrorDescription": "Please fill in the name and select a valid address."
+  },
+  "platformAdmin": {
+    "title": "Administration",
+    "switchToSaas": "Laundry SaaS",
+    "switchToAdmin": "Administration",
+    "nav": {
+      "overview": "Overview",
+      "users": "Users",
+      "sites": "Laundries",
+      "analytics": "Analytics",
+      "roles": "Roles",
+      "salesOverview": "Sales",
+      "invoices": "Invoices",
+      "products": "Products",
+      "reports": "Reports",
+      "systemStatus": "System Status",
+      "expertRequests": "Expert Requests",
+      "cronLogs": "CRON Logs"
+    },
+    "sections": {
+      "main": "Main",
+      "billing": "Billing",
+      "system": "System"
+    }
   }
 }

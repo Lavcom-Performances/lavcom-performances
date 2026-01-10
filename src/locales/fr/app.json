@@ -1506,5 +1506,29 @@
     "creating": "Ajout en cours...",
     "validationError": "Champs requis",
     "validationErrorDescription": "Veuillez remplir le nom et sélectionner une adresse valide."
+  },
+  "platformAdmin": {
+    "title": "Administration",
+    "switchToSaas": "SaaS Laverie",
+    "switchToAdmin": "Administration",
+    "nav": {
+      "overview": "Vue d'ensemble",
+      "users": "Utilisateurs",
+      "sites": "Laveries",
+      "analytics": "Analytics",
+      "roles": "Rôles",
+      "salesOverview": "Ventes",
+      "invoices": "Factures",
+      "products": "Produits",
+      "reports": "Rapports",
+      "systemStatus": "Statut système",
+      "expertRequests": "Demandes experts",
+      "cronLogs": "Logs CRON"
+    },
+    "sections": {
+      "main": "Principal",
+      "billing": "Facturation",
+      "system": "Système"
+    }
   }
 }

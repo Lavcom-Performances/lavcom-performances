@@ -198,6 +198,24 @@ html {
     animation: slideInLeft 0.2s ease-out;
   }
 
+  /* Admin sidebar styles - blue theme */
+  .admin-sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-blue-200/70 hover:text-white hover:bg-blue-800/40 text-sm;
+    @apply transition-all duration-200 ease-out;
+    @apply hover:translate-x-0.5;
+  }
+
+  .admin-sidebar-item-active {
+    @apply bg-blue-800/60 text-white font-medium shadow-sm relative;
+  }
+
+  .admin-sidebar-item-active::before {
+    content: '';
+    @apply absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full;
+    background: linear-gradient(to bottom, hsl(210 100% 60%), hsl(220 100% 50%));
+    animation: slideInLeft 0.2s ease-out;
+  }
+
   @keyframes slideInLeft {
     from {
       opacity: 0;

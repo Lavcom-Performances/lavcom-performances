@@ -5,10 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SimulationLayout } from "@/components/layout/SimulationLayout";
+import { AdminLayout } from "@/components/platformAdmin/AdminLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ViewModeProvider } from "@/hooks/useViewMode";
 import { DateRangeProvider } from "@/hooks/useDateRange";
 import { RouteTracker } from "@/components/analytics/RouteTracker";
+import { PathTracker } from "@/components/analytics/PathTracker";
 import { CookieBanner } from "@/components/cookies/CookieBanner";
 import { LoginLoggerProvider } from "@/components/auth/LoginLoggerProvider";
 import Index from "./pages/Index";
@@ -95,6 +97,7 @@ const App = () => (
       <BrowserRouter>
         <LoginLoggerProvider>
         <RouteTracker />
+        <PathTracker />
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Index />} />
@@ -126,6 +129,38 @@ const App = () => (
             <Route path="/simulation/results" element={<SimulationResultsPage />} />
           </Route>
           
+          {/* Platform Admin routes with dedicated admin layout */}
+          <Route element={
+            <ProtectedRoute>
+              <PlatformAdminRoute>
+                <AdminLayout />
+              </PlatformAdminRoute>
+            </ProtectedRoute>
+          }>
+            <Route path="/admin" element={<PlatformAdminHome />} />
+            <Route path="/admin/users" element={<PlatformAdminUsers />} />
+            <Route path="/admin/sites" element={<PlatformAdminSites />} />
+            <Route path="/admin/analytics" element={<PlatformAdminAnalytics />} />
+            <Route path="/admin/roles" element={<PlatformAdminRoles />} />
+            <Route path="/admin/system-status" element={<AdminSystemStatus />} />
+            <Route path="/admin/expert-requests" element={<AdminExpertRequests />} />
+            <Route path="/admin/cron-logs" element={<AdminCronLogs />} />
+          </Route>
+          
+          {/* Platform Admin billing routes (require billing access) */}
+          <Route element={
+            <ProtectedRoute>
+              <PlatformAdminRoute requireBilling>
+                <AdminLayout />
+              </PlatformAdminRoute>
+            </ProtectedRoute>
+          }>
+            <Route path="/admin/sales" element={<PlatformSalesOverview />} />
+            <Route path="/admin/sales/invoices" element={<PlatformSalesInvoices />} />
+            <Route path="/admin/sales/products" element={<PlatformSalesProducts />} />
+            <Route path="/admin/sales/reports" element={<PlatformSalesReports />} />
+          </Route>
+          
           {/* Protected app routes with sidebar layout */}
           <Route element={
             <ProtectedRoute>
@@ -149,18 +184,6 @@ const App = () => (
             <Route path="/aide" element={<HelpPage />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
-            <Route path="/admin" element={<PlatformAdminRoute><PlatformAdminHome /></PlatformAdminRoute>} />
-            <Route path="/admin/users" element={<PlatformAdminRoute><PlatformAdminUsers /></PlatformAdminRoute>} />
-            <Route path="/admin/sites" element={<PlatformAdminRoute><PlatformAdminSites /></PlatformAdminRoute>} />
-            <Route path="/admin/analytics" element={<PlatformAdminRoute><PlatformAdminAnalytics /></PlatformAdminRoute>} />
-            <Route path="/admin/roles" element={<PlatformAdminRoute><PlatformAdminRoles /></PlatformAdminRoute>} />
-            <Route path="/admin/sales" element={<PlatformAdminRoute requireBilling><PlatformSalesOverview /></PlatformAdminRoute>} />
-            <Route path="/admin/sales/invoices" element={<PlatformAdminRoute requireBilling><PlatformSalesInvoices /></PlatformAdminRoute>} />
-            <Route path="/admin/sales/products" element={<PlatformAdminRoute requireBilling><PlatformSalesProducts /></PlatformAdminRoute>} />
-            <Route path="/admin/sales/reports" element={<PlatformAdminRoute requireBilling><PlatformSalesReports /></PlatformAdminRoute>} />
-            <Route path="/admin/expert-requests" element={<AdminProtectedRoute><AdminExpertRequests /></AdminProtectedRoute>} />
-            <Route path="/admin/cron-logs" element={<AdminProtectedRoute><AdminCronLogs /></AdminProtectedRoute>} />
-            <Route path="/admin/system-status" element={<PlatformAdminRoute><AdminSystemStatus /></PlatformAdminRoute>} />
             
             {/* Chart pages */}
             <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />

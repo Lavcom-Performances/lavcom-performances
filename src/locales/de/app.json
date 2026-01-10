@@ -1266,5 +1266,29 @@
     "creating": "Wird hinzugefügt...",
     "validationError": "Pflichtfelder",
     "validationErrorDescription": "Bitte füllen Sie den Namen aus und wählen Sie eine gültige Adresse."
+  },
+  "platformAdmin": {
+    "title": "Verwaltung",
+    "switchToSaas": "Waschsalon SaaS",
+    "switchToAdmin": "Verwaltung",
+    "nav": {
+      "overview": "Übersicht",
+      "users": "Benutzer",
+      "sites": "Waschsalons",
+      "analytics": "Analytik",
+      "roles": "Rollen",
+      "salesOverview": "Verkäufe",
+      "invoices": "Rechnungen",
+      "products": "Produkte",
+      "reports": "Berichte",
+      "systemStatus": "Systemstatus",
+      "expertRequests": "Expertenanfragen",
+      "cronLogs": "CRON-Protokolle"
+    },
+    "sections": {
+      "main": "Haupt",
+      "billing": "Abrechnung",
+      "system": "System"
+    }
   }
 }
