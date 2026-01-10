@@ -86,3 +86,9 @@ verify_jwt = false
 
 [functions.support-chatbot]
 verify_jwt = false
+
+[functions.send-admin-invitation]
+verify_jwt = true
+
+[functions.log-admin-login]
+verify_jwt = true

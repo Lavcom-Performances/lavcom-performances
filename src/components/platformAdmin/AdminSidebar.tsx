@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Key,
   ScrollText,
+  History,
   AlertTriangle,
   Handshake,
   Clock,
@@ -75,6 +76,7 @@ export function AdminSidebar({
     { name: t('app:platformAdmin.nav.roles'), href: "/admin/roles", icon: ShieldCheck },
     { name: t('app:platformAdmin.nav.permissions'), href: "/admin/permissions", icon: Key },
     { name: t('app:platformAdmin.nav.auditLogs'), href: "/admin/audit-logs", icon: ScrollText },
+    { name: t('app:platformAdmin.nav.loginHistory'), href: "/admin/login-history", icon: History },
   ];
 
   // Billing/sales navigation - only for users with billing access

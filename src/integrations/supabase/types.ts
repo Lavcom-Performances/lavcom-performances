@@ -38,6 +38,57 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_login_history: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          id: string
+          ip_address: string | null
+          is_suspicious: boolean | null
+          os: string | null
+          region: string | null
+          session_id: string | null
+          suspicious_reason: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip_address?: string | null
+          is_suspicious?: boolean | null
+          os?: string | null
+          region?: string | null
+          session_id?: string | null
+          suspicious_reason?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip_address?: string | null
+          is_suspicious?: boolean | null
+          os?: string | null
+          region?: string | null
+          session_id?: string | null
+          suspicious_reason?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       alert_history: {
         Row: {
           alert_type: string
