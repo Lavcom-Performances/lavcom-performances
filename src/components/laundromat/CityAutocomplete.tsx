@@ -10,6 +10,7 @@
  * - Returns city name, postal code, and department/region code
  * - Handles multiple postal codes for large cities (France)
  * - Fallback to manual input on API failure
+ * - Local cache with TTL for improved performance
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -17,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { MapPin, Loader2, AlertCircle, ChevronDown, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { citySearchCache, CACHE_PREFIXES } from "@/lib/searchCache";
 
 export interface CitySearchResult {
   city: string;
@@ -123,8 +125,14 @@ export function CityAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Search cities using French API
+  // Search cities using French API (with cache)
   const searchFrenchCities = useCallback(async (query: string, signal: AbortSignal): Promise<CitySearchResult[]> => {
+    // Check cache first
+    const cached = citySearchCache.get(CACHE_PREFIXES.FRENCH_CITIES, query);
+    if (cached) {
+      return cached;
+    }
+
     const response = await fetch(
       `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(query)}&fields=nom,code,codeDepartement,codesPostaux,population&boost=population&limit=10`,
       { signal }
@@ -136,7 +144,7 @@ export function CityAutocomplete({
 
     const cities = await response.json();
 
-    return cities.map((city: any) => {
+    const results = cities.map((city: any) => {
       const postalCodes: string[] = city.codesPostaux || [];
       const primaryPostalCode = postalCodes[0] || "";
       const deptCode = city.codeDepartement || deriveDepartmentCode(primaryPostalCode);
@@ -150,10 +158,21 @@ export function CityAutocomplete({
         countryCode: 'FR',
       };
     });
+
+    // Store in cache
+    citySearchCache.set(CACHE_PREFIXES.FRENCH_CITIES, query, results);
+
+    return results;
   }, []);
 
-  // Search cities using Nominatim (OpenStreetMap)
+  // Search cities using Nominatim (OpenStreetMap) with cache
   const searchNominatimCities = useCallback(async (query: string, signal: AbortSignal): Promise<CitySearchResult[]> => {
+    // Check cache first
+    const cached = citySearchCache.get(CACHE_PREFIXES.NOMINATIM_CITIES, query, countryCode);
+    if (cached) {
+      return cached;
+    }
+
     const countryName = COUNTRY_NAMES[countryCode] || countryCode;
     
     const response = await fetch(
@@ -207,12 +226,17 @@ export function CityAutocomplete({
 
     // Remove duplicates based on city name + postal code
     const seen = new Set<string>();
-    return formattedResults.filter((item: CitySearchResult) => {
+    const dedupedResults = formattedResults.filter((item: CitySearchResult) => {
       const key = `${item.city}-${item.postalCode}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
+
+    // Store in cache
+    citySearchCache.set(CACHE_PREFIXES.NOMINATIM_CITIES, query, dedupedResults, countryCode);
+
+    return dedupedResults;
   }, [countryCode]);
 
   const searchCities = useCallback(async (query: string) => {
