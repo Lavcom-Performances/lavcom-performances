@@ -56,36 +56,51 @@ interface AuditLog {
   admin_email?: string;
 }
 
-const ACTION_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
+const ACTION_CONFIG: Record<string, { label: string; icon: React.ReactNode; colorClass: string }> = {
   GRANT_PLATFORM_ROLE: { 
     label: 'Attribution de rôle', 
     icon: <UserPlus className="h-4 w-4" />, 
-    color: 'bg-green-500/20 text-green-400 border-green-500/30' 
+    colorClass: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-500/20 dark:text-green-400 dark:border-green-500/30' 
   },
   REVOKE_PLATFORM_ROLE: { 
     label: 'Révocation de rôle', 
     icon: <UserMinus className="h-4 w-4" />, 
-    color: 'bg-red-500/20 text-red-400 border-red-500/30' 
+    colorClass: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30' 
   },
   UPDATE_PERMISSIONS: { 
     label: 'Modification permissions', 
     icon: <Edit className="h-4 w-4" />, 
-    color: 'bg-[#7DD3E8]/20 text-[#7DD3E8] border-[#7DD3E8]/30' 
+    colorClass: 'bg-cyan-100 text-cyan-700 border-cyan-200 dark:bg-[#7DD3E8]/20 dark:text-[#7DD3E8] dark:border-[#7DD3E8]/30' 
   },
   DELETE_USER: { 
     label: 'Suppression utilisateur', 
     icon: <Trash2 className="h-4 w-4" />, 
-    color: 'bg-red-500/20 text-red-400 border-red-500/30' 
+    colorClass: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30' 
   },
   CREATE_ORGANIZATION: { 
     label: 'Création organisation', 
     icon: <Shield className="h-4 w-4" />, 
-    color: 'bg-[#A3C615]/20 text-[#A3C615] border-[#A3C615]/30' 
+    colorClass: 'bg-lime-100 text-lime-700 border-lime-200 dark:bg-[#A3C615]/20 dark:text-[#A3C615] dark:border-[#A3C615]/30' 
   },
   SECURITY_ALERT: { 
     label: 'Alerte sécurité', 
     icon: <AlertTriangle className="h-4 w-4" />, 
-    color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' 
+    colorClass: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30' 
+  },
+  GRANT_ADMIN_ACCESS: { 
+    label: 'Accès admin accordé', 
+    icon: <UserPlus className="h-4 w-4" />, 
+    colorClass: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-500/20 dark:text-green-400 dark:border-green-500/30' 
+  },
+  REVOKE_ADMIN_ACCESS: { 
+    label: 'Accès admin révoqué', 
+    icon: <UserMinus className="h-4 w-4" />, 
+    colorClass: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30' 
+  },
+  ADMIN_INVITATION_SENT: { 
+    label: 'Invitation envoyée', 
+    icon: <UserPlus className="h-4 w-4" />, 
+    colorClass: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-500/30' 
   },
 };
 
@@ -133,11 +148,11 @@ export default function PlatformAdminAuditLogs() {
     const config = ACTION_CONFIG[action] || { 
       label: action, 
       icon: <Clock className="h-4 w-4" />, 
-      color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' 
+      colorClass: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-500/20 dark:text-gray-400 dark:border-gray-500/30' 
     };
 
     return (
-      <Badge variant="outline" className={`${config.color} flex items-center gap-1.5`}>
+      <Badge variant="outline" className={`${config.colorClass} flex items-center gap-1.5`}>
         {config.icon}
         {config.label}
       </Badge>
@@ -178,10 +193,10 @@ export default function PlatformAdminAuditLogs() {
   if (!isPlatformSuperAdmin && !isPlatformAdmin) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
+        <Card className="bg-card border-border">
           <CardContent className="py-12 text-center">
-            <Shield className="h-12 w-12 text-[#7DD3E8]/50 mx-auto mb-4" />
-            <p className="text-[#A8B4D0]">
+            <Shield className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+            <p className="text-muted-foreground">
               Accès réservé aux administrateurs plateforme.
             </p>
           </CardContent>
@@ -201,18 +216,18 @@ export default function PlatformAdminAuditLogs() {
       <div className="container mx-auto py-8 px-4 max-w-6xl">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
-              <ScrollText className="h-6 w-6 text-[#7DD3E8]" />
+            <h1 className="text-2xl font-bold flex items-center gap-2 text-foreground">
+              <ScrollText className="h-6 w-6 text-primary" />
               Logs d'Audit
             </h1>
-            <p className="text-[#A8B4D0]">
+            <p className="text-muted-foreground">
               Historique complet des actions administratives
             </p>
           </div>
           <Button 
             onClick={exportLogs}
             disabled={!filteredLogs?.length}
-            className="bg-gradient-to-r from-[#A3C615] to-[#8AAD12] hover:opacity-90 text-white"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Download className="h-4 w-4 mr-2" />
             Exporter CSV
@@ -221,52 +236,52 @@ export default function PlatformAdminAuditLogs() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-          <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
+          <Card className="bg-card border-border">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
-                <ScrollText className="h-8 w-8 text-[#7DD3E8]" />
+                <ScrollText className="h-8 w-8 text-primary" />
                 <div>
-                  <p className="text-2xl font-bold text-white">{logs?.length || 0}</p>
-                  <p className="text-sm text-[#A8B4D0]">Total logs</p>
+                  <p className="text-2xl font-bold text-foreground">{logs?.length || 0}</p>
+                  <p className="text-sm text-muted-foreground">Total logs</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
+          <Card className="bg-card border-border">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
-                <UserPlus className="h-8 w-8 text-green-400" />
+                <UserPlus className="h-8 w-8 text-green-500" />
                 <div>
-                  <p className="text-2xl font-bold text-white">
-                    {logs?.filter(l => l.action === 'GRANT_PLATFORM_ROLE').length || 0}
+                  <p className="text-2xl font-bold text-foreground">
+                    {logs?.filter(l => l.action.includes('GRANT')).length || 0}
                   </p>
-                  <p className="text-sm text-[#A8B4D0]">Attributions</p>
+                  <p className="text-sm text-muted-foreground">Attributions</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
+          <Card className="bg-card border-border">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
-                <UserMinus className="h-8 w-8 text-red-400" />
+                <UserMinus className="h-8 w-8 text-red-500" />
                 <div>
-                  <p className="text-2xl font-bold text-white">
-                    {logs?.filter(l => l.action === 'REVOKE_PLATFORM_ROLE').length || 0}
+                  <p className="text-2xl font-bold text-foreground">
+                    {logs?.filter(l => l.action.includes('REVOKE')).length || 0}
                   </p>
-                  <p className="text-sm text-[#A8B4D0]">Révocations</p>
+                  <p className="text-sm text-muted-foreground">Révocations</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
+          <Card className="bg-card border-border">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
-                <Edit className="h-8 w-8 text-[#FCD259]" />
+                <Edit className="h-8 w-8 text-amber-500" />
                 <div>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-foreground">
                     {logs?.filter(l => l.action === 'UPDATE_PERMISSIONS').length || 0}
                   </p>
-                  <p className="text-sm text-[#A8B4D0]">Modifications</p>
+                  <p className="text-sm text-muted-foreground">Modifications</p>
                 </div>
               </div>
             </CardContent>
@@ -276,36 +291,36 @@ export default function PlatformAdminAuditLogs() {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7DD3E8]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher par admin, action, détails..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-[#3D4B7A]/50 border-[#5C6B9A] text-white placeholder:text-[#7DD3E8]/50"
+              className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-[#7DD3E8]" />
+            <Filter className="h-4 w-4 text-muted-foreground" />
             <Select value={actionFilter} onValueChange={setActionFilter}>
-              <SelectTrigger className="w-48 bg-[#3D4B7A]/50 border-[#5C6B9A] text-white">
+              <SelectTrigger className="w-48 bg-background border-input text-foreground">
                 <SelectValue placeholder="Filtrer par action" />
               </SelectTrigger>
-              <SelectContent className="bg-[#3D4B7A] border-[#5C6B9A]">
-                <SelectItem value="all" className="text-white hover:bg-[#5C6B9A]">Toutes les actions</SelectItem>
-                <SelectItem value="GRANT_PLATFORM_ROLE" className="text-white hover:bg-[#5C6B9A]">Attribution de rôle</SelectItem>
-                <SelectItem value="REVOKE_PLATFORM_ROLE" className="text-white hover:bg-[#5C6B9A]">Révocation de rôle</SelectItem>
-                <SelectItem value="UPDATE_PERMISSIONS" className="text-white hover:bg-[#5C6B9A]">Modification permissions</SelectItem>
-                <SelectItem value="DELETE_USER" className="text-white hover:bg-[#5C6B9A]">Suppression utilisateur</SelectItem>
+              <SelectContent className="bg-popover border-border">
+                <SelectItem value="all" className="text-popover-foreground">Toutes les actions</SelectItem>
+                <SelectItem value="GRANT_ADMIN_ACCESS" className="text-popover-foreground">Accès accordé</SelectItem>
+                <SelectItem value="REVOKE_ADMIN_ACCESS" className="text-popover-foreground">Accès révoqué</SelectItem>
+                <SelectItem value="ADMIN_INVITATION_SENT" className="text-popover-foreground">Invitation envoyée</SelectItem>
+                <SelectItem value="UPDATE_PERMISSIONS" className="text-popover-foreground">Modification permissions</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
         {/* Logs table */}
-        <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white">Historique des actions</CardTitle>
-            <CardDescription className="text-[#A8B4D0]">
+            <CardTitle className="text-foreground">Historique des actions</CardTitle>
+            <CardDescription className="text-muted-foreground">
               {filteredLogs?.length || 0} entrée{(filteredLogs?.length || 0) > 1 ? 's' : ''} 
               {searchTerm && ' (filtrées)'}
             </CardDescription>
@@ -313,23 +328,23 @@ export default function PlatformAdminAuditLogs() {
           <CardContent className="p-0">
             <Table>
               <TableHeader>
-                <TableRow className="border-[#5C6B9A]/50 hover:bg-transparent">
-                  <TableHead className="text-[#7DD3E8]">Date</TableHead>
-                  <TableHead className="text-[#7DD3E8]">Admin</TableHead>
-                  <TableHead className="text-[#7DD3E8]">Action</TableHead>
-                  <TableHead className="text-[#7DD3E8]">Cible</TableHead>
-                  <TableHead className="text-[#7DD3E8] w-20">Détails</TableHead>
+                <TableRow className="border-border hover:bg-transparent">
+                  <TableHead className="text-muted-foreground">Date</TableHead>
+                  <TableHead className="text-muted-foreground">Admin</TableHead>
+                  <TableHead className="text-muted-foreground">Action</TableHead>
+                  <TableHead className="text-muted-foreground">Cible</TableHead>
+                  <TableHead className="text-muted-foreground w-20">Détails</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i} className="border-[#5C6B9A]/50">
-                      <TableCell><Skeleton className="h-4 w-32 bg-[#5C6B9A]/50" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-40 bg-[#5C6B9A]/50" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-32 bg-[#5C6B9A]/50" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-32 bg-[#5C6B9A]/50" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-8 bg-[#5C6B9A]/50" /></TableCell>
+                    <TableRow key={i} className="border-border">
+                      <TableCell><Skeleton className="h-4 w-32 bg-muted" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-40 bg-muted" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-32 bg-muted" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-32 bg-muted" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-8 bg-muted" /></TableCell>
                     </TableRow>
                   ))
                 ) : filteredLogs?.length ? (
@@ -338,22 +353,22 @@ export default function PlatformAdminAuditLogs() {
                     const targetEmail = details?.target_email as string || '-';
                     
                     return (
-                      <TableRow key={log.id} className="border-[#5C6B9A]/50 hover:bg-[#5C6B9A]/20">
-                        <TableCell className="text-[#A8B4D0] text-sm">
+                      <TableRow key={log.id} className="border-border hover:bg-muted/50">
+                        <TableCell className="text-muted-foreground text-sm">
                           <div className="flex flex-col">
-                            <span className="text-white">{format(new Date(log.created_at), 'dd MMM yyyy', { locale: fr })}</span>
+                            <span className="text-foreground">{format(new Date(log.created_at), 'dd MMM yyyy', { locale: fr })}</span>
                             <span className="text-xs">{format(new Date(log.created_at), 'HH:mm:ss')}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="font-medium text-white">{log.admin_email}</TableCell>
+                        <TableCell className="font-medium text-foreground">{log.admin_email}</TableCell>
                         <TableCell>{getActionBadge(log.action)}</TableCell>
-                        <TableCell className="text-[#A8B4D0]">{targetEmail}</TableCell>
+                        <TableCell className="text-muted-foreground">{targetEmail}</TableCell>
                         <TableCell>
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => setSelectedLog(log)}
-                            className="text-[#7DD3E8] hover:text-white hover:bg-[#5C6B9A]/50"
+                            className="text-muted-foreground hover:text-foreground hover:bg-muted"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -363,7 +378,7 @@ export default function PlatformAdminAuditLogs() {
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-12 text-[#A8B4D0]">
+                    <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
                       <ScrollText className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       {searchTerm ? 'Aucun résultat trouvé' : 'Aucun log d\'audit enregistré'}
                     </TableCell>
@@ -376,10 +391,10 @@ export default function PlatformAdminAuditLogs() {
 
         {/* Details dialog */}
         <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
-          <DialogContent className="max-w-lg bg-[#3D4B7A] border-[#5C6B9A]">
+          <DialogContent className="max-w-lg bg-card border-border">
             <DialogHeader>
-              <DialogTitle className="text-white flex items-center gap-2">
-                <ScrollText className="h-5 w-5 text-[#7DD3E8]" />
+              <DialogTitle className="text-foreground flex items-center gap-2">
+                <ScrollText className="h-5 w-5 text-primary" />
                 Détails du log
               </DialogTitle>
             </DialogHeader>
@@ -388,25 +403,25 @@ export default function PlatformAdminAuditLogs() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-[#7DD3E8] mb-1">Date</p>
-                    <p className="text-white">
+                    <p className="text-sm text-muted-foreground mb-1">Date</p>
+                    <p className="text-foreground">
                       {format(new Date(selectedLog.created_at), 'dd MMMM yyyy à HH:mm:ss', { locale: fr })}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-[#7DD3E8] mb-1">Admin</p>
-                    <p className="text-white">{selectedLog.admin_email}</p>
+                    <p className="text-sm text-muted-foreground mb-1">Admin</p>
+                    <p className="text-foreground">{selectedLog.admin_email}</p>
                   </div>
                 </div>
                 
                 <div>
-                  <p className="text-sm text-[#7DD3E8] mb-1">Action</p>
+                  <p className="text-sm text-muted-foreground mb-1">Action</p>
                   {getActionBadge(selectedLog.action)}
                 </div>
 
                 <div>
-                  <p className="text-sm text-[#7DD3E8] mb-2">Détails JSON</p>
-                  <pre className="bg-[#2D3B5A] p-4 rounded-lg text-sm text-[#A8B4D0] overflow-auto max-h-48">
+                  <p className="text-sm text-muted-foreground mb-2">Détails JSON</p>
+                  <pre className="bg-muted p-4 rounded-lg text-sm text-muted-foreground overflow-auto max-h-48">
                     {JSON.stringify(selectedLog.details, null, 2)}
                   </pre>
                 </div>
