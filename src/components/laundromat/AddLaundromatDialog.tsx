@@ -306,7 +306,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     
     // In normal mode, city must be selected from suggestions
     // In fallback mode, we also need postal code
-    if (!fallbackMode && !citySelected && formData.country === "FR") {
+    if (!fallbackMode && !citySelected) {
       errors.city = true;
     }
     
@@ -324,7 +324,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      if (!citySelected && !fallbackMode && formData.city.trim() && formData.country === "FR") {
+      if (!citySelected && !fallbackMode && formData.city.trim()) {
         toast({
           title: t('app:newLaundry.validationError'),
           description: t('app:newLaundry.cityMustBeSelected'),
@@ -437,54 +437,44 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             )}
           </div>
 
-          {/* City Field (Required) - Autocomplete for France */}
+          {/* City Field (Required) - Autocomplete for all countries */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               {t('app:newLaundry.cityLabel')} *
               {citySelected && <Lock className="h-3 w-3 text-muted-foreground" />}
             </Label>
-            {isFrance ? (
-              <>
-                <CityAutocomplete
-                  value={formData.city}
-                  onSelect={handleCitySelect}
-                  onChange={handleCityInputChange}
-                  placeholder={t('app:newLaundry.citySearchPlaceholder')}
-                  disabled={citySelected}
-                  hasError={validationErrors.city}
-                  fallbackMode={fallbackMode}
-                  onFallbackModeChange={setFallbackMode}
-                />
-                {citySelected && !fallbackMode && (
-                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Lock className="h-3 w-3" />
-                    {t('app:newLaundry.cityLocked')}
-                    {' '}
-                    <button
-                      type="button"
-                      onClick={unlockCity}
-                      className="text-primary hover:underline"
-                    >
-                      {t('app:newLaundry.unlock')}
-                    </button>
-                  </p>
-                )}
-                {!citySelected && !fallbackMode && (
-                  <p className="text-xs text-muted-foreground">
-                    {t('app:newLaundry.cityHelp')}
-                  </p>
-                )}
-              </>
-            ) : (
-              <Input
-                placeholder={t('app:newLaundry.cityPlaceholder')}
-                value={formData.city}
-                onChange={(e) => {
-                  updateField('city', e.target.value);
-                  setCitySelected(true); // For non-FR, manual input is accepted
-                }}
-                className={cn(validationErrors.city && "border-destructive")}
-              />
+            <CityAutocomplete
+              value={formData.city}
+              countryCode={formData.country}
+              onSelect={handleCitySelect}
+              onChange={handleCityInputChange}
+              placeholder={isFrance 
+                ? t('app:newLaundry.citySearchPlaceholder') 
+                : t('app:newLaundry.citySearchPlaceholderInternational')
+              }
+              disabled={citySelected}
+              hasError={validationErrors.city}
+              fallbackMode={fallbackMode}
+              onFallbackModeChange={setFallbackMode}
+            />
+            {citySelected && !fallbackMode && (
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Lock className="h-3 w-3" />
+                {t('app:newLaundry.cityLocked')}
+                {' '}
+                <button
+                  type="button"
+                  onClick={unlockCity}
+                  className="text-primary hover:underline"
+                >
+                  {t('app:newLaundry.unlock')}
+                </button>
+              </p>
+            )}
+            {!citySelected && !fallbackMode && (
+              <p className="text-xs text-muted-foreground">
+                {t('app:newLaundry.cityHelp')}
+              </p>
             )}
           </div>
 
