@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SuspiciousLoginsDashboard } from '@/components/admin/SuspiciousLoginsDashboard';
+import { TrustedIPsManager } from '@/components/admin/TrustedIPsManager';
 
 interface PlatformStats {
   total_users: number;
@@ -163,6 +164,11 @@ export default function PlatformAdminHome() {
             </CardContent>
           </Card>
         )}
+
+        {/* Trusted IPs Manager */}
+        <div className="mt-8">
+          <TrustedIPsManager />
+        </div>
 
         {/* Suspicious Logins Dashboard */}
         <div className="mt-8">
