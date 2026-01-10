@@ -38,6 +38,45 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_blocked_users: {
+        Row: {
+          blocked_at: string
+          blocked_by: string | null
+          blocked_until: string | null
+          created_at: string
+          id: string
+          reason: string
+          suspicious_count: number
+          unblocked_at: string | null
+          unblocked_by: string | null
+          user_id: string
+        }
+        Insert: {
+          blocked_at?: string
+          blocked_by?: string | null
+          blocked_until?: string | null
+          created_at?: string
+          id?: string
+          reason?: string
+          suspicious_count?: number
+          unblocked_at?: string | null
+          unblocked_by?: string | null
+          user_id: string
+        }
+        Update: {
+          blocked_at?: string
+          blocked_by?: string | null
+          blocked_until?: string | null
+          created_at?: string
+          id?: string
+          reason?: string
+          suspicious_count?: number
+          unblocked_at?: string | null
+          unblocked_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_login_history: {
         Row: {
           browser: string | null

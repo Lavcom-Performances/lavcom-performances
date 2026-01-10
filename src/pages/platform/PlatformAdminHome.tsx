@@ -15,6 +15,7 @@ import {
   ScrollText
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SuspiciousLoginsDashboard } from '@/components/admin/SuspiciousLoginsDashboard';
 
 interface PlatformStats {
   total_users: number;
@@ -162,6 +163,11 @@ export default function PlatformAdminHome() {
             </CardContent>
           </Card>
         )}
+
+        {/* Suspicious Logins Dashboard */}
+        <div className="mt-8">
+          <SuspiciousLoginsDashboard />
+        </div>
       </div>
     </>
   );

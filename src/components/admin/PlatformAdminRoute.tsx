@@ -1,9 +1,11 @@
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { usePlatformRole } from '@/hooks/usePlatformRole';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldOff } from 'lucide-react';
 import NotFound from '@/pages/NotFound';
 import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 interface PlatformAdminRouteProps {
   children: ReactNode;
@@ -16,9 +18,11 @@ interface PlatformAdminRouteProps {
  * Also logs admin login when accessing the admin area.
  */
 export function PlatformAdminRoute({ children, requireBilling = false }: PlatformAdminRouteProps) {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, signOut } = useAuth();
   const { isPlatformAdmin, isPlatformBilling, isLoading: roleLoading } = usePlatformRole();
   const hasLoggedRef = useRef(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockReason, setBlockReason] = useState<string | null>(null);
 
   // Log admin login when accessing admin area
   useEffect(() => {
@@ -34,13 +38,24 @@ export function PlatformAdminRoute({ children, requireBilling = false }: Platfor
         const { data: sessionData } = await supabase.auth.getSession();
         const sessionId = sessionData?.session?.access_token?.substring(0, 16) || null;
 
-        await supabase.functions.invoke('log-admin-login', {
+        const { data, error } = await supabase.functions.invoke('log-admin-login', {
           body: {
             user_id: user.id,
             user_agent: navigator.userAgent,
             session_id: sessionId,
           },
         });
+
+        if (error) {
+          console.error('Failed to log admin login:', error);
+          return;
+        }
+
+        // Check if user is blocked
+        if (data?.blocked) {
+          setIsBlocked(true);
+          setBlockReason(data.reason || 'Votre compte a été bloqué.');
+        }
       } catch (error) {
         console.error('Failed to log admin login:', error);
       }
@@ -74,6 +89,37 @@ export function PlatformAdminRoute({ children, requireBilling = false }: Platfor
   // Not a platform admin - show 404 (hide admin existence)
   if (!hasAccess) {
     return <NotFound />;
+  }
+
+  // Show blocked message if user is blocked
+  if (isBlocked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="max-w-md w-full border-destructive/50">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+              <ShieldOff className="h-8 w-8 text-destructive" />
+            </div>
+            <CardTitle className="text-destructive">Accès Bloqué</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              {blockReason}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Si vous pensez qu'il s'agit d'une erreur, veuillez contacter un super administrateur.
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => signOut()}
+              className="mt-4"
+            >
+              Se déconnecter
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return <>{children}</>;
