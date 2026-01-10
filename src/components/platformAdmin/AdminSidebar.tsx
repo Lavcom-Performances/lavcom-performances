@@ -10,6 +10,7 @@ import {
   Package, 
   BarChart3,
   ShieldCheck,
+  Key,
   AlertTriangle,
   Handshake,
   Clock,
@@ -71,6 +72,7 @@ export function AdminSidebar({
     { name: t('app:platformAdmin.nav.sites'), href: "/admin/sites", icon: Building2 },
     { name: t('app:platformAdmin.nav.analytics'), href: "/admin/analytics", icon: TrendingUp },
     { name: t('app:platformAdmin.nav.roles'), href: "/admin/roles", icon: ShieldCheck },
+    { name: t('app:platformAdmin.nav.permissions'), href: "/admin/permissions", icon: Key },
   ];
 
   // Billing/sales navigation - only for users with billing access

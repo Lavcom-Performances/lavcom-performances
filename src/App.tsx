@@ -42,6 +42,7 @@ import PlatformAdminUsers from "./pages/platform/PlatformAdminUsers";
 import PlatformAdminSites from "./pages/platform/PlatformAdminSites";
 import PlatformAdminAnalytics from "./pages/platform/PlatformAdminAnalytics";
 import PlatformAdminRoles from "./pages/platform/PlatformAdminRoles";
+import PlatformAdminPermissions from "./pages/platform/PlatformAdminPermissions";
 import PlatformSalesOverview from "./pages/platform/PlatformSalesOverview";
 import PlatformSalesInvoices from "./pages/platform/PlatformSalesInvoices";
 import PlatformSalesProducts from "./pages/platform/PlatformSalesProducts";
@@ -142,6 +143,7 @@ const App = () => (
             <Route path="/admin/sites" element={<PlatformAdminSites />} />
             <Route path="/admin/analytics" element={<PlatformAdminAnalytics />} />
             <Route path="/admin/roles" element={<PlatformAdminRoles />} />
+            <Route path="/admin/permissions" element={<PlatformAdminPermissions />} />
             <Route path="/admin/system-status" element={<AdminSystemStatus />} />
             <Route path="/admin/expert-requests" element={<AdminExpertRequests />} />
             <Route path="/admin/cron-logs" element={<AdminCronLogs />} />
