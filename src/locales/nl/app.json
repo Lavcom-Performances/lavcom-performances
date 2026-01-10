@@ -1279,7 +1279,8 @@
     "validationErrorDescription": "Vul de naam, land, stad en postcode in.",
     "manualInputMode": "Handmatige invoermodus (dienst niet beschikbaar)",
     "apiUnavailable": "Dienst niet beschikbaar, handmatige invoer ingeschakeld",
-    "fallbackModeNotice": "De zoekdienst is tijdelijk niet beschikbaar. Voer de informatie handmatig in."
+    "fallbackModeNotice": "De zoekdienst is tijdelijk niet beschikbaar. Voer de informatie handmatig in.",
+    "invalidPostalCode": "De postcode is ongeldig voor dit land."
   },
   "platformAdmin": {
     "title": "Administratie",

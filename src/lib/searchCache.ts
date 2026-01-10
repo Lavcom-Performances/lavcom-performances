@@ -1,23 +1,45 @@
 /**
  * searchCache.ts
  * 
- * Simple in-memory cache with TTL for API search results
+ * Cache with TTL and localStorage persistence for API search results
  * Used to reduce API calls and improve performance
  */
+
+const STORAGE_KEY = 'city_search_cache';
+const STORAGE_VERSION = 1;
 
 interface CacheEntry<T> {
   data: T;
   expiresAt: number;
 }
 
+interface StorageData<T> {
+  version: number;
+  entries: Record<string, CacheEntry<T>>;
+}
+
 class SearchCache<T> {
   private cache: Map<string, CacheEntry<T>> = new Map();
   private readonly ttlMs: number;
   private readonly maxEntries: number;
+  private readonly storageKey: string;
+  private readonly persistToStorage: boolean;
 
-  constructor(ttlMinutes: number = 10, maxEntries: number = 200) {
+  constructor(
+    ttlMinutes: number = 10, 
+    maxEntries: number = 200,
+    storageKey: string = '',
+    persistToStorage: boolean = false
+  ) {
     this.ttlMs = ttlMinutes * 60 * 1000;
     this.maxEntries = maxEntries;
+    this.storageKey = storageKey;
+    this.persistToStorage = persistToStorage && !!storageKey;
+
+    // Load from localStorage on initialization
+    if (this.persistToStorage) {
+      this.loadFromStorage();
+    }
   }
 
   private generateKey(prefix: string, query: string, ...args: string[]): string {
@@ -33,6 +55,7 @@ class SearchCache<T> {
     // Check if expired
     if (Date.now() > entry.expiresAt) {
       this.cache.delete(key);
+      this.saveToStorage();
       return null;
     }
 
@@ -50,6 +73,8 @@ class SearchCache<T> {
       data,
       expiresAt: Date.now() + this.ttlMs,
     });
+
+    this.saveToStorage();
   }
 
   private cleanup(): void {
@@ -74,10 +99,70 @@ class SearchCache<T> {
         if (key) this.cache.delete(key);
       }
     }
+
+    this.saveToStorage();
+  }
+
+  private loadFromStorage(): void {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const stored = localStorage.getItem(this.storageKey);
+      if (!stored) return;
+
+      const data: StorageData<T> = JSON.parse(stored);
+      
+      // Check version compatibility
+      if (data.version !== STORAGE_VERSION) {
+        localStorage.removeItem(this.storageKey);
+        return;
+      }
+
+      const now = Date.now();
+      
+      // Load non-expired entries
+      for (const [key, entry] of Object.entries(data.entries)) {
+        if (entry.expiresAt > now) {
+          this.cache.set(key, entry);
+        }
+      }
+    } catch (error) {
+      console.warn('[SearchCache] Error loading from localStorage:', error);
+      localStorage.removeItem(this.storageKey);
+    }
+  }
+
+  private saveToStorage(): void {
+    if (!this.persistToStorage || typeof window === 'undefined') return;
+
+    try {
+      const entries: Record<string, CacheEntry<T>> = {};
+      const now = Date.now();
+
+      // Only save non-expired entries
+      for (const [key, entry] of this.cache.entries()) {
+        if (entry.expiresAt > now) {
+          entries[key] = entry;
+        }
+      }
+
+      const data: StorageData<T> = {
+        version: STORAGE_VERSION,
+        entries,
+      };
+
+      localStorage.setItem(this.storageKey, JSON.stringify(data));
+    } catch (error) {
+      // localStorage might be full or unavailable
+      console.warn('[SearchCache] Error saving to localStorage:', error);
+    }
   }
 
   clear(): void {
     this.cache.clear();
+    if (this.persistToStorage && typeof window !== 'undefined') {
+      localStorage.removeItem(this.storageKey);
+    }
   }
 
   size(): number {
@@ -86,8 +171,8 @@ class SearchCache<T> {
 }
 
 // Singleton instance for city search results
-// 10 minute TTL, max 200 entries
-export const citySearchCache = new SearchCache<any[]>(10, 200);
+// 30 minute TTL, max 200 entries, persisted to localStorage
+export const citySearchCache = new SearchCache<any[]>(30, 200, STORAGE_KEY, true);
 
 // Cache key prefixes
 export const CACHE_PREFIXES = {

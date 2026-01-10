@@ -1519,7 +1519,8 @@
     "validationErrorDescription": "Please fill in the name, country, city and postal code.",
     "manualInputMode": "Manual input mode (service unavailable)",
     "apiUnavailable": "Service unavailable, manual input enabled",
-    "fallbackModeNotice": "The search service is temporarily unavailable. Please enter the information manually."
+    "fallbackModeNotice": "The search service is temporarily unavailable. Please enter the information manually.",
+    "invalidPostalCode": "The postal code is invalid for this country."
   },
   "platformAdmin": {
     "title": "Administration",

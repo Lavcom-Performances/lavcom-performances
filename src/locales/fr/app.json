@@ -1519,7 +1519,8 @@
     "validationErrorDescription": "Veuillez remplir le nom, le pays, la ville et le code postal.",
     "manualInputMode": "Mode saisie manuelle (service indisponible)",
     "apiUnavailable": "Service indisponible, saisie manuelle activée",
-    "fallbackModeNotice": "Le service de recherche est temporairement indisponible. Veuillez saisir les informations manuellement."
+    "fallbackModeNotice": "Le service de recherche est temporairement indisponible. Veuillez saisir les informations manuellement.",
+    "invalidPostalCode": "Le code postal est invalide pour ce pays."
   },
   "platformAdmin": {
     "title": "Administration",

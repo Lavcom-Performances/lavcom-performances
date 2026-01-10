@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useOrganization } from './useOrganization';
+import { useSites } from './useSites';
 
 export interface CurrentUserPermissions {
   can_view_sites: boolean;
@@ -90,13 +91,36 @@ const DEFAULT_PERMISSIONS_BY_ROLE: Record<string, CurrentUserPermissions> = {
     can_view_billing: false,
     can_manage_billing: false,
   },
+  // Special case: site owner without organization
+  owner: {
+    can_view_sites: true,
+    can_edit_sites: true,
+    can_delete_sites: true,
+    can_import_data: true,
+    can_export_data: true,
+    can_delete_data: true,
+    can_view_reports: true,
+    can_export_reports: true,
+    can_invite_members: false,
+    can_manage_roles: false,
+    can_view_billing: true,
+    can_manage_billing: true,
+  },
 };
 
 export function useCurrentUserPermissions() {
   const { user } = useAuth();
-  const { userRole, organization } = useOrganization();
+  const { userRole, organization, isLoading: orgLoading } = useOrganization();
+  const { sites, isLoading: sitesLoading } = useSites();
   const [customPermissions, setCustomPermissions] = useState<Partial<CurrentUserPermissions> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Check if user owns sites (useSites already filters by user_id)
+  // If user has sites returned, they are the owner of those sites
+  const isSiteOwner = useMemo(() => {
+    if (!user || sitesLoading) return false;
+    return sites.length > 0;
+  }, [user, sites, sitesLoading]);
 
   // Fetch custom permissions for current user
   const fetchCustomPermissions = useCallback(async () => {
@@ -147,6 +171,12 @@ export function useCurrentUserPermissions() {
 
   // Calculate effective permissions
   const permissions = useMemo((): CurrentUserPermissions => {
+    // If user has no organization role but owns sites, grant owner permissions
+    // This handles the case of first-time users who created sites before organizations
+    if (!userRole && isSiteOwner) {
+      return DEFAULT_PERMISSIONS_BY_ROLE.owner;
+    }
+
     const role = userRole?.role || 'guest';
     const defaultPerms = DEFAULT_PERMISSIONS_BY_ROLE[role] || DEFAULT_PERMISSIONS_BY_ROLE.guest;
 
@@ -164,7 +194,7 @@ export function useCurrentUserPermissions() {
     }
 
     return defaultPerms;
-  }, [userRole, customPermissions]);
+  }, [userRole, customPermissions, isSiteOwner]);
 
   // Helper functions for common permission checks
   const canImport = useMemo(() => permissions.can_import_data, [permissions]);
