@@ -2,6 +2,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AppSidebar } from "./AppSidebar";
+import { AdminSwitchButton } from "./AdminSwitchButton";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
@@ -44,6 +45,9 @@ export function MobileHeader({
       </a>
 
       <div className="flex items-center gap-1">
+        {/* Admin Switch Button - only for super admins */}
+        <AdminSwitchButton variant="compact" />
+        
         {/* Avatar link to profile */}
         <Link to="/profile" className="mr-1">
           <Avatar className="h-8 w-8 border border-border">
