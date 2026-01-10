@@ -5,7 +5,7 @@ import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO, getDa
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown, Lock, Ban } from "lucide-react";
+import { Search, Download, Upload, Loader2, History, ChevronLeft, ChevronRight, FileSpreadsheet, FileText, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown, Lock, Ban, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
@@ -134,6 +134,7 @@ export default function Operations() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [showNonRevenue, setShowNonRevenue] = useState(false);
   
   // Server-side pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -215,9 +216,24 @@ export default function Operations() {
     return Array.from(machines).sort();
   }, [rawOperations]);
 
-  // Apply additional filters (machine, day of week) and sorting
+  // Helper to check if operation is counted in revenue
+  const isOperationNotCounted = (op: typeof rawOperations[0]) => {
+    const typeValue = op.type?.toLowerCase() || '';
+    return typeValue.includes('rechargement') || 
+           typeValue.includes('crédit') || 
+           typeValue.includes('credit') ||
+           typeValue.includes('annulation') ||
+           typeValue.includes('remboursement');
+  };
+
+  // Apply additional filters (machine, day of week, revenue filter) and sorting
   const operations = useMemo(() => {
     let filtered = rawOperations.filter(op => {
+      // Non-revenue filter (by default hide non-revenue operations)
+      if (!showNonRevenue && isOperationNotCounted(op)) {
+        return false;
+      }
+      
       // Machine filter
       if (machineFilter !== "all") {
         const machineName = op.machine_name || op.machine;
@@ -268,7 +284,7 @@ export default function Operations() {
     }
 
     return filtered;
-  }, [rawOperations, machineFilter, dayFilter, sortColumn, sortDirection]);
+  }, [rawOperations, machineFilter, dayFilter, sortColumn, sortDirection, showNonRevenue]);
 
   // Calculate KPIs
   const kpis = useMemo(() => {
@@ -732,12 +748,13 @@ export default function Operations() {
         resultCount={operations.length}
         totalCount={rawOperations.length}
         totalAmount={operations.reduce((sum, op) => sum + Number(op.amount), 0)}
-        hasActiveFilters={categoryFilter !== "all" || paymentFilter !== "all" || machineFilter !== "all" || dayFilter !== "all"}
+        hasActiveFilters={categoryFilter !== "all" || paymentFilter !== "all" || machineFilter !== "all" || dayFilter !== "all" || showNonRevenue}
         onReset={() => {
           setCategoryFilter("all");
           setPaymentFilter("all");
           setMachineFilter("all");
           setDayFilter("all");
+          setShowNonRevenue(false);
         }}
       >
         {/* Row 1: Date + Search */}
@@ -758,7 +775,7 @@ export default function Operations() {
         </div>
         
         {/* Row 2: Filters */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 items-center">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-full sm:w-[160px] bg-background">
               <SelectValue placeholder="Catégorie" />
@@ -810,6 +827,28 @@ export default function Operations() {
               <SelectItem value="0">Dimanche</SelectItem>
             </SelectContent>
           </Select>
+          
+          {/* Toggle for non-revenue operations */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={showNonRevenue ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => setShowNonRevenue(!showNonRevenue)}
+                className={cn(
+                  "gap-1.5 h-9",
+                  showNonRevenue && "bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-300 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 dark:text-amber-400 dark:border-amber-700"
+                )}
+              >
+                {showNonRevenue ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                <span className="hidden sm:inline">Hors CA</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{showNonRevenue ? "Masquer" : "Afficher"} les opérations non comptabilisées</p>
+              <p className="text-xs text-muted-foreground">(rechargements, crédits, annulations...)</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </FiltersCard>
 
@@ -889,17 +928,7 @@ export default function Operations() {
                 const isCB = modeUpper === "CB";
                 const isESP = modeUpper === "ESP";
                 const price = op.price_eur ?? Number(op.amount);
-                
-                // Check if this operation is NOT counted in revenue
-                // For WiLine: only "Démarrage" type is counted
-                // For LM Control: operations are counted if they have a valid sale type
-                const typeValue = op.type?.toLowerCase() || '';
-                const isRechargeOrCredit = typeValue.includes('rechargement') || 
-                                            typeValue.includes('crédit') || 
-                                            typeValue.includes('credit') ||
-                                            typeValue.includes('annulation') ||
-                                            typeValue.includes('remboursement');
-                const isNotCounted = isRechargeOrCredit;
+                const isNotCounted = isOperationNotCounted(op);
                 
                 return (
                   <TableRow 
