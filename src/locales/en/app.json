@@ -1519,6 +1519,7 @@
       "roles": "Roles",
       "permissions": "Permissions",
       "auditLogs": "Audit Logs",
+      "loginHistory": "Login History",
       "salesOverview": "Sales",
       "invoices": "Invoices",
       "products": "Products",
@@ -1532,5 +1533,56 @@
       "billing": "Billing",
       "system": "System"
     }
+  },
+  "loginHistory": {
+    "title": "Login History",
+    "subtitle": "Admin back-office login tracking",
+    "filters": {
+      "search": "Search by email...",
+      "allStatuses": "All statuses",
+      "normal": "Normal",
+      "suspicious": "Suspicious",
+      "allDevices": "All devices",
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "tablet": "Tablet"
+    },
+    "stats": {
+      "totalLogins": "Total logins",
+      "suspiciousLogins": "Suspicious logins",
+      "uniqueUsers": "Unique users",
+      "countries": "Countries"
+    },
+    "table": {
+      "user": "User",
+      "datetime": "Date & Time",
+      "location": "Location",
+      "device": "Device",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "normal": "Normal",
+      "suspicious": "Suspicious"
+    },
+    "details": {
+      "title": "Login Details",
+      "browser": "Browser",
+      "os": "Operating System",
+      "device": "Device",
+      "ip": "IP Address",
+      "country": "Country",
+      "city": "City",
+      "region": "Region",
+      "sessionId": "Session ID",
+      "suspiciousReason": "Alert Reason"
+    },
+    "export": {
+      "button": "Export CSV",
+      "success": "Export successful",
+      "successDescription": "{{count}} entries exported"
+    },
+    "noData": "No logins recorded",
+    "unknown": "Unknown"
   }
 }

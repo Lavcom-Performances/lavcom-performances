@@ -1519,6 +1519,7 @@
       "roles": "Rôles",
       "permissions": "Permissions",
       "auditLogs": "Logs d'audit",
+      "loginHistory": "Historique connexions",
       "salesOverview": "Ventes",
       "invoices": "Factures",
       "products": "Produits",
@@ -1532,5 +1533,56 @@
       "billing": "Facturation",
       "system": "Système"
     }
+  },
+  "loginHistory": {
+    "title": "Historique des connexions",
+    "subtitle": "Suivi des connexions au back-office administration",
+    "filters": {
+      "search": "Rechercher par email...",
+      "allStatuses": "Tous les statuts",
+      "normal": "Normal",
+      "suspicious": "Suspect",
+      "allDevices": "Tous les appareils",
+      "desktop": "Ordinateur",
+      "mobile": "Mobile",
+      "tablet": "Tablette"
+    },
+    "stats": {
+      "totalLogins": "Connexions totales",
+      "suspiciousLogins": "Connexions suspectes",
+      "uniqueUsers": "Utilisateurs uniques",
+      "countries": "Pays"
+    },
+    "table": {
+      "user": "Utilisateur",
+      "datetime": "Date & Heure",
+      "location": "Localisation",
+      "device": "Appareil",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "normal": "Normal",
+      "suspicious": "Suspect"
+    },
+    "details": {
+      "title": "Détails de la connexion",
+      "browser": "Navigateur",
+      "os": "Système",
+      "device": "Appareil",
+      "ip": "Adresse IP",
+      "country": "Pays",
+      "city": "Ville",
+      "region": "Région",
+      "sessionId": "ID Session",
+      "suspiciousReason": "Raison de l'alerte"
+    },
+    "export": {
+      "button": "Exporter CSV",
+      "success": "Export réussi",
+      "successDescription": "{{count}} entrées exportées"
+    },
+    "noData": "Aucune connexion enregistrée",
+    "unknown": "Inconnu"
   }
 }
