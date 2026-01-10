@@ -1266,5 +1266,29 @@
     "creating": "Añadiendo...",
     "validationError": "Campos requeridos",
     "validationErrorDescription": "Por favor, complete el nombre y seleccione una dirección válida."
+  },
+  "platformAdmin": {
+    "title": "Administración",
+    "switchToSaas": "SaaS Lavandería",
+    "switchToAdmin": "Administración",
+    "nav": {
+      "overview": "Vista general",
+      "users": "Usuarios",
+      "sites": "Lavanderías",
+      "analytics": "Analytics",
+      "roles": "Roles",
+      "salesOverview": "Ventas",
+      "invoices": "Facturas",
+      "products": "Productos",
+      "reports": "Informes",
+      "systemStatus": "Estado del sistema",
+      "expertRequests": "Solicitudes de expertos",
+      "cronLogs": "Logs CRON"
+    },
+    "sections": {
+      "main": "Principal",
+      "billing": "Facturación",
+      "system": "Sistema"
+    }
   }
 }

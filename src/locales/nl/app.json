@@ -1266,5 +1266,29 @@
     "creating": "Bezig met toevoegen...",
     "validationError": "Verplichte velden",
     "validationErrorDescription": "Vul de naam in en selecteer een geldig adres."
+  },
+  "platformAdmin": {
+    "title": "Administratie",
+    "switchToSaas": "Wasserette SaaS",
+    "switchToAdmin": "Administratie",
+    "nav": {
+      "overview": "Overzicht",
+      "users": "Gebruikers",
+      "sites": "Wasserettes",
+      "analytics": "Analyses",
+      "roles": "Rollen",
+      "salesOverview": "Verkopen",
+      "invoices": "Facturen",
+      "products": "Producten",
+      "reports": "Rapporten",
+      "systemStatus": "Systeemstatus",
+      "expertRequests": "Expertverzoeken",
+      "cronLogs": "CRON-logboeken"
+    },
+    "sections": {
+      "main": "Hoofd",
+      "billing": "Facturering",
+      "system": "Systeem"
+    }
   }
 }
