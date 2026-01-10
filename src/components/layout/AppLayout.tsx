@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppSidebar } from "./AppSidebar";
 import { MobileHeader } from "./MobileHeader";
+import { AdminSwitchButton } from "./AdminSwitchButton";
 import { TrialBanner } from "@/components/trial/TrialBanner";
 import { DemoBanner } from "@/components/demo/DemoBanner";
 import { DemoTutorial } from "@/components/demo/DemoTutorial";
@@ -87,10 +88,13 @@ export function AppLayout({
         </div>
         
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Top bar with view mode toggle */}
+          {/* Top bar with view mode toggle and admin switch */}
           <div className="hidden lg:flex items-center justify-between px-6 py-3 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex-1" />
-            <ViewModeToggle />
+            <div className="flex items-center gap-3">
+              <AdminSwitchButton />
+              <ViewModeToggle />
+            </div>
           </div>
           
           {/* Trial warning banner - only show on desktop when trial is warning/critical */}
