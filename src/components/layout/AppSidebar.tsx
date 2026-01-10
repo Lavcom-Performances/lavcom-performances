@@ -410,29 +410,6 @@ export function AppSidebar({
           );
         })}
 
-        {/* Platform Admin Section - Only for platform admins */}
-        {isPlatformAdmin && (
-          <>
-            {!collapsed && (
-              <div className="pt-4 pb-2">
-                <span className="px-3 text-xs font-medium text-destructive/70 uppercase tracking-wider">
-                  Plateforme
-                </span>
-              </div>
-            )}
-            <NavLink
-              to="/admin"
-              className={cn(
-                "sidebar-item",
-                location.pathname.startsWith("/admin") && "sidebar-item-active",
-                mounted && "animate-nav-item-in"
-              )}
-            >
-              <ShieldCheck className="h-5 w-5 shrink-0 text-destructive" />
-              {!collapsed && <span className="text-destructive">Admin Lavcom</span>}
-            </NavLink>
-          </>
-        )}
 
         {/* Admin Section */}
         {(userRole === "SUPER_ADMIN" || userRole === "ADMIN") && (
