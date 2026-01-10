@@ -1306,5 +1306,66 @@
       "billing": "Facturación",
       "system": "Sistema"
     }
+  },
+  "businessActions": {
+    "title": "Acciones de Negocio",
+    "seeAll": "Ver todas las recomendaciones",
+    "viewDetails": "Ver detalles",
+    "impactLabel": "Impacto estimado",
+    "effortLabel": "Esfuerzo",
+    "kpiLabel": "KPI a seguir",
+    "stepsLabel": "Pasos",
+    "effort": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto"
+    },
+    "empty": {
+      "title": "Aún no hay suficientes datos",
+      "description": "Importe al menos 7 días de datos para obtener sus 3 acciones prioritarias.",
+      "cta": "Importar datos"
+    },
+    "rules": {
+      "offpeak": {
+        "title": "Impulsar horas valle",
+        "description": "Sus mañanas representan menos del 15% de los ingresos. Una promo matutina podría suavizar su actividad.",
+        "kpi": "Cuota de ingresos matutinos (6-10h)",
+        "step1": "Mostrar oferta -15% antes de las 10h en el escaparate",
+        "step2": "Comunicar en redes sociales",
+        "step3": "Medir el impacto después de 1 mes"
+      },
+      "card": {
+        "title": "Fomentar pagos con tarjeta",
+        "description": "Menos del 70% de pagos con tarjeta. Fomentar tarjetas reduce el manejo de efectivo y riesgos.",
+        "kpi": "% de ingresos por tarjeta",
+        "step1": "Verificar que los TPV funcionan correctamente",
+        "step2": "Mostrar claramente 'Se aceptan tarjetas'",
+        "step3": "Considerar pagos móviles"
+      },
+      "machine": {
+        "title": "Revisar máquina {{machine}}",
+        "description": "La máquina {{machine}} genera significativamente menos que otras. Verifique su estado.",
+        "kpi": "Ingresos de la máquina",
+        "step1": "Verificar el estado técnico de la máquina",
+        "step2": "Verificar tiempos de ciclo y calidad",
+        "step3": "Programar mantenimiento si es necesario"
+      },
+      "weakDay": {
+        "title": "Impulsar el {{day}}",
+        "description": "El {{day}} es su día más débil. Una acción dirigida puede mejorar este punto bajo.",
+        "kpi": "Ingresos del {{day}}",
+        "step1": "Ofrecer una oferta especial el {{day}}",
+        "step2": "Comunicar con anticipación en redes sociales",
+        "step3": "Evaluar el impacto en 1 mes"
+      },
+      "peak": {
+        "title": "Distribuir tráfico pico",
+        "description": "Más del 40% de sus ingresos se concentra en la noche. Distribuya la carga para mejorar la experiencia.",
+        "kpi": "Distribución horaria de ingresos",
+        "step1": "Ofrecer tarifas reducidas fuera de horas pico",
+        "step2": "Mostrar horas tranquilas recomendadas",
+        "step3": "Seguir cambios en la distribución"
+      }
+    }
   }
 }

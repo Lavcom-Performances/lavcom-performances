@@ -1599,5 +1599,66 @@
     },
     "noData": "Aucune connexion enregistrée",
     "unknown": "Inconnu"
+  },
+  "businessActions": {
+    "title": "Actions Business",
+    "seeAll": "Voir toutes les recommandations",
+    "viewDetails": "Voir les détails",
+    "impactLabel": "Impact estimé",
+    "effortLabel": "Effort",
+    "kpiLabel": "KPI à suivre",
+    "stepsLabel": "Étapes",
+    "effort": {
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Élevé"
+    },
+    "empty": {
+      "title": "Pas encore assez de données",
+      "description": "Importez au moins 7 jours de données pour obtenir vos 3 actions business prioritaires.",
+      "cta": "Importer des données"
+    },
+    "rules": {
+      "offpeak": {
+        "title": "Booster les heures creuses",
+        "description": "Vos matinées représentent moins de 15% du CA. Une promo matinale pourrait lisser votre activité.",
+        "kpi": "Part du CA matinal (6h-10h)",
+        "step1": "Afficher une offre -15% avant 10h en vitrine",
+        "step2": "Communiquer sur les réseaux sociaux",
+        "step3": "Mesurer l'impact après 1 mois"
+      },
+      "card": {
+        "title": "Favoriser le paiement CB",
+        "description": "Moins de 70% de paiements en CB. Encourager la CB réduit la gestion d'espèces et les risques.",
+        "kpi": "% de CA en CB",
+        "step1": "Vérifier le bon fonctionnement des TPE",
+        "step2": "Afficher clairement 'CB acceptée'",
+        "step3": "Envisager le paiement mobile"
+      },
+      "machine": {
+        "title": "Vérifier la machine {{machine}}",
+        "description": "La machine {{machine}} génère nettement moins que les autres. Vérifiez son état.",
+        "kpi": "CA de la machine concernée",
+        "step1": "Contrôler l'état technique de la machine",
+        "step2": "Vérifier les temps de cycle et la qualité",
+        "step3": "Programmer une maintenance si nécessaire"
+      },
+      "weakDay": {
+        "title": "Dynamiser le {{day}}",
+        "description": "Le {{day}} est votre jour le plus faible. Une action ciblée peut redresser ce creux.",
+        "kpi": "CA du {{day}}",
+        "step1": "Proposer une offre spéciale le {{day}}",
+        "step2": "Communiquer en amont sur les réseaux",
+        "step3": "Évaluer l'impact sur 1 mois"
+      },
+      "peak": {
+        "title": "Décongestionner les pics",
+        "description": "Plus de 40% de votre CA se concentre en soirée. Lissez la charge pour améliorer l'expérience.",
+        "kpi": "Répartition horaire du CA",
+        "step1": "Proposer des tarifs réduits hors pics",
+        "step2": "Afficher les heures creuses recommandées",
+        "step3": "Suivre l'évolution de la répartition"
+      }
+    }
   }
 }

@@ -1306,5 +1306,66 @@
       "billing": "Fatturazione",
       "system": "Sistema"
     }
+  },
+  "businessActions": {
+    "title": "Azioni Business",
+    "seeAll": "Vedi tutte le raccomandazioni",
+    "viewDetails": "Vedi dettagli",
+    "impactLabel": "Impatto stimato",
+    "effortLabel": "Sforzo",
+    "kpiLabel": "KPI da monitorare",
+    "stepsLabel": "Passaggi",
+    "effort": {
+      "low": "Basso",
+      "medium": "Medio",
+      "high": "Alto"
+    },
+    "empty": {
+      "title": "Dati insufficienti",
+      "description": "Importa almeno 7 giorni di dati per ottenere le tue 3 azioni prioritarie.",
+      "cta": "Importa dati"
+    },
+    "rules": {
+      "offpeak": {
+        "title": "Potenziare le ore morte",
+        "description": "Le vostre mattine rappresentano meno del 15% del fatturato. Una promo mattutina potrebbe livellare l'attività.",
+        "kpi": "Quota fatturato mattutino (6-10)",
+        "step1": "Esporre offerta -15% prima delle 10 in vetrina",
+        "step2": "Comunicare sui social media",
+        "step3": "Misurare l'impatto dopo 1 mese"
+      },
+      "card": {
+        "title": "Incentivare pagamenti carta",
+        "description": "Meno del 70% di pagamenti con carta. Incentivare le carte riduce la gestione contanti e i rischi.",
+        "kpi": "% fatturato con carta",
+        "step1": "Verificare che i POS funzionino correttamente",
+        "step2": "Mostrare chiaramente 'Carte accettate'",
+        "step3": "Considerare pagamenti mobile"
+      },
+      "machine": {
+        "title": "Verificare macchina {{machine}}",
+        "description": "La macchina {{machine}} genera significativamente meno delle altre. Verificare le condizioni.",
+        "kpi": "Fatturato della macchina",
+        "step1": "Controllare lo stato tecnico della macchina",
+        "step2": "Verificare tempi di ciclo e qualità",
+        "step3": "Programmare manutenzione se necessario"
+      },
+      "weakDay": {
+        "title": "Dinamizzare il {{day}}",
+        "description": "Il {{day}} è il vostro giorno più debole. Un'azione mirata può migliorare questo punto basso.",
+        "kpi": "Fatturato del {{day}}",
+        "step1": "Proporre un'offerta speciale il {{day}}",
+        "step2": "Comunicare in anticipo sui social",
+        "step3": "Valutare l'impatto su 1 mese"
+      },
+      "peak": {
+        "title": "Distribuire il traffico di punta",
+        "description": "Più del 40% del fatturato è concentrato di sera. Distribuire il carico per migliorare l'esperienza.",
+        "kpi": "Distribuzione oraria del fatturato",
+        "step1": "Offrire tariffe ridotte fuori punta",
+        "step2": "Mostrare orari tranquilli consigliati",
+        "step3": "Monitorare i cambiamenti nella distribuzione"
+      }
+    }
   }
 }

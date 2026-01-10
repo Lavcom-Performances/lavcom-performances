@@ -1599,5 +1599,66 @@
     },
     "noData": "No logins recorded",
     "unknown": "Unknown"
+  },
+  "businessActions": {
+    "title": "Business Actions",
+    "seeAll": "See all recommendations",
+    "viewDetails": "View details",
+    "impactLabel": "Estimated impact",
+    "effortLabel": "Effort",
+    "kpiLabel": "KPI to track",
+    "stepsLabel": "Steps",
+    "effort": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "empty": {
+      "title": "Not enough data yet",
+      "description": "Import at least 7 days of data to get your top 3 priority business actions.",
+      "cta": "Import data"
+    },
+    "rules": {
+      "offpeak": {
+        "title": "Boost off-peak hours",
+        "description": "Your mornings account for less than 15% of revenue. A morning promo could smooth your activity.",
+        "kpi": "Morning revenue share (6am-10am)",
+        "step1": "Display a -15% offer before 10am in the window",
+        "step2": "Communicate on social media",
+        "step3": "Measure the impact after 1 month"
+      },
+      "card": {
+        "title": "Encourage card payments",
+        "description": "Less than 70% card payments. Encouraging cards reduces cash handling and risks.",
+        "kpi": "% of revenue by card",
+        "step1": "Check that payment terminals work properly",
+        "step2": "Clearly display 'Cards accepted'",
+        "step3": "Consider mobile payments"
+      },
+      "machine": {
+        "title": "Check machine {{machine}}",
+        "description": "Machine {{machine}} generates significantly less than others. Check its condition.",
+        "kpi": "Revenue of the machine",
+        "step1": "Check the technical condition of the machine",
+        "step2": "Verify cycle times and quality",
+        "step3": "Schedule maintenance if needed"
+      },
+      "weakDay": {
+        "title": "Boost {{day}}",
+        "description": "{{day}} is your weakest day. A targeted action can improve this low point.",
+        "kpi": "{{day}} revenue",
+        "step1": "Offer a special deal on {{day}}",
+        "step2": "Communicate in advance on social media",
+        "step3": "Evaluate the impact over 1 month"
+      },
+      "peak": {
+        "title": "Spread peak traffic",
+        "description": "More than 40% of your revenue is concentrated in the evening. Spread the load to improve experience.",
+        "kpi": "Hourly revenue distribution",
+        "step1": "Offer reduced rates during off-peak hours",
+        "step2": "Display recommended quiet hours",
+        "step3": "Track distribution changes"
+      }
+    }
   }
 }
