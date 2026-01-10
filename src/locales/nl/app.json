@@ -1261,6 +1261,8 @@
     "cityLabel": "Stad",
     "cityPlaceholder": "Automatisch ingevuld",
     "citySearchPlaceholder": "Zoek een stad...",
+    "citySearchPlaceholderInternational": "Zoek een stad...",
+    "postalCodes": "postcodes",
     "cityHelp": "Selecteer een stad uit de suggestielijst.",
     "cityLocked": "Stad vergrendeld na selectie.",
     "cityMustBeSelected": "Selecteer een stad uit de suggestielijst.",

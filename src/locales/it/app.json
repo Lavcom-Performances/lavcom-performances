@@ -1261,6 +1261,8 @@
     "cityLabel": "Città",
     "cityPlaceholder": "Compilato automaticamente",
     "citySearchPlaceholder": "Cerca una città...",
+    "citySearchPlaceholderInternational": "Cerca una città...",
+    "postalCodes": "codici postali",
     "cityHelp": "Seleziona una città dall'elenco dei suggerimenti.",
     "cityLocked": "Città bloccata dopo la selezione.",
     "cityMustBeSelected": "Per favore, seleziona una città dall'elenco dei suggerimenti.",

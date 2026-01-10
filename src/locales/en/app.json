@@ -1501,6 +1501,8 @@
     "cityLabel": "City",
     "cityPlaceholder": "Auto-filled",
     "citySearchPlaceholder": "Search for a city...",
+    "citySearchPlaceholderInternational": "Search for a city...",
+    "postalCodes": "postal codes",
     "cityHelp": "Select a city from the suggestions list.",
     "cityLocked": "City locked after selection.",
     "cityMustBeSelected": "Please select a city from the suggestions list.",

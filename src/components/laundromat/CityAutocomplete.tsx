@@ -1,18 +1,21 @@
 /**
  * CityAutocomplete.tsx
  * 
- * Autocomplete component for French cities using api-adresse.data.gouv.fr
+ * Autocomplete component for cities:
+ * - France: uses api-adresse.data.gouv.fr (communes API)
+ * - Other countries: uses OpenStreetMap Nominatim
+ * 
  * Features:
  * - Searches cities/communes with autocomplete
- * - Returns city name, postal code, and department code
- * - Handles multiple postal codes for large cities
+ * - Returns city name, postal code, and department/region code
+ * - Handles multiple postal codes for large cities (France)
  * - Fallback to manual input on API failure
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { MapPin, Loader2, AlertCircle, ChevronDown } from "lucide-react";
+import { MapPin, Loader2, AlertCircle, ChevronDown, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export interface CitySearchResult {
@@ -21,11 +24,13 @@ export interface CitySearchResult {
   departmentCode: string;
   context: string;
   postalCodes?: string[]; // For cities with multiple postal codes
+  countryCode?: string; // ISO country code
 }
 
 interface CityAutocompleteProps {
   value: string;
   postalCode?: string;
+  countryCode?: string; // ISO country code (FR, BE, CH, DE, etc.)
   onSelect: (result: CitySearchResult) => void;
   onChange?: (value: string) => void;
   placeholder?: string;
@@ -35,6 +40,20 @@ interface CityAutocompleteProps {
   fallbackMode?: boolean;
   onFallbackModeChange?: (fallback: boolean) => void;
 }
+
+// Country codes to country names for Nominatim
+const COUNTRY_NAMES: Record<string, string> = {
+  FR: 'France',
+  BE: 'Belgium',
+  CH: 'Switzerland',
+  LU: 'Luxembourg',
+  DE: 'Germany',
+  IT: 'Italy',
+  NL: 'Netherlands',
+  ES: 'Spain',
+  AT: 'Austria',
+  PT: 'Portugal',
+};
 
 // Derive department code from postal code (handles Corsica)
 export function deriveDepartmentCode(postalCode: string): string {
@@ -66,6 +85,7 @@ export function deriveDepartmentCode(postalCode: string): string {
 export function CityAutocomplete({ 
   value, 
   postalCode: initialPostalCode,
+  countryCode = 'FR',
   onSelect,
   onChange,
   placeholder,
@@ -75,6 +95,7 @@ export function CityAutocomplete({
   fallbackMode = false,
   onFallbackModeChange,
 }: CityAutocompleteProps) {
+  const isFrance = countryCode === 'FR';
   const { t } = useTranslation(['app']);
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
@@ -102,6 +123,98 @@ export function CityAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Search cities using French API
+  const searchFrenchCities = useCallback(async (query: string, signal: AbortSignal): Promise<CitySearchResult[]> => {
+    const response = await fetch(
+      `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(query)}&fields=nom,code,codeDepartement,codesPostaux,population&boost=population&limit=10`,
+      { signal }
+    );
+
+    if (!response.ok) {
+      throw new Error("API error");
+    }
+
+    const cities = await response.json();
+
+    return cities.map((city: any) => {
+      const postalCodes: string[] = city.codesPostaux || [];
+      const primaryPostalCode = postalCodes[0] || "";
+      const deptCode = city.codeDepartement || deriveDepartmentCode(primaryPostalCode);
+      
+      return {
+        city: city.nom,
+        postalCode: primaryPostalCode,
+        departmentCode: deptCode,
+        context: `${primaryPostalCode} - Dép. ${deptCode}`,
+        postalCodes: postalCodes.length > 1 ? postalCodes : undefined,
+        countryCode: 'FR',
+      };
+    });
+  }, []);
+
+  // Search cities using Nominatim (OpenStreetMap)
+  const searchNominatimCities = useCallback(async (query: string, signal: AbortSignal): Promise<CitySearchResult[]> => {
+    const countryName = COUNTRY_NAMES[countryCode] || countryCode;
+    
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=${countryCode.toLowerCase()}&addressdetails=1&limit=10&featuretype=city`,
+      { 
+        signal,
+        headers: {
+          'Accept-Language': 'fr,en',
+          'User-Agent': 'LavcomPerformances/1.0',
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Nominatim API error");
+    }
+
+    const results = await response.json();
+
+    // Filter to only include place types that represent cities/towns
+    const cityTypes = ['city', 'town', 'village', 'municipality', 'hamlet'];
+    
+    const formattedResults: CitySearchResult[] = results
+      .filter((item: any) => {
+        const addressType = item.addresstype || item.type;
+        return cityTypes.includes(addressType) || item.class === 'place';
+      })
+      .map((item: any) => {
+        const address = item.address || {};
+        const cityName = address.city || address.town || address.village || address.municipality || address.hamlet || item.display_name.split(',')[0];
+        const postalCode = address.postcode || '';
+        const state = address.state || address.province || address.region || '';
+        
+        // For non-French countries, use state/region as "department"
+        let regionCode = '';
+        if (address.state_code) {
+          regionCode = address.state_code;
+        } else if (state) {
+          // Take first 2-3 letters as abbreviation
+          regionCode = state.substring(0, 3).toUpperCase();
+        }
+        
+        return {
+          city: cityName,
+          postalCode,
+          departmentCode: regionCode,
+          context: postalCode ? `${postalCode} - ${state || countryName}` : (state || countryName),
+          countryCode: countryCode,
+        };
+      });
+
+    // Remove duplicates based on city name + postal code
+    const seen = new Set<string>();
+    return formattedResults.filter((item: CitySearchResult) => {
+      const key = `${item.city}-${item.postalCode}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [countryCode]);
+
   const searchCities = useCallback(async (query: string) => {
     if (query.length < 2) {
       setResults([]);
@@ -118,31 +231,13 @@ export function CityAutocomplete({
     setApiError(false);
 
     try {
-      // Use the French gov API to search for municipalities
-      const response = await fetch(
-        `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(query)}&fields=nom,code,codeDepartement,codesPostaux,population&boost=population&limit=10`,
-        { signal: abortControllerRef.current.signal }
-      );
-
-      if (!response.ok) {
-        throw new Error("API error");
+      let formattedResults: CitySearchResult[];
+      
+      if (isFrance) {
+        formattedResults = await searchFrenchCities(query, abortControllerRef.current.signal);
+      } else {
+        formattedResults = await searchNominatimCities(query, abortControllerRef.current.signal);
       }
-
-      const cities = await response.json();
-
-      const formattedResults: CitySearchResult[] = cities.map((city: any) => {
-        const postalCodes: string[] = city.codesPostaux || [];
-        const primaryPostalCode = postalCodes[0] || "";
-        const deptCode = city.codeDepartement || deriveDepartmentCode(primaryPostalCode);
-        
-        return {
-          city: city.nom,
-          postalCode: primaryPostalCode,
-          departmentCode: deptCode,
-          context: `${primaryPostalCode} - Dép. ${deptCode}`,
-          postalCodes: postalCodes.length > 1 ? postalCodes : undefined,
-        };
-      });
 
       setResults(formattedResults);
     } catch (err: any) {
@@ -159,7 +254,7 @@ export function CityAutocomplete({
     } finally {
       setIsLoading(false);
     }
-  }, [onFallbackModeChange]);
+  }, [isFrance, searchFrenchCities, searchNominatimCities, onFallbackModeChange]);
 
   useEffect(() => {
     if (fallbackMode || disabled) return;
@@ -211,7 +306,9 @@ export function CityAutocomplete({
     onChange?.(newValue);
   };
 
-  const defaultPlaceholder = t('app:newLaundry.citySearchPlaceholder', 'Rechercher une ville...');
+  const defaultPlaceholder = isFrance 
+    ? t('app:newLaundry.citySearchPlaceholder', 'Rechercher une ville...')
+    : t('app:newLaundry.citySearchPlaceholderInternational', 'Search for a city...');
 
   // Fallback mode - simple text input
   if (fallbackMode) {
@@ -262,7 +359,11 @@ export function CityAutocomplete({
               onClick={() => handleSelect(result)}
               className="w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground transition-colors flex items-start gap-2"
             >
-              <MapPin className="h-3 w-3 text-muted-foreground shrink-0 mt-1" />
+              {isFrance ? (
+                <MapPin className="h-3 w-3 text-muted-foreground shrink-0 mt-1" />
+              ) : (
+                <Globe className="h-3 w-3 text-muted-foreground shrink-0 mt-1" />
+              )}
               <div className="flex flex-col min-w-0 flex-1">
                 <span className="font-medium truncate flex items-center gap-1">
                   {result.city}
@@ -272,7 +373,7 @@ export function CityAutocomplete({
                 </span>
                 <span className="text-xs text-muted-foreground truncate">
                   {result.postalCodes && result.postalCodes.length > 1 
-                    ? `${result.postalCodes.length} codes postaux - Dép. ${result.departmentCode}`
+                    ? `${result.postalCodes.length} ${t('app:newLaundry.postalCodes', 'codes postaux')} - ${isFrance ? 'Dép.' : ''} ${result.departmentCode}`
                     : result.context
                   }
                 </span>
