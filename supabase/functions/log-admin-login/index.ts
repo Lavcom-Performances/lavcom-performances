@@ -133,6 +133,25 @@ serve(async (req) => {
     const os = parseOS(user_agent || '');
     const deviceType = parseDeviceType(user_agent || '');
 
+    // Check if IP is in trusted whitelist
+    const { data: trustedIPs } = await supabaseAdmin
+      .from('admin_trusted_ips')
+      .select('ip_address')
+      .eq('is_active', true);
+
+    const isIPTrusted = trustedIPs?.some(trusted => {
+      const trustedIP = trusted.ip_address;
+      // Exact match
+      if (trustedIP === clientIp) return true;
+      // CIDR notation check (simplified - checks if IP starts with network prefix)
+      if (trustedIP.includes('/')) {
+        const [network] = trustedIP.split('/');
+        // Simple prefix match for common cases
+        return clientIp.startsWith(network.split('.').slice(0, 3).join('.'));
+      }
+      return false;
+    }) || false;
+
     // Get previous logins to detect suspicious activity
     const { data: previousLogins } = await supabaseAdmin
       .from('admin_login_history')
@@ -141,7 +160,10 @@ serve(async (req) => {
       .order('created_at', { ascending: false })
       .limit(10);
 
-    const { isSuspicious, reason } = detectSuspicious(user_agent || '', previousLogins || []);
+    // Skip suspicious detection for trusted IPs
+    const { isSuspicious, reason } = isIPTrusted 
+      ? { isSuspicious: false, reason: null }
+      : detectSuspicious(user_agent || '', previousLogins || []);
 
     // Check if user is already blocked
     const { data: blockedUser } = await supabaseAdmin

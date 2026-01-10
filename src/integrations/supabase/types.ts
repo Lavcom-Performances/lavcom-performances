@@ -128,6 +128,33 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_trusted_ips: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          ip_address: string
+          is_active: boolean
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          ip_address: string
+          is_active?: boolean
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          ip_address?: string
+          is_active?: boolean
+        }
+        Relationships: []
+      }
       alert_history: {
         Row: {
           alert_type: string
