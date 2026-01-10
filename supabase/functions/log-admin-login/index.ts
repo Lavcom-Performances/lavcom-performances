@@ -143,6 +143,36 @@ serve(async (req) => {
 
     const { isSuspicious, reason } = detectSuspicious(user_agent || '', previousLogins || []);
 
+    // Check if user is already blocked
+    const { data: blockedUser } = await supabaseAdmin
+      .from('admin_blocked_users')
+      .select('id, blocked_until')
+      .eq('user_id', user.id)
+      .is('unblocked_at', null)
+      .maybeSingle();
+
+    if (blockedUser) {
+      // Check if block has expired
+      if (blockedUser.blocked_until && new Date(blockedUser.blocked_until) < new Date()) {
+        // Block expired, remove it
+        await supabaseAdmin
+          .from('admin_blocked_users')
+          .update({ unblocked_at: new Date().toISOString() })
+          .eq('id', blockedUser.id);
+      } else {
+        // User is still blocked
+        console.log(`Blocked admin attempted access: ${user.email}`);
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            blocked: true,
+            reason: 'Votre compte a été bloqué suite à des activités suspectes. Contactez un administrateur.'
+          }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     // Insert login log
     const { error: insertError } = await supabaseAdmin
       .from('admin_login_history')
@@ -167,6 +197,34 @@ serve(async (req) => {
         JSON.stringify({ error: 'Erreur lors de l\'enregistrement' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // If suspicious, check for auto-blocking threshold
+    const SUSPICIOUS_THRESHOLD = 3; // Block after 3 suspicious logins
+    
+    if (isSuspicious) {
+      const { data: recentSuspicious } = await supabaseAdmin
+        .from('admin_login_history')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_suspicious', true)
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+      const suspiciousCount = recentSuspicious?.length || 0;
+
+      if (suspiciousCount >= SUSPICIOUS_THRESHOLD) {
+        // Auto-block user
+        await supabaseAdmin
+          .from('admin_blocked_users')
+          .upsert({
+            user_id: user.id,
+            blocked_at: new Date().toISOString(),
+            reason: `Blocage automatique: ${suspiciousCount} connexions suspectes en 24h`,
+            suspicious_count: suspiciousCount,
+          }, { onConflict: 'user_id' });
+
+        console.log(`User ${user.email} auto-blocked after ${suspiciousCount} suspicious logins`);
+      }
     }
 
     console.log(`Admin login logged: ${user.email} from ${country || 'unknown'} (${browser}/${os})`);
