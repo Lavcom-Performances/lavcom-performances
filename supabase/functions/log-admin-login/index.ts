@@ -7,7 +7,9 @@ const corsHeaders = {
 };
 
 interface LoginLogRequest {
-  userAgent: string;
+  user_id: string;
+  user_agent: string;
+  session_id?: string;
 }
 
 // Simple browser detection
@@ -50,7 +52,7 @@ function detectSuspicious(
   
   for (const pattern of suspiciousPatterns) {
     if (lowerUa.includes(pattern)) {
-      return { isSuspicious: true, reason: `Suspicious user agent: ${pattern}` };
+      return { isSuspicious: true, reason: `Agent utilisateur suspect: ${pattern}` };
     }
   }
 
@@ -63,7 +65,7 @@ function detectSuspicious(
     const currentCombination = `${currentBrowser}-${currentOS}`;
     
     if (!knownCombinations.includes(currentCombination)) {
-      return { isSuspicious: true, reason: `New device: ${currentBrowser} on ${currentOS}` };
+      return { isSuspicious: true, reason: `Nouvel appareil: ${currentBrowser} sur ${currentOS}` };
     }
   }
 
@@ -114,7 +116,7 @@ serve(async (req) => {
       );
     }
 
-    const { userAgent }: LoginLogRequest = await req.json();
+    const { user_agent, session_id }: LoginLogRequest = await req.json();
     
     // Get IP and geolocation from request
     const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
@@ -127,9 +129,9 @@ serve(async (req) => {
     const region = req.headers.get('cf-region') || null;
 
     // Parse user agent
-    const browser = parseBrowser(userAgent || '');
-    const os = parseOS(userAgent || '');
-    const deviceType = parseDeviceType(userAgent || '');
+    const browser = parseBrowser(user_agent || '');
+    const os = parseOS(user_agent || '');
+    const deviceType = parseDeviceType(user_agent || '');
 
     // Get previous logins to detect suspicious activity
     const { data: previousLogins } = await supabaseAdmin
@@ -139,7 +141,7 @@ serve(async (req) => {
       .order('created_at', { ascending: false })
       .limit(10);
 
-    const { isSuspicious, reason } = detectSuspicious(userAgent || '', previousLogins || []);
+    const { isSuspicious, reason } = detectSuspicious(user_agent || '', previousLogins || []);
 
     // Insert login log
     const { error: insertError } = await supabaseAdmin
@@ -153,9 +155,10 @@ serve(async (req) => {
         browser,
         os,
         device_type: deviceType,
-        user_agent: userAgent,
+        user_agent: user_agent,
         is_suspicious: isSuspicious,
         suspicious_reason: reason,
+        session_id: session_id || null,
       });
 
     if (insertError) {
@@ -167,6 +170,34 @@ serve(async (req) => {
     }
 
     console.log(`Admin login logged: ${user.email} from ${country || 'unknown'} (${browser}/${os})`);
+
+    // If suspicious, send alert email
+    if (isSuspicious) {
+      try {
+        await fetch(`${supabaseUrl}/functions/v1/send-suspicious-login-alert`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({
+            user_id: user.id,
+            email: user.email,
+            browser,
+            os,
+            device_type: deviceType,
+            country: country || 'Inconnu',
+            city: city || 'Inconnue',
+            ip_address: clientIp,
+            suspicious_reason: reason,
+            login_time: new Date().toISOString(),
+          }),
+        });
+        console.log(`Suspicious login alert sent for ${user.email}`);
+      } catch (alertError) {
+        console.error('Failed to send suspicious login alert:', alertError);
+      }
+    }
 
     return new Response(
       JSON.stringify({ 

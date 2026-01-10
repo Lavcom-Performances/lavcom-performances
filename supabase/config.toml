@@ -92,3 +92,6 @@ verify_jwt = true
 
 [functions.log-admin-login]
 verify_jwt = true
+
+[functions.send-suspicious-login-alert]
+verify_jwt = false
