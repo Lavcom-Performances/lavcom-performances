@@ -1279,7 +1279,8 @@
     "validationErrorDescription": "Por favor, complete el nombre, país, ciudad y código postal.",
     "manualInputMode": "Modo de entrada manual (servicio no disponible)",
     "apiUnavailable": "Servicio no disponible, entrada manual habilitada",
-    "fallbackModeNotice": "El servicio de búsqueda no está disponible temporalmente. Por favor, introduzca la información manualmente."
+    "fallbackModeNotice": "El servicio de búsqueda no está disponible temporalmente. Por favor, introduzca la información manualmente.",
+    "invalidPostalCode": "El código postal no es válido para este país."
   },
   "platformAdmin": {
     "title": "Administración",

@@ -25,6 +25,7 @@ import { CountrySelect } from "@/components/laundromat/CountrySelect";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { AddressSearchResult } from "@/hooks/useAddressSearch";
+import { supabase } from "@/integrations/supabase/client";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -342,7 +343,42 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
     setIsCreating(true);
     try {
-      await onSubmit(formData);
+      // Server-side postal code validation
+      const { data: validation, error: validationError } = await supabase.functions.invoke(
+        'validate-postal-code',
+        {
+          body: {
+            postalCode: formData.postalCode,
+            countryCode: formData.country,
+            city: formData.city,
+          },
+        }
+      );
+
+      if (validationError) {
+        console.warn('[AddLaundromatDialog] Postal code validation failed, proceeding anyway:', validationError);
+        // Continue even if validation service fails - don't block user
+      } else if (validation && !validation.valid) {
+        toast({
+          title: t('app:newLaundry.validationError'),
+          description: validation.error || t('app:newLaundry.invalidPostalCode'),
+          variant: "destructive",
+        });
+        setValidationErrors(prev => ({ ...prev, postalCode: true }));
+        setIsCreating(false);
+        return;
+      } else if (validation?.departmentCode && formData.country === 'FR') {
+        // Update department code from server validation
+        setFormData(prev => ({
+          ...prev,
+          departmentCode: validation.departmentCode,
+        }));
+      }
+
+      await onSubmit({
+        ...formData,
+        departmentCode: validation?.departmentCode || formData.departmentCode,
+      });
       onOpenChange(false);
     } catch (error) {
       console.error("Error creating site:", error);
