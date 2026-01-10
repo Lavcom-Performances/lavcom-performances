@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Json } from '@/integrations/supabase/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +10,13 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { 
   Table, 
   TableBody, 
@@ -46,8 +54,10 @@ import {
   UserCog,
   Shield,
   Loader2,
-  ChevronRight,
-  AlertCircle
+  AlertCircle,
+  Filter,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -134,6 +144,7 @@ export default function PlatformAdminPermissions() {
   const queryClient = useQueryClient();
   const { isPlatformSuperAdmin, isPlatformAdmin } = usePlatformRole();
   const [searchTerm, setSearchTerm] = useState('');
+  const [orgFilter, setOrgFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<UserPermissionRow | null>(null);
   const [editedPermissions, setEditedPermissions] = useState<Partial<UserPermissionRow>>({});
 
@@ -195,9 +206,25 @@ export default function PlatformAdminPermissions() {
     enabled: isPlatformSuperAdmin || isPlatformAdmin,
   });
 
+  // Log audit mutation
+  const logAuditMutation = useMutation({
+    mutationFn: async ({ action, details }: { action: string; details: Record<string, unknown> }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      await supabase
+        .from('admin_audit_logs')
+        .insert([{
+          admin_user_id: user.id,
+          action,
+          details: details as unknown as Json,
+        }]);
+    },
+  });
+
   // Update permissions mutation (only for super_admin)
   const updatePermissionsMutation = useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<UserPermissionRow> }) => {
+    mutationFn: async ({ id, updates, userEmail }: { id: string; updates: Partial<UserPermissionRow>; userEmail?: string }) => {
       const { error } = await supabase
         .from('user_permissions')
         .update({
@@ -207,10 +234,18 @@ export default function PlatformAdminPermissions() {
         .eq('id', id);
       
       if (error) throw error;
+      return { userEmail, updates };
     },
-    onSuccess: () => {
+    onSuccess: ({ userEmail, updates }) => {
       toast.success('Permissions mises à jour');
       queryClient.invalidateQueries({ queryKey: ['platform-permissions-overview'] });
+      
+      // Log audit
+      logAuditMutation.mutate({
+        action: 'UPDATE_PERMISSIONS',
+        details: { target_email: userEmail || '', changes: updates },
+      });
+      
       setSelectedUser(null);
       setEditedPermissions({});
     },
@@ -242,10 +277,15 @@ export default function PlatformAdminPermissions() {
     updatePermissionsMutation.mutate({
       id: selectedUser.id,
       updates: editedPermissions,
+      userEmail: selectedUser.user_email,
     });
   };
 
   const filteredOrganizations = organizations?.filter(org => {
+    // Filter by org
+    if (orgFilter !== 'all' && org.id !== orgFilter) return false;
+    
+    // Filter by search
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return (
@@ -268,13 +308,19 @@ export default function PlatformAdminPermissions() {
     return count;
   };
 
+  const totalPermissions = organizations?.reduce((acc, org) => acc + org.members.length, 0) || 0;
+  const fullAccessCount = organizations?.reduce((acc, org) => 
+    acc + org.members.filter(m => countPermissions(m) === 12).length, 0
+  ) || 0;
+  const restrictedCount = totalPermissions - fullAccessCount;
+
   if (!isPlatformSuperAdmin && !isPlatformAdmin) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <Card>
+        <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
           <CardContent className="py-12 text-center">
-            <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">
+            <Shield className="h-12 w-12 text-[#7DD3E8]/50 mx-auto mb-4" />
+            <p className="text-[#A8B4D0]">
               Accès réservé aux administrateurs plateforme.
             </p>
           </CardContent>
@@ -295,73 +341,102 @@ export default function PlatformAdminPermissions() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
-              <Key className="h-6 w-6 text-blue-400" />
+              <Key className="h-6 w-6 text-[#7DD3E8]" />
               Permissions Utilisateurs
             </h1>
-            <p className="text-blue-200/70">
+            <p className="text-[#A8B4D0]">
               Vue détaillée des permissions par organisation
             </p>
-          </div>
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-300" />
-            <Input
-              placeholder="Rechercher..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-blue-950/50 border-blue-800 text-white placeholder:text-blue-400/50"
-            />
           </div>
         </div>
 
         {/* Stats cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <Card className="bg-blue-950/30 border-blue-800/50">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+          <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
-                <Building2 className="h-8 w-8 text-blue-400" />
+                <Building2 className="h-8 w-8 text-[#7DD3E8]" />
                 <div>
                   <p className="text-2xl font-bold text-white">{organizations?.length || 0}</p>
-                  <p className="text-sm text-blue-200/70">Organisations</p>
+                  <p className="text-sm text-[#A8B4D0]">Organisations</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-blue-950/30 border-blue-800/50">
+          <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
-                <Users className="h-8 w-8 text-blue-400" />
+                <Users className="h-8 w-8 text-[#A3C615]" />
                 <div>
-                  <p className="text-2xl font-bold text-white">
-                    {organizations?.reduce((acc, org) => acc + org.members.length, 0) || 0}
-                  </p>
-                  <p className="text-sm text-blue-200/70">Permissions configurées</p>
+                  <p className="text-2xl font-bold text-white">{totalPermissions}</p>
+                  <p className="text-sm text-[#A8B4D0]">Permissions configurées</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-blue-950/30 border-blue-800/50">
+          <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
-                <Key className="h-8 w-8 text-blue-400" />
+                <CheckCircle className="h-8 w-8 text-green-400" />
                 <div>
-                  <p className="text-2xl font-bold text-white">12</p>
-                  <p className="text-sm text-blue-200/70">Types de permissions</p>
+                  <p className="text-2xl font-bold text-white">{fullAccessCount}</p>
+                  <p className="text-sm text-[#A8B4D0]">Accès complet</p>
                 </div>
               </div>
             </CardContent>
           </Card>
+          <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
+            <CardContent className="py-4">
+              <div className="flex items-center gap-3">
+                <XCircle className="h-8 w-8 text-[#FCD259]" />
+                <div>
+                  <p className="text-2xl font-bold text-white">{restrictedCount}</p>
+                  <p className="text-sm text-[#A8B4D0]">Accès restreint</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7DD3E8]" />
+            <Input
+              placeholder="Rechercher par organisation, email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-[#3D4B7A]/50 border-[#5C6B9A] text-white placeholder:text-[#7DD3E8]/50"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-[#7DD3E8]" />
+            <Select value={orgFilter} onValueChange={setOrgFilter}>
+              <SelectTrigger className="w-56 bg-[#3D4B7A]/50 border-[#5C6B9A] text-white">
+                <SelectValue placeholder="Filtrer par organisation" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#3D4B7A] border-[#5C6B9A]">
+                <SelectItem value="all" className="text-white hover:bg-[#5C6B9A]">Toutes les organisations</SelectItem>
+                {organizations?.map(org => (
+                  <SelectItem key={org.id} value={org.id} className="text-white hover:bg-[#5C6B9A]">
+                    {org.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Organizations list */}
         {isLoading ? (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Card key={i} className="bg-blue-950/30 border-blue-800/50">
+              <Card key={i} className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
                 <CardHeader>
-                  <Skeleton className="h-6 w-48 bg-blue-800/50" />
+                  <Skeleton className="h-6 w-48 bg-[#5C6B9A]/50" />
                 </CardHeader>
                 <CardContent>
-                  <Skeleton className="h-20 w-full bg-blue-800/50" />
+                  <Skeleton className="h-20 w-full bg-[#5C6B9A]/50" />
                 </CardContent>
               </Card>
             ))}
@@ -372,14 +447,14 @@ export default function PlatformAdminPermissions() {
               <AccordionItem 
                 key={org.id} 
                 value={org.id}
-                className="bg-blue-950/30 border border-blue-800/50 rounded-lg overflow-hidden"
+                className="bg-[#3D4B7A]/30 border border-[#5C6B9A]/50 rounded-lg overflow-hidden"
               >
-                <AccordionTrigger className="px-4 py-3 hover:bg-blue-900/20 hover:no-underline">
+                <AccordionTrigger className="px-4 py-3 hover:bg-[#5C6B9A]/20 hover:no-underline">
                   <div className="flex items-center gap-3 text-left">
-                    <Building2 className="h-5 w-5 text-blue-400" />
+                    <Building2 className="h-5 w-5 text-[#7DD3E8]" />
                     <div>
                       <p className="font-semibold text-white">{org.name}</p>
-                      <p className="text-sm text-blue-200/70">
+                      <p className="text-sm text-[#A8B4D0]">
                         Propriétaire: {org.owner_email} • {org.members.length} membre{org.members.length !== 1 ? 's' : ''} avec permissions
                       </p>
                     </div>
@@ -387,53 +462,68 @@ export default function PlatformAdminPermissions() {
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
                   {org.members.length === 0 ? (
-                    <div className="text-center py-6 text-blue-200/50">
-                      <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+                    <div className="text-center py-6 text-[#A8B4D0]">
+                      <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p>Aucune permission personnalisée configurée</p>
                       <p className="text-sm">Les membres utilisent les permissions par défaut de leur rôle</p>
                     </div>
                   ) : (
                     <Table>
                       <TableHeader>
-                        <TableRow className="border-blue-800/50 hover:bg-transparent">
-                          <TableHead className="text-blue-300">Utilisateur</TableHead>
-                          <TableHead className="text-blue-300">Permissions</TableHead>
-                          <TableHead className="text-blue-300">Dernière modification</TableHead>
-                          <TableHead className="text-blue-300 w-20">Actions</TableHead>
+                        <TableRow className="border-[#5C6B9A]/50 hover:bg-transparent">
+                          <TableHead className="text-[#7DD3E8]">Utilisateur</TableHead>
+                          <TableHead className="text-[#7DD3E8]">Permissions</TableHead>
+                          <TableHead className="text-[#7DD3E8]">Dernière modification</TableHead>
+                          <TableHead className="text-[#7DD3E8] w-20">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {org.members.map((member) => (
-                          <TableRow key={member.id} className="border-blue-800/50 hover:bg-blue-900/20">
-                            <TableCell>
-                              <div>
-                                <p className="font-medium text-white">{member.user_email}</p>
-                                {member.user_name && (
-                                  <p className="text-sm text-blue-200/70">{member.user_name}</p>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="outline" className="border-blue-600 text-blue-300">
-                                {countPermissions(member)} / 12 permissions
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-sm text-blue-200/70">
-                              {format(new Date(member.updated_at), 'dd MMM yyyy', { locale: fr })}
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleOpenEdit(member)}
-                                className="text-blue-300 hover:text-white hover:bg-blue-800/50"
-                                disabled={!isPlatformSuperAdmin}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {org.members.map((member) => {
+                          const permCount = countPermissions(member);
+                          const isFullAccess = permCount === 12;
+                          
+                          return (
+                            <TableRow key={member.id} className="border-[#5C6B9A]/50 hover:bg-[#5C6B9A]/20">
+                              <TableCell>
+                                <div>
+                                  <p className="font-medium text-white">{member.user_email}</p>
+                                  {member.user_name && (
+                                    <p className="text-sm text-[#A8B4D0]">{member.user_name}</p>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge 
+                                  variant="outline" 
+                                  className={isFullAccess 
+                                    ? "bg-green-500/20 text-green-400 border-green-500/30" 
+                                    : "bg-[#FCD259]/20 text-[#FCD259] border-[#FCD259]/30"
+                                  }
+                                >
+                                  {isFullAccess ? (
+                                    <><CheckCircle className="h-3 w-3 mr-1" /> Accès complet</>
+                                  ) : (
+                                    <>{permCount} / 12 permissions</>
+                                  )}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-sm text-[#A8B4D0]">
+                                {format(new Date(member.updated_at), 'dd MMM yyyy', { locale: fr })}
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleOpenEdit(member)}
+                                  className="text-[#7DD3E8] hover:text-white hover:bg-[#5C6B9A]/50"
+                                  disabled={!isPlatformSuperAdmin}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   )}
@@ -442,10 +532,10 @@ export default function PlatformAdminPermissions() {
             ))}
           </Accordion>
         ) : (
-          <Card className="bg-blue-950/30 border-blue-800/50">
+          <Card className="bg-[#3D4B7A]/30 border-[#5C6B9A]/50">
             <CardContent className="py-12 text-center">
-              <Building2 className="h-12 w-12 text-blue-400/50 mx-auto mb-4" />
-              <p className="text-blue-200/70">
+              <Building2 className="h-12 w-12 text-[#7DD3E8]/50 mx-auto mb-4" />
+              <p className="text-[#A8B4D0]">
                 {searchTerm ? 'Aucune organisation trouvée' : 'Aucune organisation configurée'}
               </p>
             </CardContent>
@@ -454,10 +544,13 @@ export default function PlatformAdminPermissions() {
 
         {/* Edit permissions dialog */}
         <Dialog open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
-          <DialogContent className="max-w-lg bg-slate-900 border-blue-800">
+          <DialogContent className="max-w-lg bg-[#3D4B7A] border-[#5C6B9A]">
             <DialogHeader>
-              <DialogTitle className="text-white">Modifier les permissions</DialogTitle>
-              <DialogDescription className="text-blue-200/70">
+              <DialogTitle className="text-white flex items-center gap-2">
+                <Key className="h-5 w-5 text-[#7DD3E8]" />
+                Modifier les permissions
+              </DialogTitle>
+              <DialogDescription className="text-[#A8B4D0]">
                 {selectedUser?.user_email}
               </DialogDescription>
             </DialogHeader>
@@ -465,7 +558,7 @@ export default function PlatformAdminPermissions() {
             <div className="space-y-6 py-4 max-h-[60vh] overflow-y-auto">
               {PERMISSION_GROUPS.map((group) => (
                 <div key={group.title} className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-blue-300">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-[#7DD3E8]">
                     <group.icon className="h-4 w-4" />
                     {group.title}
                   </div>
@@ -473,7 +566,7 @@ export default function PlatformAdminPermissions() {
                     {group.permissions.map((perm) => (
                       <div key={perm.key} className="flex items-center justify-between">
                         <Label className="flex items-center gap-2 text-white/80">
-                          <perm.icon className="h-3.5 w-3.5 text-blue-400" />
+                          <perm.icon className="h-3.5 w-3.5 text-[#7DD3E8]" />
                           {perm.label}
                         </Label>
                         <Switch
@@ -493,14 +586,14 @@ export default function PlatformAdminPermissions() {
               <Button 
                 variant="outline" 
                 onClick={() => setSelectedUser(null)}
-                className="border-blue-700 text-blue-200 hover:bg-blue-800/50"
+                className="border-[#5C6B9A] text-white hover:bg-[#5C6B9A]/50"
               >
                 Annuler
               </Button>
               <Button 
                 onClick={handleSavePermissions} 
                 disabled={updatePermissionsMutation.isPending}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-gradient-to-r from-[#A3C615] to-[#8AAD12] hover:opacity-90 text-white"
               >
                 {updatePermissionsMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Enregistrer
