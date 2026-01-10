@@ -1518,6 +1518,7 @@
       "analytics": "Analytics",
       "roles": "Roles",
       "permissions": "Permissions",
+      "auditLogs": "Audit Logs",
       "salesOverview": "Sales",
       "invoices": "Invoices",
       "products": "Products",
