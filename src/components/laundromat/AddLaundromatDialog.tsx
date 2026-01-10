@@ -4,20 +4,22 @@
  * Modal dialog for adding a new laundromat (site) to the system.
  * Features:
  * - Optional SIRET lookup to auto-fill company information (French business ID)
- * - Address autocomplete with auto-fill for City, Postal Code, and Country
- * - NAF code selector (French business activity classification)
+ * - City autocomplete with postal code and department auto-fill (France)
+ * - Optional address autocomplete
+ * - Fallback to manual input if API fails
  * - Client-side validation before submission
  * - Full i18n support for 6 languages
  */
 
 import { useState, useCallback, useEffect } from "react";
-import { Loader2, Search, CheckCircle2, Info, Lock } from "lucide-react";
+import { Loader2, Search, CheckCircle2, Info, Lock, AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { AddressAutocomplete } from "@/components/laundromat/AddressAutocomplete";
+import { CityAutocomplete, CitySearchResult, deriveDepartmentCode } from "@/components/laundromat/CityAutocomplete";
 import { NafCodeSelect } from "@/components/laundromat/NafCodeSelect";
 import { CountrySelect } from "@/components/laundromat/CountrySelect";
 import { useTranslation } from "react-i18next";
@@ -33,6 +35,7 @@ interface LaundryFormData {
   address: string;
   city: string;
   postalCode: string;
+  departmentCode: string;
   country: string;
   siret: string;
   nafCode: string;
@@ -49,6 +52,7 @@ const initialFormData: LaundryFormData = {
   address: "",
   city: "",
   postalCode: "",
+  departmentCode: "",
   country: "FR",
   siret: "",
   nafCode: "",
@@ -72,8 +76,12 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   // Form submission state
   const [isCreating, setIsCreating] = useState(false);
   
-  // Address selection state - tracks if address was selected from suggestions
+  // Selection states
+  const [citySelected, setCitySelected] = useState(false);
   const [addressSelected, setAddressSelected] = useState(false);
+  
+  // Fallback mode when API fails
+  const [fallbackMode, setFallbackMode] = useState(false);
   
   // Validation errors
   const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
@@ -84,7 +92,9 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       setFormData(initialFormData);
       setSiretInfo(null);
       setSiretSuccess(false);
+      setCitySelected(false);
       setAddressSelected(false);
+      setFallbackMode(false);
       setValidationErrors({});
     }
   }, [open]);
@@ -132,18 +142,25 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
         return;
       }
 
+      const postalCode = result.postal_code || "";
+      const departmentCode = deriveDepartmentCode(postalCode);
+
       setFormData(prev => ({
         ...prev,
         name: result.trade_name || result.company_name || prev.name,
         address: result.address_line1 || prev.address,
         city: result.city || prev.city,
-        postalCode: result.postal_code || prev.postalCode,
+        postalCode: postalCode,
+        departmentCode: departmentCode,
         nafCode: result.naf_code || prev.nafCode,
       }));
       
-      // Mark address as selected if we got valid location data
-      if (result.city && result.postal_code && result.address_line1) {
-        setAddressSelected(true);
+      // Mark as selected if we got valid location data
+      if (result.city && result.postal_code) {
+        setCitySelected(true);
+        if (result.address_line1) {
+          setAddressSelected(true);
+        }
       }
       
       setSiretSuccess(true);
@@ -160,18 +177,55 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   };
 
   // -------------------------------------------------------------------------
-  // ADDRESS SELECTION HANDLER
+  // CITY SELECTION HANDLER
+  // -------------------------------------------------------------------------
+
+  const handleCitySelect = useCallback((result: CitySearchResult) => {
+    setFormData(prev => ({
+      ...prev,
+      city: result.city,
+      postalCode: result.postalCode,
+      departmentCode: result.departmentCode,
+    }));
+    setCitySelected(true);
+    setValidationErrors(prev => ({
+      ...prev,
+      city: false,
+      postalCode: false,
+    }));
+  }, []);
+
+  const handleCityInputChange = useCallback((value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      city: value,
+      // In fallback mode, keep postal code if manually entered
+      postalCode: fallbackMode ? prev.postalCode : "",
+      departmentCode: fallbackMode ? prev.departmentCode : "",
+    }));
+    if (!fallbackMode) {
+      setCitySelected(false);
+    }
+    setValidationErrors(prev => ({ ...prev, city: false }));
+  }, [fallbackMode]);
+
+  // -------------------------------------------------------------------------
+  // ADDRESS SELECTION HANDLER (Optional enhancement)
   // -------------------------------------------------------------------------
 
   const handleAddressSelect = useCallback((result: AddressSearchResult) => {
+    const departmentCode = deriveDepartmentCode(result.postalCode);
+    
     setFormData(prev => ({
       ...prev,
       address: result.address,
       city: result.city,
       postalCode: result.postalCode,
+      departmentCode: departmentCode,
       country: result.countryCode || prev.country,
     }));
     setAddressSelected(true);
+    setCitySelected(true);
     setValidationErrors(prev => ({
       ...prev,
       address: false,
@@ -180,22 +234,31 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     }));
   }, []);
 
-  // Handler for manual address input changes (resets selection)
   const handleAddressInputChange = useCallback((value: string) => {
     updateField('address', value);
-    // Reset auto-filled fields and selection state when user types manually
-    if (addressSelected) {
-      setFormData(prev => ({
-        ...prev,
-        address: value,
-        city: "",
-        postalCode: "",
-      }));
-      setAddressSelected(false);
-    }
-  }, [addressSelected, updateField]);
+    setAddressSelected(false);
+  }, [updateField]);
 
-  // Handler for country change - resets address fields
+  // -------------------------------------------------------------------------
+  // POSTAL CODE MANUAL HANDLER (Fallback mode)
+  // -------------------------------------------------------------------------
+
+  const handlePostalCodeChange = useCallback((value: string) => {
+    const cleanValue = value.replace(/\D/g, '').slice(0, 5);
+    const departmentCode = deriveDepartmentCode(cleanValue);
+    
+    setFormData(prev => ({
+      ...prev,
+      postalCode: cleanValue,
+      departmentCode: departmentCode,
+    }));
+    setValidationErrors(prev => ({ ...prev, postalCode: false }));
+  }, []);
+
+  // -------------------------------------------------------------------------
+  // COUNTRY CHANGE HANDLER
+  // -------------------------------------------------------------------------
+
   const handleCountryChange = useCallback((value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -203,17 +266,22 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       address: "",
       city: "",
       postalCode: "",
+      departmentCode: "",
     }));
+    setCitySelected(false);
     setAddressSelected(false);
+    setFallbackMode(false);
   }, []);
 
-  // Unlock address for editing
-  const unlockAddress = () => {
+  // Unlock city for editing
+  const unlockCity = () => {
+    setCitySelected(false);
     setAddressSelected(false);
     setFormData(prev => ({
       ...prev,
       city: "",
       postalCode: "",
+      departmentCode: "",
     }));
   };
 
@@ -228,21 +296,22 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       errors.name = true;
     }
     
-    if (!formData.address.trim()) {
-      errors.address = true;
-    }
-    
-    // Address must be selected from suggestions (not just typed)
-    if (!addressSelected) {
-      errors.address = true;
+    if (!formData.country) {
+      errors.country = true;
     }
     
     if (!formData.city.trim()) {
       errors.city = true;
     }
     
-    if (!formData.country) {
-      errors.country = true;
+    // In normal mode, city must be selected from suggestions
+    // In fallback mode, we also need postal code
+    if (!fallbackMode && !citySelected && formData.country === "FR") {
+      errors.city = true;
+    }
+    
+    if (!formData.postalCode.trim()) {
+      errors.postalCode = true;
     }
 
     setValidationErrors(errors);
@@ -255,11 +324,10 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      // Different error messages based on what's wrong
-      if (!addressSelected && formData.address.trim()) {
+      if (!citySelected && !fallbackMode && formData.city.trim() && formData.country === "FR") {
         toast({
           title: t('app:newLaundry.validationError'),
-          description: t('app:newLaundry.addressMustBeSelected'),
+          description: t('app:newLaundry.cityMustBeSelected'),
           variant: "destructive",
         });
       } else {
@@ -283,6 +351,9 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     }
   };
 
+  // Check if France is selected
+  const isFrance = formData.country === "FR";
+
   // -------------------------------------------------------------------------
   // RENDER
   // -------------------------------------------------------------------------
@@ -296,43 +367,45 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
         
         <div className="space-y-4 py-4">
           
-          {/* SIRET Field (Optional) */}
-          <div className="space-y-2">
-            <Label htmlFor="siret" className="flex items-center gap-2">
-              {t('app:newLaundry.siretLabel')}
-              <span className="text-xs text-muted-foreground font-normal">
-                ({t('app:newLaundry.optional')} - {t('app:newLaundry.siretHelp')})
-              </span>
-            </Label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="siret"
-                placeholder={t('app:newLaundry.siretPlaceholder')}
-                value={formData.siret}
-                onChange={(e) => handleSiretChange(e.target.value)}
-                className={cn("pl-10 pr-10", siretSuccess && "border-green-500")}
-                maxLength={14}
-              />
-              {isLoadingSiret && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+          {/* SIRET Field (Optional - France only) */}
+          {isFrance && (
+            <div className="space-y-2">
+              <Label htmlFor="siret" className="flex items-center gap-2">
+                {t('app:newLaundry.siretLabel')}
+                <span className="text-xs text-muted-foreground font-normal">
+                  ({t('app:newLaundry.optional')} - {t('app:newLaundry.siretHelp')})
+                </span>
+              </Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="siret"
+                  placeholder={t('app:newLaundry.siretPlaceholder')}
+                  value={formData.siret}
+                  onChange={(e) => handleSiretChange(e.target.value)}
+                  className={cn("pl-10 pr-10", siretSuccess && "border-green-500")}
+                  maxLength={14}
+                />
+                {isLoadingSiret && (
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                )}
+                {siretSuccess && !isLoadingSiret && (
+                  <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+                )}
+              </div>
+              {siretInfo && (
+                <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 p-2 rounded-md">
+                  <Info className="h-4 w-4 shrink-0 mt-0.5" />
+                  <span>{siretInfo}</span>
+                </div>
               )}
-              {siretSuccess && !isLoadingSiret && (
-                <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+              {formData.siret.length > 0 && formData.siret.length < 14 && (
+                <p className="text-xs text-muted-foreground">
+                  {14 - formData.siret.length} {t('app:newLaundry.digitsRemaining')}
+                </p>
               )}
             </div>
-            {siretInfo && (
-              <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 p-2 rounded-md">
-                <Info className="h-4 w-4 shrink-0 mt-0.5" />
-                <span>{siretInfo}</span>
-              </div>
-            )}
-            {formData.siret.length > 0 && formData.siret.length < 14 && (
-              <p className="text-xs text-muted-foreground">
-                {14 - formData.siret.length} {t('app:newLaundry.digitsRemaining')}
-              </p>
-            )}
-          </div>
+          )}
 
           {/* Name Field (Required) */}
           <div className="space-y-2">
@@ -354,94 +427,182 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             <CountrySelect
               value={formData.country}
               onChange={handleCountryChange}
-              disabled={addressSelected}
+              disabled={citySelected}
               hasError={validationErrors.country}
             />
-            {addressSelected && (
+            {citySelected && (
               <p className="text-xs text-muted-foreground">
                 {t('app:newLaundry.countryLocked')}
               </p>
             )}
           </div>
 
-          {/* Address Field (Required) */}
+          {/* City Field (Required) - Autocomplete for France */}
           <div className="space-y-2">
-            <Label>{t('app:newLaundry.addressLabel')} *</Label>
-            <AddressAutocomplete
-              value={formData.address}
-              onSelect={handleAddressSelect}
-              onChange={handleAddressInputChange}
-              placeholder={t('app:newLaundry.addressPlaceholder')}
-              disabled={addressSelected}
-              countryCode={formData.country}
-              hasError={validationErrors.address}
-            />
-            {addressSelected ? (
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Lock className="h-3 w-3" />
-                {t('app:newLaundry.addressLocked')}
-                {' '}
-                <button
-                  type="button"
-                  onClick={unlockAddress}
-                  className="text-primary hover:underline"
-                >
-                  {t('app:newLaundry.unlock')}
-                </button>
-              </p>
+            <Label className="flex items-center gap-2">
+              {t('app:newLaundry.cityLabel')} *
+              {citySelected && <Lock className="h-3 w-3 text-muted-foreground" />}
+            </Label>
+            {isFrance ? (
+              <>
+                <CityAutocomplete
+                  value={formData.city}
+                  onSelect={handleCitySelect}
+                  onChange={handleCityInputChange}
+                  placeholder={t('app:newLaundry.citySearchPlaceholder')}
+                  disabled={citySelected}
+                  hasError={validationErrors.city}
+                  fallbackMode={fallbackMode}
+                  onFallbackModeChange={setFallbackMode}
+                />
+                {citySelected && !fallbackMode && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Lock className="h-3 w-3" />
+                    {t('app:newLaundry.cityLocked')}
+                    {' '}
+                    <button
+                      type="button"
+                      onClick={unlockCity}
+                      className="text-primary hover:underline"
+                    >
+                      {t('app:newLaundry.unlock')}
+                    </button>
+                  </p>
+                )}
+                {!citySelected && !fallbackMode && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('app:newLaundry.cityHelp')}
+                  </p>
+                )}
+              </>
             ) : (
-              <p className="text-xs text-muted-foreground">
-                {t('app:newLaundry.addressHelp')}
-              </p>
+              <Input
+                placeholder={t('app:newLaundry.cityPlaceholder')}
+                value={formData.city}
+                onChange={(e) => {
+                  updateField('city', e.target.value);
+                  setCitySelected(true); // For non-FR, manual input is accepted
+                }}
+                className={cn(validationErrors.city && "border-destructive")}
+              />
             )}
           </div>
 
-          {/* City Field (Read-only, auto-filled) */}
-          <div className="space-y-2">
-            <Label htmlFor="city" className="flex items-center gap-2">
-              {t('app:newLaundry.cityLabel')} *
-              {addressSelected && <Lock className="h-3 w-3 text-muted-foreground" />}
-            </Label>
-            <Input
-              id="city"
-              placeholder={t('app:newLaundry.cityPlaceholder')}
-              value={formData.city}
-              readOnly
-              className={cn(
-                "bg-muted/50",
-                validationErrors.city && "border-destructive"
-              )}
-            />
-          </div>
-
-          {/* Postal Code Field (Read-only, auto-filled) */}
+          {/* Postal Code Field */}
           <div className="space-y-2">
             <Label htmlFor="postal-code" className="flex items-center gap-2">
-              {t('app:newLaundry.postalCodeLabel')}
-              {addressSelected && <Lock className="h-3 w-3 text-muted-foreground" />}
+              {t('app:newLaundry.postalCodeLabel')} *
+              {citySelected && !fallbackMode && <Lock className="h-3 w-3 text-muted-foreground" />}
             </Label>
-            <Input
-              id="postal-code"
-              placeholder={t('app:newLaundry.postalCodePlaceholder')}
-              value={formData.postalCode}
-              readOnly
-              className="bg-muted/50"
-            />
+            {fallbackMode || !isFrance ? (
+              <Input
+                id="postal-code"
+                placeholder={t('app:newLaundry.postalCodeEnterPlaceholder')}
+                value={formData.postalCode}
+                onChange={(e) => handlePostalCodeChange(e.target.value)}
+                className={cn(validationErrors.postalCode && "border-destructive")}
+                maxLength={5}
+              />
+            ) : (
+              <Input
+                id="postal-code"
+                placeholder={t('app:newLaundry.postalCodePlaceholder')}
+                value={formData.postalCode}
+                readOnly
+                className={cn(
+                  "bg-muted/50",
+                  validationErrors.postalCode && "border-destructive"
+                )}
+              />
+            )}
           </div>
 
-          {/* NAF Code Field (Optional) */}
+          {/* Department Field (France only) */}
+          {isFrance && (
+            <div className="space-y-2">
+              <Label htmlFor="department" className="flex items-center gap-2">
+                {t('app:newLaundry.departmentLabel')}
+                <Lock className="h-3 w-3 text-muted-foreground" />
+              </Label>
+              <Input
+                id="department"
+                placeholder={t('app:newLaundry.departmentPlaceholder')}
+                value={formData.departmentCode}
+                readOnly
+                className="bg-muted/50"
+              />
+            </div>
+          )}
+
+          {/* Address Field (Optional but recommended) */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
-              {t('app:newLaundry.nafLabel')}
+              {t('app:newLaundry.addressLabel')}
               <span className="text-xs text-muted-foreground font-normal">
                 ({t('app:newLaundry.optional')})
               </span>
             </Label>
-            <NafCodeSelect
-              value={formData.nafCode}
-              onChange={(code) => updateField('nafCode', code)}
-            />
+            {isFrance && !fallbackMode ? (
+              <>
+                <AddressAutocomplete
+                  value={formData.address}
+                  onSelect={handleAddressSelect}
+                  onChange={handleAddressInputChange}
+                  placeholder={t('app:newLaundry.addressPlaceholder')}
+                  disabled={addressSelected}
+                  countryCode={formData.country}
+                  hasError={validationErrors.address}
+                />
+                {addressSelected && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Lock className="h-3 w-3" />
+                    {t('app:newLaundry.addressLocked')}
+                    {' '}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddressSelected(false);
+                        updateField('address', '');
+                      }}
+                      className="text-primary hover:underline"
+                    >
+                      {t('app:newLaundry.unlock')}
+                    </button>
+                  </p>
+                )}
+              </>
+            ) : (
+              <Input
+                placeholder={t('app:newLaundry.addressManualPlaceholder')}
+                value={formData.address}
+                onChange={(e) => updateField('address', e.target.value)}
+              />
+            )}
           </div>
+
+          {/* NAF Code Field (Optional - France only) */}
+          {isFrance && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                {t('app:newLaundry.nafLabel')}
+                <span className="text-xs text-muted-foreground font-normal">
+                  ({t('app:newLaundry.optional')})
+                </span>
+              </Label>
+              <NafCodeSelect
+                value={formData.nafCode}
+                onChange={(code) => updateField('nafCode', code)}
+              />
+            </div>
+          )}
+
+          {/* Fallback mode notice */}
+          {fallbackMode && (
+            <div className="flex items-start gap-2 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 p-3 rounded-md">
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{t('app:newLaundry.fallbackModeNotice')}</span>
+            </div>
+          )}
 
           {/* Submit Button */}
           <Button onClick={handleSubmit} className="w-full" disabled={isCreating}>
