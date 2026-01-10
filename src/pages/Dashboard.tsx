@@ -60,6 +60,7 @@ import { useSetupProgress } from "@/hooks/useSetupProgress";
 import { useTutorial } from "@/hooks/useTutorial";
 import { InteractiveTutorial } from "@/components/onboarding/InteractiveTutorial";
 import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
+import { BusinessActionsSection } from "@/components/dashboard/BusinessActionsSection";
 
 // Animation variants for staggered cards
 const containerVariants = {
@@ -434,6 +435,9 @@ export default function Dashboard() {
 
           {/* KPI Cards principales - Using RPC function */}
           <DashboardKPIGrid dateRange={dateRange?.from && dateRange?.to ? { from: dateRange.from, to: dateRange.to } : undefined} />
+
+          {/* Business Actions - Top 3 */}
+          <BusinessActionsSection stats={stats} isLoading={isLoading} />
 
           {/* Expert: Nouveaux KPIs Rentabilité */}
           {isExpert && stats.totalRevenue > 0 && (

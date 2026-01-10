@@ -1306,5 +1306,66 @@
       "billing": "Abrechnung",
       "system": "System"
     }
+  },
+  "businessActions": {
+    "title": "Business-Aktionen",
+    "seeAll": "Alle Empfehlungen anzeigen",
+    "viewDetails": "Details anzeigen",
+    "impactLabel": "Geschätzter Einfluss",
+    "effortLabel": "Aufwand",
+    "kpiLabel": "KPI zu verfolgen",
+    "stepsLabel": "Schritte",
+    "effort": {
+      "low": "Gering",
+      "medium": "Mittel",
+      "high": "Hoch"
+    },
+    "empty": {
+      "title": "Noch nicht genug Daten",
+      "description": "Importieren Sie mindestens 7 Tage Daten, um Ihre Top 3 Business-Aktionen zu erhalten.",
+      "cta": "Daten importieren"
+    },
+    "rules": {
+      "offpeak": {
+        "title": "Nebenzeiten fördern",
+        "description": "Ihre Vormittage machen weniger als 15% des Umsatzes aus. Eine Morgenaktion könnte Ihre Aktivität glätten.",
+        "kpi": "Vormittagsumsatzanteil (6-10 Uhr)",
+        "step1": "-15% Angebot vor 10 Uhr im Schaufenster anzeigen",
+        "step2": "In sozialen Medien kommunizieren",
+        "step3": "Wirkung nach 1 Monat messen"
+      },
+      "card": {
+        "title": "Kartenzahlung fördern",
+        "description": "Weniger als 70% Kartenzahlungen. Karten zu fördern reduziert Bargeldhandling und Risiken.",
+        "kpi": "% Umsatz per Karte",
+        "step1": "Terminals auf ordnungsgemäße Funktion prüfen",
+        "step2": "Deutlich 'Karten akzeptiert' anzeigen",
+        "step3": "Mobile Zahlungen in Betracht ziehen"
+      },
+      "machine": {
+        "title": "Maschine {{machine}} überprüfen",
+        "description": "Maschine {{machine}} erwirtschaftet deutlich weniger als andere. Zustand prüfen.",
+        "kpi": "Umsatz der Maschine",
+        "step1": "Technischen Zustand der Maschine prüfen",
+        "step2": "Zykluszeiten und Qualität überprüfen",
+        "step3": "Bei Bedarf Wartung planen"
+      },
+      "weakDay": {
+        "title": "{{day}} beleben",
+        "description": "{{day}} ist Ihr schwächster Tag. Eine gezielte Aktion kann diesen Tiefpunkt verbessern.",
+        "kpi": "{{day}} Umsatz",
+        "step1": "Sonderangebot am {{day}} anbieten",
+        "step2": "Im Voraus in sozialen Medien kommunizieren",
+        "step3": "Auswirkung über 1 Monat bewerten"
+      },
+      "peak": {
+        "title": "Spitzenverkehr verteilen",
+        "description": "Mehr als 40% Ihres Umsatzes konzentriert sich am Abend. Verteilen Sie die Last für besseres Erlebnis.",
+        "kpi": "Stündliche Umsatzverteilung",
+        "step1": "Reduzierte Tarife außerhalb der Spitzenzeiten anbieten",
+        "step2": "Empfohlene ruhige Zeiten anzeigen",
+        "step3": "Verteilungsänderungen verfolgen"
+      }
+    }
   }
 }

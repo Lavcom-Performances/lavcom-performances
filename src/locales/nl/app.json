@@ -1306,5 +1306,66 @@
       "billing": "Facturering",
       "system": "Systeem"
     }
+  },
+  "businessActions": {
+    "title": "Zakelijke Acties",
+    "seeAll": "Alle aanbevelingen bekijken",
+    "viewDetails": "Details bekijken",
+    "impactLabel": "Geschatte impact",
+    "effortLabel": "Inspanning",
+    "kpiLabel": "KPI om te volgen",
+    "stepsLabel": "Stappen",
+    "effort": {
+      "low": "Laag",
+      "medium": "Gemiddeld",
+      "high": "Hoog"
+    },
+    "empty": {
+      "title": "Nog niet genoeg gegevens",
+      "description": "Importeer minimaal 7 dagen gegevens om uw top 3 prioritaire acties te krijgen.",
+      "cta": "Gegevens importeren"
+    },
+    "rules": {
+      "offpeak": {
+        "title": "Daluren stimuleren",
+        "description": "Uw ochtenden vertegenwoordigen minder dan 15% van de omzet. Een ochtendactie kan uw activiteit gladstrijken.",
+        "kpi": "Aandeel ochtendomzet (6-10u)",
+        "step1": "-15% aanbieding voor 10u in de etalage tonen",
+        "step2": "Communiceren op sociale media",
+        "step3": "Impact meten na 1 maand"
+      },
+      "card": {
+        "title": "Kaartbetaling stimuleren",
+        "description": "Minder dan 70% kaartbetalingen. Kaarten stimuleren vermindert contantgeldbeheer en risico's.",
+        "kpi": "% omzet per kaart",
+        "step1": "Controleren of betaalterminals goed werken",
+        "step2": "Duidelijk 'Kaarten geaccepteerd' tonen",
+        "step3": "Mobiele betalingen overwegen"
+      },
+      "machine": {
+        "title": "Machine {{machine}} controleren",
+        "description": "Machine {{machine}} genereert aanzienlijk minder dan andere. Controleer de conditie.",
+        "kpi": "Omzet van de machine",
+        "step1": "Technische conditie van de machine controleren",
+        "step2": "Cyclustijden en kwaliteit verifiëren",
+        "step3": "Onderhoud plannen indien nodig"
+      },
+      "weakDay": {
+        "title": "{{day}} stimuleren",
+        "description": "{{day}} is uw zwakste dag. Een gerichte actie kan dit dieptepunt verbeteren.",
+        "kpi": "{{day}} omzet",
+        "step1": "Speciale aanbieding op {{day}} aanbieden",
+        "step2": "Vooraf communiceren op sociale media",
+        "step3": "Impact over 1 maand evalueren"
+      },
+      "peak": {
+        "title": "Piekverkeer spreiden",
+        "description": "Meer dan 40% van uw omzet is geconcentreerd in de avond. Verdeel de belasting voor betere ervaring.",
+        "kpi": "Uurlijke omzetverdeling",
+        "step1": "Verlaagde tarieven buiten piekuren aanbieden",
+        "step2": "Aanbevolen rustige uren tonen",
+        "step3": "Verdelingswijzigingen volgen"
+      }
+    }
   }
 }
