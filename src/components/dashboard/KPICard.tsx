@@ -56,7 +56,8 @@ export function KPICard({
             )}
           </div>
           <p className={cn(
-            "text-lg sm:text-xl lg:text-2xl font-display font-bold tracking-tight truncate",
+            "text-base sm:text-lg lg:text-xl xl:text-2xl font-display font-bold tracking-tight",
+            "whitespace-nowrap overflow-visible",
             variant === "primary" && "text-primary",
             variant === "success" && "text-lime-600",
             variant === "warning" && "text-amber-500"

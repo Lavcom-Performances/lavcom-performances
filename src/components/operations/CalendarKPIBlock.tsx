@@ -135,7 +135,7 @@ export function CalendarKPIBlock({ siteId, className }: CalendarKPIBlockProps) {
           </div>
           <div>
             <h3 className="text-base font-semibold text-foreground">CA Calendaire</h3>
-            <p className="text-xs text-muted-foreground">Indépendant des filtres</p>
+            <p className="text-xs text-muted-foreground">Basé sur le calendrier réel</p>
           </div>
         </div>
         <TooltipProvider>
@@ -145,10 +145,13 @@ export function CalendarKPIBlock({ siteId, className }: CalendarKPIBlockProps) {
                 <Info className="h-3.5 w-3.5 text-muted-foreground" />
               </div>
             </TooltipTrigger>
-            <TooltipContent side="left" className="max-w-[260px]">
-              <p className="text-xs">
-                Ces totaux sont basés sur le calendrier réel et ne changent pas avec les filtres de date ou de machine.
-              </p>
+            <TooltipContent side="left" className="max-w-[300px]">
+              <div className="text-xs space-y-1">
+                <p className="font-medium">📅 KPIs calendrier réel</p>
+                <p>Ces totaux sont calculés sur la date du jour, le mois en cours et l'année en cours.</p>
+                <p className="text-muted-foreground">Ils ne changent pas avec les filtres de date ou de machine.</p>
+                <p className="text-muted-foreground mt-2">💡 Le "Total période" en haut à droite correspond aux filtres sélectionnés.</p>
+              </div>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

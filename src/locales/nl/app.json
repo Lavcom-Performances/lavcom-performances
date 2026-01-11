@@ -28,7 +28,7 @@
       "loading": "Laden...",
       "lastData": "Laatste gegevens",
       "details": "Gegevensversheid",
-      "latestOperation": "Laatste operatie",
+      "lastOperation": "Laatste operatie",
       "lastImport": "Laatste import",
       "totalOperations": "Totaal operaties"
     },
