@@ -5,6 +5,7 @@ import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { useDateRange } from "@/hooks/useDateRange";
 import { getDay, format } from "date-fns";
 import { ChartFilters } from "@/components/charts/ChartPageFilters";
+import { isRechargement, isCBPayment, isESPPayment, isFIPayment } from "@/lib/operationFilters";
 
 // Helper to filter operations by multi-select filters
 function applyFilters<T extends { 
@@ -13,10 +14,17 @@ function applyFilters<T extends {
   machine_name?: string | null;
   machine?: string | null;
   type?: string | null;
-}>(data: T[], filters?: Omit<ChartFilters, 'dateRange'>): T[] {
-  if (!filters) return data;
+}>(data: T[], filters?: Omit<ChartFilters, 'dateRange'>, excludeRechargements: boolean = true): T[] {
+  let filtered = data;
   
-  return data.filter(op => {
+  // Always exclude rechargements from revenue calculations unless explicitly included
+  if (excludeRechargements) {
+    filtered = filtered.filter(op => !isRechargement(op));
+  }
+  
+  if (!filters) return filtered;
+  
+  return filtered.filter(op => {
     // Payment mode filter (multi-select)
     if (filters.paymentModes.length > 0) {
       const mode = op.payment_mode?.toUpperCase();
@@ -71,7 +79,7 @@ export function useDailyRevenue(filters?: Omit<ChartFilters, 'dateRange'>) {
 
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_date, price_cb, price_esp, amount, payment_mode, machine_name, machine, type")
+        .select("operation_date, amount, payment_mode, machine_name, machine, type")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to)
@@ -79,23 +87,30 @@ export function useDailyRevenue(filters?: Omit<ChartFilters, 'dateRange'>) {
 
       if (error) throw error;
 
-      // Apply filters
+      // Apply filters (rechargements excluded by default)
       const filtered = applyFilters(data || [], filters);
 
-      // Group by date
-      const grouped = new Map<string, { cb: number; esp: number }>();
+      // Group by date - use amount + payment_mode for accurate calculation
+      const grouped = new Map<string, { cb: number; esp: number; fi: number }>();
       filtered.forEach((op) => {
         const date = op.operation_date;
-        const existing = grouped.get(date) || { cb: 0, esp: 0 };
-        existing.cb += Number(op.price_cb || 0);
-        existing.esp += Number(op.price_esp || 0);
+        const existing = grouped.get(date) || { cb: 0, esp: 0, fi: 0 };
+        const amount = Number(op.amount || 0);
+        
+        if (isCBPayment(op)) {
+          existing.cb += amount;
+        } else if (isESPPayment(op)) {
+          existing.esp += amount;
+        } else if (isFIPayment(op)) {
+          existing.fi += amount;
+        }
         grouped.set(date, existing);
       });
 
       return Array.from(grouped.entries()).map(([date, values]) => ({
         date: format(new Date(date), "dd/MM"),
         fullDate: date,
-        revenue: values.cb + values.esp,
+        revenue: values.cb + values.esp + values.fi,
         cb: values.cb,
         esp: values.esp,
       }));
@@ -116,7 +131,7 @@ export function usePaymentDistribution(filters?: Omit<ChartFilters, 'dateRange'>
 
       const { data, error } = await supabase
         .from("operations")
-        .select("price_cb, price_esp, payment_mode, machine_name, machine, type, operation_date")
+        .select("amount, payment_mode, machine_name, machine, type, operation_date")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to);
@@ -132,10 +147,13 @@ export function usePaymentDistribution(filters?: Omit<ChartFilters, 'dateRange'>
       let totalFi = 0;
 
       filtered.forEach((op) => {
-        totalCb += Number(op.price_cb || 0);
-        totalEsp += Number(op.price_esp || 0);
-        if (op.payment_mode?.toUpperCase() === "FI") {
-          totalFi += Number(op.price_cb || 0) + Number(op.price_esp || 0);
+        const amount = Number(op.amount || 0);
+        if (isCBPayment(op)) {
+          totalCb += amount;
+        } else if (isESPPayment(op)) {
+          totalEsp += amount;
+        } else if (isFIPayment(op)) {
+          totalFi += amount;
         }
       });
 
@@ -356,7 +374,7 @@ export function useMachineStats(filters?: Omit<ChartFilters, 'dateRange'>) {
 
       const { data, error } = await supabase
         .from("operations")
-        .select("machine_name, machine, price_cb, price_esp, type, operation_date, payment_mode")
+        .select("machine_name, machine, amount, type, operation_date, payment_mode")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to);
@@ -367,17 +385,24 @@ export function useMachineStats(filters?: Omit<ChartFilters, 'dateRange'>) {
       const filtersWithoutMachine = filters ? { ...filters, machines: [] } : undefined;
       const filtered = applyFilters(data || [], filtersWithoutMachine);
 
-      const machines = new Map<string, { caEsp: number; caCb: number; ventesEsp: number; ventesCb: number; type: string }>();
+      const machines = new Map<string, { caEsp: number; caCb: number; caFi: number; ventesEsp: number; ventesCb: number; ventesFi: number; type: string }>();
 
       filtered.forEach((op) => {
         const name = op.machine_name || op.machine || "Inconnu";
-        const existing = machines.get(name) || { caEsp: 0, caCb: 0, ventesEsp: 0, ventesCb: 0, type: op.type || "" };
+        const existing = machines.get(name) || { caEsp: 0, caCb: 0, caFi: 0, ventesEsp: 0, ventesCb: 0, ventesFi: 0, type: op.type || "" };
+        const amount = Number(op.amount || 0);
         
-        existing.caCb += Number(op.price_cb || 0);
-        existing.caEsp += Number(op.price_esp || 0);
+        if (isCBPayment(op)) {
+          existing.caCb += amount;
+          existing.ventesCb += 1;
+        } else if (isESPPayment(op)) {
+          existing.caEsp += amount;
+          existing.ventesEsp += 1;
+        } else if (isFIPayment(op)) {
+          existing.caFi += amount;
+          existing.ventesFi += 1;
+        }
         
-        if (Number(op.price_cb || 0) > 0) existing.ventesCb += 1;
-        if (Number(op.price_esp || 0) > 0) existing.ventesEsp += 1;
         if (!existing.type && op.type) existing.type = op.type;
         
         machines.set(name, existing);
@@ -389,10 +414,10 @@ export function useMachineStats(filters?: Omit<ChartFilters, 'dateRange'>) {
           capacity: "",
           caEsp: stats.caEsp,
           caCb: stats.caCb,
-          caTotal: stats.caEsp + stats.caCb,
+          caTotal: stats.caEsp + stats.caCb + stats.caFi,
           ventesEsp: stats.ventesEsp,
           ventesCb: stats.ventesCb,
-          ventesTotal: stats.ventesEsp + stats.ventesCb,
+          ventesTotal: stats.ventesEsp + stats.ventesCb + stats.ventesFi,
           type: stats.type,
         }))
         .sort((a, b) => b.caTotal - a.caTotal);
@@ -416,14 +441,14 @@ export function useAnnualComparison(filters?: Omit<ChartFilters, 'dateRange'>) {
 
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_date, price_cb, price_esp, payment_mode, machine_name, machine, type")
+        .select("operation_date, amount, payment_mode, machine_name, machine, type")
         .eq("site_id", currentSiteId)
         .gte("operation_date", `${years[0]}-01-01`)
         .lte("operation_date", `${currentYear}-12-31`);
 
       if (error) throw error;
 
-      // Apply filters
+      // Apply filters (rechargements excluded automatically)
       const filtered = applyFilters(data || [], filters);
 
       // Initialize data structure
@@ -441,7 +466,7 @@ export function useAnnualComparison(filters?: Omit<ChartFilters, 'dateRange'>) {
         const date = new Date(op.operation_date);
         const year = date.getFullYear();
         const month = date.getMonth();
-        const revenue = Number(op.price_cb || 0) + Number(op.price_esp || 0);
+        const revenue = Number(op.amount || 0);
 
         if (years.includes(year)) {
           monthlyData[month][`y${year}`] += revenue;
