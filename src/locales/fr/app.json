@@ -1017,7 +1017,7 @@
       "loading": "Chargement...",
       "lastData": "Dernières données",
       "details": "Fraîcheur des données",
-      "latestOperation": "Dernière opération",
+      "lastOperation": "Dernière opération",
       "lastImport": "Dernier import",
       "totalOperations": "Total opérations"
     },

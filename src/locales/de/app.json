@@ -28,7 +28,7 @@
       "loading": "Laden...",
       "lastData": "Letzte Daten",
       "details": "Datenfrische",
-      "latestOperation": "Letzte Operation",
+      "lastOperation": "Letzte Operation",
       "lastImport": "Letzter Import",
       "totalOperations": "Gesamt Operationen"
     },

@@ -1017,7 +1017,7 @@
       "loading": "Loading...",
       "lastData": "Last data",
       "details": "Data freshness",
-      "latestOperation": "Latest operation",
+      "lastOperation": "Last operation",
       "lastImport": "Last import",
       "totalOperations": "Total operations"
     },
