@@ -959,7 +959,7 @@ export default function Operations() {
                       {formatCurrency(isCB ? price : null)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatCurrency(isESP ? price : null)}
+                      {formatCurrency(isESP ? op.price_esp : null)}
                     </TableCell>
                     <TableCell className="text-center">
                       {isNotCounted && (
