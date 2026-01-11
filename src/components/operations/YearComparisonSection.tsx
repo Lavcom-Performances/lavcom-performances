@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Operation } from "@/hooks/useOperations";
+import { filterRevenueOperations, isCBPayment, isESPPayment } from "@/lib/operationFilters";
 
 interface YearComparisonSectionProps {
   operations: Operation[];
@@ -28,18 +29,22 @@ interface YearStats {
 }
 
 const calculateYearStats = (operations: Operation[], year: number): YearStats => {
-  const yearOps = operations.filter(op => {
+  // Filter to year first
+  const yearAllOps = operations.filter(op => {
     const opYear = getYear(parseISO(op.operation_date));
     return opYear === year;
   });
+  
+  // Exclude rechargements from revenue calculations
+  const yearOps = filterRevenueOperations(yearAllOps);
 
   const total = yearOps.reduce((sum, op) => sum + Number(op.amount), 0);
-  const cbOps = yearOps.filter(op => op.payment_mode?.toUpperCase() === "CB");
-  const espOps = yearOps.filter(op => op.payment_mode?.toUpperCase() === "ESP");
+  const cbOps = yearOps.filter(isCBPayment);
+  const espOps = yearOps.filter(isESPPayment);
   const cb = cbOps.reduce((sum, op) => sum + Number(op.amount), 0);
   const esp = espOps.reduce((sum, op) => sum + Number(op.amount), 0);
 
-  // Monthly breakdown
+  // Monthly breakdown - also exclude rechargements
   const monthlyMap: Record<number, { total: number; cb: number; esp: number }> = {};
   for (let m = 0; m < 12; m++) {
     monthlyMap[m] = { total: 0, cb: 0, esp: 0 };
@@ -49,9 +54,9 @@ const calculateYearStats = (operations: Operation[], year: number): YearStats =>
     const month = parseISO(op.operation_date).getMonth();
     const amount = Number(op.amount);
     monthlyMap[month].total += amount;
-    if (op.payment_mode?.toUpperCase() === "CB") {
+    if (isCBPayment(op)) {
       monthlyMap[month].cb += amount;
-    } else if (op.payment_mode?.toUpperCase() === "ESP") {
+    } else if (isESPPayment(op)) {
       monthlyMap[month].esp += amount;
     }
   });

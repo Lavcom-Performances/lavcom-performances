@@ -12,6 +12,7 @@ import {
   isWithinInterval,
   startOfDay,
 } from "date-fns";
+import { filterRevenueOperations, isCBPayment, isESPPayment } from "@/lib/operationFilters";
 
 export interface DashboardStats {
   // Revenue KPIs
@@ -352,7 +353,7 @@ function computeStatsFromAnalytics(
 
 function computeStatsFromOperations(operations: any[], dateRange?: DateRange): DashboardStats {
   // Filter operations by date range
-  const filteredOps = operations.filter(op => {
+  const dateFilteredOps = operations.filter(op => {
     if (!dateRange?.from || !dateRange?.to) return true;
     const opDate = parseISO(op.operation_date);
     return isWithinInterval(startOfDay(opDate), {
@@ -360,6 +361,9 @@ function computeStatsFromOperations(operations: any[], dateRange?: DateRange): D
       end: startOfDay(dateRange.to),
     });
   });
+
+  // Exclude rechargements from revenue calculations
+  const filteredOps = filterRevenueOperations(dateFilteredOps);
 
   // Calculate previous period for trends
   const periodLength = dateRange?.from && dateRange?.to 
@@ -369,7 +373,7 @@ function computeStatsFromOperations(operations: any[], dateRange?: DateRange): D
   const previousFrom = dateRange?.from ? new Date(dateRange.from.getTime() - periodLength * 24 * 60 * 60 * 1000) : undefined;
   const previousTo = dateRange?.from ? new Date(dateRange.from.getTime() - 1) : undefined;
   
-  const previousOps = operations.filter(op => {
+  const previousDateFilteredOps = operations.filter(op => {
     if (!previousFrom || !previousTo) return false;
     const opDate = parseISO(op.operation_date);
     return isWithinInterval(startOfDay(opDate), {
@@ -377,14 +381,17 @@ function computeStatsFromOperations(operations: any[], dateRange?: DateRange): D
       end: startOfDay(previousTo),
     });
   });
+  
+  // Also exclude rechargements from previous period
+  const previousOps = filterRevenueOperations(previousDateFilteredOps);
 
   // Revenue calculations
   const totalRevenue = filteredOps.reduce((sum, op) => sum + Number(op.amount), 0);
   const revenueByCard = filteredOps
-    .filter(op => op.payment_mode?.toUpperCase() === "CB")
+    .filter(isCBPayment)
     .reduce((sum, op) => sum + Number(op.amount), 0);
   const revenueByCash = filteredOps
-    .filter(op => op.payment_mode?.toUpperCase() === "ESP")
+    .filter(isESPPayment)
     .reduce((sum, op) => sum + Number(op.amount), 0);
   const totalTransactions = filteredOps.length;
   const averageBasket = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
@@ -399,12 +406,12 @@ function computeStatsFromOperations(operations: any[], dateRange?: DateRange): D
     ? ((totalTransactions - previousTransactions) / previousTransactions) * 100 
     : 0;
 
-  // Monthly data
+  // Monthly data - also filter rechargements
   const monthlyData = MONTHS.map((month, index) => {
-    const monthOps = operations.filter(op => {
+    const monthOps = filterRevenueOperations(operations.filter(op => {
       const opDate = parseISO(op.operation_date);
       return opDate.getMonth() === index;
-    });
+    }));
     return {
       month,
       revenue: monthOps.reduce((sum, op) => sum + Number(op.amount), 0),

@@ -47,6 +47,7 @@ import { useSites } from "@/hooks/useSites";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
 import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
+import { isCountedInRevenue, isRechargement, isCBPayment, isESPPayment, filterRevenueOperations } from "@/lib/operationFilters";
 
 const paymentModeBadge = (mode: string | null) => {
   if (!mode) return <span className="text-muted-foreground">—</span>;
@@ -216,14 +217,9 @@ export default function Operations() {
     return Array.from(machines).sort();
   }, [rawOperations]);
 
-  // Helper to check if operation is counted in revenue
+  // Helper to check if operation is counted in revenue - use centralized filter
   const isOperationNotCounted = (op: typeof rawOperations[0]) => {
-    const typeValue = op.type?.toLowerCase() || '';
-    return typeValue.includes('rechargement') || 
-           typeValue.includes('crédit') || 
-           typeValue.includes('credit') ||
-           typeValue.includes('annulation') ||
-           typeValue.includes('remboursement');
+    return !isCountedInRevenue(op);
   };
 
   // Apply additional filters (machine, day of week, revenue filter) and sorting
@@ -286,29 +282,32 @@ export default function Operations() {
     return filtered;
   }, [rawOperations, machineFilter, dayFilter, sortColumn, sortDirection, showNonRevenue]);
 
-  // Calculate KPIs
+  // Calculate KPIs - exclude rechargements from revenue calculations
   const kpis = useMemo(() => {
     const today = startOfDay(new Date());
     const monthStart = startOfMonth(new Date());
     const yearStart = startOfYear(new Date());
 
-    const calcKPI = (ops: typeof operations) => ({
+    // Only count operations that are real sales (exclude rechargements)
+    const salesOps = filterRevenueOperations(operations);
+
+    const calcKPI = (ops: typeof salesOps) => ({
       total: ops.reduce((sum, op) => sum + Number(op.amount), 0),
-      cb: ops.filter(op => op.payment_mode?.toUpperCase() === "CB").reduce((sum, op) => sum + Number(op.amount), 0),
-      esp: ops.filter(op => op.payment_mode?.toUpperCase() === "ESP").reduce((sum, op) => sum + Number(op.amount), 0),
+      cb: ops.filter(isCBPayment).reduce((sum, op) => sum + Number(op.amount), 0),
+      esp: ops.filter(isESPPayment).reduce((sum, op) => sum + Number(op.amount), 0),
     });
 
-    const todayOps = operations.filter(op => {
+    const todayOps = salesOps.filter(op => {
       const opDate = startOfDay(parseISO(op.operation_date));
       return opDate.getTime() === today.getTime();
     });
     
-    const monthOps = operations.filter(op => {
+    const monthOps = salesOps.filter(op => {
       const opDate = parseISO(op.operation_date);
       return opDate >= monthStart;
     });
     
-    const yearOps = operations.filter(op => {
+    const yearOps = salesOps.filter(op => {
       const opDate = parseISO(op.operation_date);
       return opDate >= yearStart;
     });
@@ -320,21 +319,24 @@ export default function Operations() {
     };
   }, [operations]);
 
-  // Calculate hourly data for chart
+  // Calculate hourly data for chart - exclude rechargements
   const hourlyData = useMemo(() => {
     const hours: { [key: number]: { cb: number; esp: number } } = {};
     for (let i = 6; i <= 22; i++) {
       hours[i] = { cb: 0, esp: 0 };
     }
     
-    operations.forEach(op => {
+    // Only include sales operations (exclude rechargements)
+    const salesOps = filterRevenueOperations(operations);
+    
+    salesOps.forEach(op => {
       if (op.operation_time) {
         const hour = parseInt(op.operation_time.split(":")[0], 10);
         if (hour >= 6 && hour <= 22) {
           const amount = Number(op.amount);
-          if (op.payment_mode?.toUpperCase() === "CB") {
+          if (isCBPayment(op)) {
             hours[hour].cb += amount;
-          } else if (op.payment_mode?.toUpperCase() === "ESP") {
+          } else if (isESPPayment(op)) {
             hours[hour].esp += amount;
           }
         }
@@ -348,10 +350,12 @@ export default function Operations() {
     }));
   }, [operations]);
 
-  // Calculate machine counts
+  // Calculate machine counts - exclude rechargements from machine stats
   const machineCounts = useMemo(() => {
     const counts: { [key: string]: number } = {};
-    operations.forEach(op => {
+    const salesOps = filterRevenueOperations(operations);
+    
+    salesOps.forEach(op => {
       if (op.machine) {
         counts[op.machine] = (counts[op.machine] || 0) + 1;
       }
