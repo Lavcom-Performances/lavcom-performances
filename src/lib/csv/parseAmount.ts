@@ -1,12 +1,19 @@
 /**
  * Parse amount strings to cents (integer)
  * Handles various formats: euros, centimes, with/without currency symbols
+ * 
+ * IMPORTANT: For CSV imports from payment terminals (Events, LM Control), 
+ * values are ALWAYS in centimes. The caller should NOT rely on heuristics
+ * and should explicitly use amount_cents / 100 when inserting to DB.
  */
 
 /**
  * Parse an amount string and return value in cents
  * @param value - Raw amount string (may include €, comma/point decimals)
  * @returns Amount in cents (integer) or null if parsing fails
+ * 
+ * NOTE: This function uses heuristics that may not be reliable.
+ * For import pipelines, prefer using the raw value and explicit division.
  */
 export function parseAmountToCents(value: string | number | null | undefined): number | null {
   if (value === null || value === undefined) return null;
@@ -14,8 +21,9 @@ export function parseAmountToCents(value: string | number | null | undefined): n
   // If already a number
   if (typeof value === 'number') {
     if (isNaN(value)) return null;
-    // Determine if it's cents or euros based on magnitude
-    return normalizeToZents(value);
+    // For CSV imports, the value is typically already in centimes
+    // We just round it to ensure it's an integer
+    return Math.round(value);
   }
   
   // Clean the string
@@ -52,49 +60,41 @@ export function parseAmountToCents(value: string | number | null | undefined): n
     // Check if comma is thousands separator (1,234) or decimal (1,23)
     const parts = cleaned.split(',');
     if (parts.length === 2 && parts[1].length <= 2) {
-      // Decimal separator
+      // Decimal separator - value is likely in euros (e.g., "4,50" = 4.50€)
       cleaned = cleaned.replace(',', '.');
+      numericValue = parseFloat(cleaned);
+      // This is euros with decimal, convert to cents
+      return Math.round(numericValue * 100);
     } else {
-      // Thousands separator
+      // Thousands separator (e.g., "1,234" = 1234)
       cleaned = cleaned.replace(/,/g, '');
+      numericValue = parseFloat(cleaned);
     }
-    numericValue = parseFloat(cleaned);
   } else if (hasDot) {
     // Check if dot is thousands separator or decimal
     const parts = cleaned.split('.');
     if (parts.length === 2 && parts[1].length <= 2) {
-      // Decimal separator
+      // Decimal separator - value is likely in euros (e.g., "4.50" = 4.50€)
       numericValue = parseFloat(cleaned);
+      // This is euros with decimal, convert to cents
+      return Math.round(numericValue * 100);
     } else if (parts.length > 2) {
       // Multiple dots = thousands separators
       cleaned = cleaned.replace(/\./g, '');
       numericValue = parseFloat(cleaned);
     } else {
+      // Integer followed by more than 2 digits after dot - treat as cents
       numericValue = parseFloat(cleaned);
     }
   } else {
+    // No separator - this is an integer, likely in centimes
     numericValue = parseFloat(cleaned);
   }
   
   if (isNaN(numericValue)) return null;
   
-  return normalizeToZents(numericValue);
-}
-
-/**
- * Normalize a numeric value to cents
- * Uses heuristics to determine if value is already in cents or in euros
- */
-function normalizeToZents(value: number): number {
-  // If value > 1000 and is an integer, assume it's already in cents
-  // (e.g., 450 cents = 4.50€, 1250 cents = 12.50€)
-  if (value > 1000 && Number.isInteger(value)) {
-    return Math.round(value);
-  }
-  
-  // If value has decimals or is <= 1000, assume it's in euros
-  // Convert to cents
-  return Math.round(value * 100);
+  // Value without decimal separator is assumed to be in centimes
+  return Math.round(numericValue);
 }
 
 /**
