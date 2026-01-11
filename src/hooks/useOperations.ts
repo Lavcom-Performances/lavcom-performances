@@ -18,6 +18,8 @@ export interface Operation {
   inserted_eur?: number | null;
   price_eur?: number | null;
   change_eur?: number | null;
+  price_esp?: number | null;
+  price_cb?: number | null;
   machine_name?: string | null;
   source?: string | null;
   type?: string | null;
