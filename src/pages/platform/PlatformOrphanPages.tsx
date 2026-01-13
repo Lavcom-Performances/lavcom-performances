@@ -2,14 +2,33 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, FileQuestion, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { 
+  ExternalLink, 
+  FileQuestion, 
+  AlertTriangle, 
+  CheckCircle2, 
+  Lock, 
+  Globe, 
+  ShieldCheck, 
+  ArrowRight,
+  Loader2,
+  XCircle,
+  RefreshCw
+} from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+type AuthRequirement = 'public' | 'auth' | 'auth+admin' | 'auth+site' | 'token';
+type RouteStatus = 'unknown' | 'checking' | 'ok' | 'redirect' | 'error';
 
 interface OrphanPage {
   path: string;
   name: string;
   description: string;
   category: 'legacy' | 'internal' | 'utility' | 'deprecated' | 'redirect' | 'public';
+  auth: AuthRequirement;
+  notes?: string;
 }
 
 // ============================================
@@ -31,51 +50,51 @@ interface OrphanPage {
 // List of pages that are NOT linked from main navigation
 const orphanPages: OrphanPage[] = [
   // ============ PUBLIC PAGES (Landing/Marketing) ============
-  { path: "/", name: "Landing Page", description: "Public homepage (not in app navigation)", category: "public" },
-  { path: "/demo", name: "Demo Page", description: "Interactive demo without authentication", category: "public" },
-  { path: "/pricing", name: "Pricing Page", description: "Public pricing information", category: "public" },
-  { path: "/simulateur", name: "Simulateur", description: "Public simulator landing page", category: "public" },
-  { path: "/mentions-legales", name: "Mentions Légales", description: "Legal notices (footer link)", category: "public" },
-  { path: "/cgv", name: "CGV", description: "Terms and conditions (footer link)", category: "public" },
-  { path: "/politique-confidentialite", name: "Politique de Confidentialité", description: "Privacy policy (footer link)", category: "public" },
+  { path: "/", name: "Landing Page", description: "Public homepage (not in app navigation)", category: "public", auth: "public" },
+  { path: "/demo", name: "Demo Page", description: "Interactive demo without authentication", category: "public", auth: "public" },
+  { path: "/pricing", name: "Pricing Page", description: "Public pricing information", category: "public", auth: "public" },
+  { path: "/simulateur", name: "Simulateur", description: "Public simulator landing page", category: "public", auth: "public" },
+  { path: "/mentions-legales", name: "Mentions Légales", description: "Legal notices (footer link)", category: "public", auth: "public" },
+  { path: "/cgv", name: "CGV", description: "Terms and conditions (footer link)", category: "public", auth: "public" },
+  { path: "/politique-confidentialite", name: "Politique de Confidentialité", description: "Privacy policy (footer link)", category: "public", auth: "public" },
   
   // ============ AUTH FLOW PAGES ============
-  { path: "/login", name: "Login", description: "Authentication login page", category: "internal" },
-  { path: "/signup", name: "Signup", description: "New user registration", category: "internal" },
-  { path: "/forgot-password", name: "Forgot Password", description: "Password recovery request", category: "internal" },
-  { path: "/reset-password", name: "Reset Password", description: "Password reset (accessed via email link)", category: "internal" },
+  { path: "/login", name: "Login", description: "Authentication login page", category: "internal", auth: "public", notes: "Redirects to /dashboard if logged in" },
+  { path: "/signup", name: "Signup", description: "New user registration", category: "internal", auth: "public", notes: "Prompts logout if session exists" },
+  { path: "/forgot-password", name: "Forgot Password", description: "Password recovery request", category: "internal", auth: "public" },
+  { path: "/reset-password", name: "Reset Password", description: "Password reset (accessed via email link)", category: "internal", auth: "token", notes: "Requires valid reset token from email" },
   
   // ============ SUBSCRIPTION/PAYMENT FLOW ============
-  { path: "/subscribe", name: "Subscribe (Simple)", description: "Simple subscription flow", category: "redirect" },
-  { path: "/subscribe-full", name: "Subscribe (Full)", description: "Full subscription flow with all options", category: "utility" },
-  { path: "/subscribe-simulator", name: "Subscribe Simulator", description: "Simulator-specific subscription", category: "redirect" },
-  { path: "/simulator-payment-success", name: "Simulator Payment Success", description: "Redirect after simulator payment", category: "redirect" },
-  { path: "/billing/success", name: "Billing Success", description: "Redirect after successful subscription", category: "redirect" },
-  { path: "/billing/cancel", name: "Billing Cancel", description: "Redirect after cancelled payment", category: "redirect" },
+  { path: "/subscribe", name: "Subscribe (Simple)", description: "Simple subscription flow", category: "redirect", auth: "public" },
+  { path: "/subscribe-full", name: "Subscribe (Full)", description: "Full subscription flow with all options", category: "utility", auth: "public" },
+  { path: "/subscribe-simulator", name: "Subscribe Simulator", description: "Simulator-specific subscription", category: "redirect", auth: "public" },
+  { path: "/simulator-payment-success", name: "Simulator Payment Success", description: "Redirect after simulator payment", category: "redirect", auth: "auth", notes: "Processes Stripe session" },
+  { path: "/billing/success", name: "Billing Success", description: "Redirect after successful subscription", category: "redirect", auth: "auth", notes: "Processes Stripe session" },
+  { path: "/billing/cancel", name: "Billing Cancel", description: "Redirect after cancelled payment", category: "redirect", auth: "auth" },
   
   // ============ TEAM/INVITATION FLOW ============
-  { path: "/invitation", name: "Accept Invitation", description: "Team invitation acceptance (accessed via email)", category: "internal" },
+  { path: "/invitation", name: "Accept Invitation", description: "Team invitation acceptance (accessed via email)", category: "internal", auth: "token", notes: "Requires valid invitation token" },
   
   // ============ SIMULATION WIZARD PAGES ============
-  { path: "/simulation/local", name: "Simulation - Local", description: "Simulation wizard step 2 (location)", category: "utility" },
-  { path: "/simulation/charges", name: "Simulation - Charges", description: "Simulation wizard step 3 (costs)", category: "utility" },
-  { path: "/simulation/results", name: "Simulation - Results", description: "Simulation wizard step 4 (results)", category: "utility" },
+  { path: "/simulation/local", name: "Simulation - Local", description: "Simulation wizard step 2 (location)", category: "utility", auth: "public", notes: "Part of wizard flow from /simulation" },
+  { path: "/simulation/charges", name: "Simulation - Charges", description: "Simulation wizard step 3 (costs)", category: "utility", auth: "public", notes: "Part of wizard flow" },
+  { path: "/simulation/results", name: "Simulation - Results", description: "Simulation wizard step 4 (results)", category: "utility", auth: "public", notes: "Part of wizard flow" },
   
   // ============ SETTINGS SUB-PAGES ============
-  { path: "/settings/charges", name: "Costs Settings", description: "Site costs configuration page", category: "utility" },
-  { path: "/settings/objectives", name: "Goals Settings", description: "Revenue goals configuration", category: "utility" },
-  { path: "/security", name: "Security Page", description: "Dedicated security settings (also in /settings?tab=security)", category: "utility" },
-  { path: "/subscription", name: "Subscription Management", description: "Manage active subscription", category: "utility" },
-  { path: "/billing-history", name: "Billing History", description: "View past invoices and payments", category: "utility" },
+  { path: "/settings/charges", name: "Costs Settings", description: "Site costs configuration page", category: "utility", auth: "auth+site", notes: "Requires selected site" },
+  { path: "/settings/objectives", name: "Goals Settings", description: "Revenue goals configuration", category: "utility", auth: "auth+site", notes: "Requires selected site" },
+  { path: "/security", name: "Security Page", description: "Dedicated security settings (also in /settings?tab=security)", category: "utility", auth: "auth" },
+  { path: "/subscription", name: "Subscription Management", description: "Manage active subscription", category: "utility", auth: "auth" },
+  { path: "/billing-history", name: "Billing History", description: "View past invoices and payments", category: "utility", auth: "auth" },
   
   // ============ GETTING STARTED/ONBOARDING ============
-  { path: "/getting-started", name: "Getting Started", description: "Onboarding wizard for new users", category: "utility" },
+  { path: "/getting-started", name: "Getting Started", description: "Onboarding wizard for new users", category: "utility", auth: "auth" },
   
   // ============ LEGACY PAGES ============
-  { path: "/company-settings", name: "Company Settings", description: "Legacy company settings (not in sidebar)", category: "legacy" },
+  { path: "/company-settings", name: "Company Settings", description: "Legacy company settings (not in sidebar)", category: "legacy", auth: "public", notes: "May need cleanup" },
   
   // ============ HIDDEN ALIASES ============
-  { path: "/aide", name: "Aide (Help alias)", description: "French alias for /help page", category: "utility" },
+  { path: "/aide", name: "Aide (Help alias)", description: "French alias for /help page", category: "utility", auth: "auth" },
 ];
 
 const categoryColors: Record<string, string> = {
@@ -105,8 +124,26 @@ const categoryDescriptions: Record<string, string> = {
   public: "Public marketing pages not linked from authenticated app navigation",
 };
 
+const authLabels: Record<AuthRequirement, { label: string; icon: typeof Globe; color: string; description: string }> = {
+  public: { label: "Public", icon: Globe, color: "text-green-500", description: "No authentication required" },
+  auth: { label: "Auth", icon: Lock, color: "text-blue-500", description: "Requires user login" },
+  "auth+admin": { label: "Admin", icon: ShieldCheck, color: "text-purple-500", description: "Requires admin role" },
+  "auth+site": { label: "Auth+Site", icon: Lock, color: "text-amber-500", description: "Requires login and selected site" },
+  token: { label: "Token", icon: ArrowRight, color: "text-cyan-500", description: "Requires valid token (email link)" },
+};
+
+const statusConfig: Record<RouteStatus, { icon: typeof CheckCircle2; color: string; label: string }> = {
+  unknown: { icon: FileQuestion, color: "text-muted-foreground", label: "Not tested" },
+  checking: { icon: Loader2, color: "text-blue-500", label: "Checking..." },
+  ok: { icon: CheckCircle2, color: "text-green-500", label: "Accessible" },
+  redirect: { icon: ArrowRight, color: "text-amber-500", label: "Redirects" },
+  error: { icon: XCircle, color: "text-red-500", label: "Error/404" },
+};
+
 export default function PlatformOrphanPages() {
   const { t } = useTranslation(['app', 'common']);
+  const [routeStatuses, setRouteStatuses] = useState<Record<string, RouteStatus>>({});
+  const [isTestingAll, setIsTestingAll] = useState(false);
   
   const groupedPages = orphanPages.reduce((acc, page) => {
     if (!acc[page.category]) acc[page.category] = [];
@@ -118,17 +155,114 @@ export default function PlatformOrphanPages() {
   const categoryOrder = ['public', 'internal', 'redirect', 'utility', 'legacy', 'deprecated'];
   const orderedCategories = categoryOrder.filter(cat => groupedPages[cat]);
 
+  // Test a single route by attempting to fetch it
+  const testRoute = async (path: string): Promise<RouteStatus> => {
+    try {
+      const response = await fetch(path, { 
+        method: 'HEAD',
+        redirect: 'manual'
+      });
+      
+      if (response.status === 200) return 'ok';
+      if (response.status >= 300 && response.status < 400) return 'redirect';
+      if (response.status === 404) return 'error';
+      if (response.type === 'opaqueredirect') return 'redirect';
+      return 'ok'; // SPA will handle most routes
+    } catch {
+      // For SPA routes, fetch might fail but route could still work
+      return 'ok';
+    }
+  };
+
+  const handleTestRoute = async (path: string) => {
+    setRouteStatuses(prev => ({ ...prev, [path]: 'checking' }));
+    const status = await testRoute(path);
+    setRouteStatuses(prev => ({ ...prev, [path]: status }));
+  };
+
+  const handleTestAll = async () => {
+    setIsTestingAll(true);
+    for (const page of orphanPages) {
+      setRouteStatuses(prev => ({ ...prev, [page.path]: 'checking' }));
+      const status = await testRoute(page.path);
+      setRouteStatuses(prev => ({ ...prev, [page.path]: status }));
+      // Small delay to avoid overwhelming
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    setIsTestingAll(false);
+  };
+
+  // Count by auth requirement
+  const authCounts = orphanPages.reduce((acc, page) => {
+    acc[page.auth] = (acc[page.auth] || 0) + 1;
+    return acc;
+  }, {} as Record<AuthRequirement, number>);
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-          <FileQuestion className="h-6 w-6 text-amber-500" />
-          {t('app:platformAdmin.nav.orphanPages', 'Orphan Pages')}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Pages not linked from main navigation sidebars (admin, billing, or app)
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <FileQuestion className="h-6 w-6 text-amber-500" />
+            {t('app:platformAdmin.nav.orphanPages', 'Orphan Pages')}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Pages not linked from main navigation sidebars (admin, billing, or app)
+          </p>
+        </div>
+        <Button 
+          onClick={handleTestAll} 
+          disabled={isTestingAll}
+          variant="outline"
+          size="sm"
+        >
+          {isTestingAll ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Testing...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Test All Routes
+            </>
+          )}
+        </Button>
       </div>
+
+      {/* Auth Requirements Overview */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Authentication Requirements</CardTitle>
+          <CardDescription>Overview of access control for orphan pages</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {(Object.keys(authLabels) as AuthRequirement[]).map((auth) => {
+              const config = authLabels[auth];
+              const IconComponent = config.icon;
+              return (
+                <TooltipProvider key={auth}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 cursor-help">
+                        <IconComponent className={`h-4 w-4 ${config.color}`} />
+                        <div>
+                          <div className="text-sm font-medium">{config.label}</div>
+                          <div className="text-lg font-bold">{authCounts[auth] || 0}</div>
+                        </div>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{config.description}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="border-amber-500/30 bg-amber-500/5">
@@ -177,33 +311,80 @@ export default function PlatformOrphanPages() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {pages.map((page) => (
-                  <div
-                    key={page.path}
-                    className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="space-y-1 flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-sm">{page.name}</span>
-                        <code className="text-xs bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
-                          {page.path}
-                        </code>
-                      </div>
-                      <p className="text-xs text-muted-foreground">{page.description}</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      asChild
-                      className="shrink-0 ml-2"
+                {pages.map((page) => {
+                  const authConfig = authLabels[page.auth];
+                  const AuthIcon = authConfig.icon;
+                  const status = routeStatuses[page.path] || 'unknown';
+                  const statusConf = statusConfig[status];
+                  const StatusIcon = statusConf.icon;
+                  
+                  return (
+                    <div
+                      key={page.path}
+                      className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors gap-2"
                     >
-                      <Link to={page.path} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        Open
-                      </Link>
-                    </Button>
-                  </div>
-                ))}
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-medium text-sm">{page.name}</span>
+                          <code className="text-xs bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
+                            {page.path}
+                          </code>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge variant="outline" className="text-xs py-0 h-5 gap-1">
+                                  <AuthIcon className={`h-3 w-3 ${authConfig.color}`} />
+                                  {authConfig.label}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{authConfig.description}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className={`${statusConf.color}`}>
+                                  <StatusIcon className={`h-4 w-4 ${status === 'checking' ? 'animate-spin' : ''}`} />
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{statusConf.label}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{page.description}</p>
+                        {page.notes && (
+                          <p className="text-xs text-amber-600/80 italic">⚠️ {page.notes}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleTestRoute(page.path)}
+                          disabled={status === 'checking'}
+                          className="h-8 w-8 p-0"
+                        >
+                          <RefreshCw className={`h-3.5 w-3.5 ${status === 'checking' ? 'animate-spin' : ''}`} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="h-8"
+                        >
+                          <Link to={page.path} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                            Open
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
