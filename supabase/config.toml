@@ -95,3 +95,6 @@ verify_jwt = true
 
 [functions.send-suspicious-login-alert]
 verify_jwt = false
+
+[functions.send-orphan-page-alert]
+verify_jwt = true
