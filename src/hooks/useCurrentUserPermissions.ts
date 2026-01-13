@@ -20,6 +20,7 @@ export interface CurrentUserPermissions {
 }
 
 // Default permissions by role
+// NOTE: 'admin' is DEPRECATED - use 'company_admin' for new code
 const DEFAULT_PERMISSIONS_BY_ROLE: Record<string, CurrentUserPermissions> = {
   super_admin: {
     can_view_sites: true,
@@ -35,6 +36,21 @@ const DEFAULT_PERMISSIONS_BY_ROLE: Record<string, CurrentUserPermissions> = {
     can_view_billing: true,
     can_manage_billing: true,
   },
+  company_admin: {
+    can_view_sites: true,
+    can_edit_sites: true,
+    can_delete_sites: true,
+    can_import_data: true,
+    can_export_data: true,
+    can_delete_data: true,
+    can_view_reports: true,
+    can_export_reports: true,
+    can_invite_members: true,
+    can_manage_roles: false,
+    can_view_billing: true,
+    can_manage_billing: false,
+  },
+  // Legacy 'admin' role - DEPRECATED, kept for backwards compatibility
   admin: {
     can_view_sites: true,
     can_edit_sites: true,
@@ -203,7 +219,8 @@ export function useCurrentUserPermissions() {
   const canManageTeam = useMemo(() => permissions.can_invite_members || permissions.can_manage_roles, [permissions]);
   const canManageRoles = useMemo(() => permissions.can_manage_roles, [permissions]);
   const isSuperAdmin = useMemo(() => userRole?.role === 'super_admin', [userRole]);
-  const isAdmin = useMemo(() => userRole?.role === 'super_admin' || userRole?.role === 'admin', [userRole]);
+  const isCompanyAdmin = useMemo(() => userRole?.role === 'super_admin' || userRole?.role === 'company_admin' || userRole?.role === 'admin', [userRole]);
+  const isAdmin = isCompanyAdmin; // Alias for backwards compatibility
 
   return {
     permissions,
@@ -215,6 +232,7 @@ export function useCurrentUserPermissions() {
     canManageTeam,
     canManageRoles,
     isSuperAdmin,
+    isCompanyAdmin,
     isAdmin,
     role: userRole?.role || 'guest',
     refresh: fetchCustomPermissions,

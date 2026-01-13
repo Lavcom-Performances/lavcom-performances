@@ -83,6 +83,7 @@ import PredictiveMaintenance from "./pages/PredictiveMaintenance";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
 import SettingsPage from "./pages/SettingsPage";
 import RolesManagement from "./pages/RolesManagement";
+import TeamPage from "./pages/TeamPage";
 import GettingStarted from "./pages/GettingStarted";
 import HelpPage from "./pages/HelpPage";
 import CostsSettingsPage from "./pages/settings/CostsSettingsPage";
@@ -186,6 +187,7 @@ const App = () => (
             <Route path="/settings/charges" element={<CostsSettingsPage />} />
             <Route path="/settings/objectives" element={<GoalsSettingsPage />} />
             <Route path="/roles-management" element={<RolesManagement />} />
+            <Route path="/team" element={<TeamPage />} />
             <Route path="/help" element={<HelpPage />} />
             <Route path="/aide" element={<HelpPage />} />
             <Route path="/operations" element={<Operations />} />

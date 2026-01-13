@@ -33,7 +33,7 @@ type RoleType = UserRole['role'];
 
 const ROLE_OPTIONS: { value: RoleType; label: string; description: string; icon: React.ReactNode }[] = [
   { value: 'super_admin', label: 'Super Admin', description: 'Accès complet et gestion des admins', icon: <Crown className="h-4 w-4 text-amber-500" /> },
-  { value: 'admin', label: 'Admin', description: 'Gestion complète de l\'organisation', icon: <Shield className="h-4 w-4 text-blue-500" /> },
+  { value: 'company_admin', label: 'Admin', description: 'Gestion complète de l\'organisation', icon: <Shield className="h-4 w-4 text-blue-500" /> },
   { value: 'checker', label: 'Éditeur', description: 'Peut modifier les données', icon: <Edit className="h-4 w-4 text-emerald-500" /> },
   { value: 'user', label: 'Utilisateur', description: 'Peut voir et exporter', icon: <Eye className="h-4 w-4 text-primary" /> },
   { value: 'guest', label: 'Lecteur', description: 'Lecture seule', icon: <Eye className="h-4 w-4 text-muted-foreground" /> },
@@ -69,6 +69,14 @@ const ROLE_PERMISSIONS: Record<RoleType, PermissionKeyType[]> = {
     'view_team', 'invite_members', 'manage_roles', 'remove_members',
     'view_billing', 'manage_billing'
   ],
+  company_admin: [
+    'view_sites', 'edit_sites', 'create_sites', 'delete_sites',
+    'view_operations', 'import_data', 'export_data', 'delete_operations',
+    'view_reports', 'generate_pdf',
+    'view_team', 'invite_members', 'manage_roles', 'remove_members',
+    'view_billing', 'manage_billing'
+  ],
+  // Legacy 'admin' role (deprecated, kept for backwards compatibility)
   admin: [
     'view_sites', 'edit_sites', 'create_sites', 'delete_sites',
     'view_operations', 'import_data', 'export_data', 'delete_operations',
@@ -231,7 +239,8 @@ export default function TeamContent() {
     switch (role) {
       case 'super_admin':
         return <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30">{option.icon}<span className="ml-1">{option.label}</span></Badge>;
-      case 'admin':
+      case 'company_admin':
+      case 'admin': // Legacy support
         return <Badge className="bg-blue-500/20 text-blue-500 border-blue-500/30">{option.icon}<span className="ml-1">{option.label}</span></Badge>;
       case 'checker':
         return <Badge className="bg-emerald-500/20 text-emerald-500 border-emerald-500/30">{option.icon}<span className="ml-1">{option.label}</span></Badge>;
@@ -246,12 +255,13 @@ export default function TeamContent() {
 
   const canEditRole = (memberRole: RoleType) => {
     if (isSuperAdmin) return memberRole !== 'super_admin'; // Super admin can edit all except other super admins
-    if (isAdmin) return memberRole !== 'super_admin' && memberRole !== 'admin'; // Admin can edit non-admins
+    // company_admin can edit non-admins (not super_admin, not other company_admin)
+    if (isAdmin) return memberRole !== 'super_admin' && memberRole !== 'company_admin' && memberRole !== 'admin';
     return false;
   };
 
   const getAvailableRoles = (): RoleType[] => {
-    if (isSuperAdmin) return ['admin', 'checker', 'user', 'guest'];
+    if (isSuperAdmin) return ['company_admin', 'checker', 'user', 'guest'];
     if (isAdmin) return ['checker', 'user', 'guest'];
     return [];
   };

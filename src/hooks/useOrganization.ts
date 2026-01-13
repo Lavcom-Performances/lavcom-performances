@@ -13,7 +13,8 @@ export interface UserRole {
   id: string;
   user_id: string;
   organization_id: string;
-  role: 'super_admin' | 'admin' | 'checker' | 'user' | 'guest';
+  // NOTE: 'admin' is DEPRECATED - use 'company_admin' for new code
+  role: 'super_admin' | 'company_admin' | 'admin' | 'checker' | 'user' | 'guest';
   created_at: string;
 }
 
@@ -262,7 +263,9 @@ export function useOrganization() {
     }
   };
 
-  const isAdmin = userRole?.role === 'super_admin' || userRole?.role === 'admin';
+  // company_admin check includes legacy 'admin' for backwards compatibility
+  const isCompanyAdmin = userRole?.role === 'super_admin' || userRole?.role === 'company_admin' || userRole?.role === 'admin';
+  const isAdmin = isCompanyAdmin; // Alias for backwards compatibility
   const isSuperAdmin = userRole?.role === 'super_admin';
 
   return {
@@ -272,6 +275,7 @@ export function useOrganization() {
     invitations,
     isLoading,
     isAdmin,
+    isCompanyAdmin,
     isSuperAdmin,
     createOrganization,
     sendInvitation,

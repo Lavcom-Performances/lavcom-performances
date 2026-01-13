@@ -1,6 +1,8 @@
 // Types for the permissions system
+// NOTE: These are COMPANY roles (organization-level), NOT platform admin roles
 
-export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'CHECKER' | 'USER' | 'GUEST';
+// 'ADMIN' is DEPRECATED - use 'COMPANY_ADMIN' for new code
+export type UserRole = 'SUPER_ADMIN' | 'COMPANY_ADMIN' | 'ADMIN' | 'CHECKER' | 'USER' | 'GUEST';
 
 export interface Permission {
   id: string;
@@ -29,7 +31,8 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
   GUEST: 0,
   USER: 1,
   CHECKER: 2,
-  ADMIN: 3,
+  COMPANY_ADMIN: 3,
+  ADMIN: 3, // Legacy alias for COMPANY_ADMIN
   SUPER_ADMIN: 4,
 };
 
@@ -40,6 +43,12 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, { label: string; description: s
     description: 'Accès total à toutes les fonctionnalités. Peut gérer tous les utilisateurs et permissions.',
     color: 'hsl(var(--primary))',
   },
+  COMPANY_ADMIN: {
+    label: 'Admin',
+    description: 'Peut gérer les utilisateurs (sauf Super Admin) et modifier les permissions.',
+    color: 'hsl(142, 70%, 45%)',
+  },
+  // Legacy 'ADMIN' - kept for backwards compatibility
   ADMIN: {
     label: 'Admin',
     description: 'Peut gérer les utilisateurs (sauf Super Admin) et modifier les permissions.',
@@ -98,6 +107,15 @@ export const AVAILABLE_PERMISSIONS: Permission[] = [
 // Default permissions by role
 export const DEFAULT_ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   SUPER_ADMIN: AVAILABLE_PERMISSIONS.map(p => p.id), // All permissions
+  COMPANY_ADMIN: [
+    'dashboard_view', 'dashboard_kpi', 'dashboard_revenue',
+    'operations_view', 'operations_machines', 'operations_products',
+    'charts_daily', 'charts_monthly', 'charts_annual', 'charts_frequency',
+    'charts_heatmap', 'charts_payments', 'charts_machines', 'charts_occupancy', 'charts_products',
+    'settings_laundromat', 'settings_import',
+    'admin_users', 'admin_permissions',
+  ],
+  // Legacy 'ADMIN' - same as COMPANY_ADMIN
   ADMIN: [
     'dashboard_view', 'dashboard_kpi', 'dashboard_revenue',
     'operations_view', 'operations_machines', 'operations_products',
