@@ -1,6 +1,6 @@
 /**
  * AddLaundromatDialog.tsx
- * 
+ *
  * Modal dialog for adding a new laundromat (site) to the system.
  * Features:
  * - Optional SIRET lookup to auto-fill company information (French business ID)
@@ -64,26 +64,26 @@ const initialFormData: LaundryFormData = {
 // ============================================================================
 
 export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundromatDialogProps) {
-  const { t } = useTranslation(['app', 'errors']);
-  
+  const { t } = useTranslation(["app", "errors"]);
+
   // Form data state
   const [formData, setFormData] = useState<LaundryFormData>(initialFormData);
-  
+
   // SIRET lookup states
   const [isLoadingSiret, setIsLoadingSiret] = useState(false);
   const [siretInfo, setSiretInfo] = useState<string | null>(null);
   const [siretSuccess, setSiretSuccess] = useState(false);
-  
+
   // Form submission state
   const [isCreating, setIsCreating] = useState(false);
-  
+
   // Selection states
   const [citySelected, setCitySelected] = useState(false);
   const [addressSelected, setAddressSelected] = useState(false);
-  
+
   // Fallback mode when API fails
   const [fallbackMode, setFallbackMode] = useState(false);
-  
+
   // Validation errors
   const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
 
@@ -102,8 +102,8 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
   // Field update handler
   const updateField = useCallback(<K extends keyof LaundryFormData>(field: K, value: LaundryFormData[K]) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setValidationErrors(prev => ({ ...prev, [field]: false }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setValidationErrors((prev) => ({ ...prev, [field]: false }));
   }, []);
 
   // -------------------------------------------------------------------------
@@ -111,8 +111,8 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   // -------------------------------------------------------------------------
 
   const handleSiretChange = async (value: string) => {
-    const cleanValue = value.replace(/\D/g, '').slice(0, 14);
-    updateField('siret', cleanValue);
+    const cleanValue = value.replace(/\D/g, "").slice(0, 14);
+    updateField("siret", cleanValue);
     setSiretInfo(null);
     setSiretSuccess(false);
 
@@ -131,22 +131,22 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-from-siret?siret=${siret}`,
         {
           headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-        }
+        },
       );
 
       const result = await response.json();
 
       if (!response.ok) {
-        setSiretInfo(t('app:newLaundry.siretUnavailable'));
+        setSiretInfo(t("app:newLaundry.siretUnavailable"));
         return;
       }
 
       const postalCode = result.postal_code || "";
       const departmentCode = deriveDepartmentCode(postalCode);
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         name: result.trade_name || result.company_name || prev.name,
         address: result.address_line1 || prev.address,
@@ -155,7 +155,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
         departmentCode: departmentCode,
         nafCode: result.naf_code || prev.nafCode,
       }));
-      
+
       // Mark as selected if we got valid location data
       if (result.city && result.postal_code) {
         setCitySelected(true);
@@ -163,15 +163,15 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
           setAddressSelected(true);
         }
       }
-      
+
       setSiretSuccess(true);
       toast({
-        title: t('app:newLaundry.siretSuccess'),
-        description: t('app:newLaundry.siretSuccessDescription'),
+        title: t("app:newLaundry.siretSuccess"),
+        description: t("app:newLaundry.siretSuccessDescription"),
       });
     } catch (error) {
       console.error("Error fetching SIRET data:", error);
-      setSiretInfo(t('app:newLaundry.siretUnavailable'));
+      setSiretInfo(t("app:newLaundry.siretUnavailable"));
     } finally {
       setIsLoadingSiret(false);
     }
@@ -182,33 +182,36 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   // -------------------------------------------------------------------------
 
   const handleCitySelect = useCallback((result: CitySearchResult) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       city: result.city,
       postalCode: result.postalCode,
       departmentCode: result.departmentCode,
     }));
     setCitySelected(true);
-    setValidationErrors(prev => ({
+    setValidationErrors((prev) => ({
       ...prev,
       city: false,
       postalCode: false,
     }));
   }, []);
 
-  const handleCityInputChange = useCallback((value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      city: value,
-      // In fallback mode, keep postal code if manually entered
-      postalCode: fallbackMode ? prev.postalCode : "",
-      departmentCode: fallbackMode ? prev.departmentCode : "",
-    }));
-    if (!fallbackMode) {
-      setCitySelected(false);
-    }
-    setValidationErrors(prev => ({ ...prev, city: false }));
-  }, [fallbackMode]);
+  const handleCityInputChange = useCallback(
+    (value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        city: value,
+        // In fallback mode, keep postal code if manually entered
+        postalCode: fallbackMode ? prev.postalCode : "",
+        departmentCode: fallbackMode ? prev.departmentCode : "",
+      }));
+      if (!fallbackMode) {
+        setCitySelected(false);
+      }
+      setValidationErrors((prev) => ({ ...prev, city: false }));
+    },
+    [fallbackMode],
+  );
 
   // -------------------------------------------------------------------------
   // ADDRESS SELECTION HANDLER (Optional enhancement)
@@ -216,8 +219,8 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
   const handleAddressSelect = useCallback((result: AddressSearchResult) => {
     const departmentCode = deriveDepartmentCode(result.postalCode);
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
       address: result.address,
       city: result.city,
@@ -227,7 +230,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     }));
     setAddressSelected(true);
     setCitySelected(true);
-    setValidationErrors(prev => ({
+    setValidationErrors((prev) => ({
       ...prev,
       address: false,
       city: false,
@@ -235,25 +238,28 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     }));
   }, []);
 
-  const handleAddressInputChange = useCallback((value: string) => {
-    updateField('address', value);
-    setAddressSelected(false);
-  }, [updateField]);
+  const handleAddressInputChange = useCallback(
+    (value: string) => {
+      updateField("address", value);
+      setAddressSelected(false);
+    },
+    [updateField],
+  );
 
   // -------------------------------------------------------------------------
   // POSTAL CODE MANUAL HANDLER (Fallback mode)
   // -------------------------------------------------------------------------
 
   const handlePostalCodeChange = useCallback((value: string) => {
-    const cleanValue = value.replace(/\D/g, '').slice(0, 5);
+    const cleanValue = value.replace(/\D/g, "").slice(0, 5);
     const departmentCode = deriveDepartmentCode(cleanValue);
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
       postalCode: cleanValue,
       departmentCode: departmentCode,
     }));
-    setValidationErrors(prev => ({ ...prev, postalCode: false }));
+    setValidationErrors((prev) => ({ ...prev, postalCode: false }));
   }, []);
 
   // -------------------------------------------------------------------------
@@ -261,7 +267,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   // -------------------------------------------------------------------------
 
   const handleCountryChange = useCallback((value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       country: value,
       address: "",
@@ -278,7 +284,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   const unlockCity = () => {
     setCitySelected(false);
     setAddressSelected(false);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       city: "",
       postalCode: "",
@@ -292,25 +298,25 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
   const validateForm = (): boolean => {
     const errors: Record<string, boolean> = {};
-    
+
     if (!formData.name.trim()) {
       errors.name = true;
     }
-    
+
     if (!formData.country) {
       errors.country = true;
     }
-    
+
     if (!formData.city.trim()) {
       errors.city = true;
     }
-    
+
     // In normal mode, city must be selected from suggestions
     // In fallback mode, we also need postal code
     if (!fallbackMode && !citySelected) {
       errors.city = true;
     }
-    
+
     if (!formData.postalCode.trim()) {
       errors.postalCode = true;
     }
@@ -327,14 +333,14 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     if (!validateForm()) {
       if (!citySelected && !fallbackMode && formData.city.trim()) {
         toast({
-          title: t('app:newLaundry.validationError'),
-          description: t('app:newLaundry.cityMustBeSelected'),
+          title: t("app:newLaundry.validationError"),
+          description: t("app:newLaundry.cityMustBeSelected"),
           variant: "destructive",
         });
       } else {
         toast({
-          title: t('app:newLaundry.validationError'),
-          description: t('app:newLaundry.validationErrorDescription'),
+          title: t("app:newLaundry.validationError"),
+          description: t("app:newLaundry.validationErrorDescription"),
           variant: "destructive",
         });
       }
@@ -344,32 +350,29 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     setIsCreating(true);
     try {
       // Server-side postal code validation
-      const { data: validation, error: validationError } = await supabase.functions.invoke(
-        'validate-postal-code',
-        {
-          body: {
-            postalCode: formData.postalCode,
-            countryCode: formData.country,
-            city: formData.city,
-          },
-        }
-      );
+      const { data: validation, error: validationError } = await supabase.functions.invoke("validate-postal-code", {
+        body: {
+          postalCode: formData.postalCode,
+          countryCode: formData.country,
+          city: formData.city,
+        },
+      });
 
       if (validationError) {
-        console.warn('[AddLaundromatDialog] Postal code validation failed, proceeding anyway:', validationError);
+        console.warn("[AddLaundromatDialog] Postal code validation failed, proceeding anyway:", validationError);
         // Continue even if validation service fails - don't block user
       } else if (validation && !validation.valid) {
         toast({
-          title: t('app:newLaundry.validationError'),
-          description: validation.error || t('app:newLaundry.invalidPostalCode'),
+          title: t("app:newLaundry.validationError"),
+          description: validation.error || t("app:newLaundry.invalidPostalCode"),
           variant: "destructive",
         });
-        setValidationErrors(prev => ({ ...prev, postalCode: true }));
+        setValidationErrors((prev) => ({ ...prev, postalCode: true }));
         setIsCreating(false);
         return;
-      } else if (validation?.departmentCode && formData.country === 'FR') {
+      } else if (validation?.departmentCode && formData.country === "FR") {
         // Update department code from server validation
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           departmentCode: validation.departmentCode,
         }));
@@ -398,25 +401,24 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('app:newLaundry.title')}</DialogTitle>
+          <DialogTitle>{t("app:newLaundry.title")}</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
-          
           {/* SIRET Field (Optional - France only) */}
           {isFrance && (
             <div className="space-y-2">
               <Label htmlFor="siret" className="flex items-center gap-2">
-                {t('app:newLaundry.siretLabel')}
+                {t("app:newLaundry.siretLabel")}
                 <span className="text-xs text-muted-foreground font-normal">
-                  ({t('app:newLaundry.optional')} - {t('app:newLaundry.siretHelp')})
+                  ({t("app:newLaundry.optional")} - {t("app:newLaundry.siretHelp")})
                 </span>
               </Label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="siret"
-                  placeholder={t('app:newLaundry.siretPlaceholder')}
+                  placeholder={t("app:newLaundry.siretPlaceholder")}
                   value={formData.siret}
                   onChange={(e) => handleSiretChange(e.target.value)}
                   className={cn("pl-10 pr-10", siretSuccess && "border-green-500")}
@@ -437,7 +439,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
               )}
               {formData.siret.length > 0 && formData.siret.length < 14 && (
                 <p className="text-xs text-muted-foreground">
-                  {14 - formData.siret.length} {t('app:newLaundry.digitsRemaining')}
+                  {14 - formData.siret.length} {t("app:newLaundry.digitsRemaining")}
                 </p>
               )}
             </div>
@@ -445,48 +447,42 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
           {/* Name Field (Required) */}
           <div className="space-y-2">
-            <Label htmlFor="laundry-name">
-              {t('app:newLaundry.nameLabel')} *
-            </Label>
+            <Label htmlFor="laundry-name">{t("app:newLaundry.nameLabel")} *</Label>
             <Input
               id="laundry-name"
-              placeholder={t('app:newLaundry.namePlaceholder')}
+              placeholder={t("app:newLaundry.namePlaceholder")}
               value={formData.name}
-              onChange={(e) => updateField('name', e.target.value)}
+              onChange={(e) => updateField("name", e.target.value)}
               className={cn(validationErrors.name && "border-destructive")}
             />
           </div>
 
           {/* Country Field (Required) */}
           <div className="space-y-2">
-            <Label>{t('app:newLaundry.countryLabel')} *</Label>
+            <Label>{t("app:newLaundry.countryLabel")} *</Label>
             <CountrySelect
               value={formData.country}
               onChange={handleCountryChange}
               disabled={citySelected}
               hasError={validationErrors.country}
             />
-            {citySelected && (
-              <p className="text-xs text-muted-foreground">
-                {t('app:newLaundry.countryLocked')}
-              </p>
-            )}
+            {citySelected && <p className="text-xs text-muted-foreground">{t("app:newLaundry.countryLocked")}</p>}
           </div>
 
           {/* City Field (Required) - Autocomplete for all countries */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
-              {t('app:newLaundry.cityLabel')} *
-              {citySelected && <Lock className="h-3 w-3 text-muted-foreground" />}
+              {t("app:newLaundry.cityLabel")} *{citySelected && <Lock className="h-3 w-3 text-muted-foreground" />}
             </Label>
             <CityAutocomplete
               value={formData.city}
               countryCode={formData.country}
               onSelect={handleCitySelect}
               onChange={handleCityInputChange}
-              placeholder={isFrance 
-                ? t('app:newLaundry.citySearchPlaceholder') 
-                : t('app:newLaundry.citySearchPlaceholderInternational')
+              placeholder={
+                isFrance
+                  ? t("app:newLaundry.citySearchPlaceholder")
+                  : t("app:newLaundry.citySearchPlaceholderInternational")
               }
               disabled={citySelected}
               hasError={validationErrors.city}
@@ -496,34 +492,27 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             {citySelected && !fallbackMode && (
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Lock className="h-3 w-3" />
-                {t('app:newLaundry.cityLocked')}
-                {' '}
-                <button
-                  type="button"
-                  onClick={unlockCity}
-                  className="text-primary hover:underline"
-                >
-                  {t('app:newLaundry.unlock')}
+                {t("app:newLaundry.cityLocked")}{" "}
+                <button type="button" onClick={unlockCity} className="text-primary hover:underline">
+                  {t("app:newLaundry.unlock")}
                 </button>
               </p>
             )}
             {!citySelected && !fallbackMode && (
-              <p className="text-xs text-muted-foreground">
-                {t('app:newLaundry.cityHelp')}
-              </p>
+              <p className="text-xs text-muted-foreground">{t("app:newLaundry.cityHelp")}</p>
             )}
           </div>
 
           {/* Postal Code Field */}
           <div className="space-y-2">
             <Label htmlFor="postal-code" className="flex items-center gap-2">
-              {t('app:newLaundry.postalCodeLabel')} *
+              {t("app:newLaundry.postalCodeLabel")} *
               {citySelected && !fallbackMode && <Lock className="h-3 w-3 text-muted-foreground" />}
             </Label>
             {fallbackMode || !isFrance ? (
               <Input
                 id="postal-code"
-                placeholder={t('app:newLaundry.postalCodeEnterPlaceholder')}
+                placeholder={t("app:newLaundry.postalCodeEnterPlaceholder")}
                 value={formData.postalCode}
                 onChange={(e) => handlePostalCodeChange(e.target.value)}
                 className={cn(validationErrors.postalCode && "border-destructive")}
@@ -532,13 +521,10 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             ) : (
               <Input
                 id="postal-code"
-                placeholder={t('app:newLaundry.postalCodePlaceholder')}
+                placeholder={t("app:newLaundry.postalCodePlaceholder")}
                 value={formData.postalCode}
                 readOnly
-                className={cn(
-                  "bg-muted/50",
-                  validationErrors.postalCode && "border-destructive"
-                )}
+                className={cn("bg-muted/50", validationErrors.postalCode && "border-destructive")}
               />
             )}
           </div>
@@ -547,12 +533,12 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
           {isFrance && (
             <div className="space-y-2">
               <Label htmlFor="department" className="flex items-center gap-2">
-                {t('app:newLaundry.departmentLabel')}
+                {t("app:newLaundry.departmentLabel")}
                 <Lock className="h-3 w-3 text-muted-foreground" />
               </Label>
               <Input
                 id="department"
-                placeholder={t('app:newLaundry.departmentPlaceholder')}
+                placeholder={t("app:newLaundry.departmentPlaceholder")}
                 value={formData.departmentCode}
                 readOnly
                 className="bg-muted/50"
@@ -563,10 +549,8 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
           {/* Address Field (Optional but recommended) */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
-              {t('app:newLaundry.addressLabel')}
-              <span className="text-xs text-muted-foreground font-normal">
-                ({t('app:newLaundry.optional')})
-              </span>
+              {t("app:newLaundry.addressLabel")}
+              <span className="text-xs text-muted-foreground font-normal">({t("app:newLaundry.optional")})</span>
             </Label>
             {isFrance && !fallbackMode ? (
               <>
@@ -574,7 +558,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
                   value={formData.address}
                   onSelect={handleAddressSelect}
                   onChange={handleAddressInputChange}
-                  placeholder={t('app:newLaundry.addressPlaceholder')}
+                  placeholder={t("app:newLaundry.addressPlaceholder")}
                   disabled={addressSelected}
                   countryCode={formData.country}
                   hasError={validationErrors.address}
@@ -582,26 +566,25 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
                 {addressSelected && (
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <Lock className="h-3 w-3" />
-                    {t('app:newLaundry.addressLocked')}
-                    {' '}
+                    {t("app:newLaundry.addressLocked")}{" "}
                     <button
                       type="button"
                       onClick={() => {
                         setAddressSelected(false);
-                        updateField('address', '');
+                        updateField("address", "");
                       }}
                       className="text-primary hover:underline"
                     >
-                      {t('app:newLaundry.unlock')}
+                      {t("app:newLaundry.unlock")}
                     </button>
                   </p>
                 )}
               </>
             ) : (
               <Input
-                placeholder={t('app:newLaundry.addressManualPlaceholder')}
+                placeholder={t("app:newLaundry.addressManualPlaceholder")}
                 value={formData.address}
-                onChange={(e) => updateField('address', e.target.value)}
+                onChange={(e) => updateField("address", e.target.value)}
               />
             )}
           </div>
@@ -610,15 +593,10 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
           {isFrance && (
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
-                {t('app:newLaundry.nafLabel')}
-                <span className="text-xs text-muted-foreground font-normal">
-                  ({t('app:newLaundry.optional')})
-                </span>
+                {t("app:newLaundry.nafLabel")}
+                <span className="text-xs text-muted-foreground font-normal">({t("app:newLaundry.optional")})</span>
               </Label>
-              <NafCodeSelect
-                value={formData.nafCode}
-                onChange={(code) => updateField('nafCode', code)}
-              />
+              <NafCodeSelect value={formData.nafCode} onChange={(code) => updateField("nafCode", code)} />
             </div>
           )}
 
@@ -626,7 +604,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
           {fallbackMode && (
             <div className="flex items-start gap-2 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 p-3 rounded-md">
               <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>{t('app:newLaundry.fallbackModeNotice')}</span>
+              <span>{t("app:newLaundry.fallbackModeNotice")}</span>
             </div>
           )}
 
@@ -635,10 +613,10 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             {isCreating ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {t('app:newLaundry.creating')}
+                {t("app:newLaundry.creating")}
               </>
             ) : (
-              t('app:newLaundry.submit')
+              t("app:newLaundry.submit")
             )}
           </Button>
         </div>
