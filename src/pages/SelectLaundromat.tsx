@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Building2, MapPin, ChevronRight, Plus, Settings, Loader2, Home, Files, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { MultiCSVImportWizard } from "@/components/operations/multi-csv/MultiCSV
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useLogout } from "@/hooks/useLogout";
 import { useTranslation } from "react-i18next";
+import { usePlatformRole } from "@/hooks/usePlatformRole";
 
 interface LaundryFormData {
   name: string;
@@ -29,8 +30,22 @@ export default function SelectLaundromat() {
   const { logout } = useLogout();
   const { sites, isLoading, createSite, fetchSites } = useSites();
   const { createDemoSite, isCreatingDemo } = useDemoMode();
+  const { isPlatformAdmin, isPlatformBilling, isLoading: platformRoleLoading } = usePlatformRole();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMultiImportOpen, setIsMultiImportOpen] = useState(false);
+
+  // Platform admin bypass - redirect to admin dashboard
+  useEffect(() => {
+    if (platformRoleLoading) return;
+    
+    if (isPlatformAdmin) {
+      navigate("/admin", { replace: true });
+      return;
+    }
+    if (isPlatformBilling) {
+      navigate("/admin/sales", { replace: true });
+    }
+  }, [platformRoleLoading, isPlatformAdmin, isPlatformBilling, navigate]);
 
   const handleSelectLaundromat = (siteId: string) => {
     localStorage.setItem("selectedSiteId", siteId);
@@ -67,13 +82,25 @@ export default function SelectLaundromat() {
     setIsDialogOpen(true);
   };
 
-  // Loading state
-  if (isLoading) {
+  // Loading state (includes platform role check)
+  if (isLoading || platformRoleLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-muted-foreground">{t('app:selectLaundromat.loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Platform admin bypass - don't render while redirecting
+  if (isPlatformAdmin || isPlatformBilling) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Redirection vers l'administration...</p>
         </div>
       </div>
     );

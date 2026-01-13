@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useDemoMode } from "@/hooks/useDemoMode";
+import { usePlatformRole } from "@/hooks/usePlatformRole";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { useTranslation } from "react-i18next";
 import { 
@@ -31,6 +32,7 @@ export default function Login() {
   const { toast } = useToast();
   const { signIn, signInWithGoogle, isAuthenticated, loading } = useAuth();
   const { createDemoSite, isCreatingDemo } = useDemoMode();
+  const { isPlatformAdmin, isPlatformBilling, isLoading: platformRoleLoading } = usePlatformRole();
 
   // Check if demo mode is requested
   const isDemoRequested = searchParams.get("demo") === "true";
@@ -57,10 +59,24 @@ export default function Login() {
 
   // Handle demo mode for authenticated users
   useEffect(() => {
-    if (!loading && isAuthenticated && isDemoRequested) {
+    // Wait for both auth and platform role to be loaded
+    if (loading || platformRoleLoading) return;
+    
+    if (isAuthenticated && isDemoRequested) {
       // User is authenticated and wants demo - create demo site
       createDemoSite();
-    } else if (!loading && isAuthenticated && !isDemoRequested) {
+    } else if (isAuthenticated && !isDemoRequested) {
+      // Platform admin bypass - redirect to admin dashboard
+      if (isPlatformAdmin) {
+        navigate("/admin");
+        return;
+      }
+      // Platform billing bypass - redirect to sales dashboard
+      if (isPlatformBilling) {
+        navigate("/admin/sales");
+        return;
+      }
+      
       // Normal authenticated flow
       if (redirectUrl) {
         navigate(redirectUrl);
@@ -70,7 +86,7 @@ export default function Login() {
         navigate("/select-laundromat");
       }
     }
-  }, [loading, isAuthenticated, navigate, redirectUrl, isSimulatorMode, isDemoRequested, createDemoSite]);
+  }, [loading, platformRoleLoading, isAuthenticated, navigate, redirectUrl, isSimulatorMode, isDemoRequested, createDemoSite, isPlatformAdmin, isPlatformBilling]);
 
   const isRateLimited = cooldownSeconds > 0;
 
@@ -132,7 +148,7 @@ export default function Login() {
   const currentMode = isSimulatorMode ? 'simulator' : 'exploitant';
 
   // Don't render if already authenticated and loading, or if demo is being created
-  if (loading || (isAuthenticated && isDemoRequested) || isCreatingDemo) {
+  if (loading || platformRoleLoading || (isAuthenticated && isDemoRequested) || isCreatingDemo) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
