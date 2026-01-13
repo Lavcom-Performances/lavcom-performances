@@ -764,6 +764,39 @@ export type Database = {
         }
         Relationships: []
       }
+      orphan_page_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          route_path: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          route_path: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          route_path?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       permission_audit_logs: {
         Row: {
           action: string
