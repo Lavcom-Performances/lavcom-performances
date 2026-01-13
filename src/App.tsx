@@ -49,6 +49,7 @@ import PlatformSalesOverview from "./pages/platform/PlatformSalesOverview";
 import PlatformSalesInvoices from "./pages/platform/PlatformSalesInvoices";
 import PlatformSalesProducts from "./pages/platform/PlatformSalesProducts";
 import PlatformSalesReports from "./pages/platform/PlatformSalesReports";
+import PlatformOrphanPages from "./pages/platform/PlatformOrphanPages";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
@@ -152,6 +153,7 @@ const App = () => (
             <Route path="/admin/system-status" element={<AdminSystemStatus />} />
             <Route path="/admin/expert-requests" element={<AdminExpertRequests />} />
             <Route path="/admin/cron-logs" element={<AdminCronLogs />} />
+            <Route path="/admin/orphan-pages" element={<PlatformOrphanPages />} />
           </Route>
           
           {/* Platform Admin billing routes (require billing access) */}
