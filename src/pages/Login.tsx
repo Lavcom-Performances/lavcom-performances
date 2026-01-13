@@ -123,11 +123,10 @@ export default function Login() {
    * Priority order:
    * 1. Wait for auth and platform role to load
    * 2. If demo requested → create demo site
-   * 3. If platform admin → redirect to /admin (bypass laundromat selection)
-   * 4. If platform billing → redirect to /admin/sales
-   * 5. If redirect URL provided → use it
-   * 6. If simulator mode → go to /simulation
-   * 7. Default → go to /select-laundromat
+   * 3. Read context from localStorage (lavcom_app_context)
+   * 4. If context=="platform" AND isPlatformAdmin → /admin or lastAdminPath
+   * 5. If context=="platform" AND isPlatformBilling → /admin/sales
+   * 6. Else → SaaS: lastSaasPath OR /select-laundromat
    */
   useEffect(() => {
     // Wait for both auth and platform role to be loaded
@@ -137,26 +136,62 @@ export default function Login() {
       // User is authenticated and wants demo - create demo site
       createDemoSite();
     } else if (isAuthenticated && !isDemoRequested) {
-      // PLATFORM ADMIN BYPASS: Redirect admins directly to admin dashboard
-      // This prevents admins from being forced through laundromat selection
-      if (isPlatformAdmin) {
-        navigate("/admin");
-        return;
-      }
+      // Import context helpers
+      const getStoredContext = () => {
+        try {
+          const value = localStorage.getItem('lavcom_app_context');
+          if (value === 'platform' || value === 'saas') return value;
+          return null;
+        } catch {
+          return null;
+        }
+      };
       
-      // Platform billing users go to sales dashboard
-      if (isPlatformBilling) {
-        navigate("/admin/sales");
-        return;
-      }
+      const getLastPath = (type: 'admin' | 'saas') => {
+        try {
+          const key = type === 'admin' ? 'lavcom_last_admin_path' : 'lavcom_last_saas_path';
+          return localStorage.getItem(key);
+        } catch {
+          return null;
+        }
+      };
       
-      // Normal authenticated flow for regular users
+      // Get stored context or default based on role
+      const storedContext = getStoredContext();
+      const defaultContext = (isPlatformAdmin || isPlatformBilling) ? 'platform' : 'saas';
+      const effectiveContext = storedContext || defaultContext;
+      
+      // Validate: can only be in platform context if user has platform role
+      const context = effectiveContext === 'platform' && !isPlatformAdmin && !isPlatformBilling 
+        ? 'saas' 
+        : effectiveContext;
+      
+      // Handle redirect URL first (e.g., from ?redirect=)
       if (redirectUrl) {
         navigate(redirectUrl);
-      } else if (isSimulatorMode) {
+        return;
+      }
+      
+      // Platform context routing
+      if (context === 'platform') {
+        if (isPlatformAdmin) {
+          const lastAdminPath = getLastPath('admin');
+          navigate(lastAdminPath || '/admin');
+          return;
+        }
+        if (isPlatformBilling) {
+          const lastAdminPath = getLastPath('admin');
+          navigate(lastAdminPath?.startsWith('/admin/sales') ? lastAdminPath : '/admin/sales');
+          return;
+        }
+      }
+      
+      // SaaS context routing
+      if (isSimulatorMode) {
         navigate("/simulation");
       } else {
-        navigate("/select-laundromat");
+        const lastSaasPath = getLastPath('saas');
+        navigate(lastSaasPath || "/select-laundromat");
       }
     }
   }, [
