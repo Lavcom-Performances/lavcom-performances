@@ -134,9 +134,10 @@ export function AppSidebar({
   ];
 
   // Company admin navigation (NOT platform admin - these are for company_admin/super_admin organization roles)
+  // IMPORTANT: Never link to /admin/* routes from here - those are platform-only
   const companyAdminNavigation = [
     { name: t('app:nav.team'), href: "/team", icon: Users, permission: "MANAGE_USERS" },
-    { name: "Gestion des rôles", href: "/roles-management", icon: ShieldCheck, permission: "MANAGE_USERS" },
+    { name: t('app:nav.roles', 'Gestion des rôles'), href: "/company-roles", icon: ShieldCheck, permission: "MANAGE_USERS" },
     { name: t('app:nav.settings'), href: "/settings", icon: Settings, permission: "READ_VIEWS" },
     { name: t('app:nav.security'), href: "/settings?tab=security", icon: Shield, permission: "MANAGE_OPTIONS" },
   ];

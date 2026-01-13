@@ -4,6 +4,7 @@ import { Shield, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePlatformRole } from "@/hooks/usePlatformRole";
 import { getLastAdminPath, getLastSaasPath, isAdminPath } from "@/lib/navigation/lastPaths";
+import { setAppContext } from "@/lib/navigation/appContext";
 import {
   Tooltip,
   TooltipContent,
@@ -16,17 +17,17 @@ interface AdminSwitchButtonProps {
 }
 
 /**
- * Button that allows super_admin users to switch between SaaS and Admin modes.
- * Only visible for users with isPlatformSuperAdmin role.
+ * Button that allows platform users (super_admin, admin, billing) to switch between SaaS and Admin modes.
+ * Only visible for users with platform roles.
  */
 export function AdminSwitchButton({ variant = "header" }: AdminSwitchButtonProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation(['app']);
-  const { isPlatformSuperAdmin, isLoading } = usePlatformRole();
+  const { isPlatformAdmin, isPlatformBilling, isLoading } = usePlatformRole();
 
-  // Don't show if not a super admin or still loading
-  if (isLoading || !isPlatformSuperAdmin) {
+  // Don't show if not a platform user or still loading
+  if (isLoading || (!isPlatformAdmin && !isPlatformBilling)) {
     return null;
   }
 
@@ -34,19 +35,27 @@ export function AdminSwitchButton({ variant = "header" }: AdminSwitchButtonProps
 
   const handleSwitch = () => {
     if (isInAdmin) {
-      // Switch to SaaS - go to last SaaS path or default
+      // Switch to SaaS - update context and navigate
+      setAppContext('saas');
       const lastPath = getLastSaasPath();
       navigate(lastPath || '/select-laundromat');
     } else {
-      // Switch to Admin - go to last admin path or default
+      // Switch to Admin - update context and navigate
+      setAppContext('platform');
       const lastPath = getLastAdminPath();
-      navigate(lastPath || '/admin');
+      
+      // Billing-only users go to /admin/sales
+      if (!isPlatformAdmin && isPlatformBilling) {
+        navigate(lastPath?.startsWith('/admin/sales') ? lastPath : '/admin/sales');
+      } else {
+        navigate(lastPath || '/admin');
+      }
     }
   };
 
   const buttonLabel = isInAdmin 
-    ? t('app:platformAdmin.switchToSaas')
-    : t('app:platformAdmin.switchToAdmin');
+    ? t('app:platformAdmin.switchToSaas', 'Laveries')
+    : t('app:platformAdmin.switchToAdmin', 'Administration');
 
   const Icon = isInAdmin ? Building2 : Shield;
 
