@@ -12,7 +12,7 @@ import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { SEOHead } from "@/components/seo/SEOHead";
 
 export default function GoalsSettingsPage() {
-  const { t } = useTranslation("app");
+  const { t } = useTranslation(["app", "common"]);
   const navigate = useNavigate();
   const { currentSiteId } = useCurrentSite();
   const { goals, upsertGoals, isLoading } = useUserGoals(currentSiteId);
@@ -85,7 +85,7 @@ export default function GoalsSettingsPage() {
       <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
         <Button 
           variant="ghost" 
-          onClick={() => navigate("/dashboard")} 
+          onClick={() => navigate(-1)}
           className="mb-4 gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -157,7 +157,7 @@ export default function GoalsSettingsPage() {
                 disabled={upsertGoals.isPending}
               >
                 <Save className="h-4 w-4" />
-                {upsertGoals.isPending ? t("common.saving") : t("common.save")}
+                {upsertGoals.isPending ? t("common:saving") : t("common:save")}
               </Button>
             </form>
           </CardContent>
