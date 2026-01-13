@@ -206,12 +206,40 @@ export default function PlatformOrphanPages() {
     fetchReviews();
   }, []);
 
+  const sendFlaggedNotification = async (path: string, pageName: string, notes: string | null) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const response = await supabase.functions.invoke('send-orphan-page-alert', {
+        body: {
+          route_path: path,
+          page_name: pageName,
+          notes: notes || undefined,
+          flagged_by_email: user?.email,
+        },
+      });
+
+      if (response.error) {
+        console.error('Failed to send flagged notification:', response.error);
+        toast.error('Review saved but notification failed');
+      } else {
+        toast.success('Review saved & team notified');
+      }
+    } catch (error) {
+      console.error('Failed to send flagged notification:', error);
+    }
+  };
+
   const handleSaveReview = async (path: string) => {
     if (!user) return;
     setIsSaving(true);
     
     try {
       const existingReview = reviews[path];
+      const wasNotFlagged = !existingReview || existingReview.status !== 'flagged';
+      const isNowFlagged = editStatus === 'flagged';
+      const orphanPage = orphanPages.find(p => p.path === path);
       
       if (existingReview) {
         // Update existing review
@@ -259,7 +287,13 @@ export default function PlatformOrphanPages() {
         }));
       }
       
-      toast.success('Review saved');
+      // Send notification if newly flagged
+      if (wasNotFlagged && isNowFlagged && orphanPage) {
+        await sendFlaggedNotification(path, orphanPage.name, editNotes || null);
+      } else {
+        toast.success('Review saved');
+      }
+      
       setEditingPath(null);
     } catch (error) {
       console.error('Failed to save review:', error);
