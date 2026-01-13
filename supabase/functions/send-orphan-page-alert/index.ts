@@ -3,6 +3,7 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const slackWebhookUrl = Deno.env.get("SLACK_WEBHOOK_URL");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -131,6 +132,87 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("[send-orphan-page-alert] Email sent:", emailResponse);
 
+    // Send Slack notification if webhook is configured
+    let slackResponse = null;
+    if (slackWebhookUrl) {
+      try {
+        const slackPayload = {
+          blocks: [
+            {
+              type: "header",
+              text: {
+                type: "plain_text",
+                text: "🚩 Orphan Page Flagged for Cleanup",
+                emoji: true,
+              },
+            },
+            {
+              type: "section",
+              fields: [
+                {
+                  type: "mrkdwn",
+                  text: `*Page Name:*\n${page_name}`,
+                },
+                {
+                  type: "mrkdwn",
+                  text: `*Route Path:*\n\`${route_path}\``,
+                },
+              ],
+            },
+            ...(flagged_by_email
+              ? [
+                  {
+                    type: "section",
+                    fields: [
+                      {
+                        type: "mrkdwn",
+                        text: `*Flagged By:*\n${flagged_by_email}`,
+                      },
+                      {
+                        type: "mrkdwn",
+                        text: `*Flagged At:*\n${new Date().toLocaleString("fr-FR", { timeZone: "Europe/Paris" })}`,
+                      },
+                    ],
+                  },
+                ]
+              : []),
+            ...(notes
+              ? [
+                  {
+                    type: "section",
+                    text: {
+                      type: "mrkdwn",
+                      text: `*Notes:*\n${notes}`,
+                    },
+                  },
+                ]
+              : []),
+            {
+              type: "context",
+              elements: [
+                {
+                  type: "mrkdwn",
+                  text: "⚠️ This page has been flagged for cleanup by a platform administrator.",
+                },
+              ],
+            },
+          ],
+        };
+
+        const slackRes = await fetch(slackWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(slackPayload),
+        });
+
+        slackResponse = { ok: slackRes.ok, status: slackRes.status };
+        console.log("[send-orphan-page-alert] Slack sent:", slackResponse);
+      } catch (slackError: any) {
+        console.error("[send-orphan-page-alert] Slack error:", slackError);
+        slackResponse = { error: slackError?.message || "Unknown error" };
+      }
+    }
+
     // Log to alert_history
     await supabaseAdmin.from("alert_history").insert({
       alert_type: "orphan_page_flagged",
@@ -138,11 +220,11 @@ const handler = async (req: Request): Promise<Response> => {
       title: `Orphan Page Flagged: ${page_name}`,
       message: `Route ${route_path} was flagged for cleanup${notes ? `: ${notes}` : ''}`,
       recipient: toEmail,
-      channel: "email",
-      details: { route_path, page_name, notes, flagged_by: user.id },
+      channel: slackWebhookUrl ? "email+slack" : "email",
+      details: { route_path, page_name, notes, flagged_by: user.id, slack_sent: !!slackResponse?.ok },
     });
 
-    return new Response(JSON.stringify({ success: true, emailResponse }), {
+    return new Response(JSON.stringify({ success: true, emailResponse, slackResponse }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
