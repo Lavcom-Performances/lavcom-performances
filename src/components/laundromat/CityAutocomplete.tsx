@@ -239,7 +239,7 @@ export function CityAutocomplete({
     return dedupedResults;
   }, [countryCode]);
 
-  const searchCities = useCallback(async (query: string) => {
+  const searchCities = useCallback(async (query: string, retryCount = 0) => {
     if (query.length < 2) {
       setResults([]);
       return;
@@ -264,19 +264,35 @@ export function CityAutocomplete({
       }
 
       setResults(formattedResults);
+      // Reset fallback mode on success if it was previously enabled
+      if (onFallbackModeChange && formattedResults.length > 0) {
+        onFallbackModeChange(false);
+      }
     } catch (err: any) {
       if (err.name === 'AbortError') return;
       
       console.error("[CityAutocomplete] API error:", err);
+      
+      // Retry once before enabling fallback mode
+      if (retryCount < 1) {
+        console.log("[CityAutocomplete] Retrying...");
+        setTimeout(() => {
+          searchCities(query, retryCount + 1);
+        }, 500);
+        return;
+      }
+      
       setApiError(true);
       setResults([]);
       
-      // Enable fallback mode
+      // Enable fallback mode only after retry failed
       if (onFallbackModeChange) {
         onFallbackModeChange(true);
       }
     } finally {
-      setIsLoading(false);
+      if (retryCount >= 1 || !abortControllerRef.current?.signal.aborted) {
+        setIsLoading(false);
+      }
     }
   }, [isFrance, searchFrenchCities, searchNominatimCities, onFallbackModeChange]);
 
@@ -334,6 +350,17 @@ export function CityAutocomplete({
     ? t('app:newLaundry.citySearchPlaceholder', 'Rechercher une ville...')
     : t('app:newLaundry.citySearchPlaceholderInternational', 'Search for a city...');
 
+  // Retry search when in fallback mode
+  const handleRetrySearch = useCallback(() => {
+    if (onFallbackModeChange) {
+      onFallbackModeChange(false);
+    }
+    setApiError(false);
+    if (inputValue.length >= 2) {
+      searchCities(inputValue, 0);
+    }
+  }, [onFallbackModeChange, inputValue, searchCities]);
+
   // Fallback mode - simple text input
   if (fallbackMode) {
     return (
@@ -348,9 +375,16 @@ export function CityAutocomplete({
             disabled={disabled}
           />
         </div>
-        <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
+        <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-2">
           <AlertCircle className="h-3 w-3" />
-          {t('app:newLaundry.manualInputMode', 'Mode saisie manuelle (service indisponible)')}
+          <span>{t('app:newLaundry.manualInputMode', 'Mode saisie manuelle (service indisponible)')}</span>
+          <button 
+            type="button" 
+            onClick={handleRetrySearch}
+            className="text-primary hover:underline font-medium"
+          >
+            {t('app:newLaundry.retrySearch', 'Réessayer')}
+          </button>
         </p>
       </div>
     );

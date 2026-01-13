@@ -1280,7 +1280,8 @@
     "manualInputMode": "Modo de entrada manual (servicio no disponible)",
     "apiUnavailable": "Servicio no disponible, entrada manual habilitada",
     "fallbackModeNotice": "El servicio de búsqueda no está disponible temporalmente. Por favor, introduzca la información manualmente.",
-    "invalidPostalCode": "El código postal no es válido para este país."
+    "invalidPostalCode": "El código postal no es válido para este país.",
+    "retrySearch": "Reintentar"
   },
   "platformAdmin": {
     "title": "Administración",

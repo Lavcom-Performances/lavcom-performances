@@ -1280,7 +1280,8 @@
     "manualInputMode": "Manueller Eingabemodus (Dienst nicht verfügbar)",
     "apiUnavailable": "Dienst nicht verfügbar, manuelle Eingabe aktiviert",
     "fallbackModeNotice": "Der Suchdienst ist vorübergehend nicht verfügbar. Bitte geben Sie die Informationen manuell ein.",
-    "invalidPostalCode": "Die Postleitzahl ist für dieses Land ungültig."
+    "invalidPostalCode": "Die Postleitzahl ist für dieses Land ungültig.",
+    "retrySearch": "Erneut versuchen"
   },
   "platformAdmin": {
     "title": "Verwaltung",

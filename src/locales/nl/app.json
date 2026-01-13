@@ -1280,7 +1280,8 @@
     "manualInputMode": "Handmatige invoermodus (dienst niet beschikbaar)",
     "apiUnavailable": "Dienst niet beschikbaar, handmatige invoer ingeschakeld",
     "fallbackModeNotice": "De zoekdienst is tijdelijk niet beschikbaar. Voer de informatie handmatig in.",
-    "invalidPostalCode": "De postcode is ongeldig voor dit land."
+    "invalidPostalCode": "De postcode is ongeldig voor dit land.",
+    "retrySearch": "Opnieuw proberen"
   },
   "platformAdmin": {
     "title": "Administratie",
