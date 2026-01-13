@@ -1520,7 +1520,8 @@
     "manualInputMode": "Mode saisie manuelle (service indisponible)",
     "apiUnavailable": "Service indisponible, saisie manuelle activée",
     "fallbackModeNotice": "Le service de recherche est temporairement indisponible. Veuillez saisir les informations manuellement.",
-    "invalidPostalCode": "Le code postal est invalide pour ce pays."
+    "invalidPostalCode": "Le code postal est invalide pour ce pays.",
+    "retrySearch": "Réessayer"
   },
   "platformAdmin": {
     "title": "Administration",
