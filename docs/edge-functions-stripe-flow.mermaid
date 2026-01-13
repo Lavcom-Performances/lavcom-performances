@@ -1,0 +1,22 @@
+%%{init: {'theme': 'base'}}%%
+flowchart TD
+    STRIPE[Stripe] -->|Webhook| WH[stripe-webhook]
+    WH -->|checkout.session.completed| CS{Type de session?}
+    CS -->|simulator| SIM[handleSimulatorPurchase]
+    CS -->|addon| ADDON[handleAddonPurchase]
+    CS -->|subscription| SUB[handleSubscriptionCheckout]
+    
+    WH -->|subscription.updated| UPDATE[handleSubscriptionUpdate]
+    WH -->|subscription.deleted| DELETE[handleSubscriptionDeleted]
+    WH -->|invoice.paid| INV[upsertStripeInvoice]
+    WH -->|invoice.payment_failed| FAIL[handlePaymentFailed]
+    
+    SIM --> PROFILES[(profiles)]
+    SIM --> PURCHASES[(purchases)]
+    
+    SUB --> SUBSCRIPTIONS[(subscriptions)]
+    SUB -->|success| EMAIL[send-subscription-email]
+    
+    INV --> STRIPE_INV[(stripe_invoices)]
+    
+    WH -->|Error| ALERT[send-system-alert]

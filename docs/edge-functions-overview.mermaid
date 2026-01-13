@@ -1,0 +1,97 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#3b82f6'}}}%%
+graph TB
+    subgraph Frontend["Frontend React"]
+        APP[Application Web]
+    end
+    
+    subgraph Auth["Edge Functions - Authentication"]
+        AUTH_SIGNUP[auth-signup]
+        LOG_LOGIN[log-login]
+        LOG_ADMIN_LOGIN[log-admin-login]
+        CLEANUP[cleanup-login-logs]
+    end
+    
+    subgraph Payment["Edge Functions - Payment & Billing"]
+        STRIPE_WH[stripe-webhook]
+        CREATE_SUB[create-subscription-checkout]
+        CREATE_SIM[create-simulator-checkout]
+        CREATE_ADDON[create-addon-checkout]
+        CUSTOMER_PORTAL[customer-portal]
+        LIST_INVOICES[list-invoices]
+    end
+    
+    subgraph Analytics["Edge Functions - Analytics"]
+        COMPUTE[compute-analytics]
+        COMPUTE_CRON[compute-analytics-cron]
+    end
+    
+    subgraph Team["Edge Functions - Team Management"]
+        SEND_INVITE[send-team-invitation]
+        ACCEPT_INVITE[accept-invitation]
+        VALIDATE_INVITE[validate-invitation]
+        SEND_ADMIN_INVITE[send-admin-invitation]
+    end
+    
+    subgraph Notifications["Edge Functions - Notifications"]
+        TRIAL_REMINDER[trial-reminder]
+        SEND_SUB_EMAIL[send-subscription-email]
+        CHECK_CHURN[check-churn-alert]
+        SEND_CRON_ALERT[send-cron-alert]
+        SEND_SYSTEM_ALERT[send-system-alert]
+        SEND_PERMISSION[send-permission-alert]
+        SEND_SUSPICIOUS[send-suspicious-login-alert]
+    end
+    
+    subgraph Features["Edge Functions - User Features"]
+        SUPPORT_CHAT[support-chatbot]
+        SEND_CONTACT[send-contact]
+        SUBMIT_EXPERT[submit-expert-request]
+        CREATE_DEMO[create-demo]
+        IMPORT_CHECK[import-csv-check]
+    end
+    
+    subgraph Utilities["Edge Functions - Utilities"]
+        FETCH_SIRET[fetch-from-siret]
+        VALIDATE_POSTAL[validate-postal-code]
+        CSP_REPORT[csp-report]
+        CHECK_WEBHOOK[check-webhook-status]
+        SMOKE_TESTS[smoke-tests-cron]
+    end
+    
+    subgraph External["Services Externes"]
+        STRIPE[Stripe API]
+        RESEND[Resend Email]
+        SIRENE[API SIRENE]
+        LOVABLE_AI[Lovable AI Gateway]
+        SLACK[Slack Webhooks]
+    end
+    
+    subgraph Database["Database"]
+        SUPABASE[(Supabase PostgreSQL)]
+    end
+    
+    APP --> AUTH_SIGNUP
+    APP --> LOG_LOGIN
+    APP --> CREATE_SUB
+    APP --> SUPPORT_CHAT
+    APP --> SEND_CONTACT
+    APP --> IMPORT_CHECK
+    
+    STRIPE --> STRIPE_WH
+    STRIPE_WH --> SEND_SUB_EMAIL
+    
+    COMPUTE_CRON --> COMPUTE
+    COMPUTE_CRON --> SEND_CRON_ALERT
+    
+    SEND_INVITE --> RESEND
+    TRIAL_REMINDER --> RESEND
+    CHECK_CHURN --> RESEND
+    SEND_CRON_ALERT --> RESEND
+    SEND_CRON_ALERT --> SLACK
+    
+    SUPPORT_CHAT --> LOVABLE_AI
+    FETCH_SIRET --> SIRENE
+    
+    AUTH_SIGNUP --> SUPABASE
+    COMPUTE --> SUPABASE
+    CREATE_SUB --> STRIPE

@@ -1,0 +1,26 @@
+%%{init: {'theme': 'base'}}%%
+graph LR
+    subgraph Called["Appelées par d autres functions"]
+        SEND_SUB_EMAIL[send-subscription-email]
+        SEND_SYSTEM_ALERT[send-system-alert]
+        SEND_CRON_ALERT[send-cron-alert]
+        COMPUTE[compute-analytics]
+    end
+    
+    subgraph Callers["Functions appelantes"]
+        STRIPE_WH[stripe-webhook]
+        COMPUTE_CRON[compute-analytics-cron]
+        IMPORT_CHECK[import-csv-check]
+        LOG_ADMIN[log-admin-login]
+    end
+    
+    STRIPE_WH --> SEND_SUB_EMAIL
+    STRIPE_WH --> SEND_SYSTEM_ALERT
+    
+    COMPUTE_CRON --> COMPUTE
+    COMPUTE_CRON --> SEND_CRON_ALERT
+    COMPUTE_CRON --> SEND_SYSTEM_ALERT
+    
+    IMPORT_CHECK --> SEND_SYSTEM_ALERT
+    
+    LOG_ADMIN --> SEND_SUSPICIOUS[send-suspicious-login-alert]
