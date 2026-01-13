@@ -6,13 +6,15 @@ import { cn } from "@/lib/utils";
 
 const ROLE_ICONS: Record<UserRole, typeof Shield> = {
   SUPER_ADMIN: ShieldCheck,
-  ADMIN: Shield,
+  COMPANY_ADMIN: Shield,
+  ADMIN: Shield, // Legacy
   CHECKER: Eye,
   USER: User,
   GUEST: UserX,
 };
 
-const ROLE_ORDER: UserRole[] = ['SUPER_ADMIN', 'ADMIN', 'CHECKER', 'USER', 'GUEST'];
+// Only show non-deprecated roles in UI
+const ROLE_ORDER: UserRole[] = ['SUPER_ADMIN', 'COMPANY_ADMIN', 'CHECKER', 'USER', 'GUEST'];
 
 export function RolesInfoCard() {
   return (

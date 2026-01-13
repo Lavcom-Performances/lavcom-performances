@@ -133,11 +133,10 @@ export function AppSidebar({
     { name: t('app:nav.simulation'), href: "/simulation", icon: Calculator, permission: "READ_VIEWS" },
   ];
 
-  const adminNavigation = [
-    { name: t('app:nav.users'), href: "/admin/users", icon: Users, permission: "MANAGE_USERS" },
-    { name: "Demandes experts", href: "/admin/expert-requests", icon: Handshake, permission: "MANAGE_USERS" },
+  // Company admin navigation (NOT platform admin - these are for company_admin/super_admin organization roles)
+  const companyAdminNavigation = [
+    { name: t('app:nav.team'), href: "/team", icon: Users, permission: "MANAGE_USERS" },
     { name: "Gestion des rôles", href: "/roles-management", icon: ShieldCheck, permission: "MANAGE_USERS" },
-    { name: "Statut système", href: "/admin/status", icon: AlertTriangle, permission: "MANAGE_USERS" },
     { name: t('app:nav.settings'), href: "/settings", icon: Settings, permission: "READ_VIEWS" },
     { name: t('app:nav.security'), href: "/settings?tab=security", icon: Shield, permission: "MANAGE_OPTIONS" },
   ];
@@ -411,8 +410,8 @@ export function AppSidebar({
         })}
 
 
-        {/* Admin Section */}
-        {(userRole === "SUPER_ADMIN" || userRole === "ADMIN") && (
+        {/* Company Admin Section - NOT platform admin, these are company_admin/super_admin organization roles */}
+        {(userRole === "SUPER_ADMIN" || userRole === "COMPANY_ADMIN" || userRole === "ADMIN") && (
           <>
             {!collapsed && (
               <div className="pt-4 pb-2">
@@ -421,10 +420,10 @@ export function AppSidebar({
                 </span>
               </div>
             )}
-            {adminNavigation.map((item, index) => {
+            {companyAdminNavigation.map((item, index) => {
               if (!hasPermission(item.permission)) return null;
               const isActive = location.pathname === item.href;
-              const visibleIndex = adminNavigation.slice(0, index).filter(n => hasPermission(n.permission)).length;
+              const visibleIndex = companyAdminNavigation.slice(0, index).filter(n => hasPermission(n.permission)).length;
               
               return (
                 <NavLink

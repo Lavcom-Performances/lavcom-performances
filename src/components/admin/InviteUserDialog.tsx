@@ -21,7 +21,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
-type AppRole = 'super_admin' | 'admin' | 'checker' | 'user' | 'guest';
+// NOTE: 'admin' is DEPRECATED - use 'company_admin' for new invitations
+type AppRole = 'super_admin' | 'company_admin' | 'admin' | 'checker' | 'user' | 'guest';
 
 interface InviteUserDialogProps {
   open: boolean;
@@ -31,7 +32,7 @@ interface InviteUserDialogProps {
 }
 
 const ROLE_OPTIONS: { value: AppRole; label: string; description: string }[] = [
-  { value: 'admin', label: 'Administrateur', description: 'Gestion complète des utilisateurs et paramètres' },
+  { value: 'company_admin', label: 'Administrateur', description: 'Gestion complète des utilisateurs et paramètres' },
   { value: 'checker', label: 'Contrôleur', description: 'Consultation et vérification des données' },
   { value: 'user', label: 'Utilisateur', description: 'Accès en lecture aux laveries assignées' },
   { value: 'guest', label: 'Invité', description: 'Accès limité en lecture seule' },
