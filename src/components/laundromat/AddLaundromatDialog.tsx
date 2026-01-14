@@ -504,88 +504,10 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
             {citySelected && <p className="text-xs text-muted-foreground">{t("app:newLaundry.countryLocked")}</p>}
           </div>
 
-          {/* City Field (Required) - Autocomplete for all countries */}
+          {/* Address Field (Required - autocomplete fills other fields) */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
-              {t("app:newLaundry.cityLabel")} *{citySelected && <Lock className="h-3 w-3 text-muted-foreground" />}
-            </Label>
-            <CityAutocomplete
-              value={formData.city}
-              countryCode={formData.country}
-              onSelect={handleCitySelect}
-              onChange={handleCityInputChange}
-              placeholder={
-                isFrance
-                  ? t("app:newLaundry.citySearchPlaceholder")
-                  : t("app:newLaundry.citySearchPlaceholderInternational")
-              }
-              disabled={citySelected}
-              hasError={validationErrors.city}
-              fallbackMode={fallbackMode}
-              onFallbackModeChange={setFallbackMode}
-            />
-            {citySelected && !fallbackMode && (
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Lock className="h-3 w-3" />
-                {t("app:newLaundry.cityLocked")}{" "}
-                <button type="button" onClick={unlockCity} className="text-primary hover:underline">
-                  {t("app:newLaundry.unlock")}
-                </button>
-              </p>
-            )}
-            {!citySelected && !fallbackMode && (
-              <p className="text-xs text-muted-foreground">{t("app:newLaundry.cityHelp")}</p>
-            )}
-          </div>
-
-          {/* Postal Code Field */}
-          <div className="space-y-2">
-            <Label htmlFor="postal-code" className="flex items-center gap-2">
-              {t("app:newLaundry.postalCodeLabel")} *
-              {citySelected && !fallbackMode && <Lock className="h-3 w-3 text-muted-foreground" />}
-            </Label>
-            {fallbackMode || !isFrance ? (
-              <Input
-                id="postal-code"
-                placeholder={t("app:newLaundry.postalCodeEnterPlaceholder")}
-                value={formData.postalCode}
-                onChange={(e) => handlePostalCodeChange(e.target.value)}
-                className={cn(validationErrors.postalCode && "border-destructive")}
-                maxLength={5}
-              />
-            ) : (
-              <Input
-                id="postal-code"
-                placeholder={t("app:newLaundry.postalCodePlaceholder")}
-                value={formData.postalCode}
-                readOnly
-                className={cn("bg-muted/50", validationErrors.postalCode && "border-destructive")}
-              />
-            )}
-          </div>
-
-          {/* Department Field (France only) */}
-          {isFrance && (
-            <div className="space-y-2">
-              <Label htmlFor="department" className="flex items-center gap-2">
-                {t("app:newLaundry.departmentLabel")}
-                <Lock className="h-3 w-3 text-muted-foreground" />
-              </Label>
-              <Input
-                id="department"
-                placeholder={t("app:newLaundry.departmentPlaceholder")}
-                value={formData.departmentCode}
-                readOnly
-                className="bg-muted/50"
-              />
-            </div>
-          )}
-
-          {/* Address Field (Optional but recommended) */}
-          <div className="space-y-2">
-            <Label className="flex items-center gap-2">
-              {t("app:newLaundry.addressLabel")}
-              <span className="text-xs text-muted-foreground font-normal">({t("app:newLaundry.optional")})</span>
+              {t("app:newLaundry.addressLabel")} *
             </Label>
             {isFrance && !fallbackMode ? (
               <>
@@ -624,6 +546,86 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
               />
             )}
           </div>
+
+          {/* Postal Code Field */}
+          <div className="space-y-2">
+            <Label htmlFor="postal-code" className="flex items-center gap-2">
+              {t("app:newLaundry.postalCodeLabel")} *
+              {addressSelected && !fallbackMode && <Lock className="h-3 w-3 text-muted-foreground" />}
+            </Label>
+            {fallbackMode || !isFrance ? (
+              <Input
+                id="postal-code"
+                placeholder={t("app:newLaundry.postalCodeEnterPlaceholder")}
+                value={formData.postalCode}
+                onChange={(e) => handlePostalCodeChange(e.target.value)}
+                className={cn(validationErrors.postalCode && "border-destructive")}
+                maxLength={5}
+              />
+            ) : (
+              <Input
+                id="postal-code"
+                placeholder={t("app:newLaundry.postalCodePlaceholder")}
+                value={formData.postalCode}
+                readOnly={addressSelected}
+                className={cn(addressSelected && "bg-muted/50", validationErrors.postalCode && "border-destructive")}
+                onChange={(e) => !addressSelected && handlePostalCodeChange(e.target.value)}
+              />
+            )}
+          </div>
+
+          {/* City Field */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              {t("app:newLaundry.cityLabel")} *
+              {addressSelected && !fallbackMode && <Lock className="h-3 w-3 text-muted-foreground" />}
+            </Label>
+            {fallbackMode || !isFrance ? (
+              <CityAutocomplete
+                value={formData.city}
+                countryCode={formData.country}
+                onSelect={handleCitySelect}
+                onChange={handleCityInputChange}
+                placeholder={
+                  isFrance
+                    ? t("app:newLaundry.citySearchPlaceholder")
+                    : t("app:newLaundry.citySearchPlaceholderInternational")
+                }
+                disabled={citySelected}
+                hasError={validationErrors.city}
+                fallbackMode={fallbackMode}
+                onFallbackModeChange={setFallbackMode}
+              />
+            ) : (
+              <Input
+                placeholder={t("app:newLaundry.cityPlaceholder")}
+                value={formData.city}
+                readOnly={addressSelected}
+                className={cn(addressSelected && "bg-muted/50", validationErrors.city && "border-destructive")}
+                onChange={(e) => !addressSelected && handleCityInputChange(e.target.value)}
+              />
+            )}
+            {!addressSelected && !fallbackMode && isFrance && (
+              <p className="text-xs text-muted-foreground">{t("app:newLaundry.addressHelp")}</p>
+            )}
+          </div>
+
+          {/* Department Field (France only) */}
+          {isFrance && (
+            <div className="space-y-2">
+              <Label htmlFor="department" className="flex items-center gap-2">
+                {t("app:newLaundry.departmentLabel")}
+                <Lock className="h-3 w-3 text-muted-foreground" />
+              </Label>
+              <Input
+                id="department"
+                placeholder={t("app:newLaundry.departmentPlaceholder")}
+                value={formData.departmentCode}
+                readOnly
+                className="bg-muted/50"
+              />
+            </div>
+          )}
 
           {/* NAF Code Field (Optional - France only) */}
           {isFrance && (
