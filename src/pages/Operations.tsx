@@ -923,6 +923,7 @@ export default function Operations() {
                 <TableHead className="text-right">Rendu</TableHead>
                 <TableHead className="text-right">Prix CB</TableHead>
                 <TableHead className="text-right">Prix ESP</TableHead>
+                <TableHead className="text-right">Prix FI</TableHead>
                 <TableHead className="text-center w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -931,6 +932,7 @@ export default function Operations() {
                 const modeUpper = op.payment_mode?.toUpperCase();
                 const isCB = modeUpper === "CB";
                 const isESP = modeUpper === "ESP";
+                const isFI = modeUpper === "FI" || modeUpper === "FIDELITE";
                 const price = op.price_eur ?? Number(op.amount);
                 const isNotCounted = isOperationNotCounted(op);
                 
@@ -964,6 +966,9 @@ export default function Operations() {
                     </TableCell>
                     <TableCell className="text-right">
                       {formatCurrency(isESP ? op.price_esp : null)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(isFI ? price : null)}
                     </TableCell>
                     <TableCell className="text-center">
                       {isNotCounted && (
