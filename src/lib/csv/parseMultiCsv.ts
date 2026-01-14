@@ -177,11 +177,19 @@ export function parseMultiCsvFile(
   filename: string,
   content: string
 ): MultiCsvParsedRow[] {
+  console.log('[CSV-DEBUG] === Parsing file:', filename, '===');
+  console.log('[CSV-DEBUG] Content length:', content.length, 'chars');
+  console.log('[CSV-DEBUG] First 500 chars:', content.substring(0, 500));
+  
   const normalized = normalizeCsvText(content);
   const separator = detectSeparator(normalized);
+  console.log('[CSV-DEBUG] Detected separator:', JSON.stringify(separator));
+  
   const lines = normalized.split('\n').filter(line => line.trim());
+  console.log('[CSV-DEBUG] Total lines after normalization:', lines.length);
   
   if (lines.length === 0) {
+    console.log('[CSV-DEBUG] ERROR: No lines found after normalization');
     return [];
   }
   
@@ -189,18 +197,34 @@ export function parseMultiCsvFile(
   let headerIndex = 0;
   for (let i = 0; i < Math.min(10, lines.length); i++) {
     const fields = parseCsvLine(lines[i], separator);
+    console.log(`[CSV-DEBUG] Line ${i} fields (${fields.length}):`, fields.slice(0, 5));
     // A header line typically has multiple fields with text
     if (fields.length >= 3 && fields.some(f => /[a-zA-Z]/.test(f))) {
       headerIndex = i;
+      console.log('[CSV-DEBUG] Header found at line:', headerIndex);
       break;
     }
   }
   
-  const headers = parseCsvLine(lines[headerIndex], separator).map(h => h.toLowerCase().trim());
+  const headerFields = parseCsvLine(lines[headerIndex], separator);
+  const headers = headerFields.map(h => h.toLowerCase().trim());
+  console.log('[CSV-DEBUG] Headers (raw):', headerFields);
+  console.log('[CSV-DEBUG] Headers (normalized):', headers);
+  
+  // Check WiLine detection
+  const isWiLine = isWiLineFormat(headerFields);
+  console.log('[CSV-DEBUG] isWiLineFormat check:', isWiLine);
+  console.log('[CSV-DEBUG] WiLine required headers check:');
+  console.log('  - Has "n° transaction":', headers.some(h => h.includes('n° transaction') || h.includes('n transaction')));
+  console.log('  - Has "carte bancaire":', headers.some(h => h.includes('carte bancaire')));
+  console.log('  - Has "fidélitée":', headers.some(h => h.includes('fidélitée') || h.includes('fidelite') || h.includes('fidélité')));
+  
   const columnMap = detectColumnMapping(headers);
+  console.log('[CSV-DEBUG] Column mapping:', columnMap);
   
   // Detect CSV format
   const detectedFormat = detectCsvFormat(headers, columnMap);
+  console.log('[CSV-DEBUG] *** DETECTED FORMAT:', detectedFormat, '***');
   
   // For LM Control format: if we have "date/heure" in first column and empty second column,
   // the second column is the time column (hh:mm:ss format)
@@ -210,7 +234,13 @@ export function parseMultiCsvFile(
   
   // Route to WiLine parser if detected
   if (detectedFormat === 'wiline') {
-    return parseWiLineCsvFile(filename, content);
+    console.log('[CSV-DEBUG] Routing to WiLine parser');
+    const wilineRows = parseWiLineCsvFile(filename, content);
+    console.log('[CSV-DEBUG] WiLine parser returned', wilineRows.length, 'rows');
+    if (wilineRows.length > 0) {
+      console.log('[CSV-DEBUG] First WiLine row:', wilineRows[0]);
+    }
+    return wilineRows;
   }
   
   const isEventsFormat = detectedFormat === 'events';
