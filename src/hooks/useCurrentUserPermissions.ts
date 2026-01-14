@@ -187,19 +187,30 @@ export function useCurrentUserPermissions() {
 
   // Calculate effective permissions
   const permissions = useMemo((): CurrentUserPermissions => {
+    // Debug logging
+    console.log('[Permissions Debug]', {
+      userRole: userRole?.role,
+      isSiteOwner,
+      orgLoading,
+      sitesLoading,
+      hasOrganization: !!organization,
+    });
+
+    // Super admins always have all permissions (check first)
+    if (userRole?.role === 'super_admin') {
+      console.log('[Permissions Debug] Granting super_admin permissions');
+      return DEFAULT_PERMISSIONS_BY_ROLE.super_admin;
+    }
+
     // If user has no organization role but owns sites, grant owner permissions
     // This handles the case of first-time users who created sites before organizations
     if (!userRole && isSiteOwner) {
+      console.log('[Permissions Debug] Granting owner permissions (no org role but owns sites)');
       return DEFAULT_PERMISSIONS_BY_ROLE.owner;
     }
 
     const role = userRole?.role || 'guest';
     const defaultPerms = DEFAULT_PERMISSIONS_BY_ROLE[role] || DEFAULT_PERMISSIONS_BY_ROLE.guest;
-
-    // Super admins always have all permissions
-    if (role === 'super_admin') {
-      return DEFAULT_PERMISSIONS_BY_ROLE.super_admin;
-    }
 
     // For other roles, merge with custom permissions (custom takes precedence)
     if (customPermissions) {
@@ -210,7 +221,7 @@ export function useCurrentUserPermissions() {
     }
 
     return defaultPerms;
-  }, [userRole, customPermissions, isSiteOwner]);
+  }, [userRole, customPermissions, isSiteOwner, organization, orgLoading, sitesLoading]);
 
   // Helper functions for common permission checks
   const canImport = useMemo(() => permissions.can_import_data, [permissions]);
