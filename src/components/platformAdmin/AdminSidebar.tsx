@@ -36,6 +36,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePlatformRole } from "@/hooks/usePlatformRole";
 import { useLogout } from "@/hooks/useLogout";
 import { getLastSaasPath } from "@/lib/navigation/lastPaths";
+import { setAppContext } from "@/lib/navigation/appContext";
 import { useState, useEffect } from "react";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 
@@ -101,6 +102,8 @@ export function AdminSidebar({
   };
 
   const handleSwitchToSaas = () => {
+    // Set context to saas so SelectLaundromat doesn't redirect back to admin
+    setAppContext('saas');
     const lastPath = getLastSaasPath();
     navigate(lastPath || '/select-laundromat');
   };

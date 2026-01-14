@@ -13,6 +13,7 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { useLogout } from "@/hooks/useLogout";
 import { useTranslation } from "react-i18next";
 import { usePlatformRole } from "@/hooks/usePlatformRole";
+import { getAppContext } from "@/lib/navigation/appContext";
 
 interface LaundryFormData {
   name: string;
@@ -34,10 +35,18 @@ export default function SelectLaundromat() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMultiImportOpen, setIsMultiImportOpen] = useState(false);
 
-  // Platform admin bypass - redirect to admin dashboard
+  // Platform admin bypass - ONLY redirect if context is "platform" (not explicitly "saas")
   useEffect(() => {
     if (platformRoleLoading) return;
     
+    // Check the explicit context - if user chose "saas", let them stay
+    const appContext = getAppContext();
+    if (appContext === 'saas') {
+      // User explicitly chose SaaS context, don't redirect
+      return;
+    }
+    
+    // Only redirect to admin if no context is set (default for platform users)
     if (isPlatformAdmin) {
       navigate("/admin", { replace: true });
       return;
@@ -94,8 +103,11 @@ export default function SelectLaundromat() {
     );
   }
 
-  // Platform admin bypass - don't render while redirecting
-  if (isPlatformAdmin || isPlatformBilling) {
+  // Platform admin bypass - only show redirect message if actually redirecting
+  const appContext = getAppContext();
+  const shouldRedirectToAdmin = (isPlatformAdmin || isPlatformBilling) && appContext !== 'saas';
+  
+  if (shouldRedirectToAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="flex flex-col items-center gap-4">

@@ -10,6 +10,7 @@ import { LanguageSelector } from "@/components/ui/language-selector";
 import { AdminSidebar } from "./AdminSidebar";
 import { useAuth } from "@/hooks/useAuth";
 import { getLastSaasPath } from "@/lib/navigation/lastPaths";
+import { setAppContext } from "@/lib/navigation/appContext";
 
 export function AdminMobileHeader() {
   const [open, setOpen] = useState(false);
@@ -24,6 +25,8 @@ export function AdminMobileHeader() {
   };
 
   const handleSwitchToSaas = () => {
+    // Set context to saas so SelectLaundromat doesn't redirect back to admin
+    setAppContext('saas');
     const lastPath = getLastSaasPath();
     navigate(lastPath || '/select-laundromat');
   };
