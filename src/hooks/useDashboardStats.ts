@@ -12,7 +12,7 @@ import {
   isWithinInterval,
   startOfDay,
 } from "date-fns";
-import { filterRevenueOperations, isCBPayment, isESPPayment } from "@/lib/operationFilters";
+import { filterRevenueOperations, isCBPayment, isESPPayment, isFIPayment } from "@/lib/operationFilters";
 
 export interface DashboardStats {
   // Revenue KPIs
@@ -385,20 +385,30 @@ function computeStatsFromOperations(operations: any[], dateRange?: DateRange): D
   // Also exclude rechargements from previous period
   const previousOps = filterRevenueOperations(previousDateFilteredOps);
 
-  // Revenue calculations
-  const totalRevenue = filteredOps.reduce((sum, op) => sum + Number(op.amount), 0);
+  // Revenue calculations - CA = CB + ESP only (FI excluded)
   const revenueByCard = filteredOps
     .filter(isCBPayment)
     .reduce((sum, op) => sum + Number(op.amount), 0);
   const revenueByCash = filteredOps
     .filter(isESPPayment)
     .reduce((sum, op) => sum + Number(op.amount), 0);
-  const totalTransactions = filteredOps.length;
+  // Total revenue = CB + ESP only (FI is excluded from CA)
+  const totalRevenue = revenueByCard + revenueByCash;
+  // Count only CB/ESP transactions for revenue metrics
+  const revenueOps = filteredOps.filter(op => isCBPayment(op) || isESPPayment(op));
+  const totalTransactions = revenueOps.length;
   const averageBasket = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
 
-  // Trends
-  const previousRevenue = previousOps.reduce((sum, op) => sum + Number(op.amount), 0);
-  const previousTransactions = previousOps.length;
+  // Trends - also exclude FI from previous period
+  const previousRevenueByCard = previousOps
+    .filter(isCBPayment)
+    .reduce((sum, op) => sum + Number(op.amount), 0);
+  const previousRevenueByCash = previousOps
+    .filter(isESPPayment)
+    .reduce((sum, op) => sum + Number(op.amount), 0);
+  const previousRevenue = previousRevenueByCard + previousRevenueByCash;
+  const previousRevenueOps = previousOps.filter(op => isCBPayment(op) || isESPPayment(op));
+  const previousTransactions = previousRevenueOps.length;
   const revenueTrend = previousRevenue > 0 
     ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 
     : 0;
@@ -406,15 +416,18 @@ function computeStatsFromOperations(operations: any[], dateRange?: DateRange): D
     ? ((totalTransactions - previousTransactions) / previousTransactions) * 100 
     : 0;
 
-  // Monthly data - also filter rechargements
+  // Monthly data - filter rechargements AND exclude FI from CA
   const monthlyData = MONTHS.map((month, index) => {
     const monthOps = filterRevenueOperations(operations.filter(op => {
       const opDate = parseISO(op.operation_date);
       return opDate.getMonth() === index;
     }));
+    // CA = CB + ESP only
+    const monthCB = monthOps.filter(isCBPayment).reduce((sum, op) => sum + Number(op.amount), 0);
+    const monthESP = monthOps.filter(isESPPayment).reduce((sum, op) => sum + Number(op.amount), 0);
     return {
       month,
-      revenue: monthOps.reduce((sum, op) => sum + Number(op.amount), 0),
+      revenue: monthCB + monthESP,
     };
   });
 
@@ -425,32 +438,39 @@ function computeStatsFromOperations(operations: any[], dateRange?: DateRange): D
     days.slice(-7).forEach(day => {
       const dayStr = format(day, "yyyy-MM-dd");
       const dayOps = filteredOps.filter(op => op.operation_date === dayStr);
+      // CA = CB + ESP only
+      const dayCB = dayOps.filter(isCBPayment).reduce((sum, op) => sum + Number(op.amount), 0);
+      const dayESP = dayOps.filter(isESPPayment).reduce((sum, op) => sum + Number(op.amount), 0);
       dailyData.push({
         date: format(day, "dd/MM"),
-        revenue: dayOps.reduce((sum, op) => sum + Number(op.amount), 0),
+        revenue: dayCB + dayESP,
       });
     });
   }
 
-  // Payment distribution
-  const loyaltyRevenue = totalRevenue - revenueByCard - revenueByCash;
+  // Payment distribution - FI is tracked but NOT part of CA
+  const fiRevenue = filteredOps.filter(isFIPayment).reduce((sum, op) => sum + Number(op.amount), 0);
   const paymentData = [
     { name: "Carte bancaire", value: Math.round(revenueByCard), color: "#BED7F0" },
     { name: "Espèces", value: Math.round(revenueByCash), color: "hsl(72, 80%, 43%)" },
-    { name: "Fidélité", value: Math.round(loyaltyRevenue > 0 ? loyaltyRevenue : 0), color: "#D9D9D9" },
+    { name: "Fidélité", value: Math.round(fiRevenue), color: "#D9D9D9" },
   ];
 
-  // Weekday performance
+  // Weekday performance - CA = CB + ESP only
   const weekdayData = WEEKDAYS.slice(1).concat(WEEKDAYS[0]).map(day => {
     const dayIndex = WEEKDAYS.indexOf(day);
     const dayOps = filteredOps.filter(op => {
       const opDate = parseISO(op.operation_date);
       return getDay(opDate) === dayIndex;
     });
+    // Revenue = CB + ESP only
+    const dayCB = dayOps.filter(isCBPayment).reduce((sum, op) => sum + Number(op.amount), 0);
+    const dayESP = dayOps.filter(isESPPayment).reduce((sum, op) => sum + Number(op.amount), 0);
+    const revenueOnlyOps = dayOps.filter(op => isCBPayment(op) || isESPPayment(op));
     return {
       day,
-      revenue: dayOps.reduce((sum, op) => sum + Number(op.amount), 0),
-      transactions: dayOps.length,
+      revenue: dayCB + dayESP,
+      transactions: revenueOnlyOps.length,
     };
   });
 
@@ -472,15 +492,18 @@ function computeStatsFromOperations(operations: any[], dateRange?: DateRange): D
     }
   });
 
-  // Machine performance
+  // Machine performance - CA = CB + ESP only
   const machineStats: Record<string, { revenue: number; cycles: number }> = {};
   filteredOps.forEach(op => {
     if (op.machine) {
       if (!machineStats[op.machine]) {
         machineStats[op.machine] = { revenue: 0, cycles: 0 };
       }
-      machineStats[op.machine].revenue += Number(op.amount);
-      machineStats[op.machine].cycles += 1;
+      // Only count CB/ESP as revenue
+      if (isCBPayment(op) || isESPPayment(op)) {
+        machineStats[op.machine].revenue += Number(op.amount);
+        machineStats[op.machine].cycles += 1;
+      }
     }
   });
 
