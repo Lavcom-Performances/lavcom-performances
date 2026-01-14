@@ -7,40 +7,66 @@
  * - CA = uniquement lignes Type="Démarrage"
  * - Fidélité (FI) = consommation de crédit, compte dans CA, stocké en PRIX_FI
  * - Produits: Lessive/Détachant/Assouplissant → types dédiés
+ * 
+ * FORMAT WILINE:
+ * Headers: Date/Heure(Europe/Paris);;Type;Selection;Description;Pièce;Billet;Carte bancaire;Fidélitée;Prix;Insérée;Rendue
+ * - Col 0: Date (DD/MM/YYYY 00:00)
+ * - Col 1: Time (HH:MM:SS) - empty header
+ * - Col 2: Type (Démarrage/Annulé)
+ * - Col 3: Selection (machine number)
+ * - Col 4: Description (machine name like "Séchoirs 13kg")
+ * - Col 5-8: Payment methods (Pièce, Billet, Carte bancaire, Fidélitée)
+ * - Col 9: Prix (in EUROS with comma decimal)
+ * - Col 10: Insérée
+ * - Col 11: Rendue
  */
 
 import { normalizeCsvText, detectSeparator, parseCsvLine } from './normalizeCsvText';
 import { MultiCsvParsedRow } from './multiCsvTypes';
 import { NormalizedPaymentMode } from './normalizePaymentMode';
 
-// WiLine specific headers
-const WILINE_REQUIRED_HEADERS = ['n° transaction', 'carte bancaire', 'fidélitée'];
+// WiLine specific headers - checking for key columns
+const WILINE_HEADER_PATTERNS = [
+  /date.*heure/i,
+  /carte\s*bancaire/i,
+  /fid[ée]lit[ée]e?/i,
+];
 
 /**
  * Detect if headers are WiLine format
+ * WiLine has: Date/Heure;;Type;Selection;Description;Pièce;Billet;Carte bancaire;Fidélitée;Prix;Insérée;Rendue
  */
 export function isWiLineFormat(headers: string[]): boolean {
-  const headersLower = headers.map(h => h.toLowerCase().trim());
-  return WILINE_REQUIRED_HEADERS.every(req => 
-    headersLower.some(h => h.includes(req.replace('é', 'e')) || h.includes(req))
-  );
+  const headersStr = headers.join('|').toLowerCase();
+  
+  // Check for characteristic WiLine patterns
+  const hasDateHeure = /date.*heure/i.test(headersStr);
+  const hasCarteBancaire = /carte\s*bancaire/i.test(headersStr);
+  const hasFidelite = /fid[ée]lit[ée]e?/i.test(headersStr);
+  const hasPrix = headers.some(h => h.toLowerCase().trim() === 'prix');
+  const hasInseree = /ins[ée]r[ée]e/i.test(headersStr);
+  
+  console.log('[WiLine-DEBUG] Format detection:', { hasDateHeure, hasCarteBancaire, hasFidelite, hasPrix, hasInseree });
+  
+  // WiLine format requires at least 3 of these patterns
+  const matches = [hasDateHeure, hasCarteBancaire, hasFidelite, hasPrix, hasInseree].filter(Boolean).length;
+  return matches >= 4;
 }
 
 /**
  * WiLine column mapping
  */
 interface WiLineColumnMap {
-  transactionNo: number;
-  dateTime: number;
-  type: number;
-  details: number;
-  selection: number;
-  description: number;
+  date: number;        // Date/Heure column (date part)
+  time: number;        // Time column (empty header)
+  type: number;        // Type (Démarrage/Annulé)
+  selection: number;   // Selection (machine number like 22)
+  description: number; // Description (machine name like "Séchoirs 13kg")
   piece: number;       // Pièce (coins)
   billet: number;      // Billet (bills)
   carteBancaire: number; // CB
   fidelite: number;    // FI (loyalty credit)
-  prix: number;        // Price
+  prix: number;        // Price in euros
   inseree: number;     // Inserted
   rendue: number;      // Change returned
 }
@@ -49,31 +75,47 @@ interface WiLineColumnMap {
  * Detect WiLine column positions from headers
  */
 function detectWiLineColumns(headers: string[]): WiLineColumnMap | null {
-  const findColumn = (patterns: string[]): number => {
+  const findColumn = (patterns: (string | RegExp)[]): number => {
     return headers.findIndex(h => {
       const lower = h.toLowerCase().trim();
-      return patterns.some(p => lower.includes(p) || lower === p);
+      return patterns.some(p => {
+        if (typeof p === 'string') {
+          return lower.includes(p) || lower === p;
+        }
+        return p.test(lower);
+      });
     });
   };
 
+  // WiLine format: Date/Heure(Europe/Paris);;Type;Selection;Description;Pièce;Billet;Carte bancaire;Fidélitée;Prix;Insérée;Rendue
   const map: WiLineColumnMap = {
-    transactionNo: findColumn(['n° transaction', 'n transaction', 'transaction']),
-    dateTime: findColumn(['date/heure', 'date heure', 'datetime']),
+    date: findColumn([/date.*heure/i, 'date/heure', 'date']),
+    time: -1, // Will be set to 1 if date is at 0 and col 1 is empty
     type: findColumn(['type']),
-    details: findColumn(['details', 'détails']),
     selection: findColumn(['selection', 'sélection']),
     description: findColumn(['description']),
-    piece: findColumn(['pièce', 'piece']),
+    piece: findColumn(['pièce', 'piece', /^pi[èe]ce$/i]),
     billet: findColumn(['billet']),
-    carteBancaire: findColumn(['carte bancaire', 'cb']),
-    fidelite: findColumn(['fidélitée', 'fidelite', 'fidélité']),
-    prix: findColumn(['prix']),
-    inseree: findColumn(['insérée', 'inseree']),
-    rendue: findColumn(['rendue', 'rendu']),
+    carteBancaire: findColumn([/carte\s*bancaire/i, 'cb']),
+    fidelite: findColumn([/fid[ée]lit[ée]e?/i, 'fidelite']),
+    prix: findColumn([/^prix$/i]),
+    inseree: findColumn([/ins[ée]r[ée]e/i, 'inseree']),
+    rendue: findColumn([/rendue?/i, 'rendu']),
   };
 
-  // Validate required columns
-  if (map.transactionNo === -1 || map.dateTime === -1 || map.prix === -1) {
+  // Handle WiLine special case: first col is date, second col (empty header) is time
+  if (map.date === 0 && headers[1] === '') {
+    map.time = 1;
+    // Shift all other columns by 1 if they're wrong
+    console.log('[WiLine-DEBUG] Detected date at 0, time at 1 (empty header)');
+  }
+
+  console.log('[WiLine-DEBUG] Column map:', map);
+  console.log('[WiLine-DEBUG] Headers:', headers);
+
+  // Validate minimum required columns
+  if (map.date === -1 || map.prix === -1) {
+    console.warn('[WiLine] Missing required columns: date or prix');
     return null;
   }
 
@@ -98,39 +140,45 @@ function eurosToCents(euros: number): number {
 }
 
 /**
- * Parse WiLine date/time string
- * Format: "DD/MM/YYYY HH:MM:SS" (Europe/Paris timezone)
+ * Parse WiLine date from first column
+ * Format: "DD/MM/YYYY 00:00" or "DD/MM/YYYY"
  */
-function parseWiLineDateTime(dateStr: string): { date_iso: string | null; time: string | null } {
-  if (!dateStr || !dateStr.trim()) {
-    return { date_iso: null, time: null };
-  }
-
+function parseWiLineDate(dateStr: string): string | null {
+  if (!dateStr || !dateStr.trim()) return null;
+  
   const trimmed = dateStr.trim();
   
-  // Match DD/MM/YYYY HH:MM:SS or DD/MM/YYYY HH:MM
-  const match = trimmed.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  // Match DD/MM/YYYY with optional time
+  const match = trimmed.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/);
   
   if (match) {
-    const [, day, month, year, hour, minute] = match;
+    const [, day, month, year] = match;
     const paddedDay = day.padStart(2, '0');
     const paddedMonth = month.padStart(2, '0');
-    const date_iso = `${year}-${paddedMonth}-${paddedDay}`;
-    const time = `${hour.padStart(2, '0')}:${minute}`;
-    return { date_iso, time };
+    return `${year}-${paddedMonth}-${paddedDay}`;
   }
+  
+  return null;
+}
 
-  // Try just date without time
-  const dateOnlyMatch = trimmed.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/);
-  if (dateOnlyMatch) {
-    const [, day, month, year] = dateOnlyMatch;
-    const paddedDay = day.padStart(2, '0');
-    const paddedMonth = month.padStart(2, '0');
-    const date_iso = `${year}-${paddedMonth}-${paddedDay}`;
-    return { date_iso, time: null };
+/**
+ * Parse WiLine time from second column
+ * Format: "HH:MM:SS"
+ */
+function parseWiLineTime(timeStr: string): string | null {
+  if (!timeStr || !timeStr.trim()) return null;
+  
+  const trimmed = timeStr.trim();
+  
+  // Match HH:MM:SS or HH:MM
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+  
+  if (match) {
+    const [, hour, minute] = match;
+    return `${hour.padStart(2, '0')}:${minute}`;
   }
-
-  return { date_iso: null, time: null };
+  
+  return null;
 }
 
 /**
@@ -249,8 +297,7 @@ function normalizeWiLinePayment(
 /**
  * Check if a row is a TOTAUX line to skip
  */
-function isTotauxRow(description: string, transactionNo: string): boolean {
-  if (!transactionNo || transactionNo.trim() === '') return true;
+function isTotauxRow(description: string): boolean {
   if (description && description.toUpperCase().includes('TOTAUX')) return true;
   return false;
 }
@@ -261,8 +308,8 @@ function isTotauxRow(description: string, transactionNo: string): boolean {
  */
 function isRevenueRow(type: string): boolean {
   if (!type) return false;
-  return type.toLowerCase().trim() === 'démarrage' || 
-         type.toLowerCase().trim() === 'demarrage';
+  const lower = type.toLowerCase().trim();
+  return lower === 'démarrage' || lower === 'demarrage';
 }
 
 /**
@@ -297,11 +344,17 @@ export function parseWiLineCsvFile(
   filename: string,
   content: string
 ): WiLineParsedRow[] {
+  console.log('[WiLine-DEBUG] Starting parse for:', filename);
+  
   const normalized = normalizeCsvText(content);
   const separator = detectSeparator(normalized);
   const lines = normalized.split('\n').filter(line => line.trim());
   
+  console.log('[WiLine-DEBUG] Separator:', JSON.stringify(separator));
+  console.log('[WiLine-DEBUG] Total lines:', lines.length);
+  
   if (lines.length === 0) {
+    console.log('[WiLine-DEBUG] No lines found');
     return [];
   }
   
@@ -316,14 +369,18 @@ export function parseWiLineCsvFile(
   }
   
   const headerFields = parseCsvLine(lines[headerIndex], separator);
+  console.log('[WiLine-DEBUG] Header fields:', headerFields);
+  
   const columnMap = detectWiLineColumns(headerFields);
   
   if (!columnMap) {
-    console.warn('WiLine: Could not detect column mapping');
+    console.warn('[WiLine] Could not detect column mapping');
     return [];
   }
   
   const rows: WiLineParsedRow[] = [];
+  let skippedNotDemarrage = 0;
+  let skippedTotaux = 0;
   
   for (let i = headerIndex + 1; i < lines.length; i++) {
     const rowIndex = i - headerIndex - 1;
@@ -332,41 +389,65 @@ export function parseWiLineCsvFile(
     // Skip empty rows
     if (!rawData.some(cell => cell.trim())) continue;
     
-    // Extract values
-    const transactionNo = rawData[columnMap.transactionNo] || '';
-    const dateTimeStr = rawData[columnMap.dateTime] || '';
+    // Log first few rows for debugging
+    if (rowIndex < 3) {
+      console.log(`[WiLine-DEBUG] Row ${rowIndex} raw:`, rawData.slice(0, 8));
+    }
+    
+    // Extract values based on column map
+    const dateStr = rawData[columnMap.date] || '';
+    const timeStr = columnMap.time >= 0 ? rawData[columnMap.time] || '' : '';
     const typeRaw = columnMap.type >= 0 ? rawData[columnMap.type] || '' : '';
-    const details = columnMap.details >= 0 ? rawData[columnMap.details] || '' : '';
     const selection = columnMap.selection >= 0 ? rawData[columnMap.selection] || '' : '';
     const description = columnMap.description >= 0 ? rawData[columnMap.description] || '' : '';
-    const piece = parseFrenchNumber(rawData[columnMap.piece]);
-    const billet = parseFrenchNumber(rawData[columnMap.billet]);
-    const carteBancaire = parseFrenchNumber(rawData[columnMap.carteBancaire]);
-    const fidelite = parseFrenchNumber(rawData[columnMap.fidelite]);
-    const prix = parseFrenchNumber(rawData[columnMap.prix]);
+    const piece = columnMap.piece >= 0 ? parseFrenchNumber(rawData[columnMap.piece]) : 0;
+    const billet = columnMap.billet >= 0 ? parseFrenchNumber(rawData[columnMap.billet]) : 0;
+    const carteBancaire = columnMap.carteBancaire >= 0 ? parseFrenchNumber(rawData[columnMap.carteBancaire]) : 0;
+    const fidelite = columnMap.fidelite >= 0 ? parseFrenchNumber(rawData[columnMap.fidelite]) : 0;
+    const prix = columnMap.prix >= 0 ? parseFrenchNumber(rawData[columnMap.prix]) : 0;
     const inseree = columnMap.inseree >= 0 ? parseFrenchNumber(rawData[columnMap.inseree]) : 0;
     const rendue = columnMap.rendue >= 0 ? parseFrenchNumber(rawData[columnMap.rendue]) : 0;
     
     // Skip TOTAUX rows
-    if (isTotauxRow(description, transactionNo)) {
+    if (isTotauxRow(description)) {
+      skippedTotaux++;
       continue;
     }
     
-    // Parse date/time
-    const { date_iso, time } = parseWiLineDateTime(dateTimeStr);
-    
-    // Determine if counts towards revenue
+    // CRITICAL: Only import "Démarrage" rows for revenue
     const revenueIncluded = isRevenueRow(typeRaw);
+    if (!revenueIncluded) {
+      skippedNotDemarrage++;
+      continue; // Skip non-Démarrage rows entirely
+    }
+    
+    // Parse date and time
+    const date_iso = parseWiLineDate(dateStr);
+    const time = parseWiLineTime(timeStr);
+    
+    // Log first parsed row
+    if (rowIndex < 3) {
+      console.log(`[WiLine-DEBUG] Row ${rowIndex} parsed:`, {
+        date: date_iso,
+        time,
+        type: typeRaw,
+        selection,
+        description,
+        prix,
+        piece,
+        billet,
+        carteBancaire
+      });
+    }
     
     // Normalize payment
     const payment = normalizeWiLinePayment(piece, billet, carteBancaire, fidelite, prix);
     
-    // Determine operation type
+    // Determine operation type from description
     const operationType = detectOperationType(description);
     
     // Build metadata
     const metadata_raw: Record<string, unknown> = {
-      details,
       selection,
       piece,
       billet,
@@ -404,30 +485,34 @@ export function parseWiLineCsvFile(
     const insereeCents = eurosToCents(inseree);
     const rendueCents = eurosToCents(rendue);
     
+    // Use description for machine name (e.g., "Séchoirs 13kg", "Machines 12kg")
+    // Use selection for machine number (e.g., "22", "17")
+    const machineDisplay = description.trim() ? `${selection} - ${description.trim()}` : selection;
+    
     rows.push({
       // Base MultiCsvParsedRow fields
       source_file_name: filename,
       row_index_in_file: rowIndex,
       date_iso,
       time,
-      normalized_mode: payment.mode === 'MIX' ? 'CB' : (payment.mode as NormalizedPaymentMode | null), // For display, MIX shows as CB
+      normalized_mode: payment.mode === 'MIX' ? 'CB' : (payment.mode as NormalizedPaymentMode | null),
       amount_cents: prixCents,
-      machine: description || null,
-      program: selection || null,
+      machine: machineDisplay || null,
+      program: operationType || null,
       raw_data: rawData,
       inserted_cents: insereeCents,
       price_cents: prixCents,
       change_cents: rendueCents,
-      machine_name: description || null,
-      detected_type: 'wiline' as any, // Will be added to CsvFormatType
+      machine_name: machineDisplay || null,
+      detected_type: 'wiline' as any,
       status,
       errors,
       selected: status === 'importable',
       
       // WiLine specific
       provider: 'wiline',
-      external_id: `wiline:${transactionNo}`,
-      transaction_no: transactionNo,
+      external_id: `wiline:${date_iso}:${time}:${selection}`,
+      transaction_no: `${date_iso}:${time}:${selection}`,
       type_raw: typeRaw || null,
       label: description || null,
       operation_type: operationType,
@@ -438,6 +523,16 @@ export function parseWiLineCsvFile(
       metadata_raw,
       is_mixed_payment: payment.isMixed,
     });
+  }
+  
+  console.log('[WiLine-DEBUG] Parse complete:', {
+    totalImported: rows.length,
+    skippedNotDemarrage,
+    skippedTotaux,
+  });
+  
+  if (rows.length > 0) {
+    console.log('[WiLine-DEBUG] First row:', rows[0]);
   }
   
   return rows;
