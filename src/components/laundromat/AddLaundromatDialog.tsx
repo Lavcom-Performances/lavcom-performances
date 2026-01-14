@@ -217,19 +217,54 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   // ADDRESS SELECTION HANDLER (Optional enhancement)
   // -------------------------------------------------------------------------
 
+  // Legacy handler for onSelect (backward compatibility)
   const handleAddressSelect = useCallback((result: AddressSearchResult) => {
-    const departmentCode = deriveDepartmentCode(result.postalCode);
+    const departmentCode = result.department || deriveDepartmentCode(result.postalCode);
 
     setFormData((prev) => ({
       ...prev,
       address: result.address,
-      city: result.city,
-      postalCode: result.postalCode,
-      departmentCode: departmentCode,
+      city: result.city || prev.city,
+      postalCode: result.postalCode || prev.postalCode,
+      departmentCode: departmentCode || prev.departmentCode,
       country: result.countryCode || prev.country,
     }));
-    setAddressSelected(true);
-    setCitySelected(true);
+    
+    if (result.city && result.postalCode) {
+      setAddressSelected(true);
+      setCitySelected(true);
+    }
+    
+    setValidationErrors((prev) => ({
+      ...prev,
+      address: false,
+      city: false,
+      postalCode: false,
+    }));
+  }, []);
+
+  // New handler using onAutofill callback - provides complete data from search API
+  const handleAddressAutofill = useCallback((data: {
+    address: string;
+    postcode: string;
+    city: string;
+    department: string;
+    country: "FR";
+  }) => {
+    setFormData((prev) => ({
+      ...prev,
+      address: data.address,
+      city: data.city || prev.city,
+      postalCode: data.postcode || prev.postalCode,
+      departmentCode: data.department || prev.departmentCode,
+      country: data.country,
+    }));
+    
+    if (data.city && data.postcode) {
+      setAddressSelected(true);
+      setCitySelected(true);
+    }
+    
     setValidationErrors((prev) => ({
       ...prev,
       address: false,
@@ -557,6 +592,7 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
                 <AddressAutocomplete
                   value={formData.address}
                   onSelect={handleAddressSelect}
+                  onAutofill={handleAddressAutofill}
                   onChange={handleAddressInputChange}
                   placeholder={t("app:newLaundry.addressPlaceholder")}
                   disabled={addressSelected}
