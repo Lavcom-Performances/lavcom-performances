@@ -129,7 +129,7 @@ export function useCurrentUserPermissions() {
   const { userRole, organization, isLoading: orgLoading } = useOrganization();
   const { sites, isLoading: sitesLoading } = useSites();
   const [customPermissions, setCustomPermissions] = useState<Partial<CurrentUserPermissions> | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingCustom, setIsLoadingCustom] = useState(true);
 
   // Check if user owns sites (useSites already filters by user_id)
   // If user has sites returned, they are the owner of those sites
@@ -141,11 +141,11 @@ export function useCurrentUserPermissions() {
   // Fetch custom permissions for current user
   const fetchCustomPermissions = useCallback(async () => {
     if (!user || !organization) {
-      setIsLoading(false);
+      setIsLoadingCustom(false);
       return;
     }
 
-    setIsLoading(true);
+    setIsLoadingCustom(true);
     try {
       const { data, error } = await supabase
         .from('user_permissions')
@@ -177,7 +177,7 @@ export function useCurrentUserPermissions() {
     } catch (error) {
       console.error('Error in fetchCustomPermissions:', error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingCustom(false);
     }
   }, [user, organization]);
 
@@ -185,8 +185,22 @@ export function useCurrentUserPermissions() {
     fetchCustomPermissions();
   }, [fetchCustomPermissions]);
 
+  // Overall loading state - wait for all data before calculating permissions
+  const isLoading = orgLoading || sitesLoading || isLoadingCustom;
+
   // Calculate effective permissions
   const permissions = useMemo((): CurrentUserPermissions => {
+    // While still loading, return minimal permissions to prevent flickering
+    // but allow viewing (prevents blank screens)
+    if (isLoading) {
+      console.log('[Permissions Debug] Still loading, returning view-only permissions');
+      return {
+        ...DEFAULT_PERMISSIONS_BY_ROLE.guest,
+        can_view_sites: true,
+        can_view_reports: true,
+      };
+    }
+
     // Debug logging
     console.log('[Permissions Debug]', {
       userRole: userRole?.role,
@@ -194,6 +208,7 @@ export function useCurrentUserPermissions() {
       orgLoading,
       sitesLoading,
       hasOrganization: !!organization,
+      sitesCount: sites.length,
     });
 
     // Super admins always have all permissions (check first)
@@ -202,26 +217,33 @@ export function useCurrentUserPermissions() {
       return DEFAULT_PERMISSIONS_BY_ROLE.super_admin;
     }
 
+    // If user has any role in an organization, use that role's permissions
+    if (userRole?.role) {
+      const role = userRole.role;
+      const defaultPerms = DEFAULT_PERMISSIONS_BY_ROLE[role] || DEFAULT_PERMISSIONS_BY_ROLE.guest;
+      console.log('[Permissions Debug] Using role permissions:', role);
+      
+      // Merge with custom permissions if any
+      if (customPermissions) {
+        return {
+          ...defaultPerms,
+          ...customPermissions,
+        };
+      }
+      return defaultPerms;
+    }
+
     // If user has no organization role but owns sites, grant owner permissions
     // This handles the case of first-time users who created sites before organizations
-    if (!userRole && isSiteOwner) {
+    if (isSiteOwner) {
       console.log('[Permissions Debug] Granting owner permissions (no org role but owns sites)');
       return DEFAULT_PERMISSIONS_BY_ROLE.owner;
     }
 
-    const role = userRole?.role || 'guest';
-    const defaultPerms = DEFAULT_PERMISSIONS_BY_ROLE[role] || DEFAULT_PERMISSIONS_BY_ROLE.guest;
-
-    // For other roles, merge with custom permissions (custom takes precedence)
-    if (customPermissions) {
-      return {
-        ...defaultPerms,
-        ...customPermissions,
-      };
-    }
-
-    return defaultPerms;
-  }, [userRole, customPermissions, isSiteOwner, organization, orgLoading, sitesLoading]);
+    // No role and no sites - guest permissions
+    console.log('[Permissions Debug] No role, no sites - guest permissions');
+    return DEFAULT_PERMISSIONS_BY_ROLE.guest;
+  }, [userRole, customPermissions, isSiteOwner, organization, isLoading, sites.length, orgLoading, sitesLoading]);
 
   // Helper functions for common permission checks
   const canImport = useMemo(() => permissions.can_import_data, [permissions]);
