@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { getDepartmentFromPostcode, sleep } from "@/utils/address";
 
 export interface AddressSearchResult {
   label: string;
@@ -8,11 +9,15 @@ export interface AddressSearchResult {
   context: string;
   countryCode: string;
   countryName: string;
+  department?: string;
 }
+
+const COMPLETION_URL = "https://data.geopf.fr/geocodage/completion/";
+const SEARCH_URL = "https://data.geopf.fr/geocodage/search";
 
 /**
  * Hook for searching addresses across multiple countries.
- * - France: Uses api-adresse.data.gouv.fr (high quality)
+ * - France: Uses data.geopf.fr (new government geocoding API)
  * - Other countries: Uses Nominatim/OpenStreetMap
  */
 export function useAddressSearch(
@@ -23,8 +28,14 @@ export function useAddressSearch(
   const [results, setResults] = useState<AddressSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [manualMode, setManualMode] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const lastQueryRef = useRef<string>("");
 
   const searchAddresses = useCallback(async (searchQuery: string, country: string) => {
+    // Reset manual mode when user retypes
+    setManualMode(false);
+    
     if (searchQuery.length < minChars) {
       setResults([]);
       return;
@@ -37,13 +48,18 @@ export function useAddressSearch(
       let formattedResults: AddressSearchResult[] = [];
 
       if (country === "FR") {
-        // French government API - high quality for France
-        // Use autocomplete endpoint for better results with partial addresses
-        const apiUrl = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchQuery)}&limit=10&autocomplete=1`;
+        // Cancel previous request
+        abortRef.current?.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+        lastQueryRef.current = searchQuery;
+
+        // New French government geocoding API
+        const url = `${COMPLETION_URL}?text=${encodeURIComponent(searchQuery)}&type=StreetAddress&terr=METROPOLE&maximumResponses=6`;
         
-        console.log("[AddressSearch] Fetching FR addresses:", apiUrl);
+        console.log("[AddressSearch] Fetching FR addresses:", url);
         
-        const response = await fetch(apiUrl);
+        const response = await fetch(url, { signal: controller.signal });
 
         if (!response.ok) {
           console.error("[AddressSearch] API error:", response.status, response.statusText);
@@ -52,26 +68,52 @@ export function useAddressSearch(
 
         const data = await response.json();
         
-        console.log("[AddressSearch] API response:", data.features?.length || 0, "results");
+        // Normalize response (structure may vary)
+        const items = (data?.results || data?.suggestions || data || []) as any[];
         
-        if (data.features && data.features.length > 0) {
-          formattedResults = data.features.map((feature: any) => ({
-            label: feature.properties.label,
-            address: feature.properties.name,
-            postalCode: feature.properties.postcode || "",
-            city: feature.properties.city || feature.properties.municipality || "",
-            context: feature.properties.context || "",
-            countryCode: "FR",
-            countryName: "France",
-          }));
+        console.log("[AddressSearch] API response:", items.length || 0, "results");
+        
+        formattedResults = items
+          .map((item: any) => {
+            const fullText = item?.fulltext || item?.fullText || item?.label || item?.text || item?.value;
+            if (!fullText) return null;
+            
+            // Extract what we can from the completion response
+            const postalCode = String(item?.postcode || item?.postalcode || item?.zipcode || "").trim();
+            const city = String(item?.city || item?.municipality || item?.commune || "").trim();
+            
+            const result: AddressSearchResult = {
+              label: fullText,
+              address: fullText,
+              postalCode,
+              city,
+              context: postalCode && city ? `${postalCode} ${city}` : "",
+              countryCode: "FR",
+              countryName: "France",
+            };
+            if (postalCode) {
+              result.department = getDepartmentFromPostcode(postalCode);
+            }
+            return result;
+          })
+          .filter((item): item is AddressSearchResult => item !== null);
+
+        // Only update if this is still the current query
+        if (lastQueryRef.current === searchQuery) {
+          setResults(formattedResults);
         }
       } else {
         // Nominatim for international addresses
+        abortRef.current?.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+        
         const apiUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&countrycodes=${country.toLowerCase()}&format=json&limit=10&addressdetails=1`;
         
         console.log("[AddressSearch] Fetching international addresses:", apiUrl);
         
         const response = await fetch(apiUrl, {
+          signal: controller.signal,
           headers: {
             'Accept-Language': 'fr,en',
             'User-Agent': 'LavcomPerformances/1.0',
@@ -106,14 +148,19 @@ export function useAddressSearch(
               context: [postalCode, city, countryName].filter(Boolean).join(", "),
               countryCode: country,
               countryName,
+              department: postalCode ? getDepartmentFromPostcode(postalCode) : undefined,
             };
           });
-      }
 
-      setResults(formattedResults);
-    } catch (err) {
+        setResults(formattedResults);
+      }
+    } catch (err: any) {
+      // Abort is silent
+      if (err?.name === "AbortError") return;
+      
       console.error("[AddressSearch] Error:", err);
-      setError("Impossible de charger les adresses");
+      setManualMode(true);
+      setError("Service indisponible - mode saisie manuelle");
       setResults([]);
     } finally {
       setIsLoading(false);
@@ -121,12 +168,64 @@ export function useAddressSearch(
   }, [minChars]);
 
   useEffect(() => {
+    const trimmedQuery = query.trim();
+    
+    if (trimmedQuery.length < minChars) {
+      setResults([]);
+      setError(null);
+      return;
+    }
+
     const debounceTimer = setTimeout(() => {
-      searchAddresses(query, countryCode);
-    }, 300);
+      searchAddresses(trimmedQuery, countryCode);
+    }, 350);
 
     return () => clearTimeout(debounceTimer);
-  }, [query, countryCode, searchAddresses]);
+  }, [query, countryCode, minChars, searchAddresses]);
 
-  return { results, isLoading, error };
+  return { results, isLoading, error, manualMode };
+}
+
+/**
+ * Fetch detailed address info from a selected suggestion
+ * Uses the search endpoint to get full postcode/city when not available from completion
+ */
+export async function fetchAddressDetails(fullAddress: string): Promise<{
+  address: string;
+  postcode: string;
+  city: string;
+  department: string;
+  country: "FR";
+} | null> {
+  try {
+    const url = `${SEARCH_URL}?q=${encodeURIComponent(fullAddress)}&limit=1`;
+    let res = await fetch(url);
+    
+    // Handle rate limiting with backoff
+    if (res.status === 429) {
+      await sleep(600);
+      res = await fetch(url);
+    }
+    
+    if (!res.ok) throw new Error(`Search failed: ${res.status}`);
+    
+    const json = await res.json();
+    const feature = json?.features?.[0];
+    const props = feature?.properties || {};
+    
+    const postcode = String(props?.postcode || props?.postCode || props?.postalcode || "").trim();
+    const city = String(props?.city || props?.municipality || props?.locality || "").trim();
+    const department = getDepartmentFromPostcode(postcode);
+    
+    return {
+      address: fullAddress,
+      postcode,
+      city,
+      department,
+      country: "FR",
+    };
+  } catch (err) {
+    console.error("Failed to fetch address details:", err);
+    return null;
+  }
 }
