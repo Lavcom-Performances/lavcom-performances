@@ -1022,6 +1022,27 @@
       "lastImport": "Dernier import",
       "totalOperations": "Total opérations"
     },
+    "dataQuality": {
+      "title": "Qualité des données",
+      "lastImport": "Dernier import",
+      "lastOperation": "Dernière opération",
+      "provider": "Provider",
+      "providerUnknown": "Non détecté",
+      "periodCovered": "Période couverte",
+      "operations": "opérations",
+      "hourRange": "Plage horaire",
+      "reportIssue": "Signaler un problème",
+      "warnings": {
+        "missingHours": "Aucune donnée avant 10h",
+        "missingHoursDetails": "Première opération à {{hour}}h. Vérifiez le parsing des heures ou les données du provider.",
+        "emptyKpis": "CA = 0€ malgré des opérations",
+        "emptyKpisDetails": "{{count}} opération(s) trouvée(s) mais aucun chiffre d'affaires. Vérifiez les types d'opérations ou le champ montant.",
+        "sparseDays": "Couverture partielle de la période",
+        "sparseDaysDetails": "Seulement {{distinctDays}} jour(s) avec données sur {{periodDays}} jours ({{coverage}}%). Données manquantes ou imports incomplets."
+      },
+      "alerts": "alerte",
+      "alertsPlural": "alertes"
+    },
     "allSites": "Toutes les laveries"
   },
   "operations": {

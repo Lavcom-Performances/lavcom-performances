@@ -1022,6 +1022,27 @@
       "lastImport": "Last import",
       "totalOperations": "Total operations"
     },
+    "dataQuality": {
+      "title": "Data Quality",
+      "lastImport": "Last import",
+      "lastOperation": "Last operation",
+      "provider": "Provider",
+      "providerUnknown": "Not detected",
+      "periodCovered": "Period covered",
+      "operations": "operations",
+      "hourRange": "Hour range",
+      "reportIssue": "Report an issue",
+      "warnings": {
+        "missingHours": "No data before 10 AM",
+        "missingHoursDetails": "First operation at {{hour}}h. Check hour parsing or provider data.",
+        "emptyKpis": "Revenue = €0 despite operations",
+        "emptyKpisDetails": "{{count}} operation(s) found but no revenue. Check operation types or amount field.",
+        "sparseDays": "Partial period coverage",
+        "sparseDaysDetails": "Only {{distinctDays}} day(s) with data out of {{periodDays}} days ({{coverage}}%). Missing data or incomplete imports."
+      },
+      "alerts": "alert",
+      "alertsPlural": "alerts"
+    },
     "allSites": "All laundries"
   },
   "operations": {

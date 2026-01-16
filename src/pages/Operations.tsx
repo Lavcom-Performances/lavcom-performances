@@ -47,6 +47,7 @@ import { useSites } from "@/hooks/useSites";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
 import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
+import { DataQualityBlock } from "@/components/dashboard/DataQualityBlock";
 import { isCountedInRevenue, isRechargement, isCBPayment, isESPPayment, filterRevenueOperations } from "@/lib/operationFilters";
 
 const paymentModeBadge = (mode: string | null) => {
@@ -762,6 +763,9 @@ export default function Operations() {
         onOpenChange={setIsHistoryDialogOpen}
         onBatchDeleted={refetch}
       />
+
+      {/* Data Quality Block */}
+      <DataQualityBlock dateRange={dateRange} className="mb-4" />
 
       {/* Filters */}
       <FiltersCard
