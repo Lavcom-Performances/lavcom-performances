@@ -111,8 +111,8 @@ const orphanPages: OrphanPage[] = [
   // ============ GETTING STARTED/ONBOARDING ============
   { path: "/getting-started", name: "Getting Started", description: "Onboarding wizard for new users", category: "utility", auth: "auth" },
   
-  // ============ LEGACY PAGES ============
-  { path: "/company-settings", name: "Company Settings", description: "Legacy company settings (not in sidebar)", category: "legacy", auth: "public", notes: "May need cleanup" },
+  // ============ DEPRECATED PAGES ============
+  { path: "/company-settings", name: "Company Settings", description: "DEPRECATED - Redirects to /settings", category: "deprecated", auth: "public", notes: "Redirects to /settings since TAEX-189" },
   
   // ============ HIDDEN ALIASES ============
   { path: "/aide", name: "Aide (Help alias)", description: "French alias for /help page", category: "utility", auth: "auth" },
