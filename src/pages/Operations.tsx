@@ -320,9 +320,11 @@ export default function Operations() {
   }, [operations]);
 
   // Calculate hourly data for chart - exclude rechargements
+  // Use FULL 0-23h range based on actual data (laveries automatiques peuvent avoir des opérations 24h/24)
   const hourlyData = useMemo(() => {
+    // Initialize all 24 hours
     const hours: { [key: number]: { cb: number; esp: number } } = {};
-    for (let i = 6; i <= 22; i++) {
+    for (let i = 0; i < 24; i++) {
       hours[i] = { cb: 0, esp: 0 };
     }
     
@@ -332,7 +334,7 @@ export default function Operations() {
     salesOps.forEach(op => {
       if (op.operation_time) {
         const hour = parseInt(op.operation_time.split(":")[0], 10);
-        if (hour >= 6 && hour <= 22) {
+        if (hour >= 0 && hour < 24) {
           const amount = Number(op.amount);
           if (isCBPayment(op)) {
             hours[hour].cb += amount;
@@ -343,11 +345,25 @@ export default function Operations() {
       }
     });
 
-    return Object.entries(hours).map(([hour, data]) => ({
-      hour: `${hour}h`,
-      cb: data.cb,
-      esp: data.esp,
-    }));
+    // Find min and max hours with data to show relevant range
+    const hoursWithData = Object.entries(hours)
+      .filter(([_, data]) => data.cb > 0 || data.esp > 0)
+      .map(([h]) => parseInt(h, 10));
+    
+    // Default to 7h-22h if no data, otherwise use actual range with 1h padding
+    const minHour = hoursWithData.length > 0 ? Math.max(0, Math.min(...hoursWithData) - 1) : 7;
+    const maxHour = hoursWithData.length > 0 ? Math.min(23, Math.max(...hoursWithData) + 1) : 22;
+
+    return Object.entries(hours)
+      .filter(([h]) => {
+        const hour = parseInt(h, 10);
+        return hour >= minHour && hour <= maxHour;
+      })
+      .map(([hour, data]) => ({
+        hour: `${hour}h`,
+        cb: data.cb,
+        esp: data.esp,
+      }));
   }, [operations]);
 
   // Calculate machine counts - exclude rechargements from machine stats

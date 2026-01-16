@@ -154,7 +154,12 @@ html {
   }
 
   .kpi-card {
-    @apply bg-card rounded-xl p-6 shadow-sm border border-border/50 transition-all duration-300 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 cursor-default;
+    @apply bg-card rounded-xl p-4 sm:p-6 shadow-sm border border-border/50 transition-all duration-300 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 cursor-default overflow-visible;
+  }
+  
+  /* Ensure KPI values don't get truncated */
+  .kpi-card p {
+    @apply overflow-visible;
   }
   
   /* Payment mode badges */
