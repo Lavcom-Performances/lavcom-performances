@@ -60,6 +60,7 @@ import { useSetupProgress } from "@/hooks/useSetupProgress";
 import { useTutorial } from "@/hooks/useTutorial";
 import { InteractiveTutorial } from "@/components/onboarding/InteractiveTutorial";
 import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
+import { DataQualityBlock } from "@/components/dashboard/DataQualityBlock";
 import { BusinessActionsSection } from "@/components/dashboard/BusinessActionsSection";
 
 // Animation variants for staggered cards
@@ -406,7 +407,10 @@ export default function Dashboard() {
         />
       </div>
 
-      <GoalsConfigDialog 
+      {/* Data Quality Block */}
+      <DataQualityBlock dateRange={dateRange} />
+
+      <GoalsConfigDialog
         open={goalsDialogOpen} 
         onOpenChange={setGoalsDialogOpen}
         siteId={selectedSite?.id}
