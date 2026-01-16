@@ -42,13 +42,13 @@ export function KPICard({
 
   return (
     <div className={cn(
-      "kpi-card animate-fade-in",
+      "kpi-card animate-fade-in overflow-visible",
       className
     )}>
       <div className="flex items-start justify-between gap-2">
-        <div className="space-y-1 min-w-0 flex-1">
+        <div className="space-y-1 min-w-0 flex-1 overflow-visible">
           <div className="flex items-center gap-1">
-            <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
+            <p className="text-xs sm:text-sm font-medium text-muted-foreground line-clamp-1">
               {title}
             </p>
             {helpText && (
@@ -57,7 +57,7 @@ export function KPICard({
           </div>
           <p className={cn(
             "text-base sm:text-lg lg:text-xl xl:text-2xl font-display font-bold tracking-tight",
-            "whitespace-nowrap overflow-visible",
+            "whitespace-nowrap",
             variant === "primary" && "text-primary",
             variant === "success" && "text-lime-600",
             variant === "warning" && "text-amber-500"
@@ -65,7 +65,7 @@ export function KPICard({
             {value}
           </p>
           {subtitle && (
-            <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+            <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1" title={subtitle}>
               {subtitle}
             </p>
           )}
