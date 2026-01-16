@@ -66,7 +66,7 @@ export function MonthlyProfitabilityChart() {
       
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_date, price_cb, price_esp")
+        .select("operation_date, price_cb, price_esp, machine, machine_name, payment_mode")
         .eq("site_id", currentSiteId)
         .gte("operation_date", format(startDate, "yyyy-MM-dd"))
         .lte("operation_date", format(endDate, "yyyy-MM-dd"));
@@ -76,10 +76,20 @@ export function MonthlyProfitabilityChart() {
       // Generate all months in range
       const months = eachMonthOfInterval({ start: startDate, end: endDate });
       
-      // Group revenue by month
+      // Group revenue by month - excluding rechargements and FI payments
+      // CA = CB + ESP only (FI is excluded from revenue)
       const revenueByMonth = new Map<string, number>();
       (data || []).forEach((op) => {
+        // Exclude rechargements
+        const machine = (op.machine || op.machine_name || '').toLowerCase();
+        if (machine.includes('rech')) return;
+        
+        // Exclude FI payments from CA calculation
+        const paymentMode = (op.payment_mode || '').toUpperCase();
+        if (paymentMode === 'FI' || paymentMode === 'FIDELITE' || paymentMode === 'FIDÉLITÉ') return;
+        
         const monthKey = format(new Date(op.operation_date), "yyyy-MM");
+        // CA = price_cb + price_esp (FI excluded)
         const revenue = Number(op.price_cb || 0) + Number(op.price_esp || 0);
         revenueByMonth.set(monthKey, (revenueByMonth.get(monthKey) || 0) + revenue);
       });
