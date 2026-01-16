@@ -147,7 +147,7 @@ export default function SelectLaundromat() {
               variant="ghost" 
               size="sm"
               className="gap-2 text-muted-foreground"
-              onClick={() => navigate("/company-settings")}
+              onClick={() => navigate("/settings")}
             >
               <Settings className="h-4 w-4" />
               <span className="hidden sm:inline">Entreprise</span>

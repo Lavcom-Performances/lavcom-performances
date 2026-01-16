@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SimulationLayout } from "@/components/layout/SimulationLayout";
 import { AdminLayout } from "@/components/platformAdmin/AdminLayout";
@@ -55,7 +55,7 @@ import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
 import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite";
 import LaundromatSettings from "./pages/LaundromatSettings";
-import CompanySettings from "./pages/CompanySettings";
+// CompanySettings removed - deprecated, redirects to /settings
 import ProfilePage from "./pages/ProfilePage";
 import SecurityPage from "./pages/SecurityPage";
 import SubscriptionManagement from "./pages/SubscriptionManagement";
@@ -122,7 +122,8 @@ const App = () => (
           <Route path="/billing/cancel" element={<BillingCancel />} />
           <Route path="/invitation" element={<AcceptInvitation />} />
           <Route path="/select-laundromat" element={<SelectLaundromat />} />
-          <Route path="/company-settings" element={<CompanySettings />} />
+          {/* DEPRECATED: redirect to /settings */}
+          <Route path="/company-settings" element={<Navigate to="/settings" replace />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
           <Route path="/cgv" element={<CGV />} />
           <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
