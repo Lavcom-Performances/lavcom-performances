@@ -47,5 +47,9 @@
     "checkoutFailed": "Errore durante la creazione del pagamento",
     "noSessionUrl": "Impossibile ottenere il link di pagamento",
     "unexpected": "Si è verificato un errore imprevisto"
+  },
+  "auth": {
+    "leakedPassword": "Questa password è stata esposta in una violazione dei dati. Scegli una password diversa.",
+    "weakPassword": "Questa password è troppo debole. Usa almeno 8 caratteri con maiuscole, minuscole, numeri e simboli."
   }
 }

@@ -47,5 +47,9 @@
     "checkoutFailed": "Fout bij het aanmaken van betaling",
     "noSessionUrl": "Kan betalingslink niet ophalen",
     "unexpected": "Er is een onverwachte fout opgetreden"
+  },
+  "auth": {
+    "leakedPassword": "Dit wachtwoord is blootgesteld in een datalek. Kies een ander wachtwoord.",
+    "weakPassword": "Dit wachtwoord is te zwak. Gebruik minimaal 8 tekens met hoofdletters, kleine letters, cijfers en symbolen."
   }
 }

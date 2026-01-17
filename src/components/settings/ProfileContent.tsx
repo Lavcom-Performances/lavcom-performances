@@ -13,6 +13,7 @@ import { PasswordStrengthIndicator, usePasswordStrength } from "@/components/aut
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { ReAuthDialog } from "@/components/auth/ReAuthDialog";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { isLeakedPasswordError } from "@/lib/authErrors";
 
 export default function ProfileContent() {
   const { t } = useTranslation(['app', 'common']);
@@ -146,9 +147,13 @@ export default function ProfileContent() {
     setPendingPasswordChange(false);
 
     if (error) {
+      const errorDescription = isLeakedPasswordError(error.message)
+        ? t('errors:auth.leakedPassword')
+        : error.message;
+      
       toast({
         title: t('common:error'),
-        description: error.message,
+        description: errorDescription,
         variant: "destructive",
       });
       return;

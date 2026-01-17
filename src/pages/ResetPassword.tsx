@@ -10,6 +10,7 @@ import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
+import { isLeakedPasswordError } from "@/lib/authErrors";
 
 export default function ResetPassword() {
   const { t } = useTranslation(['app', 'common']);
@@ -74,9 +75,13 @@ export default function ResetPassword() {
     setIsLoading(false);
 
     if (error) {
+      const errorDescription = isLeakedPasswordError(error.message)
+        ? t('errors:auth.leakedPassword')
+        : error.message;
+      
       toast({
         title: t('common:error'),
-        description: error.message,
+        description: errorDescription,
         variant: "destructive",
       });
       return;

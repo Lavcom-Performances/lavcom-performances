@@ -16,6 +16,7 @@ import { usePasswordBreachCheck } from "@/hooks/usePasswordBreachCheck";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCooldown } from "@/lib/rateLimiter";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { isLeakedPasswordError, getAuthErrorMessage } from "@/lib/authErrors";
 
 export default function Signup() {
   const { t } = useTranslation(['app', 'common']);
@@ -162,6 +163,16 @@ export default function Signup() {
       if (invokeError || data?.error) {
         const errorMessage = data?.error || invokeError?.message || t('common:error');
         
+        // Check for leaked password error from Supabase
+        if (isLeakedPasswordError(errorMessage)) {
+          toast({
+            title: t('common:error'),
+            description: t('errors:auth.leakedPassword'),
+            variant: "destructive",
+          });
+          return;
+        }
+        
         if (errorMessage.includes("already registered")) {
           toast({
             title: t('app:signup.existingAccount'),
@@ -171,7 +182,7 @@ export default function Signup() {
         } else {
           toast({
             title: t('common:error'),
-            description: errorMessage,
+            description: getAuthErrorMessage(errorMessage, t),
             variant: "destructive",
           });
         }
