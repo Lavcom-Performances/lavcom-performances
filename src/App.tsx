@@ -94,7 +94,18 @@ import CostsSettingsPage from "./pages/settings/CostsSettingsPage";
 import GoalsSettingsPage from "./pages/settings/GoalsSettingsPage";
 import DemoPage from "./pages/DemoPage";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Prevent auto-refetch on window focus which can reset form inputs
+      refetchOnWindowFocus: false,
+      // Keep data fresh for 5 minutes before considering stale
+      staleTime: 5 * 60 * 1000,
+      // Retry failed requests up to 2 times
+      retry: 2,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
