@@ -39,7 +39,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
   const { t } = useTranslation("app");
   const { sites, isLoading: sitesLoading, createSite, getDefaultSite } = useSites();
   const { importMultiFormatRows, isImporting } = useMultiFormatImport();
-  const { validateFile, validateLines, checkRateLimit, showFileError, isChecking } = useImportRateLimit();
+  const { validateFile, validateLines, checkRateLimit, showFileError, logValidationError, isChecking, limits } = useImportRateLimit();
   
   // Step management
   const [currentStep, setCurrentStep] = useState<ImportStep>("upload");
@@ -121,6 +121,13 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
       // Validate file size
       const validation = validateFile(file);
       if (!validation.valid && validation.errorKey) {
+        // TAEX-197: Log validation error
+        if (selectedSiteId) {
+          logValidationError(selectedSiteId, file.name, validation.errorKey, {
+            file_size: file.size,
+            max_size: limits.maxSizeBytes
+          });
+        }
         newFiles.push({
           id: generateId(),
           file,
@@ -132,7 +139,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
           to_review_count: 0,
           invalid_count: 0,
           detected_format: 'unknown',
-          error: showFileError(validation.errorKey),
+          error: showFileError(validation.errorKey, selectedSiteId || undefined, file.name),
           duplicate_warning: null,
         });
         continue;

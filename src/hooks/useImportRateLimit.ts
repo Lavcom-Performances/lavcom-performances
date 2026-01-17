@@ -4,10 +4,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { 
   validateCSVFile, 
-  validateLineCount, 
+  validateLineCount,
+  validateFilesCount,
   formatCooldown,
   CSV_MAX_SIZE_BYTES,
-  CSV_MAX_LINES 
+  CSV_MAX_SIZE_MB,
+  CSV_MAX_LINES,
+  CSV_MAX_FILES_PER_BATCH,
+  DAILY_IMPORT_BATCHES_PER_SITE,
+  HOURLY_IMPORT_BATCHES_PER_SITE,
 } from "@/lib/rateLimiter";
 
 interface RateLimitCheckResult {
@@ -15,12 +20,33 @@ interface RateLimitCheckResult {
   error?: string;
   cooldownSeconds?: number;
   cooldownFormatted?: string;
+  remaining?: { hourly: number; daily: number };
 }
 
 interface FileValidationResult {
   valid: boolean;
   error?: string;
   errorKey?: string;
+}
+
+// TAEX-197: Log validation errors to system_events
+async function logValidationError(
+  siteId: string,
+  filename: string,
+  reason: string,
+  details?: Record<string, unknown>
+) {
+  try {
+    await supabase.functions.invoke("import-csv-check", {
+      body: { 
+        site_id: siteId, 
+        filename,
+        validation_error: { reason, details }
+      }
+    });
+  } catch (err) {
+    console.error("Failed to log validation error:", err);
+  }
 }
 
 export function useImportRateLimit() {
@@ -54,6 +80,19 @@ export function useImportRateLimit() {
     return { valid: true };
   }, [t]);
 
+  // Validate file count in batch (TAEX-197)
+  const validateFilesInBatch = useCallback((count: number): FileValidationResult => {
+    const result = validateFilesCount(count);
+    if (!result.valid) {
+      return {
+        valid: false,
+        error: t(`csvImport.maxFilesError`),
+        errorKey: result.error
+      };
+    }
+    return { valid: true };
+  }, [t]);
+
   // Check server-side rate limit before import
   const checkRateLimit = useCallback(async (
     siteId: string, 
@@ -66,7 +105,7 @@ export function useImportRateLimit() {
       if (!session) {
         return { 
           allowed: false, 
-          error: "Session expirée. Veuillez vous reconnecter." 
+          error: t("csvImport.sessionExpired")
         };
       }
 
@@ -81,20 +120,23 @@ export function useImportRateLimit() {
             ? (error as any).context 
             : null;
           
-          const cooldownSeconds = errorData?.cooldown_seconds || 120;
+          const cooldownSeconds = errorData?.cooldown_seconds || 3600;
           const cooldownFormatted = formatCooldown(cooldownSeconds);
           
-          // Determine if it's site or user rate limit
-          const scope = errorData?.scope || "import/csv-site";
-          const errorKey = scope === "import/csv-user" 
-            ? "frequencyErrorUser" 
-            : "frequencyErrorSite";
+          // Determine message based on scope
+          const messageKey = errorData?.message_key || 'csvImport.rateLimitGeneric';
+          const errorKey = messageKey.includes('Hourly') 
+            ? 'rateLimitHourly' 
+            : messageKey.includes('Daily') 
+              ? 'rateLimitDaily' 
+              : 'frequencyErrorSite';
 
           return {
             allowed: false,
             error: t(`csvImport.${errorKey}`, { time: cooldownFormatted }),
             cooldownSeconds,
-            cooldownFormatted
+            cooldownFormatted,
+            remaining: errorData?.remaining
           };
         }
 
@@ -104,7 +146,8 @@ export function useImportRateLimit() {
       }
 
       return { 
-        allowed: data?.allowed ?? true 
+        allowed: data?.allowed ?? true,
+        remaining: data?.remaining
       };
     } catch (err) {
       console.error("Rate limit check failed:", err);
@@ -133,18 +176,25 @@ export function useImportRateLimit() {
     return message;
   }, [t, toast]);
 
-  // Show file validation error (size/lines)
-  const showFileError = useCallback((errorKey: string) => {
+  // Show file validation error (size/lines/files) + log to system_events
+  const showFileError = useCallback((errorKey: string, siteId?: string, filename?: string) => {
     const message = t(`csvImport.${errorKey}`);
-    const suggestion = t("csvImport.suggestion");
 
     toast({
-      title: errorKey === "fileSizeError" 
-        ? t("csvImport.fileSizeError").split(".")[0] 
-        : t("csvImport.maxLinesError").split(".")[0],
-      description: `${message}`,
+      title: t(`csvImport.${errorKey}`).split(".")[0],
+      description: message,
       variant: "destructive"
     });
+
+    // TAEX-197: Log to system_events if we have site context
+    if (siteId) {
+      logValidationError(siteId, filename || 'unknown', errorKey, {
+        error_type: errorKey,
+        max_size_mb: CSV_MAX_SIZE_MB,
+        max_lines: CSV_MAX_LINES,
+        max_files: CSV_MAX_FILES_PER_BATCH
+      });
+    }
 
     return message;
   }, [t, toast]);
@@ -152,14 +202,19 @@ export function useImportRateLimit() {
   return {
     validateFile,
     validateLines,
+    validateFilesInBatch,
     checkRateLimit,
     showValidationError,
     showFileError,
+    logValidationError,
     isChecking,
     limits: {
       maxSizeBytes: CSV_MAX_SIZE_BYTES,
-      maxSizeMB: 20,
-      maxLines: CSV_MAX_LINES
+      maxSizeMB: CSV_MAX_SIZE_MB,
+      maxLines: CSV_MAX_LINES,
+      maxFiles: CSV_MAX_FILES_PER_BATCH,
+      hourlyImports: HOURLY_IMPORT_BATCHES_PER_SITE,
+      dailyImports: DAILY_IMPORT_BATCHES_PER_SITE
     }
   };
 }

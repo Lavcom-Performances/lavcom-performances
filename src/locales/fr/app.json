@@ -745,25 +745,36 @@
     }
   },
   "csvImport": {
-    "fileSizeError": "Le fichier est trop volumineux (max 20 Mo). Essayez d'importer par périodes plus courtes (1 à 3 mois).",
+    "fileSizeError": "Fichier trop volumineux (max 10 Mo).",
     "fileTypeError": "Seuls les fichiers CSV sont acceptés.",
-    "maxLinesError": "Le fichier contient trop de lignes (max 200 000). Essayez de le découper en plusieurs fichiers.",
+    "maxLinesError": "Trop de lignes (max 200 000).",
+    "maxFilesError": "Trop de fichiers dans un import (max 10).",
     "frequencyError": "Imports trop rapprochés. Réessayez dans {{time}}.",
     "frequencyErrorSite": "Un import est déjà en cours sur cette laverie. Réessayez dans {{time}}.",
     "frequencyErrorUser": "Vous avez atteint la limite d'imports. Réessayez dans {{time}}.",
+    "rateLimitHourly": "Limite horaire atteinte (2 imports/h). Réessayez dans {{time}}.",
+    "rateLimitDaily": "Limite journalière atteinte (6 imports/jour). Réessayez dans {{time}}.",
+    "rateLimitGeneric": "Limite d'import atteinte. Réessayez plus tard.",
+    "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
     "validating": "Validation en cours...",
     "suggestion": "Vous pouvez importer vos données par période (ex : mois par mois) pour de meilleurs résultats.",
+    "limitsInfo": "Limites : 10 Mo, 200k lignes, 10 fichiers. {{hourly}}/h et {{daily}}/jour par site.",
     "multi": {
       "maxFiles": "Maximum 10 fichiers par import.",
       "filesSelected": "{{count}} fichier(s) sélectionné(s)",
-      "dropzone": "Glissez vos fichiers CSV ici ou cliquez pour sélectionner (max 10)"
+      "dropzone": "Glissez vos fichiers CSV ici ou cliquez pour sélectionner (max 10)",
+      "skipInvalid": "Les fichiers invalides seront ignorés."
     },
     "summary": {
       "totalCbEsp": "Total des montants (CB + ESP)",
       "totalFi": "Total FI",
       "totalLines": "Total lignes fichiers",
       "transactions": "Nombre de transactions",
-      "period": "Période"
+      "period": "Période",
+      "skipped": "Fichiers ignorés",
+      "imported": "Importés",
+      "duplicates": "Doublons",
+      "errors": "Erreurs"
     },
     "lines": {
       "toReview": "À vérifier",

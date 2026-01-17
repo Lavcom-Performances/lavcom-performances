@@ -745,25 +745,36 @@
     }
   },
   "csvImport": {
-    "fileSizeError": "File is too large (max 20 MB). Try importing by shorter periods (1 to 3 months).",
+    "fileSizeError": "File too large (max 10 MB).",
     "fileTypeError": "Only CSV files are accepted.",
-    "maxLinesError": "File contains too many rows (max 200,000). Try splitting it into multiple files.",
+    "maxLinesError": "Too many rows (max 200k).",
+    "maxFilesError": "Too many files in one import (max 10).",
     "frequencyError": "Imports too close together. Try again in {{time}}.",
     "frequencyErrorSite": "An import is already in progress for this laundry. Try again in {{time}}.",
     "frequencyErrorUser": "You have reached the import limit. Try again in {{time}}.",
+    "rateLimitHourly": "Hourly limit reached (2 imports/h). Try again in {{time}}.",
+    "rateLimitDaily": "Daily limit reached (6 imports/day). Try again in {{time}}.",
+    "rateLimitGeneric": "Import limit reached. Try again later.",
+    "sessionExpired": "Session expired. Please log in again.",
     "validating": "Validating...",
     "suggestion": "You can import your data by period (e.g. month by month) for better results.",
+    "limitsInfo": "Limits: 10 MB, 200k rows, 10 files. {{hourly}}/h and {{daily}}/day per site.",
     "multi": {
       "maxFiles": "Maximum 10 files per import.",
       "filesSelected": "{{count}} file(s) selected",
-      "dropzone": "Drop your CSV files here or click to select (max 10)"
+      "dropzone": "Drop your CSV files here or click to select (max 10)",
+      "skipInvalid": "Invalid files will be skipped."
     },
     "summary": {
       "totalCbEsp": "Total amounts (CB + ESP)",
       "totalFi": "Total FI",
       "totalLines": "Total file lines",
       "transactions": "Number of transactions",
-      "period": "Period"
+      "period": "Period",
+      "skipped": "Skipped files",
+      "imported": "Imported",
+      "duplicates": "Duplicates",
+      "errors": "Errors"
     },
     "lines": {
       "toReview": "To review",
