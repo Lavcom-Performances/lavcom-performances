@@ -1,10 +1,13 @@
 /**
  * Types for multi-CSV import functionality
+ * TAEX-197: Import guardrails
  */
 
 import { NormalizedPaymentMode } from './normalizePaymentMode';
+import { CSV_MAX_FILES_PER_BATCH } from '@/lib/rateLimiter';
 
-export const MAX_FILES_PER_IMPORT = 10;
+// Re-export from centralized config
+export const MAX_FILES_PER_IMPORT = CSV_MAX_FILES_PER_BATCH;
 export const MAX_PREVIEW_ROWS_PER_FILE = 50;
 
 /**

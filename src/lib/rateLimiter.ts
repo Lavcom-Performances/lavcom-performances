@@ -1,14 +1,34 @@
 // Client-side rate limiting utilities
 // Complements server-side rate limiting for better UX
 
+// ============================================
+// TAEX-197: Import guardrails configuration
+// ============================================
+
+// File validation limits
+export const CSV_MAX_SIZE_MB = 10;
+export const CSV_MAX_SIZE_BYTES = CSV_MAX_SIZE_MB * 1024 * 1024;
+export const CSV_MAX_LINES = 200_000;
+export const CSV_MAX_FILES_PER_BATCH = 10;
+
+// Rate limiting - per site (based on import_batches counts)
+export const DAILY_IMPORT_BATCHES_PER_SITE = 6;
+export const HOURLY_IMPORT_BATCHES_PER_SITE = 2;
+
+// Cooldown after validation failure (minutes)
+export const COOLDOWN_MINUTES_AFTER_FAIL = 5;
+
 // Rate limit configurations (mirror of server config)
 export const RATE_LIMITS = {
   'auth/login': { maxRequests: 8, windowSeconds: 600 },
   'auth/signup': { maxRequests: 5, windowSeconds: 3600 },
   'auth/resend': { maxRequests: 3, windowSeconds: 900 },
   'auth/reset': { maxRequests: 3, windowSeconds: 900 },
-  'import/csv-site': { maxRequests: 1, windowSeconds: 120 },
-  'import/csv-user': { maxRequests: 10, windowSeconds: 3600 },
+  // TAEX-197: Updated import limits
+  'import/csv-site-hourly': { maxRequests: HOURLY_IMPORT_BATCHES_PER_SITE, windowSeconds: 3600 },
+  'import/csv-site-daily': { maxRequests: DAILY_IMPORT_BATCHES_PER_SITE, windowSeconds: 86400 },
+  'import/csv-site': { maxRequests: 1, windowSeconds: 120 },    // Legacy: 1 per 2 min per site
+  'import/csv-user': { maxRequests: 10, windowSeconds: 3600 },  // 10 per hour per user
   'export/pdf': { maxRequests: 5, windowSeconds: 600 },
   'export/xlsx': { maxRequests: 5, windowSeconds: 600 },
 } as const;
@@ -140,30 +160,43 @@ export function getCooldownRemaining(scope: RateLimitScope, identifier: string):
   return 0;
 }
 
-// File size validation for CSV imports
-export const CSV_MAX_SIZE_MB = 20;
-export const CSV_MAX_SIZE_BYTES = CSV_MAX_SIZE_MB * 1024 * 1024;
-export const CSV_MAX_LINES = 200000;
+// ============================================
+// File validation utilities
+// ============================================
 
-export function validateCSVFile(file: File): { valid: boolean; error?: string } {
+export interface FileValidationResult {
+  valid: boolean;
+  error?: string;
+  errorKey?: string;
+}
+
+export function validateCSVFile(file: File): FileValidationResult {
   // Check file extension
   const extension = file.name.split('.').pop()?.toLowerCase();
   if (extension !== 'csv') {
-    return { valid: false, error: 'fileTypeError' };
+    return { valid: false, error: 'fileTypeError', errorKey: 'fileTypeError' };
   }
 
-  // Check file size
+  // Check file size (TAEX-197: max 10MB)
   if (file.size > CSV_MAX_SIZE_BYTES) {
-    return { valid: false, error: 'fileSizeError' };
+    return { valid: false, error: 'fileSizeError', errorKey: 'fileSizeError' };
   }
 
   return { valid: true };
 }
 
-// Validate line count after parsing
-export function validateLineCount(lineCount: number): { valid: boolean; error?: string } {
+// Validate line count after parsing (TAEX-197: max 200k)
+export function validateLineCount(lineCount: number): FileValidationResult {
   if (lineCount > CSV_MAX_LINES) {
-    return { valid: false, error: 'maxLinesError' };
+    return { valid: false, error: 'maxLinesError', errorKey: 'maxLinesError' };
+  }
+  return { valid: true };
+}
+
+// Validate file count in batch (TAEX-197: max 10)
+export function validateFilesCount(count: number): FileValidationResult {
+  if (count > CSV_MAX_FILES_PER_BATCH) {
+    return { valid: false, error: 'maxFilesError', errorKey: 'maxFilesError' };
   }
   return { valid: true };
 }

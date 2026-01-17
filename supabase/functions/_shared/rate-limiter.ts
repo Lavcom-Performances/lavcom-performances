@@ -1,4 +1,11 @@
 // Rate limit configurations
+// TAEX-197: Updated import guardrails
+
+// Import limits constants
+export const DAILY_IMPORT_BATCHES_PER_SITE = 6;
+export const HOURLY_IMPORT_BATCHES_PER_SITE = 2;
+export const COOLDOWN_MINUTES_AFTER_FAIL = 5;
+
 export const RATE_LIMITS = {
   // Auth endpoints
   'auth/login': { maxRequests: 8, windowSeconds: 600 },        // 8 per 10 min
@@ -11,8 +18,10 @@ export const RATE_LIMITS = {
   'edge/create-demo': { maxRequests: 1, windowSeconds: 86400 },      // 1 per 24h
   'edge/compute-analytics-cron': { maxRequests: 2, windowSeconds: 300 }, // 2 per 5 min
   
-  // Import/Export
-  'import/csv-site': { maxRequests: 1, windowSeconds: 120 },    // 1 per 2 min per site
+  // Import/Export - TAEX-197: Updated limits
+  'import/csv-site-hourly': { maxRequests: HOURLY_IMPORT_BATCHES_PER_SITE, windowSeconds: 3600 },   // 2 per hour per site
+  'import/csv-site-daily': { maxRequests: DAILY_IMPORT_BATCHES_PER_SITE, windowSeconds: 86400 },    // 6 per day per site
+  'import/csv-site': { maxRequests: 1, windowSeconds: 120 },    // 1 per 2 min per site (legacy)
   'import/csv-user': { maxRequests: 10, windowSeconds: 3600 },  // 10 per hour per user
   'export/pdf': { maxRequests: 5, windowSeconds: 600 },         // 5 per 10 min
   'export/xlsx': { maxRequests: 5, windowSeconds: 600 },        // 5 per 10 min

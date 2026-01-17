@@ -1,9 +1,9 @@
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { 
-  checkRateLimit, 
   hashIP, 
-  rateLimitResponse,
-  type RateLimitScope 
+  formatCooldown,
+  DAILY_IMPORT_BATCHES_PER_SITE,
+  HOURLY_IMPORT_BATCHES_PER_SITE,
 } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
@@ -11,7 +11,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Helper to log system events and send alerts for critical ones
+// TAEX-197: Log system events for import guardrails
 async function logSystemEvent(
   supabase: SupabaseClient,
   severity: 'info' | 'warn' | 'error' | 'critical',
@@ -58,6 +58,101 @@ async function logSystemEvent(
   }
 }
 
+// TAEX-197: Check import rate limits using import_batches table
+async function checkImportRateLimits(
+  supabase: SupabaseClient,
+  siteId: string,
+  userId: string
+): Promise<{ 
+  allowed: boolean; 
+  reason?: 'hourly_site' | 'daily_site' | 'user'; 
+  cooldownSeconds?: number;
+  remaining?: { hourly: number; daily: number };
+}> {
+  const now = new Date();
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+  // Count imports in the last hour for this site
+  const { count: hourlyCount, error: hourlyError } = await supabase
+    .from('import_batches')
+    .select('*', { count: 'exact', head: true })
+    .eq('site_id', siteId)
+    .gte('created_at', oneHourAgo.toISOString());
+
+  if (hourlyError) {
+    console.error('Error checking hourly rate limit:', hourlyError);
+    return { allowed: true }; // Fail open
+  }
+
+  // Count imports in the last 24 hours for this site
+  const { count: dailyCount, error: dailyError } = await supabase
+    .from('import_batches')
+    .select('*', { count: 'exact', head: true })
+    .eq('site_id', siteId)
+    .gte('created_at', oneDayAgo.toISOString());
+
+  if (dailyError) {
+    console.error('Error checking daily rate limit:', dailyError);
+    return { allowed: true }; // Fail open
+  }
+
+  const hourlyRemaining = HOURLY_IMPORT_BATCHES_PER_SITE - (hourlyCount || 0);
+  const dailyRemaining = DAILY_IMPORT_BATCHES_PER_SITE - (dailyCount || 0);
+
+  // Check hourly limit (stricter)
+  if ((hourlyCount || 0) >= HOURLY_IMPORT_BATCHES_PER_SITE) {
+    // Find the oldest import in the last hour to calculate cooldown
+    const { data: oldestHourly } = await supabase
+      .from('import_batches')
+      .select('created_at')
+      .eq('site_id', siteId)
+      .gte('created_at', oneHourAgo.toISOString())
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .single();
+
+    const cooldownSeconds = oldestHourly 
+      ? Math.ceil((new Date(oldestHourly.created_at).getTime() + 3600000 - now.getTime()) / 1000)
+      : 3600;
+
+    return { 
+      allowed: false, 
+      reason: 'hourly_site', 
+      cooldownSeconds: Math.max(0, cooldownSeconds),
+      remaining: { hourly: 0, daily: dailyRemaining }
+    };
+  }
+
+  // Check daily limit
+  if ((dailyCount || 0) >= DAILY_IMPORT_BATCHES_PER_SITE) {
+    const { data: oldestDaily } = await supabase
+      .from('import_batches')
+      .select('created_at')
+      .eq('site_id', siteId)
+      .gte('created_at', oneDayAgo.toISOString())
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .single();
+
+    const cooldownSeconds = oldestDaily 
+      ? Math.ceil((new Date(oldestDaily.created_at).getTime() + 86400000 - now.getTime()) / 1000)
+      : 86400;
+
+    return { 
+      allowed: false, 
+      reason: 'daily_site', 
+      cooldownSeconds: Math.max(0, cooldownSeconds),
+      remaining: { hourly: hourlyRemaining, daily: 0 }
+    };
+  }
+
+  return { 
+    allowed: true,
+    remaining: { hourly: hourlyRemaining, daily: dailyRemaining }
+  };
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -93,7 +188,7 @@ Deno.serve(async (req) => {
 
     // Parse request body
     const body = await req.json();
-    const { site_id, filename } = body;
+    const { site_id, filename, validation_error } = body;
 
     if (!site_id) {
       return new Response(
@@ -124,48 +219,92 @@ Deno.serve(async (req) => {
                      "unknown";
     const ipHash = await hashIP(clientIP);
 
-    // Check rate limit: 1 import per 2 min per site
-    const siteRateLimit = await checkRateLimit(
-      supabaseUrl,
-      supabaseServiceKey,
-      "import/csv-site" as RateLimitScope,
-      site_id,
-      ipHash
-    );
+    // TAEX-197: Log validation errors if sent by client
+    if (validation_error) {
+      await logSystemEvent(
+        supabase,
+        'warn',
+        'IMPORT_VALIDATION_FAIL',
+        `Import validation failed: ${validation_error.reason}`,
+        {
+          user_id: user.id,
+          site_id,
+          site_name: site.name,
+          filename: filename || 'unknown',
+          reason_code: validation_error.reason,
+          details: validation_error.details,
+          ip_hash: ipHash
+        }
+      );
 
-    if (!siteRateLimit.allowed) {
-      console.log(`Rate limit (site): user=${user.id.slice(0, 8)}, site=${site_id.slice(0, 8)}, cooldown=${siteRateLimit.cooldownSeconds}s`);
-      return rateLimitResponse(siteRateLimit.cooldownSeconds || 120, "import/csv-site", corsHeaders);
+      return new Response(
+        JSON.stringify({ logged: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Check rate limit: 10 imports per hour per user
-    const userRateLimit = await checkRateLimit(
-      supabaseUrl,
-      supabaseServiceKey,
-      "import/csv-user" as RateLimitScope,
-      user.id,
-      ipHash
-    );
+    // TAEX-197: Check rate limits using import_batches
+    const rateLimitResult = await checkImportRateLimits(supabase, site_id, user.id);
 
-    if (!userRateLimit.allowed) {
-      console.log(`Rate limit (user): user=${user.id.slice(0, 8)}, cooldown=${userRateLimit.cooldownSeconds}s`);
-      return rateLimitResponse(userRateLimit.cooldownSeconds || 3600, "import/csv-user", corsHeaders);
+    if (!rateLimitResult.allowed) {
+      const cooldownSeconds = rateLimitResult.cooldownSeconds || 3600;
+      const scope = rateLimitResult.reason === 'hourly_site' 
+        ? 'import/csv-site-hourly' 
+        : 'import/csv-site-daily';
+
+      // Log rate limit block
+      await logSystemEvent(
+        supabase,
+        'info',
+        'IMPORT_RATE_LIMIT',
+        `Import rate limit reached: ${rateLimitResult.reason}`,
+        {
+          user_id: user.id,
+          site_id,
+          site_name: site.name,
+          filename: filename || 'unknown',
+          reason: rateLimitResult.reason,
+          cooldown_seconds: cooldownSeconds,
+          ip_hash: ipHash
+        }
+      );
+
+      console.log(`Rate limit (${rateLimitResult.reason}): user=${user.id.slice(0, 8)}, site=${site_id.slice(0, 8)}, cooldown=${cooldownSeconds}s`);
+      
+      return new Response(
+        JSON.stringify({
+          error: 'rate_limit_exceeded',
+          scope,
+          cooldown_seconds: cooldownSeconds,
+          cooldown_formatted: formatCooldown(cooldownSeconds),
+          message_key: rateLimitResult.reason === 'hourly_site' 
+            ? 'csvImport.rateLimitHourly' 
+            : 'csvImport.rateLimitDaily',
+          retry_after: cooldownSeconds,
+          remaining: rateLimitResult.remaining
+        }),
+        {
+          status: 429,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+            'Retry-After': cooldownSeconds.toString()
+          }
+        }
+      );
     }
 
     // Log successful check (minimal, no sensitive data)
-    console.log(`Import check OK: user=${user.id.slice(0, 8)}, site=${site_id.slice(0, 8)}, remaining_site=${siteRateLimit.remaining}, remaining_user=${userRateLimit.remaining}`);
+    console.log(`Import check OK: user=${user.id.slice(0, 8)}, site=${site_id.slice(0, 8)}, remaining_hourly=${rateLimitResult.remaining?.hourly}, remaining_daily=${rateLimitResult.remaining?.daily}`);
 
     // Return success with remaining quotas
     return new Response(
       JSON.stringify({
         allowed: true,
-        remaining: {
-          site: siteRateLimit.remaining,
-          user: userRateLimit.remaining
-        },
-        reset_in: {
-          site: siteRateLimit.resetIn,
-          user: userRateLimit.resetIn
+        remaining: rateLimitResult.remaining,
+        limits: {
+          hourly: HOURLY_IMPORT_BATCHES_PER_SITE,
+          daily: DAILY_IMPORT_BATCHES_PER_SITE
         }
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
