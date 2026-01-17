@@ -1706,6 +1706,10 @@ export type Database = {
           total_count: number
         }[]
       }
+      rpc_get_benchmarks: {
+        Args: { p_end_date: string; p_site_id: string; p_start_date: string }
+        Returns: Json
+      }
       rpc_log_system_event: {
         Args: {
           p_code: string

@@ -1683,5 +1683,31 @@
         "step3": "Track distribution changes"
       }
     }
+  },
+  "benchmarks": {
+    "title": "Anonymous benchmarks",
+    "tooltip": "Aggregated and anonymized data from similar laundromats to help you compare. No individual data is visible.",
+    "unavailable": "Benchmarks unavailable (insufficient sample)",
+    "sites": "sites",
+    "scope": {
+      "department": "Department {{code}}",
+      "region": "Region {{code}}",
+      "national": "France"
+    },
+    "you": "You",
+    "median": "Median",
+    "avgMarket": "Market avg.",
+    "typical": "Typical",
+    "metrics": {
+      "dailyRevenue": "Avg. daily revenue",
+      "paymentMix": "Card / Cash mix",
+      "peakHours": "Peak hours"
+    },
+    "badges": {
+      "above": "Above",
+      "average": "Average",
+      "below": "Below"
+    },
+    "disclaimer": "100% anonymized data. No individual laundromat is identifiable."
   }
 }

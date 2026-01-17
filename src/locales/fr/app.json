@@ -1683,5 +1683,31 @@
         "step3": "Suivre l'évolution de la répartition"
       }
     }
+  },
+  "benchmarks": {
+    "title": "Références anonymisées",
+    "tooltip": "Données agrégées et anonymisées de laveries similaires pour vous situer. Aucune donnée individuelle n'est visible.",
+    "unavailable": "Benchmarks indisponibles (échantillon insuffisant)",
+    "sites": "laveries",
+    "scope": {
+      "department": "Département {{code}}",
+      "region": "Région {{code}}",
+      "national": "France"
+    },
+    "you": "Vous",
+    "median": "Médiane",
+    "avgMarket": "Moy. marché",
+    "typical": "Typique",
+    "metrics": {
+      "dailyRevenue": "CA journalier moyen",
+      "paymentMix": "Mix CB / Espèces",
+      "peakHours": "Heures de pointe"
+    },
+    "badges": {
+      "above": "Au-dessus",
+      "average": "Dans la moyenne",
+      "below": "En dessous"
+    },
+    "disclaimer": "Données 100% anonymisées. Aucune laverie individuelle n'est identifiable."
   }
 }
