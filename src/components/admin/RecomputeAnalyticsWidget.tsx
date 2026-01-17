@@ -42,9 +42,11 @@ interface RecomputeResult {
   daily_records_written: number;
   kpi_records_written: number;
   duration_ms: number;
+  force_bypass?: boolean;
 }
 
 const MAX_RANGE_DAYS = 90;
+const FORCE_BYPASS_PHRASE = "FORCE FULL RECOMPUTE";
 
 export function RecomputeAnalyticsWidget({ className }: { className?: string }) {
   const [sites, setSites] = useState<Site[]>([]);
@@ -65,11 +67,26 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
   // Danger zone dialog
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmInput, setConfirmInput] = useState('');
+  
+  // Force bypass for super admins
+  const [forceBypassOpen, setForceBypassOpen] = useState(false);
+  const [forceBypassInput, setForceBypassInput] = useState('');
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
-  // Fetch sites
+  // Fetch sites and check super admin status
   useEffect(() => {
-    const fetchSites = async () => {
+    const fetchData = async () => {
       try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        // Check super admin status
+        if (user) {
+          const { data: isSuperAdminResult } = await supabase.rpc('is_platform_super_admin', { uid: user.id });
+          setIsSuperAdmin(isSuperAdminResult === true);
+        }
+        
+        // Fetch sites
         const { data, error } = await supabase
           .from('sites')
           .select('id, name, city')
@@ -87,7 +104,7 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
       }
     };
 
-    fetchSites();
+    fetchData();
   }, []);
 
   // Filter sites based on search
@@ -108,11 +125,18 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
 
   const isRangeValid = rangeDays > 0 && rangeDays <= MAX_RANGE_DAYS;
   const canSubmit = selectedSite && dateRange?.from && dateRange?.to && isRangeValid;
+  const canForceBypass = isSuperAdmin && selectedSite && dateRange?.from && dateRange?.to && rangeDays > MAX_RANGE_DAYS;
 
   const handleOpenConfirm = () => {
     if (!canSubmit) return;
     setConfirmInput('');
     setConfirmOpen(true);
+  };
+  
+  const handleOpenForceBypass = () => {
+    if (!canForceBypass) return;
+    setForceBypassInput('');
+    setForceBypassOpen(true);
   };
 
   const handleConfirmRecompute = async () => {
@@ -135,6 +159,7 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
           site_id: selectedSite.id,
           date_from: format(dateRange.from, 'yyyy-MM-dd'),
           date_to: format(dateRange.to, 'yyyy-MM-dd'),
+          force_bypass: false,
         },
       });
 
@@ -148,6 +173,49 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
 
       setResult(data as RecomputeResult);
       toast.success(`Analytics recalculées: ${data.operations_processed} opérations traitées`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erreur inconnue';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  const handleForceBypassRecompute = async () => {
+    if (!selectedSite || !dateRange?.from || !dateRange?.to) return;
+    
+    // Validate force bypass confirmation
+    if (forceBypassInput !== FORCE_BYPASS_PHRASE) {
+      toast.error('Confirmation incorrecte');
+      return;
+    }
+
+    setForceBypassOpen(false);
+    setRunning(true);
+    setResult(null);
+    setError(null);
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('recompute-analytics', {
+        body: {
+          site_id: selectedSite.id,
+          date_from: format(dateRange.from, 'yyyy-MM-dd'),
+          date_to: format(dateRange.to, 'yyyy-MM-dd'),
+          force_bypass: true,
+        },
+      });
+
+      if (fnError) {
+        throw fnError;
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      setResult({ ...data, force_bypass: true } as RecomputeResult);
+      toast.success(`⚠️ FORCE BYPASS: ${data.operations_processed} opérations recalculées sur ${data.range_days} jours`);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur inconnue';
       setError(message);
@@ -284,15 +352,22 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
             </div>
             
             {!isRangeValid && rangeDays > MAX_RANGE_DAYS && (
-              <p className="text-sm text-destructive flex items-center gap-1">
-                <AlertTriangle className="h-4 w-4" />
-                Maximum {MAX_RANGE_DAYS} jours autorisés
-              </p>
+              <div className="space-y-1">
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertTriangle className="h-4 w-4" />
+                  Maximum {MAX_RANGE_DAYS} jours autorisés
+                </p>
+                {isSuperAdmin && (
+                  <p className="text-xs text-muted-foreground">
+                    En tant que super admin, vous pouvez forcer un recalcul au-delà de cette limite.
+                  </p>
+                )}
+              </div>
             )}
           </div>
 
-          {/* Action Button */}
-          <div className="flex items-center gap-4">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-4 flex-wrap">
             <Button 
               onClick={handleOpenConfirm} 
               disabled={!canSubmit || running}
@@ -306,14 +381,39 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
               )}
               {running ? 'Recalcul en cours...' : 'Recalculer Analytics'}
             </Button>
+            
+            {/* Force Bypass Button - Super Admin Only */}
+            {isSuperAdmin && canForceBypass && (
+              <Button 
+                onClick={handleOpenForceBypass} 
+                disabled={running}
+                variant="destructive"
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {running ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                )}
+                Force Recalcul ({rangeDays} jours)
+              </Button>
+            )}
           </div>
 
           {/* Result Banner */}
           {result && (
-            <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+            <div className={cn(
+              "p-4 rounded-lg border",
+              result.force_bypass 
+                ? "bg-amber-500/10 border-amber-500/20" 
+                : "bg-green-500/10 border-green-500/20"
+            )}>
               <div className="flex items-center gap-2 mb-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-                <span className="font-medium text-green-700">Recalcul terminé avec succès</span>
+                <CheckCircle2 className={cn("h-5 w-5", result.force_bypass ? "text-amber-500" : "text-green-500")} />
+                <span className={cn("font-medium", result.force_bypass ? "text-amber-700" : "text-green-700")}>
+                  Recalcul terminé avec succès
+                  {result.force_bypass && <Badge variant="outline" className="ml-2 text-amber-600 border-amber-600">FORCE BYPASS</Badge>}
+                </span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                 <div>
@@ -396,6 +496,60 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
               className="bg-orange-500 hover:bg-orange-600"
             >
               Confirmer le recalcul
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Force Bypass Confirmation Dialog - Super Admin Only */}
+      <Dialog open={forceBypassOpen} onOpenChange={setForceBypassOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <AlertTriangle className="h-5 w-5" />
+              ⚠️ FORCE BYPASS - Super Admin
+            </DialogTitle>
+            <DialogDescription className="space-y-2">
+              <p>
+                <strong className="text-red-600">ATTENTION: Cette action dépasse la limite de sécurité de {MAX_RANGE_DAYS} jours.</strong>
+              </p>
+              <p>
+                Vous allez recalculer <strong>{rangeDays} jours</strong> d'analytics pour{" "}
+                <strong>{selectedSite?.name}</strong> du{" "}
+                {dateRange?.from && format(dateRange.from, "dd/MM/yyyy")} au{" "}
+                {dateRange?.to && format(dateRange.to, "dd/MM/yyyy")}.
+              </p>
+              <p className="text-amber-600">
+                Cette opération peut prendre plusieurs minutes et impacter temporairement les performances.
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-2 py-4">
+            <Label htmlFor="force-bypass-input">
+              Tapez <code className="bg-muted px-1 rounded text-red-600">{FORCE_BYPASS_PHRASE}</code> pour confirmer:
+            </Label>
+            <Input
+              id="force-bypass-input"
+              value={forceBypassInput}
+              onChange={(e) => setForceBypassInput(e.target.value)}
+              placeholder={FORCE_BYPASS_PHRASE}
+              autoComplete="off"
+              className="border-red-200 focus:border-red-500"
+            />
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setForceBypassOpen(false)}>
+              Annuler
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleForceBypassRecompute}
+              disabled={forceBypassInput !== FORCE_BYPASS_PHRASE}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              FORCER LE RECALCUL
             </Button>
           </DialogFooter>
         </DialogContent>

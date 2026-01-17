@@ -38,6 +38,7 @@ interface RecomputeRequest {
   site_id: string;
   date_from: string;
   date_to: string;
+  force_bypass?: boolean; // Super admin only: bypass 90-day limit
 }
 
 // Calculate days between two dates
@@ -113,7 +114,7 @@ Deno.serve(async (req) => {
     }
 
     // Parse request
-    const { site_id, date_from, date_to }: RecomputeRequest = await req.json();
+    const { site_id, date_from, date_to, force_bypass }: RecomputeRequest = await req.json();
 
     // Validate required fields
     if (!site_id || !date_from || !date_to) {
@@ -139,17 +140,42 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Check max range (90 days)
+    // Check max range (90 days) - can be bypassed by super admin with force_bypass flag
     const rangeDays = daysBetween(date_from, date_to);
     if (rangeDays > MAX_RANGE_DAYS) {
-      return new Response(
-        JSON.stringify({ 
-          error: `Date range exceeds maximum of ${MAX_RANGE_DAYS} days. Requested: ${rangeDays} days`,
-          max_days: MAX_RANGE_DAYS,
+      if (!force_bypass) {
+        return new Response(
+          JSON.stringify({ 
+            error: `Date range exceeds maximum of ${MAX_RANGE_DAYS} days. Requested: ${rangeDays} days`,
+            max_days: MAX_RANGE_DAYS,
+            requested_days: rangeDays,
+            can_force_bypass: isSuperAdmin,
+          }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      // force_bypass requested - verify super admin
+      if (!isSuperAdmin) {
+        console.error("[recompute-analytics] Force bypass requested by non-super-admin:", actorId);
+        await logEvent(supabase, 'error', 'RECOMPUTE_BYPASS_DENIED', 'Non-super-admin attempted force bypass', {
+          actor_id: actorId,
+          actor_email: actorEmail,
           requested_days: rangeDays,
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+        });
+        return new Response(
+          JSON.stringify({ error: "Force bypass requires super_admin privileges" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      
+      console.log(`[recompute-analytics] Force bypass enabled by super admin for ${rangeDays} days`);
+      await logEvent(supabase, 'warn', 'RECOMPUTE_FORCE_BYPASS', `Super admin bypassing ${MAX_RANGE_DAYS}-day limit`, {
+        actor_id: actorId,
+        actor_email: actorEmail,
+        requested_days: rangeDays,
+        site_id,
+      });
     }
 
     // Fetch site info
