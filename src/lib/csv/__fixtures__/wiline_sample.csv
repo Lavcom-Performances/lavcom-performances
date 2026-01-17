@@ -1,0 +1,12 @@
+Date/Heure(Europe/Paris);;Type;Selection;Description;Pièce;Billet;Carte bancaire;Fidélitée;Prix;Insérée;Rendue;N° Transaction
+15/03/2024;08:30:15;Démarrage;22;Machines 12kg;0;0;7,00;0;7,00;7,00;0;TRX-001
+15/03/2024;09:00:22;Démarrage;17;Séchoirs 13kg;3,00;0;0;0;3,00;3,00;0;TRX-002
+15/03/2024;09:15:45;Rechargement;01;Borne Fidélité;0;20,00;0;0;0;20,00;0;TRX-003
+15/03/2024;09:30:00;Démarrage;22;Machines 12kg;0;0;0;7,00;7,00;7,00;0;TRX-004
+15/03/2024;10:00:00;Démarrage;18;Séchoirs 18kg;2,00;0;2,50;0;4,50;4,50;0;TRX-005
+15/03/2024;10:30:15;Annulé;22;Machines 12kg;0;0;7,00;0;7,00;7,00;0;TRX-006
+15/03/2024;11:00:00;Démarrage;30;Lessive 2L;0;0;3,50;0;3,50;3,50;0;TRX-007
+15/03/2024;11:15:30;Démarrage;31;Détachant 500ml;0;0;0;2,50;2,50;2,50;0;TRX-008
+15/03/2024;11:30:45;Démarrage;32;Assouplissant 1L;1,50;0;0;0;1,50;1,50;0;TRX-009
+15/03/2024;08:30:15;Démarrage;22;Machines 12kg;0;0;7,00;0;7,00;7,00;0;TRX-001
+;;;TOTAUX;;;;0;20;27,00;9,50;43,50;43,50;0;

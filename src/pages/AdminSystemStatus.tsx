@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { toast } from 'sonner';
+import { ImportParserTestsWidget } from '@/components/admin/ImportParserTestsWidget';
 
 interface SystemEvent {
   id: number;
@@ -59,9 +60,11 @@ const sourceLabels: Record<string, string> = {
   'import_rate_limit': 'Import Rate Limit',
   'cron': 'Analytics Cron',
   'smoke-test': 'Smoke Test',
+  'smoke_tests_import': 'Import Parser Tests',
   'site_delete': 'Site Deletion',
   'member_remove': 'Member Removal',
   'backup_drill': 'Backup Drill',
+  'export': 'Export',
 };
 
 const testLabels: Record<string, string> = {
@@ -367,6 +370,9 @@ export default function AdminSystemStatus() {
             )}
           </CardContent>
         </Card>
+
+        {/* Import Parser Tests Section */}
+        <ImportParserTestsWidget />
 
         {/* Smoke Test Section */}
         <Card>
