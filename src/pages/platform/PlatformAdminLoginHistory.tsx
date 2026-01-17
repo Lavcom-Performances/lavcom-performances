@@ -45,6 +45,7 @@ import {
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { usePlatformRole } from '@/hooks/usePlatformRole';
+import { sanitizeForCsv, buildCsvLine, logExport } from '@/lib/exports';
 
 interface LoginLog {
   id: string;
@@ -136,29 +137,38 @@ export default function PlatformAdminLoginHistory() {
     mobile: logs?.filter(l => l.device_type === 'Mobile').length || 0,
   };
 
-  const exportLogs = () => {
+  const exportLogs = async () => {
     if (!filteredLogs?.length) return;
     
-    const csvContent = [
-      ['Date', 'Admin', 'Pays', 'Ville', 'Navigateur', 'OS', 'Appareil', 'Suspect', 'Raison'].join(';'),
-      ...filteredLogs.map(log => [
-        format(new Date(log.created_at), 'dd/MM/yyyy HH:mm'),
-        log.admin_email || '',
-        log.country || '',
-        log.city || '',
-        log.browser || '',
-        log.os || '',
-        log.device_type || '',
-        log.is_suspicious ? 'Oui' : 'Non',
-        log.suspicious_reason || '',
-      ].join(';'))
-    ].join('\n');
+    const headers = ['Date', 'Admin', 'Pays', 'Ville', 'Navigateur', 'OS', 'Appareil', 'Suspect', 'Raison'];
+    
+    // Sanitize all user-provided and external data
+    const rows = filteredLogs.map(log => [
+      format(new Date(log.created_at), 'dd/MM/yyyy HH:mm'),
+      sanitizeForCsv(log.admin_email || ''),
+      sanitizeForCsv(log.country || ''),
+      sanitizeForCsv(log.city || ''),
+      sanitizeForCsv(log.browser || ''),
+      sanitizeForCsv(log.os || ''),
+      sanitizeForCsv(log.device_type || ''),
+      log.is_suspicious ? 'Oui' : 'Non',
+      sanitizeForCsv(log.suspicious_reason || ''),
+    ]);
+    
+    const BOM = '\uFEFF';
+    const csvContent = BOM + [headers.join(';'), ...rows.map(r => buildCsvLine(r, ';'))].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `admin-logins-${format(new Date(), 'yyyy-MM-dd')}.csv`;
     link.click();
+
+    // Audit log the export
+    logExport({
+      exportType: 'admin_logins_csv',
+      recordCount: filteredLogs.length,
+    });
   };
 
   if (!isPlatformSuperAdmin && !isPlatformAdmin) {

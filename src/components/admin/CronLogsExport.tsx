@@ -2,6 +2,7 @@ import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { sanitizeForCsv, buildCsvLine, logExport } from "@/lib/exports";
 
 type CronLog = {
   id: string;
@@ -21,7 +22,7 @@ interface CronLogsExportProps {
 }
 
 export function CronLogsExport({ logs, disabled }: CronLogsExportProps) {
-  const exportToCSV = () => {
+  const exportToCSV = async () => {
     if (!logs?.length) return;
 
     // CSV headers
@@ -37,29 +38,23 @@ export function CronLogsExport({ logs, disabled }: CronLogsExportProps) {
       "Message d'erreur"
     ];
 
-    // CSV rows
+    // CSV rows - sanitize text fields for formula injection protection
     const rows = logs.map(log => [
       log.id,
-      log.job_name,
+      sanitizeForCsv(log.job_name),
       format(new Date(log.started_at), "yyyy-MM-dd HH:mm:ss", { locale: fr }),
       log.completed_at ? format(new Date(log.completed_at), "yyyy-MM-dd HH:mm:ss", { locale: fr }) : "",
-      log.status,
-      log.sites_processed?.toString() || "0",
-      log.sites_failed?.toString() || "0",
-      log.duration_ms?.toString() || "",
-      // Escape quotes and commas in error message
-      log.error_message ? `"${log.error_message.replace(/"/g, '""')}"` : ""
+      sanitizeForCsv(log.status),
+      log.sites_processed ?? 0,
+      log.sites_failed ?? 0,
+      log.duration_ms ?? "",
+      sanitizeForCsv(log.error_message || "")
     ]);
 
-    // Build CSV content
+    // Build CSV content with proper escaping
     const csvContent = [
       headers.join(";"),
-      ...rows.map(row => row.map(cell => 
-        // Wrap cells containing special characters
-        typeof cell === 'string' && (cell.includes(';') || cell.includes('\n') || cell.includes('"')) 
-          ? `"${cell.replace(/"/g, '""')}"` 
-          : cell
-      ).join(";"))
+      ...rows.map(row => buildCsvLine(row, ";"))
     ].join("\n");
 
     // Add BOM for Excel UTF-8 compatibility
@@ -75,6 +70,12 @@ export function CronLogsExport({ logs, disabled }: CronLogsExportProps) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    // Audit log the export
+    logExport({
+      exportType: 'cron_logs_csv',
+      recordCount: logs.length,
+    });
   };
 
   return (
