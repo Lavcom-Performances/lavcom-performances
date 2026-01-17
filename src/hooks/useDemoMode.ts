@@ -73,7 +73,7 @@ export function useDemoMode() {
       // Find demo site
       const { data: demoSite } = await supabase
         .from("sites")
-        .select("id")
+        .select("id, name")
         .eq("user_id", user.id)
         .eq("is_demo", true)
         .maybeSingle();
@@ -117,6 +117,22 @@ export function useDemoMode() {
         .eq("id", demoSite.id);
 
       if (deleteError) throw deleteError;
+
+      // Log deletion to system_events for audit trail
+      await supabase.rpc("rpc_log_system_event", {
+        p_source: "site_delete",
+        p_severity: "info",
+        p_code: "DEMO_SITE_DELETED",
+        p_message: `Demo site deleted by user`,
+        p_env: import.meta.env.MODE || "production",
+        p_meta: {
+          site_id: demoSite.id,
+          site_name: demoSite.name,
+          user_id: user.id,
+          user_email: user.email,
+          action: "delete_demo_site",
+        },
+      });
 
       // Clear localStorage if demo was selected
       const selectedSiteId = localStorage.getItem("selectedSiteId");
