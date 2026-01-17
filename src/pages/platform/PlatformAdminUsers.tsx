@@ -18,6 +18,7 @@ import {
 import { Search, Download, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { sanitizeForCsv, buildCsvLine, logExport } from '@/lib/exports';
 
 interface PlatformUser {
   id: string;
@@ -66,28 +67,38 @@ export default function PlatformAdminUsers() {
     },
   });
 
-  const exportCSV = () => {
+  const exportCSV = async () => {
     if (!data?.users) return;
     
     const headers = ['Email', 'Prénom', 'Nom', 'Entreprise', 'Inscrit le', 'Sites', 'Plan', 'Statut'];
+    
+    // Sanitize user-provided text fields
     const rows = data.users.map(u => [
-      u.email,
-      u.first_name || '',
-      u.last_name || '',
-      u.company_name || '',
+      sanitizeForCsv(u.email),
+      sanitizeForCsv(u.first_name || ''),
+      sanitizeForCsv(u.last_name || ''),
+      sanitizeForCsv(u.company_name || ''),
       format(new Date(u.created_at), 'dd/MM/yyyy'),
       u.site_count,
-      u.plan_type || '',
-      u.subscription_status || '',
+      sanitizeForCsv(u.plan_type || ''),
+      sanitizeForCsv(u.subscription_status || ''),
     ]);
     
-    const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
+    // Build CSV with proper escaping
+    const BOM = '\uFEFF';
+    const csv = BOM + [headers.join(';'), ...rows.map(r => buildCsvLine(r, ';'))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `users_${format(new Date(), 'yyyyMMdd')}.csv`;
     link.click();
+
+    // Audit log the export
+    logExport({
+      exportType: 'users_csv',
+      recordCount: data.users.length,
+    });
   };
 
   const getStatusBadge = (status: string | null, planType: string | null) => {

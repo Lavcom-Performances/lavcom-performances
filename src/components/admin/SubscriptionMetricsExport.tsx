@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { sanitizeForCsv, logExport } from "@/lib/exports";
 
 interface SubscriptionMetrics {
   active_subscriptions: number;
@@ -29,15 +30,15 @@ interface SubscriptionMetricsExportProps {
 }
 
 export function SubscriptionMetricsExport({ metrics, disabled }: SubscriptionMetricsExportProps) {
-  const exportToCSV = () => {
+  const exportToCSV = async () => {
     if (!metrics) return;
 
     const date = new Date().toISOString().split('T')[0];
     
-    // Build CSV content
+    // Build CSV content - sanitize all text values
     const lines: string[] = [];
     
-    // Header section
+    // Header section (safe static text, no sanitization needed)
     lines.push("Rapport Métriques Abonnements");
     lines.push(`Date d'export,${date}`);
     lines.push("");
@@ -59,24 +60,24 @@ export function SubscriptionMetricsExport({ metrics, disabled }: SubscriptionMet
     lines.push(`Essais expirant sous 7j,${metrics.trials_expiring_soon}`);
     lines.push("");
     
-    // Status breakdown
+    // Status breakdown - sanitize status names as they come from external source
     if (metrics.status_breakdown?.length) {
       lines.push("=== RÉPARTITION PAR STATUT ===");
       lines.push("Statut,Nombre");
       metrics.status_breakdown.forEach(item => {
-        lines.push(`${item.status},${item.count}`);
+        lines.push(`${sanitizeForCsv(item.status)},${item.count}`);
       });
       lines.push("");
     }
     
-    // Monthly trend
+    // Monthly trend - sanitize month labels
     if (metrics.monthly_trend?.length) {
       lines.push("=== TENDANCE MENSUELLE (6 derniers mois) ===");
       lines.push("Mois,Actifs,Nouveaux,Churned");
       metrics.monthly_trend.forEach(item => {
         const monthDate = new Date(item.month);
         const monthLabel = monthDate.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
-        lines.push(`${monthLabel},${item.active},${item.new},${item.churned}`);
+        lines.push(`${sanitizeForCsv(monthLabel)},${item.active},${item.new},${item.churned}`);
       });
     }
 
@@ -91,6 +92,13 @@ export function SubscriptionMetricsExport({ metrics, disabled }: SubscriptionMet
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    // Audit log the export
+    const recordCount = (metrics.status_breakdown?.length || 0) + (metrics.monthly_trend?.length || 0) + 12;
+    logExport({
+      exportType: 'subscription_metrics_csv',
+      recordCount,
+    });
   };
 
   return (

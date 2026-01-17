@@ -8,6 +8,7 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Download, FileSpreadsheet, Calendar, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
+import { sanitizeForCsv, buildCsvLine, logExport } from '@/lib/exports';
 
 interface MonthlyRevenue {
   month: number;
@@ -34,13 +35,13 @@ export default function PlatformSalesReports() {
     },
   });
 
-  const exportMonthlyCSV = () => {
+  const exportMonthlyCSV = async () => {
     const headers = ['Mois', 'HT', 'TVA', 'TTC', 'Nb Factures'];
     
     const rows = Array.from({ length: 12 }, (_, i) => {
       const monthData = monthlyRevenue?.find((m) => m.month === i + 1);
       return [
-        MONTH_NAMES[i],
+        sanitizeForCsv(MONTH_NAMES[i]),
         monthData?.subtotal ? (monthData.subtotal / 100).toFixed(2) : '0.00',
         monthData?.tax ? (monthData.tax / 100).toFixed(2) : '0.00',
         monthData?.total ? (monthData.total / 100).toFixed(2) : '0.00',
@@ -48,7 +49,6 @@ export default function PlatformSalesReports() {
       ];
     });
 
-    // Add totals row
     const totalSubtotal = monthlyRevenue?.reduce((sum, m) => sum + (m.subtotal || 0), 0) || 0;
     const totalTax = monthlyRevenue?.reduce((sum, m) => sum + (m.tax || 0), 0) || 0;
     const totalAmount = monthlyRevenue?.reduce((sum, m) => sum + (m.total || 0), 0) || 0;
@@ -62,16 +62,19 @@ export default function PlatformSalesReports() {
       totalCount,
     ]);
     
-    const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
+    const BOM = '\uFEFF';
+    const csv = BOM + [headers.join(';'), ...rows.map(r => buildCsvLine(r, ';'))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `rapport_mensuel_${selectedYear}_${format(new Date(), 'yyyyMMdd')}.csv`;
     link.click();
+
+    logExport({ exportType: 'monthly_revenue_csv', recordCount: 12, extra: { year: selectedYear } });
   };
 
-  const exportAnnualCSV = () => {
+  const exportAnnualCSV = async () => {
     const headers = ['Année', 'HT', 'TVA', 'TTC', 'Nb Factures'];
     
     const totalSubtotal = monthlyRevenue?.reduce((sum, m) => sum + (m.subtotal || 0), 0) || 0;
@@ -79,23 +82,24 @@ export default function PlatformSalesReports() {
     const totalAmount = monthlyRevenue?.reduce((sum, m) => sum + (m.total || 0), 0) || 0;
     const totalCount = monthlyRevenue?.reduce((sum, m) => sum + (m.count || 0), 0) || 0;
 
-    const rows = [
-      [
-        selectedYear,
-        (totalSubtotal / 100).toFixed(2),
-        (totalTax / 100).toFixed(2),
-        (totalAmount / 100).toFixed(2),
-        totalCount,
-      ]
-    ];
+    const rows = [[
+      selectedYear,
+      (totalSubtotal / 100).toFixed(2),
+      (totalTax / 100).toFixed(2),
+      (totalAmount / 100).toFixed(2),
+      totalCount,
+    ]];
     
-    const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
+    const BOM = '\uFEFF';
+    const csv = BOM + [headers.join(';'), ...rows.map(r => buildCsvLine(r, ';'))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `rapport_annuel_${selectedYear}_${format(new Date(), 'yyyyMMdd')}.csv`;
     link.click();
+
+    logExport({ exportType: 'annual_revenue_csv', recordCount: 1, extra: { year: selectedYear } });
   };
 
   // Calculate totals for display

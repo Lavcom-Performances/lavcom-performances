@@ -18,6 +18,7 @@ import { Download, Package } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatCentsToEuros, labelForPrice, classifySaleType } from '@/lib/salePriceUtils';
 import { Badge } from '@/components/ui/badge';
+import { sanitizeForCsv, buildCsvLine, logExport } from '@/lib/exports';
 
 interface ProductSale {
   price_id: string;
@@ -41,24 +42,34 @@ export default function PlatformSalesProducts() {
     },
   });
 
-  const exportCSV = () => {
+  const exportCSV = async () => {
     if (!products?.length) return;
     
     const headers = ['Produit', 'Type', 'Nb ventes', 'CA Total'];
+    
+    // Sanitize product labels as they may contain user input
     const rows = products.map(p => [
-      labelForPrice(p.price_id),
-      classifySaleType(p.price_id),
+      sanitizeForCsv(labelForPrice(p.price_id)),
+      sanitizeForCsv(classifySaleType(p.price_id)),
       p.sales_count,
       (p.total_amount / 100).toFixed(2),
     ]);
     
-    const csv = [headers, ...rows].map(r => r.join(';')).join('\n');
+    const BOM = '\uFEFF';
+    const csv = BOM + [headers.join(';'), ...rows.map(r => buildCsvLine(r, ';'))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `produits_ca_${selectedYear}_${format(new Date(), 'yyyyMMdd')}.csv`;
     link.click();
+
+    // Audit log the export
+    logExport({
+      exportType: 'products_sales_csv',
+      recordCount: products.length,
+      extra: { year: selectedYear },
+    });
   };
 
   const getSaleTypeBadge = (type: string) => {
