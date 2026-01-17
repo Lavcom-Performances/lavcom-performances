@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useSiteCosts } from "@/hooks/useSiteCosts";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { useUnsavedChangesWarning, UnsavedChangesDialog } from "@/hooks/useUnsavedChangesWarning";
 
 export default function CostsSettingsPage() {
   const { t } = useTranslation("app");
@@ -28,10 +29,21 @@ export default function CostsSettingsPage() {
     var_detergent_percent: "",
   });
 
+  const [initialFormData, setInitialFormData] = useState({
+    fixed_rent: "",
+    fixed_lease: "",
+    fixed_subscriptions: "",
+    fixed_insurance: "",
+    fixed_cleaning: "",
+    fixed_other: "",
+    var_energy_water_percent: "",
+    var_detergent_percent: "",
+  });
+
   // Initialize form with existing costs
   useEffect(() => {
     if (costs) {
-      setFormData({
+      const data = {
         fixed_rent: costs.fixed_rent?.toString() || "",
         fixed_lease: costs.fixed_lease?.toString() || "",
         fixed_subscriptions: costs.fixed_subscriptions?.toString() || "",
@@ -40,9 +52,22 @@ export default function CostsSettingsPage() {
         fixed_other: costs.fixed_other?.toString() || "",
         var_energy_water_percent: costs.var_energy_water_percent?.toString() || "",
         var_detergent_percent: costs.var_detergent_percent?.toString() || "",
-      });
+      };
+      setFormData(data);
+      setInitialFormData(data);
     }
   }, [costs]);
+
+  // Check if form has unsaved changes
+  const isDirty = useMemo(() => {
+    return Object.keys(formData).some(
+      (key) => formData[key as keyof typeof formData] !== initialFormData[key as keyof typeof initialFormData]
+    );
+  }, [formData, initialFormData]);
+
+  const { isBlocked, confirmNavigation, cancelNavigation } = useUnsavedChangesWarning({
+    isDirty,
+  });
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -76,6 +101,11 @@ export default function CostsSettingsPage() {
 
   return (
     <>
+      <UnsavedChangesDialog
+        isOpen={isBlocked}
+        onConfirm={confirmNavigation}
+        onCancel={cancelNavigation}
+      />
       <SEOHead 
         title={t("costs.pageTitle")}
         description={t("costs.pageDescription")}
