@@ -37,6 +37,7 @@ import { ChurnAlertSettings } from '@/components/admin/ChurnAlertSettings';
 import { RetentionDashboard } from '@/components/admin/RetentionDashboard';
 import { SystemStatusWidget } from '@/components/admin/SystemStatusWidget';
 import { ChurnPredictionsDashboard } from '@/components/admin/ChurnPredictionsDashboard';
+import { ExportAuditLogsWidget } from '@/components/admin/ExportAuditLogsWidget';
 
 interface GlobalStats {
   total_users: number;
@@ -438,6 +439,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="alerts">
               <Bell className="h-4 w-4 mr-2" />
               Alertes
+            </TabsTrigger>
+            <TabsTrigger value="exports">
+              <Download className="h-4 w-4 mr-2" />
+              Exports
             </TabsTrigger>
             <TabsTrigger value="audit">
               <FileText className="h-4 w-4 mr-2" />
@@ -869,6 +874,11 @@ export default function AdminDashboard() {
           {/* Alerts Tab */}
           <TabsContent value="alerts" className="space-y-4">
             <ChurnAlertSettings />
+          </TabsContent>
+
+          {/* Exports Tab */}
+          <TabsContent value="exports" className="space-y-4">
+            <ExportAuditLogsWidget />
           </TabsContent>
 
           <TabsContent value="audit" className="space-y-4">
