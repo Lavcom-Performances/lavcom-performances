@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { DangerZoneDialog } from '@/components/ui/danger-zone-dialog';
 import { 
   Key, 
   Search, 
@@ -117,6 +118,7 @@ export default function PlatformAdminPermissions() {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [newRole, setNewRole] = useState<'super_admin' | 'admin' | 'billing'>('admin');
+  const [revokeTarget, setRevokeTarget] = useState<{ id: string; email: string; role: string } | null>(null);
 
   // Fetch platform roles with user info
   const { data: roles, isLoading } = useQuery({
@@ -570,15 +572,7 @@ export default function PlatformAdminPermissions() {
                           variant="ghost"
                           size="icon"
                           className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => {
-                            if (confirm(`Révoquer l'accès de ${r.email} ?`)) {
-                              revokeRoleMutation.mutate({ 
-                                roleId: r.id, 
-                                email: r.email || '', 
-                                role: r.role 
-                              });
-                            }
-                          }}
+                          onClick={() => setRevokeTarget({ id: r.id, email: r.email || '', role: r.role })}
                           disabled={revokeRoleMutation.isPending}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -599,6 +593,33 @@ export default function PlatformAdminPermissions() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Danger Zone Dialog for role revocation */}
+        <DangerZoneDialog
+          open={!!revokeTarget}
+          onOpenChange={(open) => !open && setRevokeTarget(null)}
+          title="Révoquer l'accès administrateur"
+          description={
+            <>
+              Vous êtes sur le point de révoquer l'accès de <strong>{revokeTarget?.email}</strong> au back-office.
+              Cette personne ne pourra plus accéder aux fonctionnalités d'administration.
+            </>
+          }
+          confirmText={revokeTarget?.email || ''}
+          onConfirm={() => {
+            if (revokeTarget) {
+              revokeRoleMutation.mutate({ 
+                roleId: revokeTarget.id, 
+                email: revokeTarget.email, 
+                role: revokeTarget.role 
+              });
+              setRevokeTarget(null);
+            }
+          }}
+          isLoading={revokeRoleMutation.isPending}
+          actionLabel="Révoquer l'accès"
+          cancelLabel="Annuler"
+        />
       </div>
     </>
   );
