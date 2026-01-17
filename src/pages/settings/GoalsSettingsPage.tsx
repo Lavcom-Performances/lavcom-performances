@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useUserGoals } from "@/hooks/useUserGoals";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { useUnsavedChangesWarning, UnsavedChangesDialog } from "@/hooks/useUnsavedChangesWarning";
 
 export default function GoalsSettingsPage() {
   const { t } = useTranslation(["app", "common"]);
@@ -23,16 +24,37 @@ export default function GoalsSettingsPage() {
     monthly_transactions_goal: "",
   });
 
+  const [initialFormData, setInitialFormData] = useState({
+    monthly_revenue_goal: "",
+    annual_revenue_goal: "",
+    monthly_transactions_goal: "",
+  });
+
   // Initialize form with existing goals
   useEffect(() => {
     if (goals) {
-      setFormData({
+      const data = {
         monthly_revenue_goal: goals.monthly_revenue_goal?.toString() || "",
         annual_revenue_goal: goals.annual_revenue_goal?.toString() || "",
         monthly_transactions_goal: goals.monthly_transactions_goal?.toString() || "",
-      });
+      };
+      setFormData(data);
+      setInitialFormData(data);
     }
   }, [goals]);
+
+  // Check if form has unsaved changes
+  const isDirty = useMemo(() => {
+    return (
+      formData.monthly_revenue_goal !== initialFormData.monthly_revenue_goal ||
+      formData.annual_revenue_goal !== initialFormData.annual_revenue_goal ||
+      formData.monthly_transactions_goal !== initialFormData.monthly_transactions_goal
+    );
+  }, [formData, initialFormData]);
+
+  const { isBlocked, confirmNavigation, cancelNavigation } = useUnsavedChangesWarning({
+    isDirty,
+  });
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => {
@@ -76,6 +98,11 @@ export default function GoalsSettingsPage() {
 
   return (
     <>
+      <UnsavedChangesDialog
+        isOpen={isBlocked}
+        onConfirm={confirmNavigation}
+        onCancel={cancelNavigation}
+      />
       <SEOHead 
         title={t("goals.pageTitle")}
         description={t("goals.pageDescription")}
