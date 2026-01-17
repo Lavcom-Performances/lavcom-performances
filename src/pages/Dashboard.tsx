@@ -61,6 +61,7 @@ import { useTutorial } from "@/hooks/useTutorial";
 import { InteractiveTutorial } from "@/components/onboarding/InteractiveTutorial";
 import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
 import { DataQualityBlock } from "@/components/dashboard/DataQualityBlock";
+import { AnonymousBenchmarksBlock } from "@/components/dashboard/AnonymousBenchmarksBlock";
 import { BusinessActionsSection } from "@/components/dashboard/BusinessActionsSection";
 
 // Animation variants for staggered cards
@@ -409,6 +410,9 @@ export default function Dashboard() {
 
       {/* Data Quality Block */}
       <DataQualityBlock dateRange={dateRange} />
+
+      {/* Anonymous Benchmarks Block */}
+      <AnonymousBenchmarksBlock dateRange={dateRange} />
 
       <GoalsConfigDialog
         open={goalsDialogOpen} 
