@@ -55,6 +55,7 @@ import { RolesInfoCard } from "@/components/admin/RolesInfoCard";
 import { InviteUserDialog } from "@/components/admin/InviteUserDialog";
 import { CreateOrganizationDialog } from "@/components/admin/CreateOrganizationDialog";
 import { SiteAccessManager } from "@/components/admin/SiteAccessManager";
+import { DangerZoneDialog } from "@/components/ui/danger-zone-dialog";
 import { useOrganization, TeamMember, TeamInvitation } from "@/hooks/useOrganization";
 import { 
   ROLE_DESCRIPTIONS,
@@ -116,10 +117,15 @@ export default function AdminUsers() {
     }
   };
 
+  const [isDeletingMember, setIsDeletingMember] = useState(false);
+
   const handleDeleteMember = async () => {
     if (!selectedMemberToDelete) return;
     
+    setIsDeletingMember(true);
     const result = await removeMember(selectedMemberToDelete.id);
+    setIsDeletingMember(false);
+    
     if (result.error) {
       toast.error(result.error);
     } else {
@@ -482,31 +488,24 @@ export default function AdminUsers() {
         isSuperAdmin={isSuperAdmin}
       />
 
-      {/* Delete Member Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Retirer ce membre ?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {selectedMemberToDelete && (
-                <>
-                  <strong>{getFullName(selectedMemberToDelete)}</strong> sera retiré de l'organisation 
-                  et n'aura plus accès aux données.
-                </>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDeleteMember}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              Retirer
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Delete Member Confirmation Dialog - Danger Zone */}
+      <DangerZoneDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Retirer ce membre ?"
+        description={
+          selectedMemberToDelete && (
+            <>
+              <strong>{getFullName(selectedMemberToDelete)}</strong> ({selectedMemberToDelete.email}) sera retiré de l'organisation 
+              et n'aura plus accès aux données. Cette action est enregistrée dans les logs d'audit.
+            </>
+          )
+        }
+        confirmText={selectedMemberToDelete?.email.split('@')[0] || 'supprimer'}
+        onConfirm={handleDeleteMember}
+        isLoading={isDeletingMember}
+        actionLabel="Retirer le membre"
+      />
     </div>
   );
 }
