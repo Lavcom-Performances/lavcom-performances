@@ -1,16 +1,39 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, Save, Info } from "lucide-react";
+import { ChevronLeft, Save, Info, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { useSiteCosts } from "@/hooks/useSiteCosts";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useUnsavedChangesWarning, UnsavedChangesDialog } from "@/hooks/useUnsavedChangesWarning";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+
+interface CostsFormData {
+  fixed_rent: string;
+  fixed_lease: string;
+  fixed_subscriptions: string;
+  fixed_insurance: string;
+  fixed_cleaning: string;
+  fixed_other: string;
+  var_energy_water_percent: string;
+  var_detergent_percent: string;
+}
+
+const initialFormData: CostsFormData = {
+  fixed_rent: "",
+  fixed_lease: "",
+  fixed_subscriptions: "",
+  fixed_insurance: "",
+  fixed_cleaning: "",
+  fixed_other: "",
+  var_energy_water_percent: "",
+  var_detergent_percent: "",
+};
 
 export default function CostsSettingsPage() {
   const { t } = useTranslation("app");
@@ -18,32 +41,27 @@ export default function CostsSettingsPage() {
   const { currentSiteId } = useCurrentSite();
   const { costs, upsertCosts, isLoading } = useSiteCosts(currentSiteId);
 
-  const [formData, setFormData] = useState({
-    fixed_rent: "",
-    fixed_lease: "",
-    fixed_subscriptions: "",
-    fixed_insurance: "",
-    fixed_cleaning: "",
-    fixed_other: "",
-    var_energy_water_percent: "",
-    var_detergent_percent: "",
+  // Form persistence - survives page refresh and browser crashes
+  const {
+    formData,
+    setFormData,
+    clearSavedData,
+    hasSavedData,
+    resetForm,
+  } = useFormPersistence<CostsFormData>({
+    key: `costs-settings-${currentSiteId || 'default'}`,
+    initialData: initialFormData,
+    ttlMs: 24 * 60 * 60 * 1000, // 24 hours
+    enabled: true,
   });
 
-  const [initialFormData, setInitialFormData] = useState({
-    fixed_rent: "",
-    fixed_lease: "",
-    fixed_subscriptions: "",
-    fixed_insurance: "",
-    fixed_cleaning: "",
-    fixed_other: "",
-    var_energy_water_percent: "",
-    var_detergent_percent: "",
-  });
+  const [initialFormDataFromServer, setInitialFormDataFromServer] = useState<CostsFormData>(initialFormData);
+  const [hasLoadedFromServer, setHasLoadedFromServer] = useState(false);
 
-  // Initialize form with existing costs
+  // Initialize form with existing costs from server (only once, after loading)
   useEffect(() => {
-    if (costs) {
-      const data = {
+    if (costs && !hasLoadedFromServer) {
+      const serverData = {
         fixed_rent: costs.fixed_rent?.toString() || "",
         fixed_lease: costs.fixed_lease?.toString() || "",
         fixed_subscriptions: costs.fixed_subscriptions?.toString() || "",
@@ -53,23 +71,38 @@ export default function CostsSettingsPage() {
         var_energy_water_percent: costs.var_energy_water_percent?.toString() || "",
         var_detergent_percent: costs.var_detergent_percent?.toString() || "",
       };
-      setFormData(data);
-      setInitialFormData(data);
+      setInitialFormDataFromServer(serverData);
+      
+      // Only update form if there's no saved draft
+      if (!hasSavedData) {
+        setFormData(serverData);
+      }
+      setHasLoadedFromServer(true);
     }
-  }, [costs]);
+  }, [costs, hasLoadedFromServer, hasSavedData, setFormData]);
 
-  // Check if form has unsaved changes
+  // Check if form has unsaved changes (compared to server data)
   const isDirty = useMemo(() => {
     return Object.keys(formData).some(
-      (key) => formData[key as keyof typeof formData] !== initialFormData[key as keyof typeof initialFormData]
+      (key) => formData[key as keyof CostsFormData] !== initialFormDataFromServer[key as keyof CostsFormData]
     );
-  }, [formData, initialFormData]);
+  }, [formData, initialFormDataFromServer]);
+
+  // Check if we have a restored draft
+  const hasRestoredDraft = useMemo(() => {
+    return hasSavedData && isDirty;
+  }, [hasSavedData, isDirty]);
 
   const { isBlocked, confirmNavigation, cancelNavigation } = useUnsavedChangesWarning({
     isDirty,
   });
 
-  const handleChange = (field: string, value: string) => {
+  const handleClearDraft = useCallback(() => {
+    resetForm();
+    setFormData(initialFormDataFromServer);
+  }, [resetForm, setFormData, initialFormDataFromServer]);
+
+  const handleChange = (field: keyof CostsFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -92,6 +125,10 @@ export default function CostsSettingsPage() {
         var_energy_water_percent: parseFloat(formData.var_energy_water_percent) || 0,
         var_detergent_percent: parseFloat(formData.var_detergent_percent) || 0,
       });
+      
+      // Clear saved draft on successful submission
+      clearSavedData();
+      
       toast.success(t("costs.successMessage"));
       navigate("/dashboard");
     } catch (error) {
@@ -128,6 +165,25 @@ export default function CostsSettingsPage() {
             <CardDescription>{t("costs.description")}</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Draft restored indicator */}
+            {hasRestoredDraft && (
+              <div className="flex items-center justify-between gap-2 p-3 mb-4 bg-muted/50 rounded-lg border border-border/50 text-sm">
+                <div className="flex items-center gap-2">
+                  <Info className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">{t("common.draftRestored")}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearDraft}
+                  className="h-7 text-xs gap-1"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  {t("common.clearDraft")}
+                </Button>
+              </div>
+            )}
+            
             <div className="flex items-center gap-2 p-3 mb-6 bg-muted/50 rounded-lg border border-border/50">
               <Info className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <p className="text-sm text-muted-foreground">

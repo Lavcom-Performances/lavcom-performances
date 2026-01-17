@@ -67,5 +67,7 @@
     "simulatorPacks": "Packs simulateur",
     "allRightsReserved": "Tous droits réservés."
   },
-  "close": "Fermer"
+  "close": "Fermer",
+  "draftRestored": "Brouillon restauré",
+  "clearDraft": "Effacer"
 }

@@ -1,16 +1,29 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, Save, Info } from "lucide-react";
+import { ChevronLeft, Save, Info, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { useUserGoals } from "@/hooks/useUserGoals";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useUnsavedChangesWarning, UnsavedChangesDialog } from "@/hooks/useUnsavedChangesWarning";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
+
+interface GoalsFormData {
+  monthly_revenue_goal: string;
+  annual_revenue_goal: string;
+  monthly_transactions_goal: string;
+}
+
+const initialFormData: GoalsFormData = {
+  monthly_revenue_goal: "",
+  annual_revenue_goal: "",
+  monthly_transactions_goal: "",
+};
 
 export default function GoalsSettingsPage() {
   const { t } = useTranslation(["app", "common"]);
@@ -18,45 +31,65 @@ export default function GoalsSettingsPage() {
   const { currentSiteId } = useCurrentSite();
   const { goals, upsertGoals, isLoading } = useUserGoals(currentSiteId);
 
-  const [formData, setFormData] = useState({
-    monthly_revenue_goal: "",
-    annual_revenue_goal: "",
-    monthly_transactions_goal: "",
+  // Form persistence - survives page refresh and browser crashes
+  const {
+    formData,
+    setFormData,
+    clearSavedData,
+    hasSavedData,
+    resetForm,
+  } = useFormPersistence<GoalsFormData>({
+    key: `goals-settings-${currentSiteId || 'default'}`,
+    initialData: initialFormData,
+    ttlMs: 24 * 60 * 60 * 1000, // 24 hours
+    enabled: true,
   });
 
-  const [initialFormData, setInitialFormData] = useState({
-    monthly_revenue_goal: "",
-    annual_revenue_goal: "",
-    monthly_transactions_goal: "",
-  });
+  const [initialFormDataFromServer, setInitialFormDataFromServer] = useState<GoalsFormData>(initialFormData);
+  const [hasLoadedFromServer, setHasLoadedFromServer] = useState(false);
 
-  // Initialize form with existing goals
+  // Initialize form with existing goals from server (only once, after loading)
   useEffect(() => {
-    if (goals) {
-      const data = {
+    if (goals && !hasLoadedFromServer) {
+      const serverData = {
         monthly_revenue_goal: goals.monthly_revenue_goal?.toString() || "",
         annual_revenue_goal: goals.annual_revenue_goal?.toString() || "",
         monthly_transactions_goal: goals.monthly_transactions_goal?.toString() || "",
       };
-      setFormData(data);
-      setInitialFormData(data);
+      setInitialFormDataFromServer(serverData);
+      
+      // Only update form if there's no saved draft
+      if (!hasSavedData) {
+        setFormData(serverData);
+      }
+      setHasLoadedFromServer(true);
     }
-  }, [goals]);
+  }, [goals, hasLoadedFromServer, hasSavedData, setFormData]);
 
-  // Check if form has unsaved changes
+  // Check if form has unsaved changes (compared to server data)
   const isDirty = useMemo(() => {
     return (
-      formData.monthly_revenue_goal !== initialFormData.monthly_revenue_goal ||
-      formData.annual_revenue_goal !== initialFormData.annual_revenue_goal ||
-      formData.monthly_transactions_goal !== initialFormData.monthly_transactions_goal
+      formData.monthly_revenue_goal !== initialFormDataFromServer.monthly_revenue_goal ||
+      formData.annual_revenue_goal !== initialFormDataFromServer.annual_revenue_goal ||
+      formData.monthly_transactions_goal !== initialFormDataFromServer.monthly_transactions_goal
     );
-  }, [formData, initialFormData]);
+  }, [formData, initialFormDataFromServer]);
+
+  // Check if we have a restored draft
+  const hasRestoredDraft = useMemo(() => {
+    return hasSavedData && isDirty;
+  }, [hasSavedData, isDirty]);
 
   const { isBlocked, confirmNavigation, cancelNavigation } = useUnsavedChangesWarning({
     isDirty,
   });
 
-  const handleChange = (field: string, value: string) => {
+  const handleClearDraft = useCallback(() => {
+    resetForm();
+    setFormData(initialFormDataFromServer);
+  }, [resetForm, setFormData, initialFormDataFromServer]);
+
+  const handleChange = (field: keyof GoalsFormData, value: string) => {
     setFormData(prev => {
       const updated = { ...prev, [field]: value };
       
@@ -89,6 +122,10 @@ export default function GoalsSettingsPage() {
         monthly_transactions_goal: parseInt(formData.monthly_transactions_goal) || 500,
         site_id: currentSiteId,
       });
+      
+      // Clear saved draft on successful submission
+      clearSavedData();
+      
       toast.success(t("goals.successMessage"));
       navigate("/dashboard");
     } catch (error) {
@@ -125,6 +162,25 @@ export default function GoalsSettingsPage() {
             <CardDescription>{t("goals.description")}</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Draft restored indicator */}
+            {hasRestoredDraft && (
+              <div className="flex items-center justify-between gap-2 p-3 mb-4 bg-muted/50 rounded-lg border border-border/50 text-sm">
+                <div className="flex items-center gap-2">
+                  <Info className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">{t("common:draftRestored")}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearDraft}
+                  className="h-7 text-xs gap-1"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  {t("common:clearDraft")}
+                </Button>
+              </div>
+            )}
+            
             <div className="flex items-center gap-2 p-3 mb-6 bg-muted/50 rounded-lg border border-border/50">
               <Info className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <p className="text-sm text-muted-foreground">
