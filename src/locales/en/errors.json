@@ -47,5 +47,9 @@
     "checkoutFailed": "Error creating payment",
     "noSessionUrl": "Unable to get payment link",
     "unexpected": "An unexpected error occurred"
+  },
+  "auth": {
+    "leakedPassword": "This password has been exposed in a data breach. Please choose a different password.",
+    "weakPassword": "This password is too weak. Please use at least 8 characters with uppercase, lowercase, numbers, and symbols."
   }
 }
