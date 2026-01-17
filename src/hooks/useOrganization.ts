@@ -248,12 +248,36 @@ export function useOrganization() {
 
   const removeMember = async (memberId: string) => {
     try {
+      // Get member info before deletion for logging
+      const memberToRemove = teamMembers.find(m => m.id === memberId);
+      
       const { error } = await supabase
         .from('user_roles')
         .delete()
         .eq('id', memberId);
 
       if (error) throw error;
+
+      // Log to system_events for audit trail
+      if (organization && memberToRemove) {
+        await supabase.rpc("rpc_log_system_event", {
+          p_source: "member_remove",
+          p_severity: "warn",
+          p_code: "TEAM_MEMBER_REMOVED",
+          p_message: `Team member removed from organization`,
+          p_env: import.meta.env.MODE || "production",
+          p_meta: {
+            organization_id: organization.id,
+            organization_name: organization.name,
+            removed_user_id: memberToRemove.user_id,
+            removed_user_email: memberToRemove.email,
+            removed_user_role: memberToRemove.role,
+            performed_by: user?.id,
+            performed_by_email: user?.email,
+            action: "remove_team_member",
+          },
+        });
+      }
 
       await fetchOrganizationData();
       return { success: true };

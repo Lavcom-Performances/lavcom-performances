@@ -56,8 +56,12 @@ const sourceLabels: Record<string, string> = {
   'stripe-webhook': 'Stripe Webhook',
   'stripe_reconcile': 'Stripe Reconcile',
   'import': 'Import CSV',
+  'import_rate_limit': 'Import Rate Limit',
   'cron': 'Analytics Cron',
   'smoke-test': 'Smoke Test',
+  'site_delete': 'Site Deletion',
+  'member_remove': 'Member Removal',
+  'backup_drill': 'Backup Drill',
 };
 
 const testLabels: Record<string, string> = {
