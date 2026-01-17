@@ -413,24 +413,32 @@ export default function PlatformOrphanPages() {
             Pages not linked from main navigation sidebars (admin, billing, or app)
           </p>
         </div>
-        <Button 
-          onClick={handleTestAll} 
-          disabled={isTestingAll}
-          variant="outline"
-          size="sm"
-        >
-          {isTestingAll ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Testing...
-            </>
-          ) : (
-            <>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Test All Routes
-            </>
-          )}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/admin/orphan-files">
+              <FileQuestion className="h-4 w-4 mr-2" />
+              View Orphan Files
+            </Link>
+          </Button>
+          <Button 
+            onClick={handleTestAll} 
+            disabled={isTestingAll}
+            variant="outline"
+            size="sm"
+          >
+            {isTestingAll ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Testing...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Test All Routes
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Review Status Overview */}

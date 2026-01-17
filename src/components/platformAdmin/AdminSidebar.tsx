@@ -19,7 +19,8 @@ import {
   LogOut,
   ChevronLeft,
   ArrowLeftRight,
-  FileQuestion
+  FileQuestion,
+  FileX2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -95,6 +96,7 @@ export function AdminSidebar({
     { name: t('app:platformAdmin.nav.expertRequests'), href: "/admin/expert-requests", icon: Handshake },
     { name: t('app:platformAdmin.nav.cronLogs'), href: "/admin/cron-logs", icon: Clock },
     { name: t('app:platformAdmin.nav.orphanPages', 'Orphan Pages'), href: "/admin/orphan-pages", icon: FileQuestion },
+    { name: t('app:platformAdmin.nav.orphanFiles', 'Orphan Files'), href: "/admin/orphan-files", icon: FileX2 },
   ];
 
   const handleLogout = async () => {
