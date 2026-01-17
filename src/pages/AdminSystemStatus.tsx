@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   RefreshCw, AlertTriangle, AlertCircle, Info, XCircle, CheckCircle2, 
-  PlayCircle, Database, ShieldAlert, CreditCard, Loader2 
+  PlayCircle, Database, ShieldAlert, CreditCard, Loader2, HardDrive 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -96,6 +96,14 @@ export default function AdminSystemStatus() {
     fixed_count: number;
     anomalies: Record<string, number>;
     last_run?: string;
+  } | null>(null);
+
+  // Backup drill state
+  const [runningBackupDrill, setRunningBackupDrill] = useState(false);
+  const [backupDrillResult, setBackupDrillResult] = useState<{
+    success: boolean;
+    message: string;
+    timestamp?: string;
   } | null>(null);
 
   const fetchEvents = async () => {
@@ -537,6 +545,90 @@ export default function AdminSystemStatus() {
             )}
           </CardContent>
         </Card>
+
+        {/* Backup Drill Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <HardDrive className="h-5 w-5" />
+              Backup Drill (Test de Récupération)
+            </CardTitle>
+            <CardDescription>
+              Déclencher manuellement le rappel de test de récupération mensuel
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={async () => {
+                  setRunningBackupDrill(true);
+                  try {
+                    const { data, error } = await supabase.functions.invoke('backup-drill-reminder');
+                    if (error) throw error;
+                    setBackupDrillResult({
+                      success: data?.success ?? true,
+                      message: data?.message || 'Rappel backup drill enregistré',
+                      timestamp: new Date().toISOString(),
+                    });
+                    toast.success('Rappel backup drill déclenché avec succès');
+                    fetchEvents();
+                  } catch (err) {
+                    console.error('Backup drill failed:', err);
+                    toast.error('Erreur lors du déclenchement du backup drill');
+                    setBackupDrillResult({
+                      success: false,
+                      message: err instanceof Error ? err.message : 'Erreur inconnue',
+                      timestamp: new Date().toISOString(),
+                    });
+                  } finally {
+                    setRunningBackupDrill(false);
+                  }
+                }}
+                disabled={runningBackupDrill}
+                variant="outline"
+              >
+                {runningBackupDrill ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <PlayCircle className="h-4 w-4 mr-2" />
+                )}
+                {runningBackupDrill ? 'Exécution...' : 'Déclencher Backup Drill'}
+              </Button>
+              {backupDrillResult?.timestamp && (
+                <span className="text-sm text-muted-foreground">
+                  Dernier run: {format(new Date(backupDrillResult.timestamp), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                </span>
+              )}
+            </div>
+
+            {backupDrillResult && (
+              <div className={`p-4 rounded-lg ${backupDrillResult.success ? 'bg-green-500/10 border border-green-500/30' : 'bg-red-500/10 border border-red-500/30'}`}>
+                <div className="flex items-center gap-2">
+                  {backupDrillResult.success ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <XCircle className="h-5 w-5 text-red-500" />
+                  )}
+                  <span className={`font-medium ${backupDrillResult.success ? 'text-green-600' : 'text-red-600'}`}>
+                    {backupDrillResult.success ? 'Succès' : 'Échec'}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">{backupDrillResult.message}</p>
+              </div>
+            )}
+
+            <div className="p-4 rounded-lg bg-muted/50 border">
+              <h4 className="font-medium mb-2">À propos du Backup Drill</h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Rappel automatique le 1er de chaque mois à 08:00 UTC</li>
+                <li>• Enregistre un événement dans system_events</li>
+                <li>• Envoie un email aux administrateurs (si configuré)</li>
+                <li>• Consulter <code className="bg-muted px-1 rounded">docs/ops/backup-restore.md</code> pour la procédure</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="flex gap-4">
           <Select value={sourceFilter} onValueChange={setSourceFilter}>
             <SelectTrigger className="w-[200px]">
