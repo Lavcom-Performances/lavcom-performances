@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { sanitizeForCsv, buildCsvLine, logExport } from "@/lib/exports";
 
 interface ComparisonSiteData {
   name: string;
@@ -134,10 +135,11 @@ export function exportComparisonExcel(data: ComparisonExportData): void {
   // Build CSV content (Excel-compatible)
   const headers = ['Rang', 'Laverie', 'Ville', 'CA Période (€)', 'Résultat (€)', 'Cycles/jour', 'Évolution (%)'];
   
+  // Sanitize site names and cities
   const rows = data.sites.map((site, index) => [
     index + 1,
-    `"${site.name}"`,
-    `"${site.city || ''}"`,
+    sanitizeForCsv(site.name),
+    sanitizeForCsv(site.city || ''),
     site.revenue.toFixed(2),
     site.hasCosts && site.profit !== null ? site.profit.toFixed(2) : '',
     site.occupation > 0 ? site.occupation.toFixed(1) : '',
@@ -155,7 +157,7 @@ export function exportComparisonExcel(data: ComparisonExportData): void {
   const csvContent = [
     ...metaRows.map(row => row.join(';')),
     headers.join(';'),
-    ...rows.map(row => row.join(';')),
+    ...rows.map(row => buildCsvLine(row, ';')),
   ].join('\n');
   
   // Add BOM for Excel UTF-8 compatibility
@@ -171,6 +173,14 @@ export function exportComparisonExcel(data: ComparisonExportData): void {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+
+  // Audit log the export
+  logExport({
+    exportType: 'comparison_csv',
+    recordCount: data.sites.length,
+    dateFrom: data.dateStart,
+    dateTo: data.dateEnd,
+  });
 }
 
 // === PROFITABILITY COMPARISON EXPORT ===
@@ -390,9 +400,10 @@ export function exportProfitabilityComparisonCSV(data: ProfitabilityComparisonDa
     t("profitability.margin")
   ];
   
+  // Sanitize site names and cities
   const rows = data.sites.map(site => [
-    `"${site.siteName}"`,
-    `"${site.city || '-'}"`,
+    sanitizeForCsv(site.siteName),
+    sanitizeForCsv(site.city || '-'),
     site.revenue.toFixed(2),
     site.costs.toFixed(2),
     site.profit.toFixed(2),
@@ -409,7 +420,7 @@ export function exportProfitabilityComparisonCSV(data: ProfitabilityComparisonDa
   const csvContent = [
     ...metaRows.map(row => row.join(';')),
     headers.join(';'),
-    ...rows.map(row => row.join(';')),
+    ...rows.map(row => buildCsvLine(row, ';')),
   ].join('\n');
   
   const BOM = '\uFEFF';
@@ -423,4 +434,12 @@ export function exportProfitabilityComparisonCSV(data: ProfitabilityComparisonDa
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+
+  // Audit log the export
+  logExport({
+    exportType: 'profitability_csv',
+    recordCount: data.sites.length,
+    dateFrom: data.dateStart,
+    dateTo: data.dateEnd,
+  });
 }

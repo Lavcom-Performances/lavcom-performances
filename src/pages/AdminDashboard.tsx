@@ -31,6 +31,7 @@ import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { sanitizeForCsv, buildCsvLine, logExport } from '@/lib/exports';
 import { SubscriptionMetricsExport } from '@/components/admin/SubscriptionMetricsExport';
 import { ChurnAlertSettings } from '@/components/admin/ChurnAlertSettings';
 import { RetentionDashboard } from '@/components/admin/RetentionDashboard';
@@ -235,26 +236,26 @@ export default function AdminDashboard() {
   };
 
   // Export audit logs to CSV
-  const exportAuditLogsCSV = (logs: AuditLog[]) => {
+  const exportAuditLogsCSV = async (logs: AuditLog[]) => {
     const headers = ['Date', 'Action', 'Détails', 'Admin'];
+    
+    // Sanitize all text fields
     const rows = logs.map(log => {
       const adminName = log.admin_profile
         ? `${log.admin_profile.first_name || ''} ${log.admin_profile.last_name || ''} (${log.admin_profile.email})`.trim()
         : log.admin_user_id;
       return [
         format(new Date(log.created_at), 'yyyy-MM-dd HH:mm:ss'),
-        ACTION_LABELS[log.action]?.label || log.action,
-        Object.keys(log.details).length > 0 ? JSON.stringify(log.details) : '',
-        adminName
+        sanitizeForCsv(ACTION_LABELS[log.action]?.label || log.action),
+        sanitizeForCsv(Object.keys(log.details).length > 0 ? JSON.stringify(log.details) : ''),
+        sanitizeForCsv(adminName)
       ];
     });
     
-    const csvContent = [
-      headers.join(';'),
-      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
-    ].join('\n');
+    const BOM = '\uFEFF';
+    const csvContent = BOM + [headers.join(';'), ...rows.map(row => buildCsvLine(row, ';'))].join('\n');
     
-    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -263,6 +264,12 @@ export default function AdminDashboard() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    // Audit log the export
+    logExport({
+      exportType: 'audit_logs_csv',
+      recordCount: logs.length,
+    });
   };
 
   // Prepare chart data

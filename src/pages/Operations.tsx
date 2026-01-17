@@ -41,6 +41,7 @@ import { FiltersCard } from "@/components/ui/filters-card";
 import { generateOperationsPdf } from "@/utils/operationsPdfExport";
 import { trackPdfDownload } from "@/lib/analytics";
 import { useToast } from "@/hooks/use-toast";
+import { sanitizeForCsv, buildCsvLine, logExport, isLargeExport, LARGE_EXPORT_THRESHOLD } from "@/lib/exports";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useOperations } from "@/hooks/useOperations";
 import { useSites } from "@/hooks/useSites";
@@ -433,7 +434,7 @@ export default function Operations() {
     }
   };
 
-  const handleExportCsv = () => {
+  const handleExportCsv = async () => {
     if (!dateRange?.from || !dateRange?.to) {
       toast({
         title: t('app:operations.selectPeriod'),
@@ -441,6 +442,14 @@ export default function Operations() {
         variant: "destructive",
       });
       return;
+    }
+
+    // Warn user if export is large
+    if (isLargeExport(operations.length)) {
+      toast({
+        title: "Export volumineux",
+        description: `${operations.length} opérations à exporter. Pensez à réduire la période pour un export plus rapide.`,
+      });
     }
 
     try {
@@ -457,7 +466,7 @@ export default function Operations() {
         'Prix ESP (€)'
       ];
 
-      // Transform operations to CSV rows
+      // Transform operations to CSV rows with sanitization
       const rows = operations.map(op => {
         const modeUpper = op.payment_mode?.toUpperCase();
         const isCB = modeUpper === "CB";
@@ -467,8 +476,8 @@ export default function Operations() {
         return [
           format(parseISO(op.operation_date), "dd/MM/yyyy", { locale: fr }),
           op.operation_time?.slice(0, 5) || "",
-          op.machine_name || op.machine || "",
-          op.payment_mode?.toUpperCase() || "",
+          sanitizeForCsv(op.machine_name || op.machine || ""),
+          sanitizeForCsv(op.payment_mode?.toUpperCase() || ""),
           isESP && op.inserted_eur ? op.inserted_eur.toFixed(2) : "",
           price.toFixed(2),
           isESP && op.change_eur ? op.change_eur.toFixed(2) : "",
@@ -481,7 +490,7 @@ export default function Operations() {
       const BOM = '\uFEFF';
       const csvContent = BOM + [
         headers.join(';'),
-        ...rows.map(row => row.map(cell => `"${cell}"`).join(';'))
+        ...rows.map(row => buildCsvLine(row, ';'))
       ].join('\n');
 
       // Create and download the file
@@ -500,6 +509,15 @@ export default function Operations() {
       toast({
         title: "Export CSV réussi",
         description: `${operations.length} opérations exportées`,
+      });
+
+      // Audit log the export
+      logExport({
+        exportType: 'operations_csv',
+        recordCount: operations.length,
+        siteId: selectedSite?.id,
+        dateFrom: dateRange.from,
+        dateTo: dateRange.to,
       });
     } catch (error) {
       toast({
