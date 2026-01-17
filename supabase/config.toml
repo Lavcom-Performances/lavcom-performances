@@ -104,3 +104,6 @@ verify_jwt = false
 
 [functions.backup-drill-reminder]
 verify_jwt = false
+
+[functions.import-parser-tests-cron]
+verify_jwt = false
