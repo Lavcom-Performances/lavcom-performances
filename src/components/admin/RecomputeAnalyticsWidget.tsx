@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
 import { 
   RefreshCw, 
   CalendarIcon, 
@@ -17,7 +18,9 @@ import {
   Loader2,
   Database,
   ChevronsUpDown,
-  Check
+  Check,
+  History,
+  Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,6 +28,7 @@ import { format, differenceInDays, subDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { DateRange } from 'react-day-picker';
+import { Link } from 'react-router-dom';
 
 interface Site {
   id: string;
@@ -45,8 +49,23 @@ interface RecomputeResult {
   force_bypass?: boolean;
 }
 
+interface ProgressState {
+  isRunning: boolean;
+  startTime: number;
+  estimatedTotalMs: number;
+  elapsedMs: number;
+  phase: 'fetching' | 'processing' | 'writing' | 'complete';
+}
+
 const MAX_RANGE_DAYS = 90;
 const FORCE_BYPASS_PHRASE = "FORCE FULL RECOMPUTE";
+
+// Estimation: ~50ms per day for small sites, ~200ms per day for larger ones
+const estimateTimeMs = (rangeDays: number, isForceBypass: boolean): number => {
+  const basePerDay = isForceBypass ? 150 : 100; // force bypass = larger dataset
+  const overhead = 2000; // connection, auth, etc.
+  return overhead + (rangeDays * basePerDay);
+};
 
 export function RecomputeAnalyticsWidget({ className }: { className?: string }) {
   const [sites, setSites] = useState<Site[]>([]);
@@ -72,6 +91,16 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
   const [forceBypassOpen, setForceBypassOpen] = useState(false);
   const [forceBypassInput, setForceBypassInput] = useState('');
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  
+  // Progress tracking
+  const [progress, setProgress] = useState<ProgressState>({
+    isRunning: false,
+    startTime: 0,
+    estimatedTotalMs: 0,
+    elapsedMs: 0,
+    phase: 'fetching',
+  });
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch sites and check super admin status
   useEffect(() => {
@@ -107,6 +136,15 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
     fetchData();
   }, []);
 
+  // Progress ticker cleanup
+  useEffect(() => {
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, []);
+
   // Filter sites based on search
   const filteredSites = useMemo(() => {
     if (!siteSearch) return sites;
@@ -117,7 +155,7 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
     );
   }, [sites, siteSearch]);
 
-  // Calculate range days
+  // Calculate range days - MUST be defined before startProgress
   const rangeDays = useMemo(() => {
     if (!dateRange?.from || !dateRange?.to) return 0;
     return differenceInDays(dateRange.to, dateRange.from) + 1;
@@ -126,6 +164,74 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
   const isRangeValid = rangeDays > 0 && rangeDays <= MAX_RANGE_DAYS;
   const canSubmit = selectedSite && dateRange?.from && dateRange?.to && isRangeValid;
   const canForceBypass = isSuperAdmin && selectedSite && dateRange?.from && dateRange?.to && rangeDays > MAX_RANGE_DAYS;
+
+  // Start progress tracking
+  const startProgress = useCallback((isForceBypass: boolean) => {
+    const estimatedMs = estimateTimeMs(rangeDays, isForceBypass);
+    const startTime = Date.now();
+    
+    setProgress({
+      isRunning: true,
+      startTime,
+      estimatedTotalMs: estimatedMs,
+      elapsedMs: 0,
+      phase: 'fetching',
+    });
+    
+    // Update progress every 100ms
+    progressIntervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const phaseProgress = elapsed / estimatedMs;
+      
+      // Update phase based on progress
+      let phase: ProgressState['phase'] = 'fetching';
+      if (phaseProgress > 0.2) phase = 'processing';
+      if (phaseProgress > 0.8) phase = 'writing';
+      
+      setProgress(prev => ({
+        ...prev,
+        elapsedMs: elapsed,
+        phase,
+      }));
+    }, 100);
+  }, [rangeDays]);
+
+  // Stop progress tracking
+  const stopProgress = useCallback(() => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+    setProgress(prev => ({
+      ...prev,
+      isRunning: false,
+      phase: 'complete',
+    }));
+  }, []);
+
+  // Progress percentage calculation
+  const progressPercent = useMemo(() => {
+    if (!progress.isRunning) return 0;
+    const percent = Math.min(95, (progress.elapsedMs / progress.estimatedTotalMs) * 100);
+    return Math.round(percent);
+  }, [progress]);
+
+  const estimatedRemaining = useMemo(() => {
+    if (!progress.isRunning) return null;
+    const remaining = Math.max(0, progress.estimatedTotalMs - progress.elapsedMs);
+    if (remaining < 1000) return 'quelques secondes';
+    const seconds = Math.ceil(remaining / 1000);
+    if (seconds < 60) return `~${seconds}s`;
+    const minutes = Math.ceil(seconds / 60);
+    return `~${minutes}min`;
+  }, [progress]);
+
+  const phaseLabels: Record<ProgressState['phase'], string> = {
+    fetching: 'Récupération des opérations...',
+    processing: 'Calcul des analytics...',
+    writing: 'Écriture en base...',
+    complete: 'Terminé',
+  };
 
   const handleOpenConfirm = () => {
     if (!canSubmit) return;
@@ -152,6 +258,7 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
     setRunning(true);
     setResult(null);
     setError(null);
+    startProgress(false);
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('recompute-analytics', {
@@ -178,6 +285,7 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
       setError(message);
       toast.error(message);
     } finally {
+      stopProgress();
       setRunning(false);
     }
   };
@@ -195,6 +303,7 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
     setRunning(true);
     setResult(null);
     setError(null);
+    startProgress(true);
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('recompute-analytics', {
@@ -221,6 +330,7 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
       setError(message);
       toast.error(message);
     } finally {
+      stopProgress();
       setRunning(false);
     }
   };
@@ -229,15 +339,25 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
     <>
       <Card className={className}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Database className="h-5 w-5" />
-            Recalculer Analytics
-          </CardTitle>
-          <CardDescription>
-            Recalculer les tables analytics_daily et analytics_kpis pour un site sur une période donnée.
-            <br />
-            <span className="text-orange-500 font-medium">⚠️ Réservé aux platform admins. Maximum {MAX_RANGE_DAYS} jours.</span>
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                Recalculer Analytics
+              </CardTitle>
+              <CardDescription>
+                Recalculer les tables analytics_daily et analytics_kpis pour un site sur une période donnée.
+                <br />
+                <span className="text-orange-500 font-medium">⚠️ Réservé aux platform admins. Maximum {MAX_RANGE_DAYS} jours.</span>
+              </CardDescription>
+            </div>
+            <Link to="/admin/recompute-audit">
+              <Button variant="outline" size="sm">
+                <History className="h-4 w-4 mr-2" />
+                Audit Trail
+              </Button>
+            </Link>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Site Selector */}
@@ -399,6 +519,27 @@ export function RecomputeAnalyticsWidget({ className }: { className?: string }) 
               </Button>
             )}
           </div>
+
+          {/* Progress Indicator */}
+          {running && progress.isRunning && (
+            <div className="p-4 rounded-lg border bg-muted/30 space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  <span className="font-medium">{phaseLabels[progress.phase]}</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  <span>Temps restant: {estimatedRemaining}</span>
+                </div>
+              </div>
+              <Progress value={progressPercent} className="h-2" />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>{Math.round(progress.elapsedMs / 1000)}s écoulées</span>
+                <span>{progressPercent}%</span>
+              </div>
+            </div>
+          )}
 
           {/* Result Banner */}
           {result && (

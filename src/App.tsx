@@ -50,6 +50,7 @@ import PlatformSalesInvoices from "./pages/platform/PlatformSalesInvoices";
 import PlatformSalesProducts from "./pages/platform/PlatformSalesProducts";
 import PlatformSalesReports from "./pages/platform/PlatformSalesReports";
 import PlatformOrphanPages from "./pages/platform/PlatformOrphanPages";
+import RecomputeAuditTrail from "./pages/platform/RecomputeAuditTrail";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
@@ -156,6 +157,7 @@ const App = () => (
             <Route path="/admin/expert-requests" element={<AdminExpertRequests />} />
             <Route path="/admin/cron-logs" element={<AdminCronLogs />} />
             <Route path="/admin/orphan-pages" element={<PlatformOrphanPages />} />
+            <Route path="/admin/recompute-audit" element={<RecomputeAuditTrail />} />
           </Route>
           
           {/* Platform Admin billing routes (require billing access) */}
