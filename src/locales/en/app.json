@@ -1554,7 +1554,12 @@
     "apiUnavailable": "Service unavailable, manual input enabled",
     "fallbackModeNotice": "The search service is temporarily unavailable. Please enter the information manually.",
     "invalidPostalCode": "The postal code is invalid for this country.",
-    "retrySearch": "Retry"
+    "retrySearch": "Retry",
+    "postalCodeNotFound": "Postal code not found. Please check the code.",
+    "loadingPostalIndex": "Loading postal codes index...",
+    "selectCity": "Select a city",
+    "selectCityHelp": "Select a city from the list above.",
+    "enterPostalCodeFirst": "Enter postal code first"
   },
   "platformAdmin": {
     "title": "Administration",
