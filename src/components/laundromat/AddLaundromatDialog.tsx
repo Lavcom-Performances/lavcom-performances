@@ -4,15 +4,16 @@
  * Modal dialog for adding a new laundromat (site) to the system.
  * Features:
  * - Optional SIRET lookup to auto-fill company information (French business ID)
- * - City autocomplete with postal code and department auto-fill (France)
+ * - France: City validated against postal code using local CSV index
+ * - Other countries: City autocomplete via APIs
  * - Optional address autocomplete
  * - Fallback to manual input if API fails
  * - Client-side validation before submission
  * - Full i18n support for 6 languages
  */
 
-import { useState, useCallback, useEffect } from "react";
-import { Loader2, Search, CheckCircle2, Info, Lock, AlertCircle } from "lucide-react";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { Loader2, Search, CheckCircle2, Info, Lock, AlertCircle, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +27,22 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { AddressSearchResult } from "@/hooks/useAddressSearch";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  loadPostalCityIndex,
+  getCitiesForPostalCode,
+  getDepartmentFor,
+  isValidCityForPostalCode,
+  isValidPostalCode,
+  logPostalValidationEvent,
+  deriveDepartmentCodeFromPostal,
+} from "@/lib/fr/postalCityIndex";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -81,11 +98,34 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   const [citySelected, setCitySelected] = useState(false);
   const [addressSelected, setAddressSelected] = useState(false);
 
-  // Fallback mode when API fails
+  // Fallback mode when API fails (for non-France countries)
   const [fallbackMode, setFallbackMode] = useState(false);
 
   // Validation errors
   const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
+
+  // France postal code validation state
+  const [frCityOptions, setFrCityOptions] = useState<string[]>([]);
+  const [frPostalCodeValid, setFrPostalCodeValid] = useState<boolean | null>(null);
+  const [frIndexLoading, setFrIndexLoading] = useState(false);
+  const [frIndexLoaded, setFrIndexLoaded] = useState(false);
+
+  // Load France postal code index when dialog opens with France selected
+  useEffect(() => {
+    if (open && formData.country === "FR" && !frIndexLoaded) {
+      setFrIndexLoading(true);
+      loadPostalCityIndex()
+        .then(() => {
+          setFrIndexLoaded(true);
+        })
+        .catch((err) => {
+          console.error("[AddLaundromatDialog] Failed to load postal index:", err);
+        })
+        .finally(() => {
+          setFrIndexLoading(false);
+        });
+    }
+  }, [open, formData.country, frIndexLoaded]);
 
   // Reset form when dialog closes
   useEffect(() => {
@@ -97,6 +137,8 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       setAddressSelected(false);
       setFallbackMode(false);
       setValidationErrors({});
+      setFrCityOptions([]);
+      setFrPostalCodeValid(null);
     }
   }, [open]);
 
@@ -282,20 +324,64 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   );
 
   // -------------------------------------------------------------------------
-  // POSTAL CODE MANUAL HANDLER (Fallback mode)
+  // POSTAL CODE CHANGE HANDLER (France uses CSV index)
   // -------------------------------------------------------------------------
 
   const handlePostalCodeChange = useCallback((value: string) => {
     const cleanValue = value.replace(/\D/g, "").slice(0, 5);
-    const departmentCode = deriveDepartmentCode(cleanValue);
-
+    
     setFormData((prev) => ({
       ...prev,
       postalCode: cleanValue,
-      departmentCode: departmentCode,
+      // Clear city when postal code changes (France only)
+      city: formData.country === "FR" ? "" : prev.city,
+      departmentCode: "",
     }));
-    setValidationErrors((prev) => ({ ...prev, postalCode: false }));
-  }, []);
+    setCitySelected(false);
+    setFrCityOptions([]);
+    setFrPostalCodeValid(null);
+    setValidationErrors((prev) => ({ ...prev, postalCode: false, city: false }));
+
+    // For France: lookup cities from CSV index when 5 digits entered
+    if (formData.country === "FR" && cleanValue.length === 5 && frIndexLoaded) {
+      const cities = getCitiesForPostalCode(cleanValue);
+      if (cities.length > 0) {
+        setFrCityOptions(cities);
+        setFrPostalCodeValid(true);
+        const dept = deriveDepartmentCodeFromPostal(cleanValue);
+        setFormData((prev) => ({
+          ...prev,
+          postalCode: cleanValue,
+          departmentCode: dept,
+        }));
+      } else {
+        setFrCityOptions([]);
+        setFrPostalCodeValid(false);
+        // Log to observability
+        logPostalValidationEvent('postal_code_not_found', cleanValue, 'FR');
+      }
+    } else if (formData.country !== "FR") {
+      // Non-France: derive department from postal code
+      const departmentCode = deriveDepartmentCode(cleanValue);
+      setFormData((prev) => ({
+        ...prev,
+        postalCode: cleanValue,
+        departmentCode: departmentCode,
+      }));
+    }
+  }, [formData.country, frIndexLoaded]);
+
+  // Handle France city selection from dropdown
+  const handleFranceCitySelect = useCallback((city: string) => {
+    const dept = getDepartmentFor(formData.postalCode, city);
+    setFormData((prev) => ({
+      ...prev,
+      city,
+      departmentCode: dept || deriveDepartmentCodeFromPostal(prev.postalCode),
+    }));
+    setCitySelected(true);
+    setValidationErrors((prev) => ({ ...prev, city: false }));
+  }, [formData.postalCode]);
 
   // -------------------------------------------------------------------------
   // COUNTRY CHANGE HANDLER
@@ -313,7 +399,18 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     setCitySelected(false);
     setAddressSelected(false);
     setFallbackMode(false);
-  }, []);
+    setFrCityOptions([]);
+    setFrPostalCodeValid(null);
+    
+    // Load France index if switching to France
+    if (value === "FR" && !frIndexLoaded) {
+      setFrIndexLoading(true);
+      loadPostalCityIndex()
+        .then(() => setFrIndexLoaded(true))
+        .catch(console.error)
+        .finally(() => setFrIndexLoading(false));
+    }
+  }, [frIndexLoaded]);
 
   // Unlock city for editing
   const unlockCity = () => {
@@ -325,6 +422,8 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       postalCode: "",
       departmentCode: "",
     }));
+    setFrCityOptions([]);
+    setFrPostalCodeValid(null);
   };
 
   // -------------------------------------------------------------------------
@@ -346,14 +445,42 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       errors.city = true;
     }
 
-    // In normal mode, city must be selected from suggestions
-    // In fallback mode, we also need postal code
-    if (!fallbackMode && !citySelected) {
-      errors.city = true;
-    }
-
     if (!formData.postalCode.trim()) {
       errors.postalCode = true;
+    }
+
+    // France-specific validation
+    if (formData.country === "FR") {
+      // Postal code must be valid (in CSV index)
+      if (formData.postalCode.length === 5 && frPostalCodeValid === false) {
+        errors.postalCode = true;
+      }
+      
+      // City must be selected from dropdown (not free text)
+      if (!citySelected) {
+        errors.city = true;
+      }
+      
+      // Validate city against postal code
+      if (formData.city && formData.postalCode.length === 5 && frIndexLoaded) {
+        if (!isValidCityForPostalCode(formData.postalCode, formData.city)) {
+          errors.city = true;
+          // Log validation failure
+          logPostalValidationEvent('city_validation_failed', formData.postalCode, 'FR', {
+            attempted_city: formData.city,
+          });
+        }
+      }
+      
+      // Department must be filled
+      if (!formData.departmentCode) {
+        errors.departmentCode = true;
+      }
+    } else {
+      // Non-France: city must be selected from suggestions (or fallback mode)
+      if (!fallbackMode && !citySelected) {
+        errors.city = true;
+      }
     }
 
     setValidationErrors(errors);
@@ -551,16 +678,43 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
           <div className="space-y-2">
             <Label htmlFor="postal-code" className="flex items-center gap-2">
               {t("app:newLaundry.postalCodeLabel")} *
-              {addressSelected && !fallbackMode && <Lock className="h-3 w-3 text-muted-foreground" />}
+              {addressSelected && !isFrance && <Lock className="h-3 w-3 text-muted-foreground" />}
             </Label>
-            {fallbackMode || !isFrance ? (
+            {isFrance ? (
+              <>
+                <Input
+                  id="postal-code"
+                  placeholder={t("app:newLaundry.postalCodeEnterPlaceholder")}
+                  value={formData.postalCode}
+                  onChange={(e) => handlePostalCodeChange(e.target.value)}
+                  className={cn(
+                    validationErrors.postalCode && "border-destructive",
+                    frPostalCodeValid === false && formData.postalCode.length === 5 && "border-destructive"
+                  )}
+                  maxLength={5}
+                  disabled={addressSelected}
+                />
+                {frIndexLoading && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    {t("app:newLaundry.loadingPostalIndex")}
+                  </p>
+                )}
+                {frPostalCodeValid === false && formData.postalCode.length === 5 && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {t("app:newLaundry.postalCodeNotFound")}
+                  </p>
+                )}
+              </>
+            ) : fallbackMode ? (
               <Input
                 id="postal-code"
                 placeholder={t("app:newLaundry.postalCodeEnterPlaceholder")}
                 value={formData.postalCode}
                 onChange={(e) => handlePostalCodeChange(e.target.value)}
                 className={cn(validationErrors.postalCode && "border-destructive")}
-                maxLength={5}
+                maxLength={10}
               />
             ) : (
               <Input
@@ -578,35 +732,94 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               {t("app:newLaundry.cityLabel")} *
-              {addressSelected && !fallbackMode && <Lock className="h-3 w-3 text-muted-foreground" />}
+              {citySelected && <Lock className="h-3 w-3 text-muted-foreground" />}
             </Label>
-            {fallbackMode || !isFrance ? (
+            
+            {/* France: City dropdown based on postal code */}
+            {isFrance ? (
+              <>
+                {frCityOptions.length > 0 ? (
+                  <>
+                    <Select
+                      value={formData.city}
+                      onValueChange={handleFranceCitySelect}
+                      disabled={citySelected}
+                    >
+                      <SelectTrigger 
+                        className={cn(
+                          citySelected && "bg-muted/50",
+                          validationErrors.city && "border-destructive"
+                        )}
+                      >
+                        <SelectValue placeholder={t("app:newLaundry.selectCity")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {frCityOptions.map((city) => (
+                          <SelectItem key={city} value={city}>
+                            {city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {citySelected && (
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Lock className="h-3 w-3" />
+                        {t("app:newLaundry.cityLocked")}{" "}
+                        <button
+                          type="button"
+                          onClick={unlockCity}
+                          className="text-primary hover:underline"
+                        >
+                          {t("app:newLaundry.unlock")}
+                        </button>
+                      </p>
+                    )}
+                  </>
+                ) : formData.postalCode.length === 5 && frPostalCodeValid !== false ? (
+                  <Input
+                    placeholder={t("app:newLaundry.enterPostalCodeFirst")}
+                    value={formData.city}
+                    disabled
+                    className="bg-muted/50"
+                  />
+                ) : (
+                  <Input
+                    placeholder={t("app:newLaundry.enterPostalCodeFirst")}
+                    value=""
+                    disabled
+                    className="bg-muted/50"
+                  />
+                )}
+                {!citySelected && frCityOptions.length > 0 && (
+                  <p className="text-xs text-muted-foreground">{t("app:newLaundry.selectCityHelp")}</p>
+                )}
+              </>
+            ) : fallbackMode ? (
+              /* Non-France fallback mode */
               <CityAutocomplete
                 value={formData.city}
                 countryCode={formData.country}
                 onSelect={handleCitySelect}
                 onChange={handleCityInputChange}
-                placeholder={
-                  isFrance
-                    ? t("app:newLaundry.citySearchPlaceholder")
-                    : t("app:newLaundry.citySearchPlaceholderInternational")
-                }
+                placeholder={t("app:newLaundry.citySearchPlaceholderInternational")}
                 disabled={citySelected}
                 hasError={validationErrors.city}
                 fallbackMode={fallbackMode}
                 onFallbackModeChange={setFallbackMode}
               />
             ) : (
-              <Input
-                placeholder={t("app:newLaundry.cityPlaceholder")}
+              /* Non-France: City autocomplete */
+              <CityAutocomplete
                 value={formData.city}
-                readOnly={addressSelected}
-                className={cn(addressSelected && "bg-muted/50", validationErrors.city && "border-destructive")}
-                onChange={(e) => !addressSelected && handleCityInputChange(e.target.value)}
+                countryCode={formData.country}
+                onSelect={handleCitySelect}
+                onChange={handleCityInputChange}
+                placeholder={t("app:newLaundry.citySearchPlaceholderInternational")}
+                disabled={citySelected}
+                hasError={validationErrors.city}
+                fallbackMode={fallbackMode}
+                onFallbackModeChange={setFallbackMode}
               />
-            )}
-            {!addressSelected && !fallbackMode && isFrance && (
-              <p className="text-xs text-muted-foreground">{t("app:newLaundry.addressHelp")}</p>
             )}
           </div>
 
