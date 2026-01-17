@@ -13,7 +13,8 @@
  */
 
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { Loader2, Search, CheckCircle2, Info, Lock, AlertCircle, ChevronDown } from "lucide-react";
+import { Loader2, Search, CheckCircle2, Info, Lock, AlertCircle, ChevronDown, RotateCcw } from "lucide-react";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -83,8 +84,36 @@ const initialFormData: LaundryFormData = {
 export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundromatDialogProps) {
   const { t } = useTranslation(["app", "errors"]);
 
-  // Form data state
-  const [formData, setFormData] = useState<LaundryFormData>(initialFormData);
+  // Form persistence - survives page refresh and browser crashes
+  const {
+    formData: persistedFormData,
+    setFormData: setPersistedFormData,
+    clearSavedData,
+    hasSavedData,
+    resetForm: resetPersistedForm,
+  } = useFormPersistence<LaundryFormData>({
+    key: "add-laundromat-dialog",
+    initialData: initialFormData,
+    ttlMs: 24 * 60 * 60 * 1000, // 24 hours
+    enabled: true,
+  });
+
+  // Use persisted form data
+  const [formData, setFormDataInternal] = useState<LaundryFormData>(persistedFormData);
+
+  // Sync persisted data with internal state
+  useEffect(() => {
+    setFormDataInternal(persistedFormData);
+  }, [persistedFormData]);
+
+  // Wrapper to update both internal and persisted state
+  const setFormData = useCallback((updater: LaundryFormData | ((prev: LaundryFormData) => LaundryFormData)) => {
+    setFormDataInternal((prev) => {
+      const newData = typeof updater === "function" ? updater(prev) : updater;
+      setPersistedFormData(newData);
+      return newData;
+    });
+  }, [setPersistedFormData]);
 
   // SIRET lookup states
   const [isLoadingSiret, setIsLoadingSiret] = useState(false);
@@ -110,6 +139,15 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   const [frIndexLoading, setFrIndexLoading] = useState(false);
   const [frIndexLoaded, setFrIndexLoaded] = useState(false);
 
+  // Check if persisted data has values to show restore message
+  const hasRestoredDraft = useMemo(() => {
+    return hasSavedData && (
+      persistedFormData.name !== initialFormData.name ||
+      persistedFormData.city !== initialFormData.city ||
+      persistedFormData.address !== initialFormData.address
+    );
+  }, [hasSavedData, persistedFormData]);
+
   // Load France postal code index when dialog opens with France selected
   useEffect(() => {
     if (open && formData.country === "FR" && !frIndexLoaded) {
@@ -127,10 +165,25 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     }
   }, [open, formData.country, frIndexLoaded]);
 
-  // Reset form when dialog closes
+  // Re-validate France city options when dialog opens with restored data
   useEffect(() => {
-    if (!open) {
-      setFormData(initialFormData);
+    if (open && formData.country === "FR" && formData.postalCode.length === 5 && frIndexLoaded) {
+      const cities = getCitiesForPostalCode(formData.postalCode);
+      if (cities.length > 0) {
+        setFrCityOptions(cities);
+        setFrPostalCodeValid(true);
+        // Check if restored city is valid
+        if (formData.city && isValidCityForPostalCode(formData.postalCode, formData.city)) {
+          setCitySelected(true);
+        }
+      }
+    }
+  }, [open, frIndexLoaded]);
+
+  // Reset form when dialog closes successfully (not on cancel with unsaved data)
+  const handleDialogClose = useCallback((isOpen: boolean) => {
+    if (!isOpen) {
+      // Don't clear saved data on close - user might want to continue later
       setSiretInfo(null);
       setSiretSuccess(false);
       setCitySelected(false);
@@ -140,7 +193,8 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       setFrCityOptions([]);
       setFrPostalCodeValid(null);
     }
-  }, [open]);
+    onOpenChange(isOpen);
+  }, [onOpenChange]);
 
   // Field update handler
   const updateField = useCallback(<K extends keyof LaundryFormData>(field: K, value: LaundryFormData[K]) => {
@@ -544,13 +598,32 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
         ...formData,
         departmentCode: validation?.departmentCode || formData.departmentCode,
       });
-      onOpenChange(false);
+      
+      // Clear saved draft on successful submission
+      clearSavedData();
+      resetPersistedForm();
+      
+      handleDialogClose(false);
     } catch (error) {
       console.error("Error creating site:", error);
     } finally {
       setIsCreating(false);
     }
   };
+
+  // Clear draft handler
+  const handleClearDraft = useCallback(() => {
+    resetPersistedForm();
+    setFormDataInternal(initialFormData);
+    setSiretInfo(null);
+    setSiretSuccess(false);
+    setCitySelected(false);
+    setAddressSelected(false);
+    setFallbackMode(false);
+    setValidationErrors({});
+    setFrCityOptions([]);
+    setFrPostalCodeValid(null);
+  }, [resetPersistedForm]);
 
   // Check if France is selected
   const isFrance = formData.country === "FR";
@@ -560,11 +633,30 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   // -------------------------------------------------------------------------
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("app:newLaundry.title")}</DialogTitle>
         </DialogHeader>
+
+        {/* Draft restored indicator */}
+        {hasRestoredDraft && (
+          <div className="flex items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg border border-border/50 text-sm">
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="text-muted-foreground">{t("app:newLaundry.draftRestored")}</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearDraft}
+              className="h-7 text-xs gap-1"
+            >
+              <RotateCcw className="h-3 w-3" />
+              {t("app:newLaundry.clearDraft")}
+            </Button>
+          </div>
+        )}
 
         <div className="space-y-4 py-4">
           {/* SIRET Field (Optional - France only) */}

@@ -1559,7 +1559,9 @@
     "loadingPostalIndex": "Loading postal codes index...",
     "selectCity": "Select a city",
     "selectCityHelp": "Select a city from the list above.",
-    "enterPostalCodeFirst": "Enter postal code first"
+    "enterPostalCodeFirst": "Enter postal code first",
+    "draftRestored": "Draft restored",
+    "clearDraft": "Clear"
   },
   "platformAdmin": {
     "title": "Administration",

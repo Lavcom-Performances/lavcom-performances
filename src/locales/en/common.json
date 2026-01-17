@@ -67,5 +67,7 @@
     "simulatorPacks": "Simulator Packs",
     "allRightsReserved": "All rights reserved."
   },
-  "close": "Close"
+  "close": "Close",
+  "draftRestored": "Draft restored",
+  "clearDraft": "Clear"
 }
