@@ -454,7 +454,8 @@ export default function AdminSystemStatus() {
                       ...data,
                       last_run: new Date().toISOString(),
                     });
-                    const totalAnomalies = Object.values(data.anomalies || {}).reduce((a: number, b: unknown) => a + (b as number), 0);
+                    const anomalyValues = Object.values(data.anomalies || {}) as number[];
+                    const totalAnomalies = anomalyValues.reduce((a, b) => a + b, 0);
                     if (totalAnomalies > 0 || data.fixed_count > 0) {
                       toast.warning(`${data.fixed_count} correction(s), ${totalAnomalies} anomalie(s) détectée(s)`);
                     } else {
