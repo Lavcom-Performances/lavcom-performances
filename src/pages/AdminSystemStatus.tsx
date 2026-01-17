@@ -14,6 +14,7 @@ import { fr } from 'date-fns/locale';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { toast } from 'sonner';
 import { ImportParserTestsWidget } from '@/components/admin/ImportParserTestsWidget';
+import { RecomputeAnalyticsWidget } from '@/components/admin/RecomputeAnalyticsWidget';
 
 interface SystemEvent {
   id: number;
@@ -61,6 +62,7 @@ const sourceLabels: Record<string, string> = {
   'cron': 'Analytics Cron',
   'smoke-test': 'Smoke Test',
   'smoke_tests_import': 'Import Parser Tests',
+  'recompute_analytics': 'Recompute Analytics',
   'site_delete': 'Site Deletion',
   'member_remove': 'Member Removal',
   'backup_drill': 'Backup Drill',
@@ -370,6 +372,9 @@ export default function AdminSystemStatus() {
             )}
           </CardContent>
         </Card>
+
+        {/* Recompute Analytics Section */}
+        <RecomputeAnalyticsWidget />
 
         {/* Import Parser Tests Section */}
         <ImportParserTestsWidget />

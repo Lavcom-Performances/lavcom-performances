@@ -107,3 +107,6 @@ verify_jwt = false
 
 [functions.import-parser-tests-cron]
 verify_jwt = false
+
+[functions.recompute-analytics]
+verify_jwt = true
