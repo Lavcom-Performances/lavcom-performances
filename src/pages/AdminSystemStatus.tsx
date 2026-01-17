@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   RefreshCw, AlertTriangle, AlertCircle, Info, XCircle, CheckCircle2, 
-  PlayCircle, Database, ShieldAlert 
+  PlayCircle, Database, ShieldAlert, CreditCard, Loader2 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -54,6 +54,7 @@ const severityConfig = {
 
 const sourceLabels: Record<string, string> = {
   'stripe-webhook': 'Stripe Webhook',
+  'stripe_reconcile': 'Stripe Reconcile',
   'import': 'Import CSV',
   'cron': 'Analytics Cron',
   'smoke-test': 'Smoke Test',
@@ -83,6 +84,15 @@ export default function AdminSystemStatus() {
   const [selectedSiteId, setSelectedSiteId] = useState<string>('');
   const [smokeTestResults, setSmokeTestResults] = useState<SmokeTestResult[]>([]);
   const [runningSmokeTest, setRunningSmokeTest] = useState(false);
+
+  // Billing health state
+  const [runningReconcile, setRunningReconcile] = useState(false);
+  const [reconcileResult, setReconcileResult] = useState<{
+    total_checked: number;
+    fixed_count: number;
+    anomalies: Record<string, number>;
+    last_run?: string;
+  } | null>(null);
 
   const fetchEvents = async () => {
     try {
@@ -421,7 +431,107 @@ export default function AdminSystemStatus() {
           </CardContent>
         </Card>
 
-        {/* Filters */}
+        {/* Billing Health Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Santé Facturation (Stripe ↔ DB)
+            </CardTitle>
+            <CardDescription>
+              Réconciliation des abonnements Stripe avec la base de données
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={async () => {
+                  setRunningReconcile(true);
+                  try {
+                    const { data, error } = await supabase.functions.invoke('stripe-reconcile-cron');
+                    if (error) throw error;
+                    setReconcileResult({
+                      ...data,
+                      last_run: new Date().toISOString(),
+                    });
+                    const totalAnomalies = Object.values(data.anomalies || {}).reduce((a: number, b: unknown) => a + (b as number), 0);
+                    if (totalAnomalies > 0 || data.fixed_count > 0) {
+                      toast.warning(`${data.fixed_count} correction(s), ${totalAnomalies} anomalie(s) détectée(s)`);
+                    } else {
+                      toast.success('Réconciliation OK - Aucune anomalie');
+                    }
+                    fetchEvents();
+                  } catch (err) {
+                    console.error('Reconcile failed:', err);
+                    toast.error('Erreur lors de la réconciliation');
+                  } finally {
+                    setRunningReconcile(false);
+                  }
+                }}
+                disabled={runningReconcile}
+                variant="outline"
+              >
+                {runningReconcile ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <PlayCircle className="h-4 w-4 mr-2" />
+                )}
+                {runningReconcile ? 'Exécution...' : 'Lancer Réconciliation'}
+              </Button>
+              {reconcileResult?.last_run && (
+                <span className="text-sm text-muted-foreground">
+                  Dernier run: {format(new Date(reconcileResult.last_run), 'dd/MM/yyyy HH:mm', { locale: fr })}
+                </span>
+              )}
+            </div>
+
+            {reconcileResult && (
+              <div className="grid gap-4 md:grid-cols-4 mt-4">
+                <div className="p-4 rounded-lg bg-muted/50 text-center">
+                  <div className="text-2xl font-bold">{reconcileResult.total_checked}</div>
+                  <p className="text-xs text-muted-foreground">Abonnements vérifiés</p>
+                </div>
+                <div className={`p-4 rounded-lg text-center ${reconcileResult.fixed_count > 0 ? 'bg-green-500/10' : 'bg-muted/50'}`}>
+                  <div className={`text-2xl font-bold ${reconcileResult.fixed_count > 0 ? 'text-green-500' : ''}`}>
+                    {reconcileResult.fixed_count}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Corrections appliquées</p>
+                </div>
+                <div className={`p-4 rounded-lg text-center ${(reconcileResult.anomalies?.MISSING_STRIPE_IDS || 0) > 0 ? 'bg-red-500/10' : 'bg-muted/50'}`}>
+                  <div className={`text-2xl font-bold ${(reconcileResult.anomalies?.MISSING_STRIPE_IDS || 0) > 0 ? 'text-red-500' : ''}`}>
+                    {reconcileResult.anomalies?.MISSING_STRIPE_IDS || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">IDs Stripe manquants</p>
+                </div>
+                <div className={`p-4 rounded-lg text-center ${(reconcileResult.anomalies?.STATUS_MISMATCH || 0) > 0 ? 'bg-orange-500/10' : 'bg-muted/50'}`}>
+                  <div className={`text-2xl font-bold ${(reconcileResult.anomalies?.STATUS_MISMATCH || 0) > 0 ? 'text-orange-500' : ''}`}>
+                    {reconcileResult.anomalies?.STATUS_MISMATCH || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Statuts incohérents</p>
+                </div>
+              </div>
+            )}
+
+            {reconcileResult && Object.values(reconcileResult.anomalies || {}).some(v => (v as number) > 0) && (
+              <div className="mt-4 p-4 rounded-lg border border-orange-500/30 bg-orange-500/5">
+                <h4 className="font-medium mb-2 flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-orange-500" />
+                  Détail des anomalies
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                  {Object.entries(reconcileResult.anomalies || {}).map(([key, value]) => (
+                    (value as number) > 0 && (
+                      <div key={key} className="flex justify-between">
+                        <span className="text-muted-foreground">{key.replace(/_/g, ' ')}:</span>
+                        <span className="font-medium">{value as number}</span>
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
         <div className="flex gap-4">
           <Select value={sourceFilter} onValueChange={setSourceFilter}>
             <SelectTrigger className="w-[200px]">
@@ -430,6 +540,7 @@ export default function AdminSystemStatus() {
             <SelectContent>
               <SelectItem value="all">Toutes les sources</SelectItem>
               <SelectItem value="stripe-webhook">Stripe Webhook</SelectItem>
+              <SelectItem value="stripe_reconcile">Stripe Reconcile</SelectItem>
               <SelectItem value="import">Import CSV</SelectItem>
               <SelectItem value="cron">Analytics Cron</SelectItem>
               <SelectItem value="smoke-test">Smoke Test</SelectItem>
