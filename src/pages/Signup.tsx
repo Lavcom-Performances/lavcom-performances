@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatCooldown } from "@/lib/rateLimiter";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { isLeakedPasswordError, getAuthErrorMessage } from "@/lib/authErrors";
+import { logAuthSecurityEvent } from "@/lib/authLogging";
 
 export default function Signup() {
   const { t } = useTranslation(['app', 'common']);
@@ -165,6 +166,9 @@ export default function Signup() {
         
         // Check for leaked password error from Supabase
         if (isLeakedPasswordError(errorMessage)) {
+          // Log security event (no PII)
+          logAuthSecurityEvent('leaked_password_blocked', { flow: 'signup' });
+          
           toast({
             title: t('common:error'),
             description: t('errors:auth.leakedPassword'),
