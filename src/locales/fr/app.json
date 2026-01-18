@@ -833,6 +833,38 @@
       }
     }
   },
+  "securityAudit": {
+    "title": "Journal d'audit sécurité auth",
+    "description": "Voir les événements de sécurité liés à la politique de mots de passe",
+    "filterByFlow": "Filtrer par flux",
+    "allFlows": "Tous les flux",
+    "noEvents": "Aucun événement de sécurité enregistré",
+    "footerNote": "Les événements sont enregistrés lorsque des utilisateurs tentent d'utiliser des mots de passe compromis ou faibles. Aucun mot de passe n'est stocké.",
+    "events": {
+      "leakedPasswordBlocked": "Mot de passe compromis bloqué",
+      "weakPasswordBlocked": "Mot de passe faible bloqué",
+      "signupFailed": "Inscription échouée",
+      "passwordResetFailed": "Réinitialisation échouée"
+    },
+    "flows": {
+      "signup": "Inscription",
+      "resetPassword": "Réinitialisation",
+      "changePassword": "Modification"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Attention",
+      "error": "Erreur",
+      "critical": "Critique"
+    },
+    "columns": {
+      "timestamp": "Date/heure",
+      "event": "Événement",
+      "flow": "Flux",
+      "severity": "Sévérité",
+      "env": "Env"
+    }
+  },
   "securityCenter": {
     "title": "Centre de sécurité",
     "description": "Visualisez et améliorez la protection de votre compte et de vos données",

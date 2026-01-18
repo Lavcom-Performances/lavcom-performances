@@ -14,6 +14,7 @@ import { SecurityAccountChecklist } from "./SecurityAccountChecklist";
 import { SecurityProjectChecklist } from "./SecurityProjectChecklist";
 import { LoginHistory } from "./LoginHistory";
 import { LogRetentionSettings } from "./LogRetentionSettings";
+import { AuthSecurityAuditLog } from "./AuthSecurityAuditLog";
 
 export interface SecurityScore {
   score: number;
@@ -173,6 +174,9 @@ export function SecurityCenter() {
 
       {/* Login History */}
       <LoginHistory />
+
+      {/* Auth Security Audit Log */}
+      <AuthSecurityAuditLog />
 
       {/* Log Retention Settings */}
       <LogRetentionSettings />

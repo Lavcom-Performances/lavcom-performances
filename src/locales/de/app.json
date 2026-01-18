@@ -724,6 +724,38 @@
       }
     }
   },
+  "securityAudit": {
+    "title": "Auth-Sicherheitsauditprotokoll",
+    "description": "Sicherheitsereignisse zur Passwortrichtlinie anzeigen",
+    "filterByFlow": "Nach Ablauf filtern",
+    "allFlows": "Alle Abläufe",
+    "noEvents": "Noch keine Sicherheitsereignisse aufgezeichnet",
+    "footerNote": "Ereignisse werden aufgezeichnet, wenn Benutzer versuchen, kompromittierte oder schwache Passwörter zu verwenden. Es werden keine Passwörter gespeichert.",
+    "events": {
+      "leakedPasswordBlocked": "Geleaktes Passwort blockiert",
+      "weakPasswordBlocked": "Schwaches Passwort blockiert",
+      "signupFailed": "Registrierung fehlgeschlagen",
+      "passwordResetFailed": "Passwort-Reset fehlgeschlagen"
+    },
+    "flows": {
+      "signup": "Registrierung",
+      "resetPassword": "Passwort zurücksetzen",
+      "changePassword": "Passwort ändern"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Warnung",
+      "error": "Fehler",
+      "critical": "Kritisch"
+    },
+    "columns": {
+      "timestamp": "Zeitstempel",
+      "event": "Ereignis",
+      "flow": "Ablauf",
+      "severity": "Schweregrad",
+      "env": "Env"
+    }
+  },
   "securityCenter": {
     "title": "Sicherheitszentrum",
     "description": "Visualisieren und verbessern Sie den Schutz Ihres Kontos und Ihrer Daten",
