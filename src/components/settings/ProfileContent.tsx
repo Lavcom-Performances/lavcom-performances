@@ -14,6 +14,7 @@ import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { ReAuthDialog } from "@/components/auth/ReAuthDialog";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { isLeakedPasswordError } from "@/lib/authErrors";
+import { logAuthSecurityEvent } from "@/lib/authLogging";
 
 export default function ProfileContent() {
   const { t } = useTranslation(['app', 'common']);
@@ -147,13 +148,16 @@ export default function ProfileContent() {
     setPendingPasswordChange(false);
 
     if (error) {
-      const errorDescription = isLeakedPasswordError(error.message)
-        ? t('errors:auth.leakedPassword')
-        : error.message;
+      const isLeaked = isLeakedPasswordError(error.message);
+      
+      // Log security event for leaked password (no PII)
+      if (isLeaked) {
+        logAuthSecurityEvent('leaked_password_blocked', { flow: 'change_password' });
+      }
       
       toast({
         title: t('common:error'),
-        description: errorDescription,
+        description: isLeaked ? t('errors:auth.leakedPassword') : error.message,
         variant: "destructive",
       });
       return;
