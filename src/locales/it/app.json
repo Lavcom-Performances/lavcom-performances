@@ -724,6 +724,38 @@
       }
     }
   },
+  "securityAudit": {
+    "title": "Log di audit sicurezza auth",
+    "description": "Visualizza gli eventi di sicurezza relativi alla policy delle password",
+    "filterByFlow": "Filtra per flusso",
+    "allFlows": "Tutti i flussi",
+    "noEvents": "Nessun evento di sicurezza registrato",
+    "footerNote": "Gli eventi vengono registrati quando gli utenti tentano di usare password compromesse o deboli. Nessuna password viene memorizzata.",
+    "events": {
+      "leakedPasswordBlocked": "Password compromessa bloccata",
+      "weakPasswordBlocked": "Password debole bloccata",
+      "signupFailed": "Registrazione fallita",
+      "passwordResetFailed": "Reset password fallito"
+    },
+    "flows": {
+      "signup": "Registrazione",
+      "resetPassword": "Reset password",
+      "changePassword": "Modifica password"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Avviso",
+      "error": "Errore",
+      "critical": "Critico"
+    },
+    "columns": {
+      "timestamp": "Data/ora",
+      "event": "Evento",
+      "flow": "Flusso",
+      "severity": "Gravità",
+      "env": "Env"
+    }
+  },
   "securityCenter": {
     "title": "Centro sicurezza",
     "description": "Visualizza e migliora la protezione del tuo account e dei tuoi dati",

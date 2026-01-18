@@ -724,6 +724,38 @@
       }
     }
   },
+  "securityAudit": {
+    "title": "Registro de auditoría de seguridad auth",
+    "description": "Ver eventos de seguridad relacionados con la política de contraseñas",
+    "filterByFlow": "Filtrar por flujo",
+    "allFlows": "Todos los flujos",
+    "noEvents": "Aún no hay eventos de seguridad registrados",
+    "footerNote": "Los eventos se registran cuando los usuarios intentan usar contraseñas comprometidas o débiles. No se almacenan contraseñas.",
+    "events": {
+      "leakedPasswordBlocked": "Contraseña filtrada bloqueada",
+      "weakPasswordBlocked": "Contraseña débil bloqueada",
+      "signupFailed": "Registro fallido",
+      "passwordResetFailed": "Restablecimiento fallido"
+    },
+    "flows": {
+      "signup": "Registro",
+      "resetPassword": "Restablecer contraseña",
+      "changePassword": "Cambiar contraseña"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Advertencia",
+      "error": "Error",
+      "critical": "Crítico"
+    },
+    "columns": {
+      "timestamp": "Fecha/hora",
+      "event": "Evento",
+      "flow": "Flujo",
+      "severity": "Gravedad",
+      "env": "Env"
+    }
+  },
   "securityCenter": {
     "title": "Centro de seguridad",
     "description": "Visualice y mejore la protección de su cuenta y sus datos",

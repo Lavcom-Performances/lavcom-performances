@@ -833,6 +833,38 @@
       }
     }
   },
+  "securityAudit": {
+    "title": "Auth Security Audit Log",
+    "description": "View security events related to password policy enforcement",
+    "filterByFlow": "Filter by flow",
+    "allFlows": "All flows",
+    "noEvents": "No security events recorded yet",
+    "footerNote": "Events are logged when users attempt to use compromised or weak passwords. No passwords are stored.",
+    "events": {
+      "leakedPasswordBlocked": "Leaked password blocked",
+      "weakPasswordBlocked": "Weak password blocked",
+      "signupFailed": "Signup failed",
+      "passwordResetFailed": "Password reset failed"
+    },
+    "flows": {
+      "signup": "Signup",
+      "resetPassword": "Password reset",
+      "changePassword": "Password change"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Warning",
+      "error": "Error",
+      "critical": "Critical"
+    },
+    "columns": {
+      "timestamp": "Timestamp",
+      "event": "Event",
+      "flow": "Flow",
+      "severity": "Severity",
+      "env": "Env"
+    }
+  },
   "securityCenter": {
     "title": "Security Center",
     "description": "View and improve the protection of your account and data",

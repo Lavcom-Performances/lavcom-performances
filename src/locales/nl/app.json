@@ -724,6 +724,38 @@
       }
     }
   },
+  "securityAudit": {
+    "title": "Auth beveiligingsauditlog",
+    "description": "Bekijk beveiligingsgebeurtenissen gerelateerd aan wachtwoordbeleid",
+    "filterByFlow": "Filter op stroom",
+    "allFlows": "Alle stromen",
+    "noEvents": "Nog geen beveiligingsgebeurtenissen geregistreerd",
+    "footerNote": "Gebeurtenissen worden geregistreerd wanneer gebruikers proberen gecompromitteerde of zwakke wachtwoorden te gebruiken. Er worden geen wachtwoorden opgeslagen.",
+    "events": {
+      "leakedPasswordBlocked": "Gelekt wachtwoord geblokkeerd",
+      "weakPasswordBlocked": "Zwak wachtwoord geblokkeerd",
+      "signupFailed": "Registratie mislukt",
+      "passwordResetFailed": "Wachtwoord reset mislukt"
+    },
+    "flows": {
+      "signup": "Registratie",
+      "resetPassword": "Wachtwoord reset",
+      "changePassword": "Wachtwoord wijzigen"
+    },
+    "severity": {
+      "info": "Info",
+      "warning": "Waarschuwing",
+      "error": "Fout",
+      "critical": "Kritiek"
+    },
+    "columns": {
+      "timestamp": "Tijdstempel",
+      "event": "Gebeurtenis",
+      "flow": "Stroom",
+      "severity": "Ernst",
+      "env": "Env"
+    }
+  },
   "securityCenter": {
     "title": "Beveiligingscentrum",
     "description": "Bekijk en verbeter de bescherming van uw account en gegevens",
