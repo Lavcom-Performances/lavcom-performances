@@ -63,7 +63,9 @@ import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndi
 import { DataQualityBlock } from "@/components/dashboard/DataQualityBlock";
 import { AnonymousBenchmarksBlock } from "@/components/dashboard/AnonymousBenchmarksBlock";
 import { BusinessActionsSection } from "@/components/dashboard/BusinessActionsSection";
-
+import { RecentActivityWidget } from "@/components/dashboard/RecentActivityWidget";
+import { OrgActivityFeed } from "@/components/dashboard/OrgActivityFeed";
+import { useOrganization } from "@/hooks/useOrganization";
 // Animation variants for staggered cards
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -164,7 +166,7 @@ export default function Dashboard() {
   const setupProgress = useSetupProgress();
   const tutorial = useTutorial();
   const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
-
+  const { organization, isCompanyAdmin } = useOrganization();
   // Handle analytics recalculation
   const handleRecalculateAnalytics = async () => {
     if (!selectedSite?.id || !user) return;
@@ -536,6 +538,22 @@ export default function Dashboard() {
               <SalesHeatmap data={stats.heatmapData} />
             </motion.div>
           )}
+
+          {/* Activity Widgets */}
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.4, ease: "easeOut" }}
+          >
+            {/* User's recent activity */}
+            <RecentActivityWidget limit={8} showFilters={true} />
+            
+            {/* Organization activity feed - only for admins */}
+            {isCompanyAdmin && organization && (
+              <OrgActivityFeed organizationId={organization.id} limit={15} />
+            )}
+          </motion.div>
         </TabsContent>
 
         {/* Financier */}
