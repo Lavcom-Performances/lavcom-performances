@@ -1053,6 +1053,50 @@ export type Database = {
         }
         Relationships: []
       }
+      privacy_consent_audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_hash: string | null
+          new_value: boolean
+          old_value: boolean | null
+          organization_id: string
+          performed_by: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          new_value: boolean
+          old_value?: boolean | null
+          organization_id: string
+          performed_by: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          new_value?: boolean
+          old_value?: boolean | null
+          organization_id?: string
+          performed_by?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "privacy_consent_audit_logs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           access_expires_at: string | null
