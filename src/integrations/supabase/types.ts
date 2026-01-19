@@ -309,6 +309,42 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          ip_hash: string | null
+          metadata: Json | null
+          target_id: string | null
+          target_table: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          metadata?: Json | null
+          target_id?: string | null
+          target_table: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          metadata?: Json | null
+          target_id?: string | null
+          target_table?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       churn_alert_settings: {
         Row: {
           alert_cooldown_hours: number
@@ -958,6 +994,33 @@ export type Database = {
           siret?: string | null
           stripe_customer_id?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1675,6 +1738,18 @@ export type Database = {
       rpc_admin_top_sites: {
         Args: { p_end_date: string; p_limit?: number; p_start_date: string }
         Returns: Json
+      }
+      rpc_create_audit_log: {
+        Args: {
+          p_action: string
+          p_actor_id: string
+          p_ip_hash?: string
+          p_metadata?: Json
+          p_target_id?: string
+          p_target_table: string
+          p_user_agent?: string
+        }
+        Returns: string
       }
       rpc_dashboard_kpis: {
         Args: { p_end_date: string; p_site_id: string; p_start_date: string }
