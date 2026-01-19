@@ -1,35 +1,76 @@
-import { Eye, EyeOff, Loader2, Info } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  getOrganizationPrivacySettings,
+  upsertOrganizationPrivacySettings,
+} from "@/lib/organizationPrivacySettings";
+import { useAuth } from "@/hooks/useAuth";
+import { useOrganization } from "@/hooks/useOrganization";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, Loader2, HelpCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useOrganizationPrivacySettings } from "@/hooks/useOrganizationPrivacySettings";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 
 export function PrivacyConsentCard() {
-  const {
-    settings,
-    isLoading,
-    isSaving,
-    canManage,
-    allowAnonymousSiteData,
-    updateSettings,
-  } = useOrganizationPrivacySettings();
+  const { user } = useAuth();
+  const { organization } = useOrganization();
+  const organizationId = organization?.id;
 
-  const handleToggle = async (checked: boolean) => {
-    await updateSettings(checked);
-  };
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [value, setValue] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
-  if (isLoading) {
+  const canWrite = useMemo(
+    () => Boolean(user?.id && organizationId),
+    [user?.id, organizationId]
+  );
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      if (!organizationId) return;
+      try {
+        setLoading(true);
+        const settings = await getOrganizationPrivacySettings(organizationId);
+        if (!mounted) return;
+        setValue(settings?.allow_anonymous_site_data ?? false);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [organizationId]);
+
+  async function onSave(next: boolean) {
+    if (!user?.id || !organizationId) return;
+    setSaving(true);
+    try {
+      await upsertOrganizationPrivacySettings({
+        organizationId,
+        allowAnonymousSiteData: next,
+        decidedByUserId: user.id,
+      });
+      setValue(next);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
     return (
       <Card>
         <CardHeader>
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-4 w-72 mt-2" />
+          <Skeleton className="h-6 w-64" />
+          <Skeleton className="h-4 w-96 mt-2" />
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-24 w-full" />
         </CardContent>
       </Card>
     );
@@ -39,55 +80,73 @@ export function PrivacyConsentCard() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          {allowAnonymousSiteData ? (
-            <Eye className="h-5 w-5 text-primary" />
-          ) : (
-            <EyeOff className="h-5 w-5 text-muted-foreground" />
-          )}
-          Partage de données anonymisées
+          <HelpCircle className="h-5 w-5 text-primary" />
+          Accepteriez-vous de nous aider à améliorer nos services ?
         </CardTitle>
         <CardDescription>
-          Contribuez à améliorer le service en partageant des données de performance anonymisées
+          Pouvons-nous collecter des informations anonymes sur votre site afin d'améliorer
+          votre expérience et celles des autres utilisateurs ?
         </CardDescription>
       </CardHeader>
+
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-muted/30">
-          <div className="space-y-1 flex-1 pr-4">
-            <Label 
-              htmlFor="anonymous-data-toggle" 
-              className="text-sm font-medium cursor-pointer"
+        <RadioGroup
+          value={value ? "yes" : "no"}
+          onValueChange={(v) => onSave(v === "yes")}
+          disabled={!canWrite || saving}
+          className="space-y-3"
+        >
+          <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+            <RadioGroupItem value="no" id="consent-no" disabled={!canWrite || saving} />
+            <Label
+              htmlFor="consent-no"
+              className="flex-1 cursor-pointer text-sm font-medium"
             >
-              Autoriser le partage de données anonymisées
+              Non, je ne veux pas partager les données de mon site
             </Label>
-            <p className="text-xs text-muted-foreground">
-              Ces données sont utilisées uniquement pour améliorer nos benchmarks et ne contiennent aucune information identifiable.
-            </p>
+            {saving && !value && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </div>
-          <div className="flex items-center gap-2">
-            {isSaving && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-            <Switch
-              id="anonymous-data-toggle"
-              checked={allowAnonymousSiteData}
-              onCheckedChange={handleToggle}
-              disabled={!canManage || isSaving}
+
+          <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+            <RadioGroupItem value="yes" id="consent-yes" disabled={!canWrite || saving} />
+            <Label
+              htmlFor="consent-yes"
+              className="flex-1 cursor-pointer text-sm font-medium"
+            >
+              Oui, vous pouvez collecter les données de mon site
+            </Label>
+            {saving && value && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          </div>
+        </RadioGroup>
+
+        <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <ChevronDown
+              className={`h-4 w-4 transition-transform duration-200 ${
+                detailsOpen ? "rotate-180" : ""
+              }`}
             />
-          </div>
-        </div>
+            Quelles données seront collectées et pourquoi ?
+          </CollapsibleTrigger>
 
-        {!canManage && (
-          <div className="flex items-start gap-2 p-3 rounded-md bg-amber-500/10 border border-amber-500/20">
-            <Info className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
-            <p className="text-xs text-amber-700 dark:text-amber-400">
-              Seuls les administrateurs de l'organisation peuvent modifier ce paramètre.
-            </p>
-          </div>
-        )}
-
-        {settings?.decided_at && (
-          <p className="text-xs text-muted-foreground">
-            Dernière modification : {format(new Date(settings.decided_at), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
-          </p>
-        )}
+          <CollapsibleContent className="mt-3">
+            <div className="space-y-3 p-4 rounded-lg bg-muted/50 border border-border text-sm text-muted-foreground">
+              <p>
+                <strong className="text-foreground">Exemples (anonymes) :</strong> pages consultées,
+                fonctionnalités utilisées, temps de chargement, erreurs techniques, type d'appareil
+                et version de navigateur.
+              </p>
+              <p>
+                <strong className="text-foreground">Objectif :</strong> détecter les bugs, améliorer
+                la performance et prioriser les améliorations produit.
+              </p>
+              <p>
+                <strong className="text-foreground">Important :</strong> nous ne vendrons pas ces
+                données et nous ne collectons aucune donnée personnelle sur vous ou vos laveries.
+              </p>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </CardContent>
     </Card>
   );
