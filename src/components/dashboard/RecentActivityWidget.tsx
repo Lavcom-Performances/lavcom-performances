@@ -1,11 +1,12 @@
 /**
  * Dashboard widget showing recent audit log activity for the current user
+ * Includes real-time updates via Supabase subscriptions
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Activity, Filter, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Activity, Filter, RefreshCw, ChevronDown, ChevronUp, Radio } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,6 +68,8 @@ export function RecentActivityWidget({
   const [isLoading, setIsLoading] = useState(true);
   const [actionFilter, setActionFilter] = useState<ActionFilter>('all');
   const [expandedLog, setExpandedLog] = useState<string | null>(null);
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   const fetchLogs = useCallback(async () => {
     if (!user) return;
@@ -99,9 +102,60 @@ export function RecentActivityWidget({
     }
   }, [user, limit, actionFilter]);
 
+  // Initial fetch
   useEffect(() => {
     fetchLogs();
   }, [fetchLogs]);
+
+  // Real-time subscription for new audit logs
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('user-activity-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'audit_logs',
+          filter: `actor_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const newLog = payload.new as AuditLogEntry;
+          
+          // Check if this log matches the current filter
+          if (actionFilter !== 'all' && newLog.action !== actionFilter) {
+            return;
+          }
+
+          // Add new log to the top of the list
+          setLogs((prev) => {
+            // Avoid duplicates
+            if (prev.some((log) => log.id === newLog.id)) {
+              return prev;
+            }
+            // Keep only the most recent logs up to the limit
+            return [newLog, ...prev].slice(0, limit);
+          });
+        }
+      )
+      .subscribe((status) => {
+        setIsRealtimeConnected(status === 'SUBSCRIBED');
+        if (status === 'SUBSCRIBED') {
+          console.log('[RecentActivityWidget] Realtime connected');
+        }
+      });
+
+    channelRef.current = channel;
+
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+    };
+  }, [user, actionFilter, limit]);
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -156,6 +210,11 @@ export function RecentActivityWidget({
           <CardTitle className="flex items-center gap-2 text-base">
             <Activity className="h-4 w-4" />
             Activité récente
+            {isRealtimeConnected && (
+              <span title="Temps réel actif">
+                <Radio className="h-3 w-3 text-emerald-500 animate-pulse" />
+              </span>
+            )}
           </CardTitle>
           <div className="flex items-center gap-2">
             {showFilters && (
