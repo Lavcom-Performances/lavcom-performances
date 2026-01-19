@@ -9,7 +9,8 @@ import {
   Building2, 
   Users,
   Bell,
-  Receipt
+  Receipt,
+  FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,6 +25,7 @@ import BillingContent from "@/components/settings/BillingContent";
 import LaundryContent from "@/components/settings/LaundryContent";
 import TeamContent from "@/components/settings/TeamContent";
 import NotificationsContent from "@/components/settings/NotificationsContent";
+import DocumentsContent from "@/components/settings/DocumentsContent";
 
 const TABS = [
   { id: "profile", label: "Profil", icon: User },
@@ -33,6 +35,7 @@ const TABS = [
   { id: "laundry", label: "Laverie", icon: Building2 },
   { id: "team", label: "Utilisateurs", icon: Users },
   { id: "notifications", label: "Notifications", icon: Bell },
+  { id: "documents", label: "Documents", icon: FileText },
 ] as const;
 
 type TabId = typeof TABS[number]["id"];
@@ -130,6 +133,10 @@ export default function SettingsPage() {
 
           <TabsContent value="notifications" className="mt-0">
             <NotificationsContent />
+          </TabsContent>
+
+          <TabsContent value="documents" className="mt-0">
+            <DocumentsContent />
           </TabsContent>
         </Tabs>
       </div>
