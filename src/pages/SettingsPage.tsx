@@ -11,7 +11,8 @@ import {
   Bell,
   Receipt,
   FileText,
-  Bot
+  Bot,
+  ScrollText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,6 +28,7 @@ import LaundryContent from "@/components/settings/LaundryContent";
 import TeamContent from "@/components/settings/TeamContent";
 import NotificationsContent from "@/components/settings/NotificationsContent";
 import DocumentsContent from "@/components/settings/DocumentsContent";
+import AuditLogSettingsContent from "@/components/settings/AuditLogSettingsContent";
 import { AIUsageWidget } from "@/components/settings/AIUsageWidget";
 
 const TABS = [
@@ -37,6 +39,7 @@ const TABS = [
   { id: "laundry", label: "Laverie", icon: Building2 },
   { id: "team", label: "Utilisateurs", icon: Users },
   { id: "notifications", label: "Notifications", icon: Bell },
+  { id: "audit", label: "Journaux", icon: ScrollText },
   { id: "documents", label: "Documents", icon: FileText },
   { id: "ai", label: "IA", icon: Bot },
 ] as const;
@@ -136,6 +139,10 @@ export default function SettingsPage() {
 
           <TabsContent value="notifications" className="mt-0">
             <NotificationsContent />
+          </TabsContent>
+
+          <TabsContent value="audit" className="mt-0">
+            <AuditLogSettingsContent />
           </TabsContent>
 
           <TabsContent value="documents" className="mt-0">

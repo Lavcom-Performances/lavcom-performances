@@ -28,8 +28,21 @@ interface CleanupStats {
   usersProcessed: number;
   totalDeleted: number;
   archivedCount: number;
+  archiveFiles: number;
   errors: string[];
-  detailsByUser: { userId: string; deleted: number; retentionDays: number }[];
+  detailsByUser: { userId: string; deleted: number; archived: number; retentionDays: number }[];
+}
+
+interface AuditLog {
+  id: string;
+  actor_id: string | null;
+  action: string;
+  target_table: string;
+  target_id: string | null;
+  metadata: Record<string, unknown> | null;
+  ip_hash: string | null;
+  user_agent: string | null;
+  created_at: string;
 }
 
 serve(async (req) => {
@@ -55,11 +68,12 @@ serve(async (req) => {
       usersProcessed: 0,
       totalDeleted: 0,
       archivedCount: 0,
+      archiveFiles: 0,
       errors: [],
       detailsByUser: [],
     };
 
-    // Get all profiles with their plan and retention settings
+    // Get all profiles with their plan, retention settings, and archive preference
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
       .select('id, plan_code, log_retention_days');
@@ -68,6 +82,17 @@ serve(async (req) => {
       logStep("Error fetching profiles", profilesError);
       throw profilesError;
     }
+
+    // Get notification preferences to check archive settings
+    const profileIds = profiles?.map(p => p.id) || [];
+    const { data: notifPrefs } = await supabase
+      .from('notification_preferences')
+      .select('user_id, archive_before_deletion')
+      .in('user_id', profileIds);
+
+    const archivePrefsMap = new Map(
+      notifPrefs?.map(p => [p.user_id, p.archive_before_deletion ?? true]) || []
+    );
 
     logStep("Profiles fetched", { count: profiles?.length || 0 });
 
@@ -94,19 +119,81 @@ serve(async (req) => {
       cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
       const cutoffDateStr = cutoffDate.toISOString();
 
+      // Check if user wants to archive before deletion
+      const shouldArchive = archivePrefsMap.get(profile.id) ?? true;
+
       try {
-        // Count logs to be deleted first (for logging purposes)
-        const { count: countToDelete } = await supabase
+        // Fetch logs to be deleted
+        const { data: logsToDelete, count: countToDelete } = await supabase
           .from('audit_logs')
-          .select('*', { count: 'exact', head: true })
+          .select('*', { count: 'exact' })
           .eq('actor_id', profile.id)
-          .lt('created_at', cutoffDateStr);
+          .lt('created_at', cutoffDateStr)
+          .order('created_at', { ascending: true })
+          .limit(1000); // Process in batches
 
         if (!countToDelete || countToDelete === 0) {
           continue; // No logs to delete for this user
         }
 
         logStep(`User ${profile.id}: ${countToDelete} logs older than ${retentionDays} days`);
+
+        let archivedCount = 0;
+
+        // Archive logs before deletion if enabled
+        if (shouldArchive && logsToDelete && logsToDelete.length > 0) {
+          try {
+            const archiveData = {
+              exported_at: new Date().toISOString(),
+              user_id: profile.id,
+              retention_days: retentionDays,
+              logs: logsToDelete as AuditLog[],
+            };
+
+            const archiveJson = JSON.stringify(archiveData, null, 2);
+            const archiveBlob = new Blob([archiveJson], { type: 'application/json' });
+
+            // Create unique filename with date range
+            const oldestLog = logsToDelete[0] as AuditLog;
+            const newestLog = logsToDelete[logsToDelete.length - 1] as AuditLog;
+            const dateRangeStart = oldestLog.created_at.split('T')[0];
+            const dateRangeEnd = newestLog.created_at.split('T')[0];
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const fileName = `${profile.id}/audit-logs_${dateRangeStart}_to_${dateRangeEnd}_${timestamp}.json`;
+
+            // Upload to storage
+            const { error: uploadError } = await supabase.storage
+              .from('audit-archives')
+              .upload(fileName, archiveBlob, {
+                contentType: 'application/json',
+                upsert: false,
+              });
+
+            if (uploadError) {
+              logStep(`Archive upload failed for user ${profile.id}`, uploadError);
+              stats.errors.push(`Archive upload failed for ${profile.id}: ${uploadError.message}`);
+            } else {
+              // Record the archive in the tracking table
+              await supabase.from('audit_log_archives').insert({
+                user_id: profile.id,
+                file_path: fileName,
+                records_count: logsToDelete.length,
+                date_range_start: oldestLog.created_at,
+                date_range_end: newestLog.created_at,
+                file_size_bytes: archiveBlob.size,
+              });
+
+              archivedCount = logsToDelete.length;
+              stats.archivedCount += archivedCount;
+              stats.archiveFiles++;
+              logStep(`Archived ${archivedCount} logs for user ${profile.id}`);
+            }
+          } catch (archiveError) {
+            const errorMsg = archiveError instanceof Error ? archiveError.message : String(archiveError);
+            stats.errors.push(`Archive error for ${profile.id}: ${errorMsg}`);
+            logStep(`Archive error for user ${profile.id}`, { error: errorMsg });
+          }
+        }
 
         // Delete old audit logs for this user
         const { error: deleteError } = await supabase
@@ -125,10 +212,11 @@ serve(async (req) => {
         stats.detailsByUser.push({
           userId: profile.id,
           deleted: countToDelete,
+          archived: archivedCount,
           retentionDays,
         });
 
-        logStep(`User ${profile.id}: deleted ${countToDelete} logs`);
+        logStep(`User ${profile.id}: deleted ${countToDelete} logs (archived: ${archivedCount})`);
       } catch (userError) {
         const errorMsg = userError instanceof Error ? userError.message : String(userError);
         stats.errors.push(`User ${profile.id}: ${errorMsg}`);
@@ -160,6 +248,7 @@ serve(async (req) => {
         stats.detailsByUser.push({
           userId: 'system_orphans',
           deleted: orphanCount,
+          archived: 0,
           retentionDays: PLAN_RETENTION_DAYS.default,
         });
       } else {
@@ -172,10 +261,12 @@ serve(async (req) => {
       source: 'cleanup-audit-logs',
       severity: stats.errors.length > 0 ? 'warn' : 'info',
       code: 'CLEANUP_COMPLETE',
-      message: `Audit log cleanup completed: ${stats.totalDeleted} logs deleted`,
+      message: `Audit log cleanup completed: ${stats.totalDeleted} logs deleted, ${stats.archivedCount} archived`,
       meta: {
         usersProcessed: stats.usersProcessed,
         totalDeleted: stats.totalDeleted,
+        archivedCount: stats.archivedCount,
+        archiveFiles: stats.archiveFiles,
         usersWithDeletions: stats.detailsByUser.length,
         errorCount: stats.errors.length,
       },
@@ -184,6 +275,8 @@ serve(async (req) => {
     logStep("Job complete", {
       usersProcessed: stats.usersProcessed,
       totalDeleted: stats.totalDeleted,
+      archivedCount: stats.archivedCount,
+      archiveFiles: stats.archiveFiles,
       usersWithDeletions: stats.detailsByUser.length,
       errors: stats.errors.length,
     });
