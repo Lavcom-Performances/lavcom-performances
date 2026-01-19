@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { parseAIError, formatAIErrorMessage } from "@/lib/ai/errorHandling";
 
 interface ChatAction {
   label: string;
@@ -258,11 +259,14 @@ export function SupportChatbot({ language = "fr", onScrollToContact }: SupportCh
       }
     } catch (error) {
       console.error("Chatbot error:", error);
+      
+      // TAEX-210: Parse AI error with trace ID support
+      const parsedError = parseAIError(error);
+      const errorMessage = formatAIErrorMessage(parsedError, language);
+      
       const errorMsg: Message = { 
         role: "assistant", 
-        content: language === "fr" 
-          ? "Désolé, une erreur est survenue. Veuillez réessayer."
-          : "Sorry, an error occurred. Please try again."
+        content: errorMessage
       };
       const updatedMessages = [...newMessages, errorMsg];
       setMessages(updatedMessages);

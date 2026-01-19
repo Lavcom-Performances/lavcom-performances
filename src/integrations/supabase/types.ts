@@ -155,6 +155,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_usage_daily: {
+        Row: {
+          actor_id: string
+          created_at: string
+          date: string
+          estimated_cost_eur: number
+          request_count: number
+          tokens_in: number
+          tokens_out: number
+          updated_at: string
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          date?: string
+          estimated_cost_eur?: number
+          request_count?: number
+          tokens_in?: number
+          tokens_out?: number
+          updated_at?: string
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          date?: string
+          estimated_cost_eur?: number
+          request_count?: number
+          tokens_in?: number
+          tokens_out?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       alert_history: {
         Row: {
           alert_type: string
@@ -1829,8 +1862,20 @@ export type Database = {
           total_count: number
         }[]
       }
+      rpc_get_ai_usage_today: { Args: { p_actor_id: string }; Returns: Json }
       rpc_get_benchmarks: {
         Args: { p_end_date: string; p_site_id: string; p_start_date: string }
+        Returns: Json
+      }
+      rpc_increment_ai_usage: {
+        Args: {
+          p_actor_id: string
+          p_daily_cost_limit?: number
+          p_daily_request_limit?: number
+          p_estimated_cost?: number
+          p_tokens_in?: number
+          p_tokens_out?: number
+        }
         Returns: Json
       }
       rpc_log_system_event: {
