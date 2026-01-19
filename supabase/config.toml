@@ -18,6 +18,9 @@ verify_jwt = true
 [functions.cleanup-login-logs]
 verify_jwt = false
 
+[functions.cleanup-audit-logs]
+verify_jwt = false
+
 [functions.csp-report]
 verify_jwt = false
 
@@ -68,6 +71,9 @@ verify_jwt = false
 
 [functions.send-permission-alert]
 verify_jwt = true
+
+[functions.send-audit-alert]
+verify_jwt = false
 
 [functions.accept-invitation]
 verify_jwt = true
