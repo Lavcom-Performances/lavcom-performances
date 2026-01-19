@@ -342,6 +342,39 @@ export type Database = {
           },
         ]
       }
+      audit_log_archives: {
+        Row: {
+          created_at: string
+          date_range_end: string
+          date_range_start: string
+          file_path: string
+          file_size_bytes: number | null
+          id: string
+          records_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_range_end: string
+          date_range_start: string
+          file_path: string
+          file_size_bytes?: number | null
+          id?: string
+          records_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date_range_end?: string
+          date_range_start?: string
+          file_path?: string
+          file_size_bytes?: number | null
+          id?: string
+          records_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -727,10 +760,15 @@ export type Database = {
       }
       notification_preferences: {
         Row: {
+          archive_before_deletion: boolean
           created_at: string
+          critical_actions_alerts: boolean
+          deletion_alerts: boolean
           email_alerts: boolean
           id: string
           maintenance_alerts: boolean
+          member_removal_alerts: boolean
+          permission_change_alerts: boolean
           push_alerts: boolean
           revenue_alerts: boolean
           trial_reminder: boolean
@@ -739,10 +777,15 @@ export type Database = {
           weekly_report: boolean
         }
         Insert: {
+          archive_before_deletion?: boolean
           created_at?: string
+          critical_actions_alerts?: boolean
+          deletion_alerts?: boolean
           email_alerts?: boolean
           id?: string
           maintenance_alerts?: boolean
+          member_removal_alerts?: boolean
+          permission_change_alerts?: boolean
           push_alerts?: boolean
           revenue_alerts?: boolean
           trial_reminder?: boolean
@@ -751,10 +794,15 @@ export type Database = {
           weekly_report?: boolean
         }
         Update: {
+          archive_before_deletion?: boolean
           created_at?: string
+          critical_actions_alerts?: boolean
+          deletion_alerts?: boolean
           email_alerts?: boolean
           id?: string
           maintenance_alerts?: boolean
+          member_removal_alerts?: boolean
+          permission_change_alerts?: boolean
           push_alerts?: boolean
           revenue_alerts?: boolean
           trial_reminder?: boolean
