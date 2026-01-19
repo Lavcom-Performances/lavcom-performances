@@ -2,15 +2,19 @@ import { useEffect, useMemo, useState } from "react";
 import {
   getOrganizationPrivacySettings,
   upsertOrganizationPrivacySettings,
+  type OrganizationPrivacySettingsWithUser,
 } from "@/lib/organizationPrivacySettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrganization } from "@/hooks/useOrganization";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Loader2, HelpCircle } from "lucide-react";
+import { ChevronDown, Loader2, HelpCircle, Clock, User } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export function PrivacyConsentCard() {
   const { user } = useAuth();
@@ -19,8 +23,10 @@ export function PrivacyConsentCard() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [value, setValue] = useState(false);
+  const [settings, setSettings] = useState<OrganizationPrivacySettingsWithUser | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+
+  const value = settings?.allow_anonymous_site_data ?? false;
 
   const canWrite = useMemo(
     () => Boolean(user?.id && organizationId),
@@ -34,9 +40,9 @@ export function PrivacyConsentCard() {
       if (!organizationId) return;
       try {
         setLoading(true);
-        const settings = await getOrganizationPrivacySettings(organizationId);
+        const data = await getOrganizationPrivacySettings(organizationId);
         if (!mounted) return;
-        setValue(settings?.allow_anonymous_site_data ?? false);
+        setSettings(data);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -51,16 +57,47 @@ export function PrivacyConsentCard() {
     if (!user?.id || !organizationId) return;
     setSaving(true);
     try {
-      await upsertOrganizationPrivacySettings({
+      const updatedSettings = await upsertOrganizationPrivacySettings({
         organizationId,
         allowAnonymousSiteData: next,
         decidedByUserId: user.id,
       });
-      setValue(next);
+      
+      // Refetch to get the user info
+      const fullSettings = await getOrganizationPrivacySettings(organizationId);
+      setSettings(fullSettings);
+      
+      toast({
+        title: "Préférence enregistrée",
+        description: next 
+          ? "Vous avez accepté le partage de données anonymes." 
+          : "Vous avez refusé le partage de données.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible d'enregistrer votre préférence. Veuillez réessayer.",
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
   }
+
+  const formatLastUpdated = () => {
+    if (!settings?.decided_at) return null;
+    
+    const date = new Date(settings.decided_at);
+    const formattedDate = format(date, "d MMMM yyyy 'à' HH:mm", { locale: fr });
+    
+    const userName = settings.decided_by_user
+      ? settings.decided_by_user.first_name && settings.decided_by_user.last_name
+        ? `${settings.decided_by_user.first_name} ${settings.decided_by_user.last_name}`
+        : settings.decided_by_user.email
+      : null;
+    
+    return { formattedDate, userName };
+  };
 
   if (loading) {
     return (
@@ -75,6 +112,8 @@ export function PrivacyConsentCard() {
       </Card>
     );
   }
+
+  const lastUpdatedInfo = formatLastUpdated();
 
   return (
     <Card>
@@ -148,6 +187,23 @@ export function PrivacyConsentCard() {
           </CollapsibleContent>
         </Collapsible>
       </CardContent>
+
+      {lastUpdatedInfo && (
+        <CardFooter className="border-t pt-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" />
+              Dernière modification : {lastUpdatedInfo.formattedDate}
+            </span>
+            {lastUpdatedInfo.userName && (
+              <span className="flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5" />
+                par {lastUpdatedInfo.userName}
+              </span>
+            )}
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }

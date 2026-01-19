@@ -8,6 +8,14 @@ export type OrganizationPrivacySettings = {
   updated_at: string;
 };
 
+export type OrganizationPrivacySettingsWithUser = OrganizationPrivacySettings & {
+  decided_by_user?: {
+    first_name: string | null;
+    last_name: string | null;
+    email: string;
+  } | null;
+};
+
 type PrivacyPayload = {
   organization_id: string;
   allow_anonymous_site_data: boolean;
@@ -15,23 +23,31 @@ type PrivacyPayload = {
   decided_by_user_id: string;
 };
 
-export async function getOrganizationPrivacySettings(organizationId: string): Promise<OrganizationPrivacySettings | null> {
-  // Using type assertion since table was just created and types haven't regenerated yet
-  const { data, error } = await (supabase as unknown as {
-    from: (table: string) => {
-      select: (columns: string) => {
-        eq: (column: string, value: string) => {
-          maybeSingle: () => Promise<{ data: OrganizationPrivacySettings | null; error: Error | null }>;
-        };
-      };
-    };
-  }).from("organization_privacy_settings")
+export async function getOrganizationPrivacySettings(organizationId: string): Promise<OrganizationPrivacySettingsWithUser | null> {
+  const { data, error } = await supabase
+    .from("organization_privacy_settings")
     .select("*")
     .eq("organization_id", organizationId)
     .maybeSingle();
 
   if (error) throw error;
-  return data;
+  if (!data) return null;
+
+  // Fetch the user who made the decision
+  let decidedByUser = null;
+  if (data.decided_by_user_id) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("first_name, last_name, email")
+      .eq("id", data.decided_by_user_id)
+      .maybeSingle();
+    decidedByUser = profile;
+  }
+
+  return {
+    ...data,
+    decided_by_user: decidedByUser,
+  };
 }
 
 export async function upsertOrganizationPrivacySettings(params: {
@@ -46,16 +62,8 @@ export async function upsertOrganizationPrivacySettings(params: {
     decided_by_user_id: params.decidedByUserId,
   };
 
-  // Using type assertion since table was just created and types haven't regenerated yet
-  const { data, error } = await (supabase as unknown as {
-    from: (table: string) => {
-      upsert: (payload: PrivacyPayload, options: { onConflict: string }) => {
-        select: (columns: string) => {
-          single: () => Promise<{ data: OrganizationPrivacySettings | null; error: Error | null }>;
-        };
-      };
-    };
-  }).from("organization_privacy_settings")
+  const { data, error } = await supabase
+    .from("organization_privacy_settings")
     .upsert(payload, { onConflict: "organization_id" })
     .select("*")
     .single();
