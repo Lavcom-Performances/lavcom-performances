@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useAuditLog } from './useAuditLog';
 
 export interface UserPermissions {
   id: string;
@@ -28,6 +29,7 @@ export function useUserPermissions(organizationId: string | null) {
   const { user } = useAuth();
   const [permissions, setPermissions] = useState<Map<string, UserPermissions>>(new Map());
   const [isLoading, setIsLoading] = useState(false);
+  const { logInsert, logUpdate, logDelete } = useAuditLog('user_permissions', { source: 'useUserPermissions' });
 
   const fetchPermissions = useCallback(async () => {
     if (!organizationId || !user) return;
@@ -76,6 +78,8 @@ export function useUserPermissions(organizationId: string | null) {
       const existingPerms = permissions.get(userId);
 
       if (existingPerms) {
+        const oldValue = existingPerms[permission];
+        
         // Update existing permissions
         const { error } = await supabase
           .from('user_permissions')
@@ -83,6 +87,15 @@ export function useUserPermissions(organizationId: string | null) {
           .eq('id', existingPerms.id);
 
         if (error) throw error;
+
+        // Log the permission update
+        logUpdate(existingPerms.id, {
+          target_user_id: userId,
+          organization_id: organizationId,
+          permission_changed: permission,
+          old_value: oldValue,
+          new_value: value,
+        });
 
         // Update local state
         setPermissions(prev => {
@@ -103,6 +116,14 @@ export function useUserPermissions(organizationId: string | null) {
           .single();
 
         if (error) throw error;
+
+        // Log the permission creation
+        logInsert(data.id, {
+          target_user_id: userId,
+          organization_id: organizationId,
+          initial_permission: permission,
+          initial_value: value,
+        });
 
         // Update local state
         setPermissions(prev => {
@@ -129,12 +150,27 @@ export function useUserPermissions(organizationId: string | null) {
       const existingPerms = permissions.get(userId);
 
       if (existingPerms) {
+        // Capture old values for audit
+        const oldValues: Partial<Record<PermissionKey, boolean>> = {};
+        Object.keys(perms).forEach((key) => {
+          oldValues[key as PermissionKey] = existingPerms[key as PermissionKey];
+        });
+
         const { error } = await supabase
           .from('user_permissions')
           .update(perms)
           .eq('id', existingPerms.id);
 
         if (error) throw error;
+
+        // Log the bulk permission update
+        logUpdate(existingPerms.id, {
+          target_user_id: userId,
+          organization_id: organizationId,
+          permissions_changed: Object.keys(perms),
+          old_values: oldValues,
+          new_values: perms,
+        });
 
         setPermissions(prev => {
           const newMap = new Map(prev);
@@ -154,6 +190,13 @@ export function useUserPermissions(organizationId: string | null) {
 
         if (error) throw error;
 
+        // Log the permission creation
+        logInsert(data.id, {
+          target_user_id: userId,
+          organization_id: organizationId,
+          initial_permissions: perms,
+        });
+
         setPermissions(prev => {
           const newMap = new Map(prev);
           newMap.set(userId, data as UserPermissions);
@@ -172,6 +215,8 @@ export function useUserPermissions(organizationId: string | null) {
     if (!organizationId) return { error: 'Aucune organisation' };
 
     try {
+      const existingPerms = permissions.get(userId);
+
       const { error } = await supabase
         .from('user_permissions')
         .delete()
@@ -179,6 +224,15 @@ export function useUserPermissions(organizationId: string | null) {
         .eq('organization_id', organizationId);
 
       if (error) throw error;
+
+      // Log the permission deletion
+      if (existingPerms) {
+        logDelete(existingPerms.id, {
+          target_user_id: userId,
+          organization_id: organizationId,
+          deleted_permissions: existingPerms,
+        });
+      }
 
       setPermissions(prev => {
         const newMap = new Map(prev);

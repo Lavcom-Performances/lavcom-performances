@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuditLog } from "@/hooks/useAuditLog";
 
 export interface Site {
   id: string;
@@ -17,6 +18,7 @@ export function useSites() {
   const [sites, setSites] = useState<Site[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { logInsert } = useAuditLog('sites', { source: 'useSites' });
 
   useEffect(() => {
     if (!user) {
@@ -71,6 +73,14 @@ export function useSites() {
       .single();
 
     if (insertError) throw insertError;
+
+    // Log the site creation
+    logInsert(data.id, {
+      site_name: site.name,
+      city: site.city,
+      postal_code: site.postal_code,
+      is_first_site: sites.length === 0,
+    });
 
     setSites((prev) => [...prev, data]);
     return data;
