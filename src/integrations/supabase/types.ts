@@ -857,6 +857,38 @@ export type Database = {
           },
         ]
       }
+      organization_privacy_settings: {
+        Row: {
+          allow_anonymous_site_data: boolean
+          decided_at: string | null
+          decided_by_user_id: string | null
+          organization_id: string
+          updated_at: string
+        }
+        Insert: {
+          allow_anonymous_site_data?: boolean
+          decided_at?: string | null
+          decided_by_user_id?: string | null
+          organization_id: string
+          updated_at?: string
+        }
+        Update: {
+          allow_anonymous_site_data?: boolean
+          decided_at?: string | null
+          decided_by_user_id?: string | null
+          organization_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_privacy_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           created_at: string
