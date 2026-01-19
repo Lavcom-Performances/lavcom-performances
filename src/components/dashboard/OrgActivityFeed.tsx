@@ -1,7 +1,8 @@
 /**
  * Organization-wide activity feed showing all team members' actions for admins
+ * Includes real-time updates via Supabase subscriptions
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { 
@@ -13,7 +14,8 @@ import {
   Users,
   User,
   ChevronLeft,
-  ChevronRight 
+  ChevronRight,
+  Radio
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -83,6 +85,9 @@ export function OrgActivityFeed({
   const [expandedLog, setExpandedLog] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
+  const [orgMemberIds, setOrgMemberIds] = useState<string[]>([]);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   const fetchOrgMembers = useCallback(async () => {
     if (!organizationId) return;
@@ -97,6 +102,7 @@ export function OrgActivityFeed({
       if (!roles || roles.length === 0) return;
 
       const userIds = roles.map(r => r.user_id);
+      setOrgMemberIds(userIds);
 
       // Get profiles for these users
       const { data: profilesData } = await supabase
@@ -192,6 +198,73 @@ export function OrgActivityFeed({
     }
   }, [fetchLogs, page, profiles]);
 
+  // Real-time subscription for new audit logs from organization members
+  useEffect(() => {
+    if (!organizationId || orgMemberIds.length === 0 || page !== 0) return;
+
+    const channel = supabase
+      .channel('org-activity-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'audit_logs',
+        },
+        (payload) => {
+          const newLog = payload.new as OrgAuditLogEntry;
+          
+          // Check if this log is from an org member
+          if (!newLog.actor_id || !orgMemberIds.includes(newLog.actor_id)) {
+            return;
+          }
+
+          // Check if this log matches the current filters
+          if (actionFilter !== 'all' && newLog.action !== actionFilter) {
+            return;
+          }
+          if (tableFilter !== 'all' && newLog.target_table !== tableFilter) {
+            return;
+          }
+
+          // Enrich with profile data
+          const profile = profiles.get(newLog.actor_id);
+          const enrichedLog: OrgAuditLogEntry = {
+            ...newLog,
+            actor_email: profile?.email,
+            actor_name: profile?.first_name && profile?.last_name 
+              ? `${profile.first_name} ${profile.last_name}`
+              : profile?.email?.split('@')[0]
+          };
+
+          // Add new log to the top of the list (only on first page)
+          setLogs((prev) => {
+            // Avoid duplicates
+            if (prev.some((log) => log.id === enrichedLog.id)) {
+              return prev;
+            }
+            // Keep only the most recent logs up to the limit
+            return [enrichedLog, ...prev].slice(0, limit);
+          });
+        }
+      )
+      .subscribe((status) => {
+        setIsRealtimeConnected(status === 'SUBSCRIBED');
+        if (status === 'SUBSCRIBED') {
+          console.log('[OrgActivityFeed] Realtime connected');
+        }
+      });
+
+    channelRef.current = channel;
+
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+    };
+  }, [organizationId, orgMemberIds, actionFilter, tableFilter, limit, page, profiles]);
+
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -271,6 +344,11 @@ export function OrgActivityFeed({
             <CardTitle className="flex items-center gap-2 text-base">
               <Users className="h-4 w-4" />
               Activité de l'équipe
+              {isRealtimeConnected && (
+                <span title="Temps réel actif">
+                  <Radio className="h-3 w-3 text-emerald-500 animate-pulse" />
+                </span>
+              )}
             </CardTitle>
             <CardDescription className="mt-1">
               Actions récentes de tous les membres
