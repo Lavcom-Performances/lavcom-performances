@@ -18,6 +18,10 @@ export const RATE_LIMITS = {
   'edge/create-demo': { maxRequests: 1, windowSeconds: 86400 },      // 1 per 24h
   'edge/compute-analytics-cron': { maxRequests: 2, windowSeconds: 300 }, // 2 per 5 min
   
+  // AI Proxy - TAEX-210: Burst limits for anti-abuse
+  'ai_proxy/burst_actor': { maxRequests: 30, windowSeconds: 300 },   // 30 per 5 min per user
+  'ai_proxy/burst_ip': { maxRequests: 60, windowSeconds: 300 },      // 60 per 5 min per IP
+  
   // Import/Export - TAEX-197: Updated limits
   'import/csv-site-hourly': { maxRequests: HOURLY_IMPORT_BATCHES_PER_SITE, windowSeconds: 3600 },   // 2 per hour per site
   'import/csv-site-daily': { maxRequests: DAILY_IMPORT_BATCHES_PER_SITE, windowSeconds: 86400 },    // 6 per day per site
