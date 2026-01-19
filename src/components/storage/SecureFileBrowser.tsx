@@ -12,7 +12,8 @@ import {
   Image,
   FileSpreadsheet,
   Loader2,
-  FolderOpen
+  FolderOpen,
+  Tag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { FileMetadataEditor } from './FileMetadataEditor';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -66,6 +68,7 @@ export function SecureFileBrowser({
   const [currentPath, setCurrentPath] = useState<string[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<FileItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [metadataTarget, setMetadataTarget] = useState<FileItem | null>(null);
   
   const { deleteFile } = useSecureUpload({ subfolder });
   const { download, getUrl } = useSecureDownload();
@@ -319,6 +322,10 @@ export function SecureFileBrowser({
                         <Download className="h-4 w-4 mr-2" />
                         Download
                       </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setMetadataTarget(file)}>
+                        <Tag className="h-4 w-4 mr-2" />
+                        Properties
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
                         onClick={() => setDeleteTarget(file)}
@@ -372,6 +379,19 @@ export function SecureFileBrowser({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* File Metadata Editor */}
+      {metadataTarget && (
+        <FileMetadataEditor
+          filePath={metadataTarget.path}
+          fileName={metadataTarget.name}
+          fileSize={metadataTarget.size}
+          mimeType={metadataTarget.mimeType}
+          open={!!metadataTarget}
+          onOpenChange={(open) => !open && setMetadataTarget(null)}
+          onSave={() => loadFiles()}
+        />
+      )}
     </div>
   );
 }

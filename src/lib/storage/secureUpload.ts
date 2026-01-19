@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { createFileMetadata, deleteFileMetadata } from "./fileMetadata";
 
 // Allowed file types matching the bucket configuration
 export const ALLOWED_FILE_TYPES = [
@@ -163,6 +164,14 @@ export async function secureUpload(
     };
   }
 
+  // Create metadata entry
+  await createFileMetadata({
+    filePath,
+    fileName: file.name,
+    fileSize: file.size,
+    mimeType: file.type
+  });
+
   return {
     success: true,
     path: filePath,
@@ -199,6 +208,9 @@ export async function secureDelete(filePath: string): Promise<{ success: boolean
   if (error) {
     return { success: false, error: error.message };
   }
+
+  // Also delete metadata
+  await deleteFileMetadata(filePath);
 
   return { success: true };
 }
