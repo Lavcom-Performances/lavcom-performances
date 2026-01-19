@@ -74,6 +74,89 @@ jobs:
           npm outdated || true >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
+  snyk-security:
+    name: Snyk Security Scan
+    runs-on: ubuntu-latest
+    if: ${{ vars.ENABLE_SNYK == 'true' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate with Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk vulnerability test
+        id: snyk-test
+        run: |
+          echo "## 🔐 Snyk Security Scan" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          set +e
+          snyk test --severity-threshold=high --json > snyk-results.json 2>&1
+          SNYK_EXIT_CODE=$?
+          set -e
+          
+          if [ $SNYK_EXIT_CODE -eq 0 ]; then
+            echo "✅ **No high or critical vulnerabilities found.**" >> $GITHUB_STEP_SUMMARY
+          elif [ $SNYK_EXIT_CODE -eq 1 ]; then
+            echo "❌ **Vulnerabilities found!** See details below." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+            cat snyk-results.json | jq '.vulnerabilities[] | {package: .packageName, severity: .severity, title: .title}' >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "⚠️ **Snyk scan encountered an error.**" >> $GITHUB_STEP_SUMMARY
+          fi
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Monitor project with Snyk
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: snyk monitor
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  secret-scanning:
+    name: Secret Scanning (TruffleHog)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified
+
+      - name: Report results
+        if: always()
+        run: |
+          echo "## 🔑 Secret Scanning (TruffleHog)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Scanned repository for hardcoded secrets and credentials." >> $GITHUB_STEP_SUMMARY
+
   codeql-analysis:
     name: CodeQL Security Analysis
     runs-on: ubuntu-latest
@@ -96,3 +179,35 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:javascript-typescript"
+
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-audit, codeql-analysis, secret-scanning]
+    if: always()
+    
+    steps:
+      - name: Generate security report
+        run: |
+          echo "## 📊 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.dependency-audit.result }}" == "success" ]; then
+            echo "| Dependency Audit | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Dependency Audit | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.codeql-analysis.result }}" == "success" ]; then
+            echo "| CodeQL Analysis | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| CodeQL Analysis | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.secret-scanning.result }}" == "success" ]; then
+            echo "| Secret Scanning | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Secret Scanning | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
