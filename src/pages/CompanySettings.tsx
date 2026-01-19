@@ -12,8 +12,10 @@ import {
   Image as ImageIcon,
   AlertCircle,
   Shield,
-  ArrowRight
+  ArrowRight,
+  Lock
 } from "lucide-react";
+import { PrivacyConsentCard } from "@/components/settings/PrivacyConsentCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -245,7 +247,7 @@ export default function CompanySettings() {
         </div>
 
         <Tabs defaultValue="identity" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-lg">
+          <TabsList className="grid w-full grid-cols-4 max-w-xl">
             <TabsTrigger value="identity" className="gap-2">
               <Building2 className="h-4 w-4" />
               <span className="hidden sm:inline">Identité</span>
@@ -253,6 +255,10 @@ export default function CompanySettings() {
             <TabsTrigger value="theme" className="gap-2">
               <Palette className="h-4 w-4" />
               <span className="hidden sm:inline">Thème</span>
+            </TabsTrigger>
+            <TabsTrigger value="privacy" className="gap-2">
+              <Lock className="h-4 w-4" />
+              <span className="hidden sm:inline">Confidentialité</span>
             </TabsTrigger>
             <TabsTrigger value="security" className="gap-2">
               <Shield className="h-4 w-4" />
@@ -582,6 +588,11 @@ export default function CompanySettings() {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Privacy Tab */}
+          <TabsContent value="privacy" className="space-y-6">
+            <PrivacyConsentCard />
           </TabsContent>
 
           {/* Security Tab */}
