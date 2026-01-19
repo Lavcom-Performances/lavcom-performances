@@ -51,6 +51,7 @@ import PlatformSalesProducts from "./pages/platform/PlatformSalesProducts";
 import PlatformSalesReports from "./pages/platform/PlatformSalesReports";
 import PlatformOrphanPages from "./pages/platform/PlatformOrphanPages";
 import PlatformOrphanFiles from "./pages/platform/PlatformOrphanFiles";
+import PlatformAIUsage from "./pages/platform/PlatformAIUsage";
 import RecomputeAuditTrail from "./pages/platform/RecomputeAuditTrail";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
@@ -170,6 +171,7 @@ const App = () => (
             <Route path="/admin/cron-logs" element={<AdminCronLogs />} />
             <Route path="/admin/orphan-pages" element={<PlatformOrphanPages />} />
             <Route path="/admin/orphan-files" element={<PlatformOrphanFiles />} />
+            <Route path="/admin/ai-usage" element={<PlatformAIUsage />} />
             <Route path="/admin/recompute-audit" element={<RecomputeAuditTrail />} />
           </Route>
           

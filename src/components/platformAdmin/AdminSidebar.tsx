@@ -20,7 +20,8 @@ import {
   ChevronLeft,
   ArrowLeftRight,
   FileQuestion,
-  FileX2
+  FileX2,
+  Bot
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -93,6 +94,7 @@ export function AdminSidebar({
   // System navigation
   const systemNavigation = [
     { name: t('app:platformAdmin.nav.systemStatus'), href: "/admin/system-status", icon: AlertTriangle },
+    { name: t('app:platformAdmin.nav.aiUsage', 'AI Usage'), href: "/admin/ai-usage", icon: Bot },
     { name: t('app:platformAdmin.nav.expertRequests'), href: "/admin/expert-requests", icon: Handshake },
     { name: t('app:platformAdmin.nav.cronLogs'), href: "/admin/cron-logs", icon: Clock },
     { name: t('app:platformAdmin.nav.orphanPages', 'Orphan Pages'), href: "/admin/orphan-pages", icon: FileQuestion },
