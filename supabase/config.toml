@@ -131,3 +131,6 @@ verify_jwt = false
 
 [functions.send-audit-report]
 verify_jwt = false
+
+[functions.get-audit-archive-download-url]
+verify_jwt = true

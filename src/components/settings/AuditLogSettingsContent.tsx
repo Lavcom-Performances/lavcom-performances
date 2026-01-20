@@ -55,6 +55,7 @@ interface AuditArchive {
   date_range_end: string;
   file_size_bytes: number | null;
   created_at: string;
+  sha256_checksum: string | null;
 }
 
 const defaultPreferences: AuditAlertPreferences = {
@@ -200,25 +201,39 @@ export default function AuditLogSettingsContent() {
     }
   };
 
+  const [downloadingArchiveId, setDownloadingArchiveId] = useState<string | null>(null);
+
   const downloadArchive = async (archive: AuditArchive) => {
+    setDownloadingArchiveId(archive.id);
     try {
-      const { data, error } = await supabase.storage
-        .from('audit-archives')
-        .download(archive.file_path);
+      // Request signed URL from edge function (audited + permission-checked)
+      const { data, error } = await supabase.functions.invoke('get-audit-archive-download-url', {
+        body: { archive_id: archive.id },
+      });
 
       if (error) throw error;
+      if (!data?.signed_url) throw new Error('No signed URL returned');
 
-      const url = URL.createObjectURL(data);
+      // Use the signed URL to download
+      const response = await fetch(data.signed_url);
+      if (!response.ok) throw new Error('Download failed');
+      
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = archive.file_path.split('/').pop() || 'audit-archive.json';
+      a.download = data.file_name || 'audit-archive.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      toast.success("Archive téléchargée");
     } catch (error) {
       console.error('Error downloading archive:', error);
       toast.error("Erreur lors du téléchargement");
+    } finally {
+      setDownloadingArchiveId(null);
     }
   };
 
@@ -538,6 +553,11 @@ export default function AuditLogSettingsContent() {
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {archive.records_count} entrées • {formatFileSize(archive.file_size_bytes)}
+                        {archive.sha256_checksum && (
+                          <span className="ml-2 text-primary" title={`Checksum: ${archive.sha256_checksum}`}>
+                            ✓ vérifié
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -545,8 +565,13 @@ export default function AuditLogSettingsContent() {
                     variant="ghost"
                     size="sm"
                     onClick={() => downloadArchive(archive)}
+                    disabled={downloadingArchiveId === archive.id}
                   >
-                    <Download className="h-4 w-4" />
+                    {downloadingArchiveId === archive.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Download className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               ))}
