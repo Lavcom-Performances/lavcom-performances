@@ -134,3 +134,6 @@ verify_jwt = false
 
 [functions.get-audit-archive-download-url]
 verify_jwt = true
+
+[functions.verify-archive-integrity]
+verify_jwt = true
