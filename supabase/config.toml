@@ -146,3 +146,6 @@ verify_jwt = true
 
 [functions.monthly-compliance-report]
 verify_jwt = false
+
+[functions.generate-compliance-report]
+verify_jwt = true

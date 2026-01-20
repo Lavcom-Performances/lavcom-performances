@@ -291,6 +291,10 @@ export default function PlatformAdminArchives() {
               Téléchargement et vérification d'intégrité des archives
             </p>
           </div>
+          <Button variant="outline" onClick={() => window.location.href = '/admin/compliance-reports'}>
+            <FileCheck className="h-4 w-4 mr-2" />
+            Voir les Rapports de Conformité
+          </Button>
         </div>
 
         {/* Stats */}

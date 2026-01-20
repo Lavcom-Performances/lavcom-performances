@@ -326,13 +326,46 @@ serve(async (req) => {
       results,
     };
 
+    const integrityScore = report.total_archives > 0 
+      ? Math.round((report.verified_valid / report.total_archives) * 100)
+      : 100;
+
     logStep("Verification complete", {
       total: report.total_archives,
       valid: verified_valid,
       invalid: verified_invalid,
       file_missing,
       storage: formatBytes(totalStorageBytes),
+      integrity_score: integrityScore,
     });
+
+    // Save report to compliance_reports table
+    const { data: savedReport, error: saveError } = await supabase
+      .from('compliance_reports')
+      .insert({
+        period_label: periodLabel,
+        date_range_start: date_from,
+        date_range_end: date_to,
+        total_archives: report.total_archives,
+        verified_valid,
+        verified_invalid,
+        no_checksum,
+        file_missing,
+        errors,
+        integrity_score: integrityScore,
+        total_storage_bytes: totalStorageBytes,
+        generated_by: null, // Scheduled report
+        report_type: 'scheduled',
+        report_data: results,
+      })
+      .select()
+      .single();
+
+    if (saveError) {
+      logStep("Warning: Failed to save report to database", saveError);
+    } else {
+      logStep("Report saved to database", { id: savedReport?.id });
+    }
 
     // Send email report to platform admins
     let emailsSent = 0;
