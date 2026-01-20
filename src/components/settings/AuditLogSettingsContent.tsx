@@ -14,7 +14,10 @@ import {
   Clock,
   Info,
   Download,
-  FileText
+  FileText,
+  Mail,
+  Calendar,
+  ExternalLink
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,8 +25,17 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Link } from "react-router-dom";
 
 interface AuditAlertPreferences {
   critical_actions_alerts: boolean;
@@ -31,6 +43,8 @@ interface AuditAlertPreferences {
   member_removal_alerts: boolean;
   deletion_alerts: boolean;
   archive_before_deletion: boolean;
+  audit_report_frequency: 'none' | 'weekly' | 'monthly';
+  audit_report_email: string;
 }
 
 interface AuditArchive {
@@ -49,6 +63,8 @@ const defaultPreferences: AuditAlertPreferences = {
   member_removal_alerts: true,
   deletion_alerts: true,
   archive_before_deletion: true,
+  audit_report_frequency: 'none',
+  audit_report_email: '',
 };
 
 const MIN_RETENTION = 7;
@@ -88,7 +104,7 @@ export default function AuditLogSettingsContent() {
       // Fetch notification preferences
       const { data: notifData, error: notifError } = await supabase
         .from('notification_preferences')
-        .select('critical_actions_alerts, permission_change_alerts, member_removal_alerts, deletion_alerts, archive_before_deletion')
+        .select('critical_actions_alerts, permission_change_alerts, member_removal_alerts, deletion_alerts, archive_before_deletion, audit_report_frequency, audit_report_email')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -101,6 +117,8 @@ export default function AuditLogSettingsContent() {
           member_removal_alerts: notifData.member_removal_alerts ?? true,
           deletion_alerts: notifData.deletion_alerts ?? true,
           archive_before_deletion: notifData.archive_before_deletion ?? true,
+          audit_report_frequency: (notifData.audit_report_frequency as 'none' | 'weekly' | 'monthly') ?? 'none',
+          audit_report_email: notifData.audit_report_email ?? '',
         };
         setPreferences(prefs);
         setOriginalPreferences(prefs);
@@ -378,6 +396,70 @@ export default function AuditLogSettingsContent() {
               checked={preferences.deletion_alerts}
               onCheckedChange={() => handleToggle('deletion_alerts')}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Scheduled Reports */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" />
+              <div>
+                <CardTitle>Rapports programmés</CardTitle>
+                <CardDescription>
+                  Recevez un résumé des actions critiques par email
+                </CardDescription>
+              </div>
+            </div>
+            <Link to="/audit-logs" className="text-sm text-primary hover:underline flex items-center gap-1">
+              Voir mes journaux
+              <ExternalLink className="h-3 w-3" />
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Label className="text-sm text-muted-foreground mb-1.5 block">Fréquence</Label>
+              <Select 
+                value={preferences.audit_report_frequency} 
+                onValueChange={(v) => {
+                  const newPrefs = { ...preferences, audit_report_frequency: v as 'none' | 'weekly' | 'monthly' };
+                  setPreferences(newPrefs);
+                  checkForChanges(newPrefs, retentionDays);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Désactivé</SelectItem>
+                  <SelectItem value="weekly">Hebdomadaire (lundi)</SelectItem>
+                  <SelectItem value="monthly">Mensuel (1er du mois)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-sm text-muted-foreground mb-1.5 block">Email (optionnel)</Label>
+              <Input
+                type="email"
+                placeholder={profile?.email || "votre@email.com"}
+                value={preferences.audit_report_email}
+                onChange={(e) => {
+                  const newPrefs = { ...preferences, audit_report_email: e.target.value };
+                  setPreferences(newPrefs);
+                  checkForChanges(newPrefs, retentionDays);
+                }}
+              />
+            </div>
+          </div>
+          <div className="p-3 rounded-lg bg-muted/50 flex items-start gap-2">
+            <Calendar className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+            <p className="text-xs text-muted-foreground">
+              Les rapports incluent un résumé des suppressions, modifications de permissions et autres actions critiques de la période.
+            </p>
           </div>
         </CardContent>
       </Card>

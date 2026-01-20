@@ -761,11 +761,14 @@ export type Database = {
       notification_preferences: {
         Row: {
           archive_before_deletion: boolean
+          audit_report_email: string | null
+          audit_report_frequency: string | null
           created_at: string
           critical_actions_alerts: boolean
           deletion_alerts: boolean
           email_alerts: boolean
           id: string
+          last_audit_report_sent_at: string | null
           maintenance_alerts: boolean
           member_removal_alerts: boolean
           permission_change_alerts: boolean
@@ -778,11 +781,14 @@ export type Database = {
         }
         Insert: {
           archive_before_deletion?: boolean
+          audit_report_email?: string | null
+          audit_report_frequency?: string | null
           created_at?: string
           critical_actions_alerts?: boolean
           deletion_alerts?: boolean
           email_alerts?: boolean
           id?: string
+          last_audit_report_sent_at?: string | null
           maintenance_alerts?: boolean
           member_removal_alerts?: boolean
           permission_change_alerts?: boolean
@@ -795,11 +801,14 @@ export type Database = {
         }
         Update: {
           archive_before_deletion?: boolean
+          audit_report_email?: string | null
+          audit_report_frequency?: string | null
           created_at?: string
           critical_actions_alerts?: boolean
           deletion_alerts?: boolean
           email_alerts?: boolean
           id?: string
+          last_audit_report_sent_at?: string | null
           maintenance_alerts?: boolean
           member_removal_alerts?: boolean
           permission_change_alerts?: boolean

@@ -128,3 +128,6 @@ verify_jwt = true
 
 [functions.validate-postal-code]
 verify_jwt = false
+
+[functions.send-audit-report]
+verify_jwt = false
