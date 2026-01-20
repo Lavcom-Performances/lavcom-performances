@@ -447,6 +447,66 @@ export type Database = {
         }
         Relationships: []
       }
+      compliance_reports: {
+        Row: {
+          created_at: string
+          date_range_end: string
+          date_range_start: string
+          errors: number
+          file_missing: number
+          generated_at: string
+          generated_by: string | null
+          id: string
+          integrity_score: number
+          no_checksum: number
+          period_label: string
+          report_data: Json | null
+          report_type: string
+          total_archives: number
+          total_storage_bytes: number | null
+          verified_invalid: number
+          verified_valid: number
+        }
+        Insert: {
+          created_at?: string
+          date_range_end: string
+          date_range_start: string
+          errors?: number
+          file_missing?: number
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          integrity_score?: number
+          no_checksum?: number
+          period_label: string
+          report_data?: Json | null
+          report_type?: string
+          total_archives?: number
+          total_storage_bytes?: number | null
+          verified_invalid?: number
+          verified_valid?: number
+        }
+        Update: {
+          created_at?: string
+          date_range_end?: string
+          date_range_start?: string
+          errors?: number
+          file_missing?: number
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          integrity_score?: number
+          no_checksum?: number
+          period_label?: string
+          report_data?: Json | null
+          report_type?: string
+          total_archives?: number
+          total_storage_bytes?: number | null
+          verified_invalid?: number
+          verified_valid?: number
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
