@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { encode as hexEncode } from "https://deno.land/std@0.190.0/encoding/hex.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -43,6 +44,18 @@ interface AuditLog {
   ip_hash: string | null;
   user_agent: string | null;
   created_at: string;
+}
+
+/**
+ * Compute SHA256 checksum of data for tamper evidence
+ */
+async function computeSha256(text: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data as unknown as BufferSource);
+  const hashArray = new Uint8Array(hashBuffer);
+  const decoder = new TextDecoder();
+  return decoder.decode(hexEncode(hashArray));
 }
 
 serve(async (req) => {
@@ -159,7 +172,14 @@ serve(async (req) => {
             const dateRangeStart = oldestLog.created_at.split('T')[0];
             const dateRangeEnd = newestLog.created_at.split('T')[0];
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const fileName = `${profile.id}/audit-logs_${dateRangeStart}_to_${dateRangeEnd}_${timestamp}.json`;
+            
+            // Use user-scoped path structure: user/{user_id}/filename.json
+            const fileName = `user/${profile.id}/audit-logs_${dateRangeStart}_to_${dateRangeEnd}_${timestamp}.json`;
+
+            // Compute checksum for tamper evidence
+            const sha256Checksum = await computeSha256(archiveJson);
+            
+            logStep(`Computed checksum for archive: ${sha256Checksum.substring(0, 16)}...`);
 
             // Upload to storage
             const { error: uploadError } = await supabase.storage
@@ -173,7 +193,7 @@ serve(async (req) => {
               logStep(`Archive upload failed for user ${profile.id}`, uploadError);
               stats.errors.push(`Archive upload failed for ${profile.id}: ${uploadError.message}`);
             } else {
-              // Record the archive in the tracking table
+              // Record the archive in the tracking table with checksum
               await supabase.from('audit_log_archives').insert({
                 user_id: profile.id,
                 file_path: fileName,
@@ -181,12 +201,13 @@ serve(async (req) => {
                 date_range_start: oldestLog.created_at,
                 date_range_end: newestLog.created_at,
                 file_size_bytes: archiveBlob.size,
+                sha256_checksum: sha256Checksum,
               });
 
               archivedCount = logsToDelete.length;
               stats.archivedCount += archivedCount;
               stats.archiveFiles++;
-              logStep(`Archived ${archivedCount} logs for user ${profile.id}`);
+              logStep(`Archived ${archivedCount} logs for user ${profile.id} (checksum: ${sha256Checksum.substring(0, 16)}...)`);
             }
           } catch (archiveError) {
             const errorMsg = archiveError instanceof Error ? archiveError.message : String(archiveError);
