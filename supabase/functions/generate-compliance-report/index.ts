@@ -368,7 +368,38 @@ serve(async (req) => {
       integrity_score: integrityScore,
     });
 
-    // Save report to database
+    // Prepare report JSON for storage
+    const reportJson = JSON.stringify({
+      ...report,
+      integrity_score: integrityScore,
+      period_label: periodLabel,
+      total_storage_bytes: totalStorageBytes,
+    }, null, 2);
+
+    // Compute checksum for tamper detection
+    const encoder = new TextEncoder();
+    const reportData = encoder.encode(reportJson);
+    const reportChecksum = await computeSha256(reportData.buffer as ArrayBuffer);
+
+    // Generate file path
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filePath = `${report_type}/${date_from.split('T')[0]}_${date_to.split('T')[0]}_${timestamp}.json`;
+
+    logStep("Saving report file to storage", { filePath, checksum: reportChecksum });
+
+    // Upload to storage
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from('compliance-reports')
+      .upload(filePath, new Blob([reportJson], { type: 'application/json' }), {
+        contentType: 'application/json',
+        upsert: false,
+      });
+
+    if (uploadError) {
+      logStep("Warning: Failed to upload report file", uploadError);
+    }
+
+    // Save report to database with file_path and checksum
     const { data: savedReport, error: saveError } = await supabaseAdmin
       .from('compliance_reports')
       .insert({
@@ -386,6 +417,8 @@ serve(async (req) => {
         generated_by: user.id,
         report_type,
         report_data: results,
+        file_path: uploadError ? null : filePath,
+        sha256_checksum: uploadError ? null : reportChecksum,
       })
       .select()
       .single();
@@ -393,7 +426,7 @@ serve(async (req) => {
     if (saveError) {
       logStep("Warning: Failed to save report to database", saveError);
     } else {
-      logStep("Report saved to database", { id: savedReport?.id });
+      logStep("Report saved to database", { id: savedReport?.id, file_path: filePath });
     }
 
     // Log to audit_logs
