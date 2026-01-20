@@ -28,14 +28,23 @@ import {
   Clock,
   FileCheck,
   FileWarning,
+  AlertTriangle,
+  Lock,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { usePlatformRole } from '@/hooks/usePlatformRole';
 import { toast } from 'sonner';
 import { ManualComplianceReport } from '@/components/platformAdmin/ManualComplianceReport';
+import { ComplianceRetentionSettings } from '@/components/platformAdmin/ComplianceRetentionSettings';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ComplianceReport {
   id: string;
@@ -55,6 +64,9 @@ interface ComplianceReport {
   report_type: string;
   report_data: unknown;
   created_at: string;
+  file_path: string | null;
+  sha256_checksum: string | null;
+  retention_years: number | null;
 }
 
 const PAGE_SIZE = 15;
@@ -85,6 +97,7 @@ function getScoreIcon(score: number) {
 export default function PlatformAdminComplianceReports() {
   const { isPlatformSuperAdmin, isPlatformAdmin, isLoading: roleLoading } = usePlatformRole();
   const [page, setPage] = useState(0);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const canAccess = isPlatformSuperAdmin || isPlatformAdmin;
 
@@ -204,6 +217,43 @@ export default function PlatformAdminComplianceReports() {
     }
   }, []);
 
+  // Handle secure download with signed URL
+  const handleSecureDownload = useCallback(async (report: ComplianceReport) => {
+    if (!report.file_path) {
+      // Fallback to local PDF generation if no file is stored
+      handleExportPDF(report);
+      return;
+    }
+
+    setDownloadingId(report.id);
+
+    try {
+      const response = await supabase.functions.invoke('get-compliance-report-download-url', {
+        body: { report_id: report.id },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Échec de la génération du lien');
+      }
+
+      const data = response.data;
+      if (!data.success || !data.signed_url) {
+        throw new Error(data.error || 'Lien de téléchargement invalide');
+      }
+
+      // Open the signed URL to download
+      window.open(data.signed_url, '_blank');
+      toast.success('Téléchargement sécurisé démarré');
+    } catch (error) {
+      console.error('Secure download error:', error);
+      toast.error(error instanceof Error ? error.message : 'Erreur de téléchargement');
+      // Fallback to local PDF generation
+      handleExportPDF(report);
+    } finally {
+      setDownloadingId(null);
+    }
+  }, [handleExportPDF]);
+
   // Loading state
   if (roleLoading) {
     return (
@@ -310,8 +360,9 @@ export default function PlatformAdminComplianceReports() {
 
         {/* Manual Report Generation */}
         {isPlatformSuperAdmin && (
-          <div className="mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <ManualComplianceReport onReportGenerated={() => refetch()} />
+            <ComplianceRetentionSettings onCleanupComplete={() => refetch()} />
           </div>
         )}
 
@@ -403,15 +454,36 @@ export default function PlatformAdminComplianceReports() {
                             {format(new Date(report.generated_at), 'dd/MM/yyyy HH:mm', { locale: fr })}
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleExportPDF(report)}
-                              className="h-8 px-2"
-                            >
-                              <Download className="h-4 w-4 mr-1" />
-                              PDF
-                            </Button>
+                            <div className="flex items-center justify-end gap-1">
+                              {!report.sha256_checksum && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger>
+                                      <AlertTriangle className="h-4 w-4 text-amber-500" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Checksum manquant</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => report.file_path ? handleSecureDownload(report) : handleExportPDF(report)}
+                                disabled={downloadingId === report.id}
+                                className="h-8 px-2"
+                              >
+                                {downloadingId === report.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : report.file_path ? (
+                                  <Lock className="h-4 w-4 mr-1" />
+                                ) : (
+                                  <Download className="h-4 w-4 mr-1" />
+                                )}
+                                {report.file_path ? 'JSON' : 'PDF'}
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

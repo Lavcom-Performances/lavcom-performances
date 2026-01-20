@@ -454,6 +454,7 @@ export type Database = {
           date_range_start: string
           errors: number
           file_missing: number
+          file_path: string | null
           generated_at: string
           generated_by: string | null
           id: string
@@ -462,6 +463,8 @@ export type Database = {
           period_label: string
           report_data: Json | null
           report_type: string
+          retention_years: number | null
+          sha256_checksum: string | null
           total_archives: number
           total_storage_bytes: number | null
           verified_invalid: number
@@ -473,6 +476,7 @@ export type Database = {
           date_range_start: string
           errors?: number
           file_missing?: number
+          file_path?: string | null
           generated_at?: string
           generated_by?: string | null
           id?: string
@@ -481,6 +485,8 @@ export type Database = {
           period_label: string
           report_data?: Json | null
           report_type?: string
+          retention_years?: number | null
+          sha256_checksum?: string | null
           total_archives?: number
           total_storage_bytes?: number | null
           verified_invalid?: number
@@ -492,6 +498,7 @@ export type Database = {
           date_range_start?: string
           errors?: number
           file_missing?: number
+          file_path?: string | null
           generated_at?: string
           generated_by?: string | null
           id?: string
@@ -500,6 +507,8 @@ export type Database = {
           period_label?: string
           report_data?: Json | null
           report_type?: string
+          retention_years?: number | null
+          sha256_checksum?: string | null
           total_archives?: number
           total_storage_bytes?: number | null
           verified_invalid?: number

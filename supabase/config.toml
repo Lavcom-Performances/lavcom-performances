@@ -149,3 +149,9 @@ verify_jwt = false
 
 [functions.generate-compliance-report]
 verify_jwt = true
+
+[functions.get-compliance-report-download-url]
+verify_jwt = true
+
+[functions.cleanup-compliance-reports]
+verify_jwt = false
