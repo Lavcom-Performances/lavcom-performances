@@ -143,3 +143,6 @@ verify_jwt = false
 
 [functions.verify-archives-bulk]
 verify_jwt = true
+
+[functions.monthly-compliance-report]
+verify_jwt = false
