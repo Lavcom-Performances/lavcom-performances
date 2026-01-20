@@ -53,6 +53,7 @@ import { usePlatformRole } from '@/hooks/usePlatformRole';
 import { DateRangePicker } from '@/components/dashboard/DateRangePicker';
 import { DateRange } from 'react-day-picker';
 import { toast } from 'sonner';
+import { ArchiveCleanupSettings } from '@/components/platformAdmin/ArchiveCleanupSettings';
 
 interface AuditArchive {
   id: string;
@@ -346,6 +347,13 @@ export default function PlatformAdminArchives() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Archive Cleanup Settings - Only for Super Admins */}
+        {isPlatformSuperAdmin && (
+          <div className="mb-6">
+            <ArchiveCleanupSettings onCleanupComplete={() => refetch()} />
+          </div>
+        )}
 
         {/* Filters */}
         <Card className="bg-card border-border mb-6">
