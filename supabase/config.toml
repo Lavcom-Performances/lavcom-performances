@@ -137,3 +137,6 @@ verify_jwt = true
 
 [functions.verify-archive-integrity]
 verify_jwt = true
+
+[functions.cleanup-audit-archives]
+verify_jwt = false

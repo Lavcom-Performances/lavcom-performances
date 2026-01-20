@@ -21,7 +21,8 @@ import {
   ArrowLeftRight,
   FileQuestion,
   FileX2,
-  Bot
+  Bot,
+  Archive,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -80,6 +81,7 @@ export function AdminSidebar({
     { name: t('app:platformAdmin.nav.roles'), href: "/admin/roles", icon: ShieldCheck },
     { name: t('app:platformAdmin.nav.permissions'), href: "/admin/permissions", icon: Key },
     { name: t('app:platformAdmin.nav.auditLogs'), href: "/admin/audit-logs", icon: ScrollText },
+    { name: t('app:platformAdmin.nav.archives', 'Archives'), href: "/admin/archives", icon: Archive },
     { name: t('app:platformAdmin.nav.loginHistory'), href: "/admin/login-history", icon: History },
   ];
 
