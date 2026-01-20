@@ -140,3 +140,6 @@ verify_jwt = true
 
 [functions.cleanup-audit-archives]
 verify_jwt = false
+
+[functions.verify-archives-bulk]
+verify_jwt = true

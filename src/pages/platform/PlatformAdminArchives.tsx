@@ -54,6 +54,7 @@ import { DateRangePicker } from '@/components/dashboard/DateRangePicker';
 import { DateRange } from 'react-day-picker';
 import { toast } from 'sonner';
 import { ArchiveCleanupSettings } from '@/components/platformAdmin/ArchiveCleanupSettings';
+import { BulkArchiveVerification } from '@/components/platformAdmin/BulkArchiveVerification';
 
 interface AuditArchive {
   id: string;
@@ -350,8 +351,9 @@ export default function PlatformAdminArchives() {
 
         {/* Archive Cleanup Settings - Only for Super Admins */}
         {isPlatformSuperAdmin && (
-          <div className="mb-6">
+          <div className="space-y-6 mb-6">
             <ArchiveCleanupSettings onCleanupComplete={() => refetch()} />
+            <BulkArchiveVerification />
           </div>
         )}
 
