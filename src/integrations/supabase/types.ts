@@ -1331,6 +1331,30 @@ export type Database = {
           },
         ]
       }
+      platform_feature_flags: {
+        Row: {
+          description: string | null
+          is_enabled: boolean
+          key: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          description?: string | null
+          is_enabled?: boolean
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          description?: string | null
+          is_enabled?: boolean
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       platform_roles: {
         Row: {
           created_at: string
