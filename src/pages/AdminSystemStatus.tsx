@@ -18,6 +18,7 @@ import { RecomputeAnalyticsWidget } from '@/components/admin/RecomputeAnalyticsW
 import { DREvidenceWidget } from '@/components/admin/DREvidenceWidget';
 import { SecretsHealthPanel } from '@/components/admin/SecretsHealthPanel';
 import { DiagnosticsPanel } from '@/components/admin/DiagnosticsPanel';
+import { FeatureFlagsPanel } from '@/components/admin/FeatureFlagsPanel';
 
 interface SystemEvent {
   id: number;
@@ -73,6 +74,8 @@ const sourceLabels: Record<string, string> = {
   'export': 'Export',
   'diagnostics': 'Diagnostics',
   'secrets-health': 'Secrets Health',
+  'feature_flag': 'Feature Flags',
+  'ai_proxy': 'AI Proxy',
 };
 
 const testLabels: Record<string, string> = {
@@ -378,6 +381,9 @@ export default function AdminSystemStatus() {
             )}
           </CardContent>
         </Card>
+
+        {/* Feature Flags / Safe Mode Section - TAEX-223 */}
+        <FeatureFlagsPanel />
 
         {/* Recompute Analytics Section */}
         <RecomputeAnalyticsWidget />

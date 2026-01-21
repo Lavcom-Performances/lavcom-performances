@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkFeatureOrBlock } from "../_shared/feature-flags.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -41,6 +42,16 @@ Deno.serve(async (req) => {
   let runId = "";
 
   try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    const supabaseForFlags = createClient(supabaseUrl, supabaseServiceKey);
+
+    // TAEX-223: Check feature flag
+    const flagCheck = await checkFeatureOrBlock(supabaseForFlags, 'automated_dr_drill_enabled', 'Automated DR Drill');
+    if (!flagCheck.allowed) {
+      return flagCheck.response;
+    }
+
     // Verify authorization
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
@@ -49,9 +60,6 @@ Deno.serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
     // User client for auth check
     const supabaseUser = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY") ?? "", {

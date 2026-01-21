@@ -14,6 +14,8 @@ import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { validateInput, ValidationSchema, redactSensitiveData } from "../_shared/validation.ts";
 import { verifyAuth, getServiceClient } from "../_shared/auth.ts";
 import { checkRateLimit, rateLimitResponse, hashIP, RATE_LIMITS } from "../_shared/rate-limiter.ts";
+import { checkFeatureOrBlock } from "../_shared/feature-flags.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // ============================================================================
 // CONFIGURATION CONSTANTS
@@ -233,6 +235,16 @@ Deno.serve(async (req) => {
   const ipHash = await hashIP(clientIP);
 
   try {
+    // ========================================================================
+    // FEATURE FLAG CHECK - TAEX-223
+    // ========================================================================
+    const supabaseForFlags = createClient(supabaseUrl, supabaseServiceKey);
+    const flagCheck = await checkFeatureOrBlock(supabaseForFlags, 'ai_enabled', 'AI Features');
+    if (!flagCheck.allowed) {
+      await logAIRequest(supabaseUrl, supabaseServiceKey, traceId, 'anonymous', 'unknown', 0, 0, 0, Date.now() - startTime, 503, 'feature_disabled');
+      return flagCheck.response;
+    }
+
     // ========================================================================
     // AUTHENTICATION
     // ========================================================================

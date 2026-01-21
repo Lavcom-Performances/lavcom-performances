@@ -5,6 +5,7 @@ import {
   DAILY_IMPORT_BATCHES_PER_SITE,
   HOURLY_IMPORT_BATCHES_PER_SITE,
 } from "../_shared/rate-limiter.ts";
+import { checkFeatureOrBlock } from "../_shared/feature-flags.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -162,6 +163,13 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // TAEX-223: Check feature flag
+    const flagCheck = await checkFeatureOrBlock(supabase, 'imports_enabled', 'Imports CSV');
+    if (!flagCheck.allowed) {
+      return flagCheck.response;
+    }
 
     // Get user from authorization header
     const authHeader = req.headers.get("Authorization");
@@ -171,8 +179,6 @@ Deno.serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
     // Verify the JWT token
     const token = authHeader.replace("Bearer ", "");
