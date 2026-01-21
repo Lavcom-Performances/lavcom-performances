@@ -714,6 +714,63 @@ export type Database = {
         }
         Relationships: []
       }
+      dr_drill_runs: {
+        Row: {
+          actor_email: string | null
+          actor_id: string
+          artifacts_paths: Json | null
+          blocked_reason: string | null
+          created_at: string
+          duration_ms: number | null
+          ended_at: string | null
+          environment: string
+          id: string
+          overall_passed: boolean | null
+          rto_met: boolean | null
+          site_id: string | null
+          site_name: string | null
+          started_at: string
+          status: string
+          steps_summary: Json | null
+        }
+        Insert: {
+          actor_email?: string | null
+          actor_id: string
+          artifacts_paths?: Json | null
+          blocked_reason?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          ended_at?: string | null
+          environment?: string
+          id?: string
+          overall_passed?: boolean | null
+          rto_met?: boolean | null
+          site_id?: string | null
+          site_name?: string | null
+          started_at?: string
+          status?: string
+          steps_summary?: Json | null
+        }
+        Update: {
+          actor_email?: string | null
+          actor_id?: string
+          artifacts_paths?: Json | null
+          blocked_reason?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          ended_at?: string | null
+          environment?: string
+          id?: string
+          overall_passed?: boolean | null
+          rto_met?: boolean | null
+          site_id?: string | null
+          site_name?: string | null
+          started_at?: string
+          status?: string
+          steps_summary?: Json | null
+        }
+        Relationships: []
+      }
       expert_requests: {
         Row: {
           created_at: string
