@@ -164,3 +164,6 @@ verify_jwt = true
 
 [functions.cleanup-compliance-reports]
 verify_jwt = false
+
+[functions.secrets-health]
+verify_jwt = false
