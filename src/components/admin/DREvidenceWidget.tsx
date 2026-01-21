@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { 
   FolderPlus, 
@@ -18,7 +19,10 @@ import {
   Image,
   ExternalLink,
   RefreshCw,
-  Shield
+  Shield,
+  PlayCircle,
+  Loader2,
+  X
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -31,9 +35,24 @@ interface DrillFolder {
   hasAfter: boolean;
 }
 
+interface UploadingFile {
+  name: string;
+  progress: number;
+  status: 'uploading' | 'success' | 'error';
+  error?: string;
+}
+
+const ALLOWED_FILE_TYPES = ['image/png', 'image/jpeg', 'application/json'];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
 export function DREvidenceWidget() {
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [customDate, setCustomDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
+  const [isRunningAutoDrill, setIsRunningAutoDrill] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: folders, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['dr-evidence-folders'],
@@ -48,7 +67,6 @@ export function DREvidenceWidget() {
 
       if (listError) throw listError;
 
-      // For each folder, check what files exist
       const foldersWithDetails: DrillFolder[] = [];
       
       for (const folder of drFolder || []) {
@@ -87,7 +105,6 @@ export function DREvidenceWidget() {
 
     setIsCreatingFolder(true);
     try {
-      // Create a placeholder file to create the folder
       const placeholderContent = new Blob([''], { type: 'text/plain' });
       const folderPath = `dr/${customDate}/.placeholder`;
 
@@ -98,7 +115,6 @@ export function DREvidenceWidget() {
 
       if (uploadError) throw uploadError;
 
-      // Log the folder creation to audit_logs
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.rpc('rpc_create_audit_log', {
@@ -114,12 +130,152 @@ export function DREvidenceWidget() {
       }
 
       toast.success(`Dossier dr/${customDate} créé avec succès`);
+      setSelectedFolder(customDate);
       refetch();
     } catch (error) {
       console.error('Failed to create folder:', error);
       toast.error('Erreur lors de la création du dossier');
     } finally {
       setIsCreatingFolder(false);
+    }
+  };
+
+  const validateFile = (file: File): string | null => {
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      return `Type non autorisé: ${file.type}. Utilisez PNG, JPEG ou JSON.`;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return `Fichier trop volumineux: ${(file.size / 1024 / 1024).toFixed(1)}MB. Maximum: 10MB`;
+    }
+    return null;
+  };
+
+  const uploadFile = async (file: File, folderName: string): Promise<boolean> => {
+    const validation = validateFile(file);
+    if (validation) {
+      setUploadingFiles(prev => prev.map(f => 
+        f.name === file.name ? { ...f, status: 'error' as const, error: validation } : f
+      ));
+      return false;
+    }
+
+    const filePath = `dr/${folderName}/${file.name}`;
+
+    try {
+      const { error } = await supabase.storage
+        .from('dr-evidence')
+        .upload(filePath, file, { upsert: true });
+
+      if (error) throw error;
+
+      // Log the upload
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.rpc('rpc_create_audit_log', {
+          p_actor_id: user.id,
+          p_action: 'DR_EVIDENCE_UPLOAD',
+          p_target_table: 'storage.objects',
+          p_target_id: null,
+          p_metadata: {
+            file: filePath,
+            bucket: 'dr-evidence',
+            size: file.size,
+            type: file.type,
+          },
+        });
+      }
+
+      setUploadingFiles(prev => prev.map(f => 
+        f.name === file.name ? { ...f, status: 'success' as const, progress: 100 } : f
+      ));
+      return true;
+    } catch (error) {
+      console.error('Upload failed:', error);
+      setUploadingFiles(prev => prev.map(f => 
+        f.name === file.name ? { ...f, status: 'error' as const, error: 'Upload échoué' } : f
+      ));
+      return false;
+    }
+  };
+
+  const handleFiles = async (files: FileList) => {
+    const targetFolder = selectedFolder || customDate;
+    
+    if (!targetFolder) {
+      toast.error('Sélectionnez ou créez un dossier d\'abord');
+      return;
+    }
+
+    // Initialize uploading state
+    const newUploadingFiles: UploadingFile[] = Array.from(files).map(f => ({
+      name: f.name,
+      progress: 0,
+      status: 'uploading' as const,
+    }));
+    setUploadingFiles(prev => [...prev, ...newUploadingFiles]);
+
+    let successCount = 0;
+    for (const file of Array.from(files)) {
+      const success = await uploadFile(file, targetFolder);
+      if (success) successCount++;
+    }
+
+    if (successCount > 0) {
+      toast.success(`${successCount} fichier(s) uploadé(s) avec succès`);
+      refetch();
+    }
+
+    // Clear completed uploads after 3 seconds
+    setTimeout(() => {
+      setUploadingFiles(prev => prev.filter(f => f.status === 'uploading'));
+    }, 3000);
+  };
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    if (e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files);
+    }
+  }, [selectedFolder, customDate]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  }, []);
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFiles(e.target.files);
+    }
+  };
+
+  const handleRunAutoDrill = async () => {
+    setIsRunningAutoDrill(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('run-dr-drill', {
+        body: { environment: 'staging' },
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast.success('Drill automatique terminé avec succès');
+        refetch();
+      } else {
+        toast.error(data?.message || 'Le drill a échoué');
+      }
+    } catch (error) {
+      console.error('Auto drill failed:', error);
+      toast.error('Erreur lors du drill automatique');
+    } finally {
+      setIsRunningAutoDrill(false);
     }
   };
 
@@ -173,6 +329,39 @@ export function DREvidenceWidget() {
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* Automated Drill Button */}
+        <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 font-medium">
+                <PlayCircle className="h-4 w-4 text-primary" />
+                Drill Automatique (Staging)
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Simule un incident, capture l'état système, génère results.json
+              </p>
+            </div>
+            <Button
+              onClick={handleRunAutoDrill}
+              disabled={isRunningAutoDrill}
+              variant="outline"
+              size="sm"
+            >
+              {isRunningAutoDrill ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  Exécution...
+                </>
+              ) : (
+                <>
+                  <PlayCircle className="h-4 w-4 mr-1" />
+                  Lancer
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+
         {/* Create Folder Section */}
         <div className="bg-muted/50 rounded-lg p-4 space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium">
@@ -205,21 +394,72 @@ export function DREvidenceWidget() {
               Créer
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Chemin: <code className="bg-muted px-1 rounded">dr-evidence/dr/{customDate}/</code>
+        </div>
+
+        {/* Drag and Drop Upload Zone */}
+        <div
+          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+            isDragOver
+              ? 'border-primary bg-primary/5'
+              : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+          }`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            multiple
+            accept=".png,.jpg,.jpeg,.json"
+            onChange={handleFileInput}
+          />
+          
+          <Upload className={`h-8 w-8 mx-auto mb-2 ${isDragOver ? 'text-primary' : 'text-muted-foreground'}`} />
+          
+          <p className="text-sm font-medium">
+            Glissez-déposez vos fichiers ici
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            ou{' '}
+            <button
+              type="button"
+              className="text-primary hover:underline"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              parcourir
+            </button>
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            PNG, JPEG, JSON • Max 10MB • Dossier cible: <code className="bg-muted px-1 rounded">{selectedFolder || customDate}</code>
           </p>
         </div>
 
-        {/* Required Files Info */}
-        <div className="text-xs text-muted-foreground space-y-1">
-          <p className="font-medium">Fichiers requis:</p>
-          <ul className="list-disc list-inside pl-2 space-y-0.5">
-            <li><code>before.png</code> - Screenshot avant incident</li>
-            <li><code>incident.png</code> - Screenshot après incident</li>
-            <li><code>after.png</code> - Screenshot après restauration</li>
-            <li><code>results.json</code> - Résultats structurés du drill</li>
-          </ul>
-        </div>
+        {/* Upload Progress */}
+        {uploadingFiles.length > 0 && (
+          <div className="space-y-2">
+            {uploadingFiles.map((file, idx) => (
+              <div key={`${file.name}-${idx}`} className="flex items-center gap-2 text-sm">
+                {file.status === 'uploading' && (
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                )}
+                {file.status === 'success' && (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                )}
+                {file.status === 'error' && (
+                  <X className="h-4 w-4 text-destructive" />
+                )}
+                <span className={file.status === 'error' ? 'text-destructive' : 'text-muted-foreground'}>
+                  {file.name}
+                </span>
+                {file.error && (
+                  <span className="text-xs text-destructive">({file.error})</span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Recent Drills */}
         <div className="border-t pt-4">
@@ -238,13 +478,17 @@ export function DREvidenceWidget() {
               {folders.slice(0, 5).map((folder) => {
                 const isFolderComplete = folder.hasResults && folder.hasBefore && 
                                          folder.hasIncident && folder.hasAfter;
+                const isSelected = selectedFolder === folder.name;
                 return (
                   <div
                     key={folder.name}
-                    className={`rounded-lg p-3 border ${
-                      isFolderComplete 
-                        ? 'bg-green-500/5 border-green-500/20' 
-                        : 'bg-yellow-500/5 border-yellow-500/20'
+                    onClick={() => setSelectedFolder(folder.name)}
+                    className={`rounded-lg p-3 border cursor-pointer transition-colors ${
+                      isSelected
+                        ? 'ring-2 ring-primary border-primary'
+                        : isFolderComplete 
+                          ? 'bg-green-500/5 border-green-500/20 hover:border-green-500/40' 
+                          : 'bg-yellow-500/5 border-yellow-500/20 hover:border-yellow-500/40'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -264,6 +508,12 @@ export function DREvidenceWidget() {
                           </Badge>
                         )}
                       </div>
+                      {isSelected && (
+                        <Badge variant="outline" className="text-primary">
+                          <Upload className="h-3 w-3 mr-1" />
+                          Cible
+                        </Badge>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 gap-1">
                       {getFileStatus(folder.hasBefore, 'before.png')}

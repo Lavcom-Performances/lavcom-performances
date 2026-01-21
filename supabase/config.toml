@@ -1,5 +1,8 @@
 project_id = "betvwipgtcrhmludzgxw"
 
+[functions.run-dr-drill]
+verify_jwt = false
+
 [functions.dr-drill-reminder]
 verify_jwt = false
 
