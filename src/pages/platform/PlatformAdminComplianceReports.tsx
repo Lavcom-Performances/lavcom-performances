@@ -18,6 +18,9 @@ import {
   FileText, 
   Download,
   Shield,
+  ShieldCheck,
+  ShieldX,
+  ShieldQuestion,
   ChevronLeft,
   ChevronRight,
   Calendar,
@@ -37,6 +40,7 @@ import { usePlatformRole } from '@/hooks/usePlatformRole';
 import { toast } from 'sonner';
 import { ManualComplianceReport } from '@/components/platformAdmin/ManualComplianceReport';
 import { ComplianceRetentionSettings } from '@/components/platformAdmin/ComplianceRetentionSettings';
+import { ComplianceIntegrityTrendsChart } from '@/components/platformAdmin/ComplianceIntegrityTrendsChart';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {
@@ -98,6 +102,8 @@ export default function PlatformAdminComplianceReports() {
   const { isPlatformSuperAdmin, isPlatformAdmin, isLoading: roleLoading } = usePlatformRole();
   const [page, setPage] = useState(0);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [verifyingId, setVerifyingId] = useState<string | null>(null);
+  const [verificationResults, setVerificationResults] = useState<Record<string, { valid: boolean; message: string } | null>>({});
 
   const canAccess = isPlatformSuperAdmin || isPlatformAdmin;
 
@@ -254,6 +260,75 @@ export default function PlatformAdminComplianceReports() {
     }
   }, [handleExportPDF]);
 
+  // Handle integrity verification
+  const handleVerifyIntegrity = useCallback(async (report: ComplianceReport) => {
+    setVerifyingId(report.id);
+    setVerificationResults(prev => ({ ...prev, [report.id]: null }));
+
+    try {
+      const response = await supabase.functions.invoke('verify-compliance-report-integrity', {
+        body: { report_id: report.id },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Échec de la vérification');
+      }
+
+      const data = response.data;
+      setVerificationResults(prev => ({ 
+        ...prev, 
+        [report.id]: { 
+          valid: data.valid, 
+          message: data.message 
+        } 
+      }));
+
+      if (data.valid) {
+        toast.success('Intégrité vérifiée', {
+          description: data.message,
+        });
+      } else {
+        toast.warning('Problème d\'intégrité', {
+          description: data.message,
+        });
+      }
+    } catch (error) {
+      console.error('Verify integrity error:', error);
+      toast.error(error instanceof Error ? error.message : 'Erreur de vérification');
+      setVerificationResults(prev => ({ 
+        ...prev, 
+        [report.id]: { 
+          valid: false, 
+          message: error instanceof Error ? error.message : 'Erreur de vérification' 
+        } 
+      }));
+    } finally {
+      setVerifyingId(null);
+    }
+  }, []);
+
+  // Get verification icon based on result
+  const getVerificationIcon = (reportId: string, hasChecksum: boolean) => {
+    if (verifyingId === reportId) {
+      return <Loader2 className="h-4 w-4 animate-spin" />;
+    }
+    
+    const result = verificationResults[reportId];
+    if (result === undefined) {
+      return <Shield className="h-4 w-4" />;
+    }
+    
+    if (result === null) {
+      return <ShieldQuestion className="h-4 w-4 text-muted-foreground" />;
+    }
+    
+    if (result.valid) {
+      return <ShieldCheck className="h-4 w-4 text-green-500" />;
+    }
+    
+    return <ShieldX className="h-4 w-4 text-red-500" />;
+  };
+
   // Loading state
   if (roleLoading) {
     return (
@@ -358,6 +433,11 @@ export default function PlatformAdminComplianceReports() {
           </Card>
         </div>
 
+        {/* Integrity Trends Chart */}
+        <div className="mb-6">
+          <ComplianceIntegrityTrendsChart />
+        </div>
+
         {/* Manual Report Generation */}
         {isPlatformSuperAdmin && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -455,6 +535,7 @@ export default function PlatformAdminComplianceReports() {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-1">
+                              {/* Checksum warning */}
                               {!report.sha256_checksum && (
                                 <TooltipProvider>
                                   <Tooltip>
@@ -467,6 +548,36 @@ export default function PlatformAdminComplianceReports() {
                                   </Tooltip>
                                 </TooltipProvider>
                               )}
+                              
+                              {/* Verify integrity button */}
+                              {report.sha256_checksum && report.file_path && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleVerifyIntegrity(report)}
+                                        disabled={verifyingId === report.id}
+                                        className="h-8 px-2"
+                                      >
+                                        {getVerificationIcon(report.id, !!report.sha256_checksum)}
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      {verificationResults[report.id] !== undefined ? (
+                                        verificationResults[report.id]?.valid 
+                                          ? 'Intégrité vérifiée ✓'
+                                          : 'Problème d\'intégrité !'
+                                      ) : (
+                                        'Vérifier l\'intégrité'
+                                      )}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+
+                              {/* Download button */}
                               <Button
                                 variant="ghost"
                                 size="sm"

@@ -1,5 +1,8 @@
 project_id = "betvwipgtcrhmludzgxw"
 
+[functions.verify-compliance-report-integrity]
+verify_jwt = false
+
 [functions.ai-proxy]
 verify_jwt = false
 
