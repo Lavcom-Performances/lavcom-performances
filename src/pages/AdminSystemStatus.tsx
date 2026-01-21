@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { ImportParserTestsWidget } from '@/components/admin/ImportParserTestsWidget';
 import { RecomputeAnalyticsWidget } from '@/components/admin/RecomputeAnalyticsWidget';
 import { DREvidenceWidget } from '@/components/admin/DREvidenceWidget';
+import { SecretsHealthPanel } from '@/components/admin/SecretsHealthPanel';
 
 interface SystemEvent {
   id: number;
@@ -641,6 +642,9 @@ export default function AdminSystemStatus() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Secrets Health Panel - super_admin only */}
+        <SecretsHealthPanel />
 
         {/* DR Evidence Section */}
         <DREvidenceWidget />
