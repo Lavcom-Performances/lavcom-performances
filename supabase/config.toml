@@ -179,3 +179,6 @@ verify_jwt = true
 
 [functions.get-impersonation-session]
 verify_jwt = true
+
+[functions.permission-tests-cron]
+verify_jwt = false

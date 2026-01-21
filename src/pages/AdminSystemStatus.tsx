@@ -19,6 +19,7 @@ import { DREvidenceWidget } from '@/components/admin/DREvidenceWidget';
 import { SecretsHealthPanel } from '@/components/admin/SecretsHealthPanel';
 import { DiagnosticsPanel } from '@/components/admin/DiagnosticsPanel';
 import { FeatureFlagsPanel } from '@/components/admin/FeatureFlagsPanel';
+import { PermissionTestsWidget } from '@/components/admin/PermissionTestsWidget';
 
 interface SystemEvent {
   id: number;
@@ -66,6 +67,7 @@ const sourceLabels: Record<string, string> = {
   'cron': 'Analytics Cron',
   'smoke-test': 'Smoke Test',
   'smoke_tests_import': 'Import Parser Tests',
+  'permission_tests': 'Permission Tests',
   'recompute_analytics': 'Recompute Analytics',
   'site_delete': 'Site Deletion',
   'member_remove': 'Member Removal',
@@ -390,6 +392,9 @@ export default function AdminSystemStatus() {
 
         {/* Import Parser Tests Section */}
         <ImportParserTestsWidget />
+
+        {/* Permission Tests Section - TAEX-225 */}
+        <PermissionTestsWidget />
 
         {/* Smoke Test Section */}
         <Card>
