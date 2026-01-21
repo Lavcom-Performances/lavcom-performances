@@ -15,6 +15,7 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { toast } from 'sonner';
 import { ImportParserTestsWidget } from '@/components/admin/ImportParserTestsWidget';
 import { RecomputeAnalyticsWidget } from '@/components/admin/RecomputeAnalyticsWidget';
+import { DREvidenceWidget } from '@/components/admin/DREvidenceWidget';
 
 interface SystemEvent {
   id: number;
@@ -66,6 +67,7 @@ const sourceLabels: Record<string, string> = {
   'site_delete': 'Site Deletion',
   'member_remove': 'Member Removal',
   'backup_drill': 'Backup Drill',
+  'dr_drill_reminder': 'DR Drill Reminder',
   'export': 'Export',
 };
 
@@ -639,6 +641,9 @@ export default function AdminSystemStatus() {
             </div>
           </CardContent>
         </Card>
+
+        {/* DR Evidence Section */}
+        <DREvidenceWidget />
 
         <div className="flex gap-4">
           <Select value={sourceFilter} onValueChange={setSourceFilter}>
