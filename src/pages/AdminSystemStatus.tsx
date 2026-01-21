@@ -17,6 +17,7 @@ import { ImportParserTestsWidget } from '@/components/admin/ImportParserTestsWid
 import { RecomputeAnalyticsWidget } from '@/components/admin/RecomputeAnalyticsWidget';
 import { DREvidenceWidget } from '@/components/admin/DREvidenceWidget';
 import { SecretsHealthPanel } from '@/components/admin/SecretsHealthPanel';
+import { DiagnosticsPanel } from '@/components/admin/DiagnosticsPanel';
 
 interface SystemEvent {
   id: number;
@@ -70,6 +71,8 @@ const sourceLabels: Record<string, string> = {
   'backup_drill': 'Backup Drill',
   'dr_drill_reminder': 'DR Drill Reminder',
   'export': 'Export',
+  'diagnostics': 'Diagnostics',
+  'secrets-health': 'Secrets Health',
 };
 
 const testLabels: Record<string, string> = {
@@ -645,6 +648,9 @@ export default function AdminSystemStatus() {
 
         {/* Secrets Health Panel - super_admin only */}
         <SecretsHealthPanel />
+
+        {/* Diagnostics Panel - platform admin only */}
+        <DiagnosticsPanel />
 
         {/* DR Evidence Section */}
         <DREvidenceWidget />

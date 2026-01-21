@@ -648,6 +648,56 @@ export type Database = {
         }
         Relationships: []
       }
+      diagnostics_bundles: {
+        Row: {
+          actor_email: string | null
+          actor_id: string
+          bundle_summary: Json | null
+          created_at: string
+          date_from: string | null
+          date_to: string | null
+          expires_at: string
+          file_path: string
+          file_size_bytes: number | null
+          id: string
+          site_id: string | null
+        }
+        Insert: {
+          actor_email?: string | null
+          actor_id: string
+          bundle_summary?: Json | null
+          created_at?: string
+          date_from?: string | null
+          date_to?: string | null
+          expires_at?: string
+          file_path: string
+          file_size_bytes?: number | null
+          id?: string
+          site_id?: string | null
+        }
+        Update: {
+          actor_email?: string | null
+          actor_id?: string
+          bundle_summary?: Json | null
+          created_at?: string
+          date_from?: string | null
+          date_to?: string | null
+          expires_at?: string
+          file_path?: string
+          file_size_bytes?: number | null
+          id?: string
+          site_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostics_bundles_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dr_drill_history: {
         Row: {
           actor_email: string | null
