@@ -167,3 +167,6 @@ verify_jwt = false
 
 [functions.secrets-health]
 verify_jwt = false
+
+[functions.collect-diagnostics]
+verify_jwt = false
