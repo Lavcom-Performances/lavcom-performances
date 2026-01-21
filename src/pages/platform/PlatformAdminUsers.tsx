@@ -15,10 +15,12 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { Search, Download, ChevronLeft, ChevronRight, Building2 } from 'lucide-react';
+import { Search, Download, ChevronLeft, ChevronRight, Building2, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { sanitizeForCsv, buildCsvLine, logExport } from '@/lib/exports';
+import { usePlatformRole } from '@/hooks/usePlatformRole';
+import { ImpersonateUserDialog } from '@/components/admin/ImpersonateUserDialog';
 
 interface PlatformUser {
   id: string;
@@ -42,9 +44,16 @@ interface UsersResponse {
 const LIMIT = 50;
 
 export default function PlatformAdminUsers() {
+  const { role } = usePlatformRole();
+  const isSuperAdmin = role === 'super_admin';
+  
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(0);
+  
+  // Impersonation state
+  const [impersonateDialogOpen, setImpersonateDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<{ id: string; email: string; name?: string } | null>(null);
 
   // Debounce search
   const handleSearch = (value: string) => {
@@ -116,6 +125,15 @@ export default function PlatformAdminUsers() {
     return <Badge variant="secondary">{status}</Badge>;
   };
 
+  const handleImpersonate = (user: PlatformUser) => {
+    setSelectedUser({
+      id: user.id,
+      email: user.email,
+      name: [user.first_name, user.last_name].filter(Boolean).join(' ') || undefined,
+    });
+    setImpersonateDialogOpen(true);
+  };
+
   const totalPages = Math.ceil((data?.total ?? 0) / LIMIT);
 
   return (
@@ -161,6 +179,7 @@ export default function PlatformAdminUsers() {
                   <TableHead className="text-center">Sites</TableHead>
                   <TableHead>Plan</TableHead>
                   <TableHead>Statut</TableHead>
+                  {isSuperAdmin && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -173,6 +192,7 @@ export default function PlatformAdminUsers() {
                       <TableCell><Skeleton className="h-4 w-8 mx-auto" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      {isSuperAdmin && <TableCell><Skeleton className="h-8 w-20 ml-auto" /></TableCell>}
                     </TableRow>
                   ))
                 ) : data?.users?.length ? (
@@ -198,11 +218,24 @@ export default function PlatformAdminUsers() {
                       </TableCell>
                       <TableCell className="capitalize">{user.plan_type || '-'}</TableCell>
                       <TableCell>{getStatusBadge(user.subscription_status, user.plan_type)}</TableCell>
+                      {isSuperAdmin && (
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleImpersonate(user)}
+                            title="Voir en tant que cet utilisateur"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            Support
+                          </Button>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={isSuperAdmin ? 7 : 6} className="text-center py-8 text-muted-foreground">
                       Aucun utilisateur trouvé
                     </TableCell>
                   </TableRow>
@@ -237,6 +270,17 @@ export default function PlatformAdminUsers() {
               </Button>
             </div>
           </div>
+        )}
+        
+        {/* Impersonation Dialog */}
+        {selectedUser && (
+          <ImpersonateUserDialog
+            open={impersonateDialogOpen}
+            onOpenChange={setImpersonateDialogOpen}
+            targetUserId={selectedUser.id}
+            targetEmail={selectedUser.email}
+            targetName={selectedUser.name}
+          />
         )}
       </div>
     </>

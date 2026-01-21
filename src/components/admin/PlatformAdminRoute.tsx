@@ -1,11 +1,13 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { usePlatformRole } from '@/hooks/usePlatformRole';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2, ShieldOff } from 'lucide-react';
+import { useImpersonation } from '@/contexts/ImpersonationContext';
+import { Loader2, ShieldOff, AlertTriangle } from 'lucide-react';
 import NotFound from '@/pages/NotFound';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface PlatformAdminRouteProps {
   children: ReactNode;
@@ -20,6 +22,8 @@ interface PlatformAdminRouteProps {
 export function PlatformAdminRoute({ children, requireBilling = false }: PlatformAdminRouteProps) {
   const { user, isAuthenticated, loading: authLoading, signOut } = useAuth();
   const { isPlatformAdmin, isPlatformBilling, isLoading: roleLoading } = usePlatformRole();
+  const { isImpersonating, endImpersonation, loading: impersonationLoading } = useImpersonation();
+  const navigate = useNavigate();
   const hasLoggedRef = useRef(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockReason, setBlockReason] = useState<string | null>(null);
@@ -89,6 +93,43 @@ export function PlatformAdminRoute({ children, requireBilling = false }: Platfor
   // Not a platform admin - show 404 (hide admin existence)
   if (!hasAccess) {
     return <NotFound />;
+  }
+
+  // Block admin access when impersonating
+  if (isImpersonating) {
+    const handleExitImpersonation = async () => {
+      await endImpersonation('Exited to access admin');
+      navigate('/admin/users');
+    };
+
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="max-w-md w-full border-amber-500/50">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
+              <AlertTriangle className="h-8 w-8 text-amber-600" />
+            </div>
+            <CardTitle className="text-amber-700">Mode Support Actif</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              L'accès aux routes administrateur est bloqué pendant une session de support.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Quittez le mode support pour accéder au back-office.
+            </p>
+            <Button
+              variant="outline"
+              onClick={handleExitImpersonation}
+              disabled={impersonationLoading}
+              className="mt-4"
+            >
+              Quitter le mode support
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   // Show blocked message if user is blocked

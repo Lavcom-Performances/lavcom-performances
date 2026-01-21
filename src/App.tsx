@@ -13,6 +13,8 @@ import { RouteTracker } from "@/components/analytics/RouteTracker";
 import { PathTracker } from "@/components/analytics/PathTracker";
 import { CookieBanner } from "@/components/cookies/CookieBanner";
 import { LoginLoggerProvider } from "@/components/auth/LoginLoggerProvider";
+import { ImpersonationProvider } from "@/contexts/ImpersonationContext";
+import { ImpersonationBanner } from "@/components/admin/ImpersonationBanner";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -119,6 +121,8 @@ const App = () => (
         <Sonner />
       <BrowserRouter>
         <LoginLoggerProvider>
+        <ImpersonationProvider>
+        <ImpersonationBanner />
         <RouteTracker />
         <PathTracker />
         <Routes>
@@ -241,6 +245,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
         <CookieBanner />
+        </ImpersonationProvider>
         </LoginLoggerProvider>
         </BrowserRouter>
       </TooltipProvider>
