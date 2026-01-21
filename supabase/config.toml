@@ -170,3 +170,12 @@ verify_jwt = false
 
 [functions.collect-diagnostics]
 verify_jwt = false
+
+[functions.start-impersonation]
+verify_jwt = true
+
+[functions.end-impersonation]
+verify_jwt = true
+
+[functions.get-impersonation-session]
+verify_jwt = true

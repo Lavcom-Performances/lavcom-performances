@@ -926,6 +926,42 @@ export type Database = {
         }
         Relationships: []
       }
+      impersonation_sessions: {
+        Row: {
+          admin_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          reason: string
+          revoked_at: string | null
+          revoked_reason: string | null
+          target_user_id: string
+          ticket_id: string | null
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          reason: string
+          revoked_at?: string | null
+          revoked_reason?: string | null
+          target_user_id: string
+          ticket_id?: string | null
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          reason?: string
+          revoked_at?: string | null
+          revoked_reason?: string | null
+          target_user_id?: string
+          ticket_id?: string | null
+        }
+        Relationships: []
+      }
       import_batches: {
         Row: {
           created_at: string
