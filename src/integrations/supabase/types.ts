@@ -648,6 +648,72 @@ export type Database = {
         }
         Relationships: []
       }
+      dr_drill_history: {
+        Row: {
+          actor_email: string | null
+          actor_id: string
+          created_at: string
+          drill_date: string
+          duration_minutes: number
+          environment: string
+          evidence_folder: string | null
+          failures: string[] | null
+          id: string
+          incident_site_id: string | null
+          incident_type: string | null
+          notes: string | null
+          overall_passed: boolean
+          rto_met: boolean
+          rto_target_minutes: number
+          screenshots: Json | null
+          snapshots: Json | null
+          step_details: Json
+          steps: Json
+        }
+        Insert: {
+          actor_email?: string | null
+          actor_id: string
+          created_at?: string
+          drill_date: string
+          duration_minutes: number
+          environment?: string
+          evidence_folder?: string | null
+          failures?: string[] | null
+          id?: string
+          incident_site_id?: string | null
+          incident_type?: string | null
+          notes?: string | null
+          overall_passed: boolean
+          rto_met: boolean
+          rto_target_minutes?: number
+          screenshots?: Json | null
+          snapshots?: Json | null
+          step_details?: Json
+          steps?: Json
+        }
+        Update: {
+          actor_email?: string | null
+          actor_id?: string
+          created_at?: string
+          drill_date?: string
+          duration_minutes?: number
+          environment?: string
+          evidence_folder?: string | null
+          failures?: string[] | null
+          id?: string
+          incident_site_id?: string | null
+          incident_type?: string | null
+          notes?: string | null
+          overall_passed?: boolean
+          rto_met?: boolean
+          rto_target_minutes?: number
+          screenshots?: Json | null
+          snapshots?: Json | null
+          step_details?: Json
+          steps?: Json
+        }
+        Relationships: []
+      }
       expert_requests: {
         Row: {
           created_at: string
