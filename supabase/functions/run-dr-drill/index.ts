@@ -33,6 +33,62 @@ const MAX_CORRUPTION_DAYS = 14;
 const COOLDOWN_HOURS = 24;
 const RTO_TARGET_MINUTES = 240; // 4 hours
 
+// Screenshot capture helper
+// deno-lint-ignore no-explicit-any
+async function captureScreenshot(
+  supabase: any,
+  screenshotUrl: string,
+  storagePath: string,
+  screenshotApiKey?: string
+): Promise<{ success: boolean; path?: string; error?: string }> {
+  if (!screenshotApiKey) {
+    console.log("SCREENSHOTONE_API_KEY not configured, skipping screenshot");
+    return { success: false, error: "Screenshot API key not configured" };
+  }
+
+  try {
+    // Use ScreenshotOne API
+    const apiUrl = new URL("https://api.screenshotone.com/take");
+    apiUrl.searchParams.set("access_key", screenshotApiKey);
+    apiUrl.searchParams.set("url", screenshotUrl);
+    apiUrl.searchParams.set("viewport_width", "1920");
+    apiUrl.searchParams.set("viewport_height", "1080");
+    apiUrl.searchParams.set("format", "png");
+    apiUrl.searchParams.set("full_page", "false");
+    apiUrl.searchParams.set("delay", "2");
+    apiUrl.searchParams.set("block_ads", "true");
+
+    console.log(`Capturing screenshot: ${screenshotUrl}`);
+    
+    const response = await fetch(apiUrl.toString());
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Screenshot API error:", errorText);
+      return { success: false, error: `API returned ${response.status}` };
+    }
+
+    const imageBuffer = await response.arrayBuffer();
+    const imageBlob = new Blob([imageBuffer], { type: "image/png" });
+
+    const { error: uploadError } = await supabase.storage
+      .from("dr-evidence")
+      .upload(storagePath, imageBlob, { upsert: true });
+
+    if (uploadError) {
+      console.error("Screenshot upload error:", uploadError);
+      return { success: false, error: uploadError.message };
+    }
+
+    console.log(`Screenshot saved: ${storagePath}`);
+    return { success: true, path: storagePath };
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : "Unknown error";
+    console.error("Screenshot capture failed:", errorMsg);
+    return { success: false, error: errorMsg };
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -311,9 +367,13 @@ Deno.serve(async (req) => {
     });
 
     const drillDate = new Date().toISOString().split("T")[0];
+    const folderPath = `dr/${drillDate}`;
     const steps: DrillStep[] = [];
     const incidentSiteId = targetSite.id;
     const incidentType = "analytics_corruption";
+    const screenshotApiKey = Deno.env.get("SCREENSHOTONE_API_KEY");
+    const appBaseUrl = Deno.env.get("APP_BASE_URL") || "https://id-preview--0c20acb9-34c5-4f70-97e3-bbe92804c0d9.lovable.app";
+    const screenshotResults: { before?: string; incident?: string; after?: string } = {};
 
     // ============================================
     // STEP 1: Capture Baseline
@@ -323,10 +383,21 @@ Deno.serve(async (req) => {
 
     const beforeSnapshot: SystemSnapshot = await captureSystemSnapshot(supabaseAdmin);
 
+    // Capture "before" screenshot
+    const beforeScreenshot = await captureScreenshot(
+      supabaseAdmin,
+      `${appBaseUrl}/admin/system-status`,
+      `${folderPath}/before.png`,
+      screenshotApiKey
+    );
+    if (beforeScreenshot.success) {
+      screenshotResults.before = beforeScreenshot.path;
+    }
+
     steps.push({
       name: "baseline_recorded",
       passed: true,
-      details: `Sites: ${beforeSnapshot.sites_count}, Demo: ${beforeSnapshot.demo_sites_count}, Analytics 7d: ${beforeSnapshot.analytics_rows_7d}`,
+      details: `Sites: ${beforeSnapshot.sites_count}, Demo: ${beforeSnapshot.demo_sites_count}, Analytics 7d: ${beforeSnapshot.analytics_rows_7d}${beforeScreenshot.success ? ' (screenshot captured)' : ''}`,
       duration_ms: Date.now() - step1Start,
     });
 
@@ -377,6 +448,17 @@ Deno.serve(async (req) => {
 
     // Capture incident state
     const incidentSnapshot: SystemSnapshot = await captureSystemSnapshot(supabaseAdmin);
+
+    // Capture "incident" screenshot
+    const incidentScreenshot = await captureScreenshot(
+      supabaseAdmin,
+      `${appBaseUrl}/admin/system-status`,
+      `${folderPath}/incident.png`,
+      screenshotApiKey
+    );
+    if (incidentScreenshot.success) {
+      screenshotResults.incident = incidentScreenshot.path;
+    }
 
     // ============================================
     // STEP 3: Restore (recompute analytics)
@@ -476,12 +558,23 @@ Deno.serve(async (req) => {
 
     const afterSnapshot: SystemSnapshot = await captureSystemSnapshot(supabaseAdmin);
 
+    // Capture "after" screenshot
+    const afterScreenshot = await captureScreenshot(
+      supabaseAdmin,
+      `${appBaseUrl}/admin/system-status`,
+      `${folderPath}/after.png`,
+      screenshotApiKey
+    );
+    if (afterScreenshot.success) {
+      screenshotResults.after = afterScreenshot.path;
+    }
+
     const systemClean = afterSnapshot.critical_events_24h === 0;
     steps.push({
       name: "system_status_clean",
       passed: systemClean,
       details: systemClean
-        ? "No critical events in last 24h"
+        ? `No critical events in last 24h${afterScreenshot.success ? ' (screenshot captured)' : ''}`
         : `${afterSnapshot.critical_events_24h} critical event(s) detected`,
       duration_ms: Date.now() - step5Start,
     });
@@ -527,14 +620,14 @@ Deno.serve(async (req) => {
         incident: incidentSnapshot,
         after: afterSnapshot,
       },
+      screenshots: screenshotResults,
       failures: steps.filter((s) => !s.passed).map((s) => s.name),
       notes: allPassed
         ? "Drill completed successfully. All checks passed."
         : `Drill completed with ${steps.filter((s) => !s.passed).length} failure(s).`,
     };
 
-    // Upload results.json to storage
-    const folderPath = `dr/${drillDate}`;
+    // Upload results.json to storage (folderPath already declared earlier)
     const resultsJson = JSON.stringify(results, null, 2);
     const resultsBlob = new Blob([resultsJson], { type: "application/json" });
 
@@ -567,6 +660,7 @@ Deno.serve(async (req) => {
     const artifactsPaths = {
       results: `${folderPath}/results.json`,
       system_state: `${folderPath}/system-state.json`,
+      ...screenshotResults,
     };
 
     // ============================================

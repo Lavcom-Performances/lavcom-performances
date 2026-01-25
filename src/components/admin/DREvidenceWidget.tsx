@@ -651,7 +651,7 @@ export function DREvidenceWidget() {
 
         {/* Drag and Drop Upload Zone */}
         <div
-          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+          className={`border-2 border-dashed rounded-lg p-4 transition-colors ${
             isDragOver
               ? 'border-primary bg-primary/5'
               : 'border-muted-foreground/25 hover:border-muted-foreground/50'
@@ -669,24 +669,48 @@ export function DREvidenceWidget() {
             onChange={handleFileInput}
           />
           
-          <Upload className={`h-8 w-8 mx-auto mb-2 ${isDragOver ? 'text-primary' : 'text-muted-foreground'}`} />
-          
-          <p className="text-sm font-medium">
-            Glissez-déposez vos fichiers ici
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            ou{' '}
-            <button
-              type="button"
-              className="text-primary hover:underline"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              parcourir
-            </button>
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            PNG, JPEG, JSON • Max 10MB • Dossier: <code className="bg-muted px-1 rounded">{selectedFolder || customDate}</code>
-          </p>
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 p-3 bg-muted rounded-lg">
+              <Upload className={`h-6 w-6 ${isDragOver ? 'text-primary' : 'text-muted-foreground'}`} />
+            </div>
+            
+            <div className="flex-1 text-left">
+              <p className="text-sm font-medium">
+                Glissez-déposez vos fichiers ici
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                ou{' '}
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  parcourir
+                </button>
+                {' '}• Dossier: <code className="bg-muted px-1 rounded">{selectedFolder || customDate}</code>
+              </p>
+              
+              {/* Expected file names guide */}
+              <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span><code>before.png</code> - État initial</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-orange-500" />
+                  <span><code>incident.png</code> - Après incident</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span><code>after.png</code> - Après restauration</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-purple-500" />
+                  <span><code>results.json</code> - Résultats du drill</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Upload Progress */}
