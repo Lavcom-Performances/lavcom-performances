@@ -146,7 +146,7 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
                 Ville <span className="text-destructive">*</span>
               </Label>
               <CityAutocomplete
-                value={project.location || ""}
+                value={project.city || ""}
                 onSelect={handleCitySelect}
                 placeholder="Rechercher une ville..."
                 country={project.country || "FR"}
@@ -160,6 +160,22 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
               )}
             </div>
 
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Code postal
+              </Label>
+              <Input
+                value={project.postal_code || ""}
+                placeholder="Ex: 75001"
+                disabled
+                className="bg-muted"
+              />
+              <p className="text-xs text-muted-foreground">Rempli automatiquement</p>
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <Label className={cn("flex items-center gap-2", showErrors && errors.zone_type && "text-destructive")}>
                 <Map className="h-4 w-4" />
@@ -187,6 +203,20 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
                 </p>
               )}
             </div>
+
+            {project.department && (
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Map className="h-4 w-4" />
+                  Département
+                </Label>
+                <Input
+                  value={project.department}
+                  disabled
+                  className="bg-muted"
+                />
+              </div>
+            )}
           </div>
 
           {/* Surface */}
