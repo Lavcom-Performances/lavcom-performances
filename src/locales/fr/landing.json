@@ -3,7 +3,8 @@
     "badge": "Le tableau de bord performance des laveries automatiques",
     "optimizeLaundries": "Je veux optimiser mes laveries",
     "openLaundry": "Je veux ouvrir une laverie",
-    "viewDemo": "Voir une démo interactive • 2 min",
+    "viewDemo": "Explorer une démo du tableau de bord",
+    "viewDemoSubtext": "Aperçu des écrans et des indicateurs (sans inscription)",
     "slides": {
       "slide1": {
         "title": "Gagnez plus avec vos laveries, sans changer tout votre quotidien",
@@ -56,7 +57,7 @@
     "noGuessing": "Plus besoin de deviner. Vous simulez, vous voyez, vous décidez.",
     "testSimulator": "Tester le simulateur gratuit",
     "seePacks": "Voir les packs",
-    "simulator": "Simulateur",
+    "simulator": "Simulateur gratuit",
     "profitability": "de rentabilité",
     "profitabilityThreshold": "Seuil rentabilité",
     "unlimitedScenarios": "Scénarios illimités",
@@ -280,7 +281,7 @@
     "description": "La plateforme qui vous aide à tirer le meilleur de vos laveries automatiques.",
     "quickLinks": "Liens rapides",
     "pricingOperators": "Tarifs exploitants",
-    "simulator": "Simulateur",
+    "simulator": "Simulateur gratuit",
     "simulatorPacks": "Packs simulateur",
     "contactTitle": "Contact",
     "address": "88 avenue de Grammont, 37000 Tours",

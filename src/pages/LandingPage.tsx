@@ -387,30 +387,23 @@ const LandingPage = () => {
           </div>
           
           {/* Bouton démo */}
-          <div className="mt-4 animate-fade-in">
+          <div className="mt-4 flex flex-col items-center gap-1 animate-fade-in">
             <Link to="/demo">
               <Button variant="outline" size="sm" className="btn-bounce border-lavcom-green/50 text-lavcom-green hover:bg-lavcom-green/10">
                 <Eye className="mr-2 h-4 w-4" />
                 {t("landing:hero.viewDemo")}
               </Button>
             </Link>
+            <p className="text-xs text-muted-foreground">
+              {t("landing:hero.viewDemoSubtext")}
+            </p>
           </div>
           
-          {/* Ligne de réassurance essai gratuit */}
-          <div className="mt-4 md:mt-6 flex flex-wrap items-center justify-center gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground animate-fade-in">
-            <span className="flex items-center gap-1.5">
+          {/* Ligne de réassurance essai gratuit - en une seule phrase */}
+          <div className="mt-4 md:mt-6 flex items-center justify-center animate-fade-in">
+            <span className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
               <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-lavcom-green" />
-              {t("common:freeTrial")}
-            </span>
-            <span className="hidden sm:inline text-border">•</span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-lavcom-green" />
-              {t("common:noCommitment")}
-            </span>
-            <span className="hidden sm:inline text-border">•</span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-lavcom-green" />
-              {t("common:noCreditCard")}
+              {t("common:freeTrialOneLine")}
             </span>
           </div>
         </div>
@@ -707,8 +700,7 @@ const LandingPage = () => {
               
               <a 
                 href="/exemple-rapport-laverie-demo.pdf" 
-                target="_blank" 
-                rel="noopener noreferrer"
+                download="exemple-rapport-laverie-lavcom.pdf"
                 className="inline-block w-full sm:w-auto"
               >
                 <Button size="default" className="btn-bounce text-sm md:text-base w-full sm:w-auto">
@@ -1395,7 +1387,7 @@ const LandingPage = () => {
             {/* Logo et description - takes more space */}
             <div className="md:col-span-5 lg:col-span-4">
               <Link to="/" className="inline-block mb-5">
-                <img src={lavcomLogo} alt="Lavcom Performances" className="h-12 md:h-14 w-auto" />
+                <img src={lavcomLogo} alt="Lavcom Performances" className="h-8 w-auto" />
               </Link>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
                 {t("landing:footer.description")}
@@ -1439,7 +1431,7 @@ const LandingPage = () => {
             
             {/* Contact */}
             <div className="md:col-span-3 lg:col-span-3">
-              <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wide">{t("landing:footer.contactTitle")}</h4>
+              <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wide">Contact</h4>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2.5">
                   <Mail className="h-4 w-4 shrink-0" />

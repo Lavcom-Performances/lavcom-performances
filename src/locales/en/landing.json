@@ -3,7 +3,8 @@
     "badge": "The performance dashboard for laundromats",
     "optimizeLaundries": "I want to optimize my laundries",
     "openLaundry": "I want to open a laundry",
-    "viewDemo": "See an interactive demo • 2 min",
+    "viewDemo": "Explore a dashboard demo",
+    "viewDemoSubtext": "Preview of screens and indicators (no signup required)",
     "slides": {
       "slide1": {
         "title": "Earn more with your laundromats, without changing everything",

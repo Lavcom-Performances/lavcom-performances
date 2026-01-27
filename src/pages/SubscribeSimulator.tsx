@@ -37,15 +37,15 @@ export default function SubscribeSimulator() {
   const getPackIcon = (packId: string) => {
     switch (packId) {
       case 'essential':
-        return <Calculator className="h-6 w-6 text-amber-600" />;
+        return <Calculator className="h-6 w-6 text-primary" />;
       case 'project':
         return <FolderOpen className="h-6 w-6 text-primary" />;
       case 'comparator':
-        return <Layers className="h-6 w-6 text-amber-600" />;
+        return <Layers className="h-6 w-6 text-primary" />;
       case 'premium':
         return <Video className="h-6 w-6 text-primary" />;
       default:
-        return <Calculator className="h-6 w-6 text-amber-600" />;
+        return <Calculator className="h-6 w-6 text-primary" />;
     }
   };
 
@@ -117,19 +117,13 @@ export default function SubscribeSimulator() {
               className={`relative flex flex-col transition-all duration-300 hover:shadow-xl ${
                 pack.isRecommended 
                   ? 'border-primary shadow-lg ring-2 ring-primary/20' 
-                  : pack.hasExpertCalls
-                    ? 'border-amber-500/50 hover:border-amber-500'
-                    : 'border-border hover:border-amber-600/50'
+                  : 'border-border hover:border-primary/50'
               }`}
             >
-              {/* Badge */}
+              {/* Badge - Only for recommended and premium packs */}
               {(pack.isRecommended || pack.hasExpertCalls) && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className={`shadow-md gap-1 ${
-                    pack.isRecommended 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-amber-500 text-white'
-                  }`}>
+                  <Badge className="bg-primary text-primary-foreground shadow-md gap-1">
                     <Sparkles className="h-3 w-3" />
                     {t(`app:subscribeSimulator.packs.${pack.id}.badge`)}
                   </Badge>
@@ -137,14 +131,17 @@ export default function SubscribeSimulator() {
               )}
               
               <CardHeader className="text-center pb-2 pt-6">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 ${
-                  pack.isRecommended ? 'bg-primary/20' : 'bg-amber-500/20'
-                }`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 bg-primary/20`}>
                   {getPackIcon(pack.id)}
                 </div>
                 <CardTitle className="font-display text-xl">
                   {t(`app:subscribeSimulator.packs.${pack.id}.title`)}
                 </CardTitle>
+                {pack.isRecommended && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t(`app:subscribeSimulator.packs.${pack.id}.badgeSubtext`)}
+                  </p>
+                )}
               </CardHeader>
               
               <CardContent className="flex-1 flex flex-col">
@@ -160,32 +157,31 @@ export default function SubscribeSimulator() {
                 <ul className="space-y-2 flex-1 text-sm">
                   {getPackFeatures(pack).map((feature, index) => (
                     <li key={index} className="flex items-start gap-2">
-                      <Check className={`h-4 w-4 shrink-0 mt-0.5 ${
-                        pack.isRecommended ? 'text-primary' : 'text-amber-600'
-                      }`} />
+                      <Check className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
                       <span className="text-foreground">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 {/* CTA */}
-                <Button 
-                  className={`w-full mt-4 ${
-                    pack.isRecommended 
-                      ? '' 
-                      : 'bg-amber-600 hover:bg-amber-700 text-white'
-                  }`}
-                  variant={pack.isRecommended ? 'default' : undefined}
-                  onClick={() => handleSubscribe(pack.id)}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : pack.hasExpertCalls ? (
-                    <Sparkles className="mr-2 h-4 w-4" />
-                  ) : null}
-                  {t(`app:subscribeSimulator.packs.${pack.id}.cta`)}
-                </Button>
+                <div className="mt-4 space-y-2">
+                  <Button 
+                    className="w-full"
+                    variant={pack.isRecommended ? 'default' : 'outline'}
+                    onClick={() => handleSubscribe(pack.id)}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : pack.hasExpertCalls ? (
+                      <Sparkles className="mr-2 h-4 w-4" />
+                    ) : null}
+                    {t(`app:subscribeSimulator.packs.${pack.id}.cta`)}
+                  </Button>
+                  <p className="text-[10px] text-muted-foreground text-center">
+                    {t('app:subscribeSimulator.stripeRedirectInfo')}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -218,8 +214,8 @@ export default function SubscribeSimulator() {
               {/* Extension 30 jours */}
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-500/20 rounded-lg">
-                    <Clock className="h-5 w-5 text-amber-600" />
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <Clock className="h-5 w-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold">Extension 30 jours</h3>
@@ -270,26 +266,26 @@ export default function SubscribeSimulator() {
             <CardContent>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="text-center">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
-                    <Target className="h-5 w-5 text-amber-600" />
+                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center mx-auto mb-2">
+                    <Target className="h-5 w-5 text-primary" />
                   </div>
                   <p className="text-sm font-medium">{t('app:subscribeSimulator.features.profitability')}</p>
                 </div>
                 <div className="text-center">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
-                    <Layers className="h-5 w-5 text-amber-600" />
+                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center mx-auto mb-2">
+                    <Layers className="h-5 w-5 text-primary" />
                   </div>
                   <p className="text-sm font-medium">{t('app:subscribeSimulator.features.scenarios')}</p>
                 </div>
                 <div className="text-center">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
-                    <FileText className="h-5 w-5 text-amber-600" />
+                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center mx-auto mb-2">
+                    <FileText className="h-5 w-5 text-primary" />
                   </div>
                   <p className="text-sm font-medium">{t('app:subscribeSimulator.features.reports')}</p>
                 </div>
                 <div className="text-center">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mx-auto mb-2">
-                    <Clock className="h-5 w-5 text-amber-600" />
+                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center mx-auto mb-2">
+                    <Clock className="h-5 w-5 text-primary" />
                   </div>
                   <p className="text-sm font-medium">{t('app:subscribeSimulator.features.unlimitedAccess')}</p>
                 </div>
