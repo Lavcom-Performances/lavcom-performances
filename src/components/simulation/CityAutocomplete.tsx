@@ -25,11 +25,15 @@ export function CityAutocomplete({
   const { t } = useTranslation(['app']);
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
-  const { results, isLoading } = useCitySearch(inputValue, 2, country);
+  const [hasSelected, setHasSelected] = useState(false);
+  const { results, isLoading } = useCitySearch(hasSelected ? "" : inputValue, 2, country);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setInputValue(value);
+    if (value) {
+      setHasSelected(true);
+    }
   }, [value]);
 
   useEffect(() => {
@@ -44,9 +48,17 @@ export function CityAutocomplete({
   }, []);
 
   const handleSelect = (result: CitySearchResult) => {
-    setInputValue(result.label);
+    setInputValue(result.city);
+    setHasSelected(true);
     onSelect(result);
     setIsOpen(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    setHasSelected(false);
+    setIsOpen(true);
   };
 
   return (
@@ -55,11 +67,12 @@ export function CityAutocomplete({
         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            setIsOpen(true);
+          onChange={handleInputChange}
+          onFocus={() => {
+            if (!hasSelected) {
+              setIsOpen(true);
+            }
           }}
-          onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
           className={cn("pl-10", hasError && "border-destructive focus-visible:ring-destructive")}
         />
@@ -84,7 +97,7 @@ export function CityAutocomplete({
         </div>
       )}
 
-      {isOpen && inputValue.length >= 2 && !isLoading && results.length === 0 && (
+      {isOpen && inputValue.length >= 2 && !isLoading && results.length === 0 && !hasSelected && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg p-3 text-sm text-muted-foreground">
           {t('app:newLaundry.noCityFound', 'Aucune ville trouvée')}
         </div>
