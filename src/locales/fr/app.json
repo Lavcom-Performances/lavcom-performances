@@ -536,7 +536,8 @@
     "badge": "Simulateur de rentabilité",
     "title": "Choisissez votre formule",
     "subtitle": "Accédez à notre outil de simulation pour évaluer la rentabilité de votre projet de laverie.",
-    "backToSimulator": "Retour au simulateur",
+    "backToSimulator": "Retour au simulateur gratuit",
+    "stripeRedirectInfo": "Paiement via Stripe — retour automatique après achat.",
     "oneTimePayment": "Paiement unique — aucun renouvellement automatique",
     "accessDays": "Accès {{days}} jours",
     "projectsIncluded": "{{count}} projet enregistré",
@@ -553,6 +554,7 @@
       },
       "project": {
         "badge": "Recommandé",
+        "badgeSubtext": "Le plus choisi pour démarrer",
         "title": "Pack Projet",
         "cta": "Choisir ce pack"
       },
@@ -610,7 +612,7 @@
       "exploitantLogin": "Connexion Exploitant",
       "simulatorLogin": "Connexion Simulateur"
     },
-    "free": "Gratuit",
+    "free": "Simulateur gratuit",
     "title": "Estimez le chiffre d'affaires de votre future laverie",
     "subtitle": "Une première estimation gratuite en quelques clics pour valider votre projet.",
     "form": {
@@ -1259,8 +1261,8 @@
       "importMultipleCsv": "Importer plusieurs CSV",
       "importMultipleCsvDescription": "Multi-sites ou plusieurs jours",
       "orDiscover": "ou découvrir",
-      "viewInteractiveDemo": "Voir une démo interactive",
-      "viewInteractiveDemoDescription": "Explorez avec des données exemple • 2 min",
+      "viewInteractiveDemo": "Explorer une démo du tableau de bord",
+      "viewInteractiveDemoDescription": "Aperçu des écrans et des indicateurs (sans inscription)",
       "creatingDemoData": "Création des données d'exemple..."
     },
     "page": {

@@ -16,7 +16,7 @@ export function Footer() {
               <img 
                 src={lavcomLogo} 
                 alt="Lavcom Performances" 
-                className="h-12 md:h-14 w-auto"
+                className="h-8 w-auto"
               />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
@@ -61,7 +61,7 @@ export function Footer() {
 
           {/* Contact */}
           <div className="md:col-span-3 lg:col-span-3">
-            <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wide">{t('footer.contact')}</h4>
+            <h4 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wide">Contact</h4>
             <ul className="space-y-3">
               <li className="flex items-center gap-2.5 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 shrink-0" />

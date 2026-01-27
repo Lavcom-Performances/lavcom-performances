@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -215,6 +215,7 @@ export default function SimulateurPage() {
   const navigate = useNavigate();
   const [showResults, setShowResults] = useState(false);
   const [customPricesOpen, setCustomPricesOpen] = useState(false);
+  const resultsRef = React.useRef<HTMLDivElement>(null);
   
   const [simulation, setSimulation] = useState<SimulationState>({
     surface: 50,
@@ -279,6 +280,10 @@ export default function SimulateurPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowResults(true);
+    // Auto-scroll to results after a short delay to ensure render
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleUnlock = () => {
@@ -643,8 +648,12 @@ export default function SimulateurPage() {
             <div className="space-y-6">
               {/* Résultats */}
               {showResults && (
-                <Card className="border-green-500/30 bg-green-500/5">
+                <Card ref={resultsRef} className="border-green-500/30 bg-green-500/5">
                   <CardHeader>
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold text-white mb-2 w-fit" style={{ backgroundColor: '#A5C800' }}>
+                      <Calculator className="h-3 w-3" />
+                      {t('app:simulateur.free')}
+                    </div>
                     <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-400">
                       <TrendingUp className="h-5 w-5" />
                       {t('app:simulateur.results.title')}
