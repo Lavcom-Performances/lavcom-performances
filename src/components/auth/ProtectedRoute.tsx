@@ -2,6 +2,7 @@ import { ReactNode, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
+import { usePlatformRole } from '@/hooks/usePlatformRole';
 import { TrialExpiredPaywall } from '@/components/trial/TrialExpiredPaywall';
 import { EmailVerificationRequired } from '@/components/auth/EmailVerificationRequired';
 import { Loader2 } from 'lucide-react';
@@ -34,6 +35,7 @@ export function ProtectedRoute({
   const location = useLocation();
   const { user, isAuthenticated, loading: authLoading, signOut, isEmailVerified } = useAuth();
   const { isSubscriptionActive, isExpired, loading: subLoading } = useSubscription();
+  const { isPlatformSuperAdmin, isLoading: roleLoading } = usePlatformRole();
 
   useEffect(() => {
     // Guard 1: Not authenticated -> redirect to login
@@ -42,8 +44,8 @@ export function ProtectedRoute({
     }
   }, [authLoading, isAuthenticated, navigate]);
 
-  // Show loading while checking auth
-  if (authLoading || subLoading) {
+  // Show loading while checking auth and role
+  if (authLoading || subLoading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -57,6 +59,11 @@ export function ProtectedRoute({
   // Not authenticated - will redirect via useEffect
   if (!isAuthenticated) {
     return null;
+  }
+
+  // Platform super_admin bypasses ALL restrictions (email verification, subscription)
+  if (isPlatformSuperAdmin) {
+    return <>{children}</>;
   }
 
   // Email not verified - show verification required screen
