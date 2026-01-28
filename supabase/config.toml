@@ -188,3 +188,6 @@ verify_jwt = false
 
 [functions.log-performance]
 verify_jwt = false
+
+[functions.evaluate-platform-readiness]
+verify_jwt = false

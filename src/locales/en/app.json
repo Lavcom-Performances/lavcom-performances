@@ -1787,5 +1787,26 @@
     "last90Days": "Last 90 days",
     "thisMonth": "This month",
     "lastMonth": "Last month"
+  },
+  "platformReadiness": {
+    "title": "Platform Readiness",
+    "description": "Pre-release verification checklist",
+    "ready": "READY",
+    "notReady": "NOT READY",
+    "reevaluate": "Re-evaluate",
+    "evaluatedAt": "Evaluated {{time}}",
+    "cached": "Cached",
+    "passed": "Passed",
+    "failed": "Failed",
+    "warnings": "Warnings",
+    "bannerMessage": "Platform not ready for release — {{count}} blocker(s) detected",
+    "reviewBlockers": "Review blockers",
+    "categories": {
+      "secrets": "Secrets",
+      "stripe": "Stripe",
+      "security": "Security",
+      "data": "Data",
+      "ops": "Ops"
+    }
   }
 }

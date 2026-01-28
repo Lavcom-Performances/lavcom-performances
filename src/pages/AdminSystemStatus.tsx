@@ -21,6 +21,7 @@ import { DiagnosticsPanel } from '@/components/admin/DiagnosticsPanel';
 import { FeatureFlagsPanel } from '@/components/admin/FeatureFlagsPanel';
 import { PermissionTestsWidget } from '@/components/admin/PermissionTestsWidget';
 import { PerformanceSummaryWidget } from '@/components/admin/PerformanceSummaryWidget';
+import { PlatformReadinessWidget } from '@/components/admin/PlatformReadinessWidget';
 
 interface SystemEvent {
   id: number;
@@ -280,6 +281,9 @@ export default function AdminSystemStatus() {
             Actualiser
           </Button>
         </div>
+
+        {/* Platform Readiness - TAEX-228 */}
+        <PlatformReadinessWidget />
 
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-4">

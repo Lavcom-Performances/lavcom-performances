@@ -15,6 +15,7 @@ import { CookieBanner } from "@/components/cookies/CookieBanner";
 import { LoginLoggerProvider } from "@/components/auth/LoginLoggerProvider";
 import { ImpersonationProvider } from "@/contexts/ImpersonationContext";
 import { ImpersonationBanner } from "@/components/admin/ImpersonationBanner";
+import { PlatformReadinessBanner } from "@/components/admin/PlatformReadinessBanner";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -122,6 +123,7 @@ const App = () => (
       <BrowserRouter>
         <LoginLoggerProvider>
         <ImpersonationProvider>
+        <PlatformReadinessBanner />
         <ImpersonationBanner />
         <RouteTracker />
         <PathTracker />
