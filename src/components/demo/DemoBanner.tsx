@@ -1,54 +1,105 @@
-import { AlertTriangle, Trash2, Loader2, Sparkles } from "lucide-react";
+import { Sparkles, RefreshCw, LogOut, Loader2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useDemoMode } from "@/hooks/useDemoMode";
+import { useDemoContext } from "@/hooks/useDemoContext";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 interface DemoBannerProps {
   className?: string;
 }
 
+function formatTimeRemaining(seconds: number | null): string {
+  if (seconds === null || seconds <= 0) return "";
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (mins > 0) {
+    return `${mins}m ${secs.toString().padStart(2, '0')}s`;
+  }
+  return `${secs}s`;
+}
+
 export function DemoBanner({ className }: DemoBannerProps) {
-  const { deleteDemoSite, isDeletingDemo } = useDemoMode();
+  const { 
+    isResetting, 
+    resetDemo, 
+    exitDemo, 
+    demoSessionRemainingSeconds 
+  } = useDemoContext();
   const { t } = useTranslation(['app']);
+
+  const timeRemaining = formatTimeRemaining(demoSessionRemainingSeconds);
+  const isTimeWarning = demoSessionRemainingSeconds !== null && demoSessionRemainingSeconds < 300; // < 5 min
 
   return (
     <div
-      className={`w-full bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-orange-500/15 border-b border-amber-500/30 px-4 py-2.5 flex items-center justify-between gap-4 ${className}`}
+      className={cn(
+        "w-full bg-gradient-to-r from-primary/15 via-primary/10 to-primary/15 border-b border-primary/30 px-4 py-2.5 flex items-center justify-between gap-4",
+        className
+      )}
     >
-      <div className="flex items-center gap-3 text-amber-700 dark:text-amber-400">
-        <div className="flex items-center justify-center w-7 h-7 rounded-full bg-amber-500/20">
+      <div className="flex items-center gap-3 text-primary">
+        <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/20">
           <Sparkles className="h-4 w-4" />
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
           <span className="text-sm font-semibold">
-            {t('app:demo.banner.title')}
+            {t('app:demo.banner.title', 'Mode démonstration')}
           </span>
-          <span className="hidden sm:inline text-amber-600/60 dark:text-amber-400/60">•</span>
-          <span className="text-xs text-amber-600/80 dark:text-amber-400/80">
-            {t('app:demo.banner.description')}
+          <span className="hidden sm:inline text-primary/60">•</span>
+          <span className="text-xs text-primary/80">
+            {t('app:demo.banner.autoReset', 'Les données se réinitialisent automatiquement')}
           </span>
+          
+          {/* Session timer */}
+          {timeRemaining && (
+            <>
+              <span className="hidden sm:inline text-primary/60">•</span>
+              <span className={cn(
+                "text-xs flex items-center gap-1",
+                isTimeWarning ? "text-destructive font-medium animate-pulse" : "text-primary/70"
+              )}>
+                <Clock className="h-3 w-3" />
+                {timeRemaining}
+              </span>
+            </>
+          )}
         </div>
       </div>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={deleteDemoSite}
-        disabled={isDeletingDemo}
-        className="text-amber-700 hover:text-amber-800 hover:bg-amber-500/20 dark:text-amber-400 dark:hover:text-amber-300 shrink-0"
-      >
-        {isDeletingDemo ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-            <span className="hidden sm:inline">{t('app:demo.banner.deleting')}</span>
-          </>
-        ) : (
-          <>
-            <Trash2 className="h-4 w-4 sm:mr-1.5" />
-            <span className="hidden sm:inline">{t('app:demo.banner.delete')}</span>
-          </>
-        )}
-      </Button>
+      <div className="flex items-center gap-2">
+        {/* Reset button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={resetDemo}
+          disabled={isResetting}
+          className="text-primary hover:text-primary hover:bg-primary/20 shrink-0"
+        >
+          {isResetting ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+              <span className="hidden sm:inline">{t('app:demo.banner.resetting', 'Réinitialisation...')}</span>
+            </>
+          ) : (
+            <>
+              <RefreshCw className="h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">{t('app:demo.banner.reset', 'Réinitialiser')}</span>
+            </>
+          )}
+        </Button>
+
+        {/* Exit demo button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={exitDemo}
+          disabled={isResetting}
+          className="text-foreground border-primary/30 hover:bg-primary/10 shrink-0"
+        >
+          <LogOut className="h-4 w-4 sm:mr-1.5" />
+          <span className="hidden sm:inline">{t('app:demo.banner.exit', 'Quitter la démo')}</span>
+        </Button>
+      </div>
     </div>
   );
 }

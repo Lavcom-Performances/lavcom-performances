@@ -1218,8 +1218,20 @@
     "banner": {
       "title": "Demo mode",
       "description": "You are exploring sample data to discover the platform",
-      "delete": "Exit demo",
-      "deleting": "Deleting..."
+      "autoReset": "Data resets automatically",
+      "delete": "Delete demo",
+      "deleting": "Deleting...",
+      "reset": "Reset",
+      "resetting": "Resetting...",
+      "exit": "Exit demo"
+    },
+    "featureDisabled": {
+      "title": "Available after signup",
+      "description": "This feature is not available in demo mode."
+    },
+    "sessionExpired": {
+      "title": "Demo session expired",
+      "description": "Your demo session has expired after 30 minutes of inactivity."
     },
     "tutorial": {
       "restart": "Replay tutorial",

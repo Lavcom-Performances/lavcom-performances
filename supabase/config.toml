@@ -21,6 +21,9 @@ verify_jwt = false
 [functions.create-demo]
 verify_jwt = true
 
+[functions.reset-demo]
+verify_jwt = true
+
 [functions.import-csv-check]
 verify_jwt = true
 

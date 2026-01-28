@@ -16,6 +16,7 @@ export const RATE_LIMITS = {
   // Edge Functions
   'edge/fetch-from-siret': { maxRequests: 10, windowSeconds: 300 },  // 10 per 5 min
   'edge/create-demo': { maxRequests: 1, windowSeconds: 86400 },      // 1 per 24h
+  'edge/reset-demo': { maxRequests: 3, windowSeconds: 3600 },        // 3 per hour
   'edge/compute-analytics-cron': { maxRequests: 2, windowSeconds: 300 }, // 2 per 5 min
   
   // AI Proxy - TAEX-210: Burst limits for anti-abuse

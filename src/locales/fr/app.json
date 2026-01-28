@@ -1218,8 +1218,20 @@
     "banner": {
       "title": "Mode démonstration",
       "description": "Vous explorez des données fictives pour découvrir la plateforme",
-      "delete": "Quitter la démo",
-      "deleting": "Suppression..."
+      "autoReset": "Les données se réinitialisent automatiquement",
+      "delete": "Supprimer la démo",
+      "deleting": "Suppression...",
+      "reset": "Réinitialiser",
+      "resetting": "Réinitialisation...",
+      "exit": "Quitter la démo"
+    },
+    "featureDisabled": {
+      "title": "Disponible après inscription",
+      "description": "Cette fonctionnalité n'est pas disponible en mode démo."
+    },
+    "sessionExpired": {
+      "title": "Session démo expirée",
+      "description": "Votre session de démonstration a expiré après 30 minutes d'inactivité."
     },
     "tutorial": {
       "restart": "Revoir le tutoriel",
