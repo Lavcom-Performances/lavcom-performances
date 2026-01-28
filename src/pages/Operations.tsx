@@ -49,6 +49,8 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
 import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
 import { DataQualityBlock } from "@/components/dashboard/DataQualityBlock";
+import { DateRangeGuardrail } from "@/components/ui/DateRangeGuardrail";
+import { usePlatformRole } from "@/hooks/usePlatformRole";
 import { isCountedInRevenue, isRechargement, isCBPayment, isESPPayment, filterRevenueOperations } from "@/lib/operationFilters";
 
 const paymentModeBadge = (mode: string | null) => {
@@ -85,7 +87,8 @@ export default function Operations() {
   const queryClient = useQueryClient();
   const { sites, getDefaultSite } = useSites();
   const { canImport, canExport, permissions } = useCurrentUserPermissions();
-  
+  const { isPlatformAdmin } = usePlatformRole();
+  const [forceLoadLargeRange, setForceLoadLargeRange] = useState(false);
   // Get site from URL or default
   const urlSiteId = searchParams.get('site');
   const urlDateStart = searchParams.get('date_start');
@@ -784,6 +787,17 @@ export default function Operations() {
 
       {/* Data Quality Block */}
       <DataQualityBlock dateRange={dateRange} className="mb-4" />
+
+      {/* Performance Guardrail for large date ranges */}
+      {!forceLoadLargeRange && (
+        <DateRangeGuardrail
+          dateRange={dateRange}
+          onDateRangeChange={handleDateChange}
+          onForceLoad={() => setForceLoadLargeRange(true)}
+          isPlatformAdmin={isPlatformAdmin}
+          className="mb-4"
+        />
+      )}
 
       {/* Filters */}
       <FiltersCard

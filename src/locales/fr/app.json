@@ -1773,5 +1773,19 @@
       "below": "En dessous"
     },
     "disclaimer": "Données 100% anonymisées. Aucune laverie individuelle n'est identifiable."
+  },
+  "performance": {
+    "largeRangeWarning": "Période étendue détectée",
+    "largeRangeDesc": "Vous consultez {{days}} jours de données. Pour de meilleures performances, nous recommandons de réduire à {{threshold}} jours ou moins.",
+    "narrowRange": "Réduire la période",
+    "forceLoad": "Charger quand même (Admin)",
+    "forceLoadTitle": "Charger une large période ?",
+    "forceLoadDesc": "Vous êtes sur le point de charger {{days}} jours de données. Cela peut ralentir significativement l'application et augmenter la charge serveur."
+  },
+  "dateRange": {
+    "last30Days": "Derniers 30 jours",
+    "last90Days": "Derniers 90 jours",
+    "thisMonth": "Ce mois-ci",
+    "lastMonth": "Mois dernier"
   }
 }

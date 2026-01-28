@@ -20,6 +20,7 @@ import { SecretsHealthPanel } from '@/components/admin/SecretsHealthPanel';
 import { DiagnosticsPanel } from '@/components/admin/DiagnosticsPanel';
 import { FeatureFlagsPanel } from '@/components/admin/FeatureFlagsPanel';
 import { PermissionTestsWidget } from '@/components/admin/PermissionTestsWidget';
+import { PerformanceSummaryWidget } from '@/components/admin/PerformanceSummaryWidget';
 
 interface SystemEvent {
   id: number;
@@ -78,6 +79,8 @@ const sourceLabels: Record<string, string> = {
   'secrets-health': 'Secrets Health',
   'feature_flag': 'Feature Flags',
   'ai_proxy': 'AI Proxy',
+  'perf': 'Performance',
+  'demo_mode': 'Demo Mode',
 };
 
 const testLabels: Record<string, string> = {
@@ -386,6 +389,9 @@ export default function AdminSystemStatus() {
 
         {/* Feature Flags / Safe Mode Section - TAEX-223 */}
         <FeatureFlagsPanel />
+
+        {/* Performance Monitoring - TAEX-227 */}
+        <PerformanceSummaryWidget />
 
         {/* Recompute Analytics Section */}
         <RecomputeAnalyticsWidget />

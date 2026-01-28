@@ -1773,5 +1773,19 @@
       "below": "Below"
     },
     "disclaimer": "100% anonymized data. No individual laundromat is identifiable."
+  },
+  "performance": {
+    "largeRangeWarning": "Extended period detected",
+    "largeRangeDesc": "You are viewing {{days}} days of data. For better performance, we recommend reducing to {{threshold}} days or less.",
+    "narrowRange": "Narrow the period",
+    "forceLoad": "Force load (Admin)",
+    "forceLoadTitle": "Load a large period?",
+    "forceLoadDesc": "You are about to load {{days}} days of data. This may significantly slow down the application and increase server load."
+  },
+  "dateRange": {
+    "last30Days": "Last 30 days",
+    "last90Days": "Last 90 days",
+    "thisMonth": "This month",
+    "lastMonth": "Last month"
   }
 }

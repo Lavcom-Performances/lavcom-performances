@@ -185,3 +185,6 @@ verify_jwt = true
 
 [functions.permission-tests-cron]
 verify_jwt = false
+
+[functions.log-performance]
+verify_jwt = false
