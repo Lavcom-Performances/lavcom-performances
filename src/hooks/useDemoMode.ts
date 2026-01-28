@@ -39,6 +39,22 @@ export function useDemoMode() {
         throw new Error("No site ID returned");
       }
 
+      // Log demo entry event
+      await supabase.rpc("rpc_log_system_event", {
+        p_source: "demo_mode",
+        p_severity: "info",
+        p_code: "DEMO_ENTER",
+        p_message: "User entered demo mode",
+        p_env: import.meta.env.MODE || "production",
+        p_meta: {
+          user_id: user.id,
+          user_email: user.email,
+          site_id: data.siteId,
+          created: data.created,
+          action: "enter_demo",
+        },
+      });
+
       if (data.created) {
         toast({
           title: "Données d'exemple créées",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Upload, FileText, Calendar, Lock } from "lucide-react";
+import { Download, Upload, FileText, Calendar, Lock, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,6 +9,8 @@ import { toast } from "@/hooks/use-toast";
 import { CSVImportDialog } from "@/components/operations/CSVImportDialog";
 import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useDemoContext } from "@/hooks/useDemoContext";
+import { useTranslation } from "react-i18next";
 
 const MONTHS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
@@ -18,12 +20,17 @@ const MONTHS = [
 const YEARS = [2024, 2025];
 
 export default function ImportExport() {
+  const { t } = useTranslation(['app']);
   const { canImport, canExport, permissions } = useCurrentUserPermissions();
+  const { isInDemoMode, isFeatureDisabled } = useDemoContext();
   const [selectedMonth, setSelectedMonth] = useState<string>("Janvier");
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const [isGenerating, setIsGenerating] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [lastImportCount, setLastImportCount] = useState<number | null>(null);
+
+  const isImportDisabledByDemo = isFeatureDisabled('imports');
+  const isExportDisabledByDemo = isFeatureDisabled('exports');
 
   const handleExportPDF = async () => {
     setIsGenerating(true);
@@ -127,7 +134,15 @@ export default function ImportExport() {
               </p>
             </div>
 
-            {!canExport && (
+            {isExportDisabledByDemo && (
+              <Alert className="mb-4 border-primary/30 bg-primary/5">
+                <AlertTriangle className="h-4 w-4 text-primary" />
+                <AlertDescription className="text-primary">
+                  {t('app:demo.featureDisabled.description', 'Cette fonctionnalité n\'est pas disponible en mode démo.')}
+                </AlertDescription>
+              </Alert>
+            )}
+            {!canExport && !isExportDisabledByDemo && (
               <Alert className="mb-4">
                 <Lock className="h-4 w-4" />
                 <AlertDescription>
@@ -139,7 +154,7 @@ export default function ImportExport() {
               className="w-full" 
               size="lg"
               onClick={handleExportPDF}
-              disabled={isGenerating || !canExport}
+              disabled={isGenerating || !canExport || isExportDisabledByDemo}
             >
               {isGenerating ? (
                 <>
@@ -170,14 +185,22 @@ export default function ImportExport() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {!canImport ? (
+            {isImportDisabledByDemo && (
+              <Alert className="border-primary/30 bg-primary/5">
+                <AlertTriangle className="h-4 w-4 text-primary" />
+                <AlertDescription className="text-primary">
+                  {t('app:demo.featureDisabled.description', 'Cette fonctionnalité n\'est pas disponible en mode démo.')}
+                </AlertDescription>
+              </Alert>
+            )}
+            {!canImport && !isImportDisabledByDemo ? (
               <Alert>
                 <Lock className="h-4 w-4" />
                 <AlertDescription>
                   Vous n'avez pas la permission d'importer des données.
                 </AlertDescription>
               </Alert>
-            ) : (
+            ) : isImportDisabledByDemo ? null : (
               <>
                 <div 
                   className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-lavcom-green/50 transition-colors cursor-pointer"
