@@ -71,5 +71,7 @@
   "close": "Fermer",
   "draftRestored": "Brouillon restauré",
   "clearDraft": "Effacer",
-  "contact": "Contact"
+  "contact": "Contact",
+  "euroPerMonth": "€/mois",
+  "euroPerYear": "€/an"
 }
