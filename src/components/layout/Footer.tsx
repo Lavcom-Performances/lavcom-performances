@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, Linkedin, Instagram, Facebook } from "lucide-react";
-import lavcomLogo from "@/assets/lavcom-performances-logo.png";
+import lavcomLogo from "@/assets/lavcom-performances-header.png";
 
 export function Footer() {
   const { t } = useTranslation('common');
