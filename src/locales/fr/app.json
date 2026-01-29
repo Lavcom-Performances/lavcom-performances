@@ -236,16 +236,16 @@
   },
   "charts": {
     "annualRevenue": "CA Annuel",
-    "monthlyRevenue": "CA par mois",
-    "dailyRevenue": "CA par jour",
-    "payments": "Paiements",
-    "machines": "Machines",
-    "occupancyRate": "Taux occupation",
-    "hourlyFreq": "Fréq. par heure",
-    "dailyFreq": "Fréq. par jour",
-    "halfHourlyFreq": "Fréq. 30 min",
-    "heatmap": "Affluence (Heatmap)",
-    "products": "Produits"
+    "monthlyRevenue": "CA Mensuel",
+    "dailyRevenue": "CA Journalier",
+    "payments": "Paiements CB/ESP",
+    "machines": "CA par Machine",
+    "occupancyRate": "Taux d'occupation",
+    "hourlyFreq": "Activité par heure",
+    "dailyFreq": "Activité par jour",
+    "halfHourlyFreq": "Activité 30 min",
+    "heatmap": "Carte d'affluence",
+    "products": "Produits / Recharges"
   },
   "login": {
     "exploitant": {
