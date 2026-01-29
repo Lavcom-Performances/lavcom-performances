@@ -14,25 +14,26 @@ const MACHINES = [
   "SL-01", "SL-02", "SL-03"
 ];
 
+// Realistic laundromat prices (in euros) - no random variations
 const PROGRAMS_WASHERS = [
   { name: "Lavage 30°", price: 4.50 },
   { name: "Lavage 40°", price: 5.00 },
   { name: "Lavage 60°", price: 6.00 },
-  { name: "Lavage 90°", price: 7.00 },
+  { name: "Lavage 90°", price: 8.50 },
   { name: "Express 20min", price: 3.50 },
 ];
 
 const PROGRAMS_DRYERS = [
-  { name: "Séchage 15min", price: 2.00 },
-  { name: "Séchage 30min", price: 3.50 },
-  { name: "Séchage 45min", price: 5.00 },
+  { name: "Séchage 15min", price: 1.50 },
+  { name: "Séchage 30min", price: 3.00 },
+  { name: "Séchage 45min", price: 4.50 },
+  { name: "Séchage 60min", price: 6.00 },
 ];
 
+// Payment mode weights - CB vs ESP only (FI excluded from CA)
 const PAYMENT_MODES = [
-  { mode: "CB", weight: 45 },
-  { mode: "Espèces", weight: 30 },
-  { mode: "Carte Fidélité", weight: 15 },
-  { mode: "Mobile", weight: 10 },
+  { mode: "CB", weight: 65 },
+  { mode: "ESP", weight: 35 },
 ];
 
 const HOURLY_WEIGHTS = [
@@ -83,9 +84,12 @@ interface DemoOperation {
   operation_date: string;
   operation_time: string;
   amount: number;
+  price_cb: number | null;
+  price_esp: number | null;
   machine: string;
   program: string;
   payment_mode: string;
+  source: string;
 }
 
 function generateDemoOperations(
@@ -116,8 +120,10 @@ function generateDemoOperations(
       const isWasher = machine.startsWith("LL");
       const programs = isWasher ? PROGRAMS_WASHERS : PROGRAMS_DRYERS;
       const program = programs[Math.floor(Math.random() * programs.length)];
-      const priceVariation = 0.9 + Math.random() * 0.2;
-      const amount = Math.round(program.price * priceVariation * 100) / 100;
+      
+      // Use the exact program price - no random variation for realistic data
+      const amount = program.price;
+      const paymentMode = getRandomPaymentMode();
 
       operations.push({
         user_id: userId,
@@ -126,9 +132,13 @@ function generateDemoOperations(
         operation_date: formatDate(currentDate),
         operation_time: formatTime(getRandomHour()),
         amount,
+        // Populate price_cb/price_esp based on payment mode for correct CA calculation
+        price_cb: paymentMode === "CB" ? amount : null,
+        price_esp: paymentMode === "ESP" ? amount : null,
         machine,
         program: program.name,
-        payment_mode: getRandomPaymentMode(),
+        payment_mode: paymentMode,
+        source: "demo",
       });
     }
 
