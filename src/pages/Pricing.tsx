@@ -64,9 +64,9 @@ export default function Pricing() {
             <Link to="/simulateur" className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors">
               {t('app:nav.simulationOpening')}
             </Link>
-            <Link to="/login?mode=exploitant">
-              <Button variant="ghost">{t('common:login')}</Button>
-            </Link>
+            <Button variant="ghost" asChild>
+              <Link to="/login?mode=exploitant">{t('common:login')}</Link>
+            </Button>
           </nav>
         </div>
       </header>
