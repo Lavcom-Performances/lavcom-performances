@@ -71,5 +71,7 @@
   "close": "Close",
   "draftRestored": "Draft restored",
   "clearDraft": "Clear",
-  "contact": "Contact"
+  "contact": "Contact",
+  "euroPerMonth": "€/month",
+  "euroPerYear": "€/year"
 }

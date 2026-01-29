@@ -1809,5 +1809,20 @@
       "data": "Données",
       "ops": "Ops"
     }
+  },
+  "cookies": {
+    "title": "Nous respectons votre vie privée",
+    "description": "Nous utilisons des cookies pour améliorer votre expérience, analyser le trafic et personnaliser le contenu. Vous pouvez choisir quels cookies accepter.",
+    "acceptAll": "Tout accepter",
+    "reject": "Refuser",
+    "customize": "Personnaliser",
+    "saveChoices": "Enregistrer mes choix",
+    "privacyPolicy": "Politique de confidentialité",
+    "essential": "Cookies essentiels",
+    "essentialAlways": "(toujours actifs)",
+    "analytics": "Cookies analytiques",
+    "analyticsDescription": "Pour comprendre comment vous utilisez notre site",
+    "marketing": "Cookies marketing",
+    "marketingDescription": "Pour personnaliser les publicités"
   }
 }

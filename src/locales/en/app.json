@@ -1809,5 +1809,20 @@
       "data": "Data",
       "ops": "Ops"
     }
+  },
+  "cookies": {
+    "title": "We respect your privacy",
+    "description": "We use cookies to improve your experience, analyze traffic and personalize content. You can choose which cookies to accept.",
+    "acceptAll": "Accept all",
+    "reject": "Reject",
+    "customize": "Customize",
+    "saveChoices": "Save my choices",
+    "privacyPolicy": "Privacy policy",
+    "essential": "Essential cookies",
+    "essentialAlways": "(always active)",
+    "analytics": "Analytics cookies",
+    "analyticsDescription": "To understand how you use our site",
+    "marketing": "Marketing cookies",
+    "marketingDescription": "To personalize ads"
   }
 }

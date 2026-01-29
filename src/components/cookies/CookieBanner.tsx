@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Cookie, X, Check, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const COOKIE_CONSENT_KEY = "lavcom_cookie_consent";
 
@@ -13,6 +14,7 @@ interface CookieConsent {
 }
 
 export function CookieBanner() {
+  const { t } = useTranslation('app');
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [consent, setConsent] = useState<CookieConsent>({
@@ -79,11 +81,10 @@ export function CookieBanner() {
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-foreground text-base sm:text-lg">
-                  Nous respectons votre vie privée
+                  {t('cookies.title')}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Nous utilisons des cookies pour améliorer votre expérience, analyser le trafic et personnaliser le contenu. 
-                  Vous pouvez choisir quels cookies accepter.
+                  {t('cookies.description')}
                 </p>
               </div>
             </div>
@@ -96,8 +97,8 @@ export function CookieBanner() {
                     <Check className="h-3 w-3 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <span className="text-sm font-medium text-foreground">Cookies essentiels</span>
-                    <span className="text-xs text-muted-foreground ml-2">(toujours actifs)</span>
+                    <span className="text-sm font-medium text-foreground">{t('cookies.essential')}</span>
+                    <span className="text-xs text-muted-foreground ml-2">{t('cookies.essentialAlways')}</span>
                   </div>
                 </label>
 
@@ -114,8 +115,8 @@ export function CookieBanner() {
                     {consent.analytics && <Check className="h-3 w-3" />}
                   </button>
                   <div className="flex-1">
-                    <span className="text-sm font-medium text-foreground">Cookies analytiques</span>
-                    <p className="text-xs text-muted-foreground">Pour comprendre comment vous utilisez notre site</p>
+                    <span className="text-sm font-medium text-foreground">{t('cookies.analytics')}</span>
+                    <p className="text-xs text-muted-foreground">{t('cookies.analyticsDescription')}</p>
                   </div>
                 </label>
 
@@ -132,8 +133,8 @@ export function CookieBanner() {
                     {consent.marketing && <Check className="h-3 w-3" />}
                   </button>
                   <div className="flex-1">
-                    <span className="text-sm font-medium text-foreground">Cookies marketing</span>
-                    <p className="text-xs text-muted-foreground">Pour personnaliser les publicités</p>
+                    <span className="text-sm font-medium text-foreground">{t('cookies.marketing')}</span>
+                    <p className="text-xs text-muted-foreground">{t('cookies.marketingDescription')}</p>
                   </div>
                 </label>
               </div>
@@ -146,7 +147,7 @@ export function CookieBanner() {
                 className="order-1 sm:order-2"
               >
                 <Check className="h-4 w-4 mr-2" />
-                Tout accepter
+                {t('cookies.acceptAll')}
               </Button>
               
               <Button 
@@ -155,7 +156,7 @@ export function CookieBanner() {
                 className="order-2 sm:order-1"
               >
                 <X className="h-4 w-4 mr-2" />
-                Refuser
+                {t('cookies.reject')}
               </Button>
 
               <Button
@@ -164,14 +165,14 @@ export function CookieBanner() {
                 className="order-3 text-muted-foreground"
               >
                 <Settings2 className="h-4 w-4 mr-2" />
-                {showDetails ? "Enregistrer mes choix" : "Personnaliser"}
+                {showDetails ? t('cookies.saveChoices') : t('cookies.customize')}
               </Button>
 
               <a 
                 href="/politique-confidentialite" 
                 className="order-4 text-xs text-muted-foreground hover:text-foreground transition-colors text-center sm:text-left sm:ml-auto"
               >
-                Politique de confidentialité
+                {t('cookies.privacyPolicy')}
               </a>
             </div>
           </div>
