@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Footer } from "@/components/layout/Footer";
 import { Check, Building2, ArrowRight, Minus, Plus, Sparkles } from "lucide-react";
@@ -13,11 +13,28 @@ import {
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { useTranslation } from "react-i18next";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Pricing() {
   const { t } = useTranslation(['app', 'common']);
   const navigate = useNavigate();
   const [laundryCount, setLaundryCount] = useState(1);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const pricing = getLaundromatPricing(laundryCount);
 
@@ -64,10 +81,29 @@ export default function Pricing() {
             <Link to="/simulateur" className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors">
               {t('app:nav.simulationOpening')}
             </Link>
-            <Button variant="ghost" asChild>
-              <Link to="/login?mode=exploitant">{t('common:login')}</Link>
-            </Button>
+            {isAuthenticated ? (
+              <Button variant="ghost" asChild>
+                <Link to="/dashboard">{t('common:accessApp')}</Link>
+              </Button>
+            ) : (
+              <Button variant="ghost" asChild>
+                <Link to="/login?mode=exploitant">{t('common:login')}</Link>
+              </Button>
+            )}
           </nav>
+          
+          {/* Mobile: Show login or access button */}
+          <div className="md:hidden">
+            {isAuthenticated ? (
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/dashboard">{t('common:accessApp')}</Link>
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login?mode=exploitant">{t('common:login')}</Link>
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
