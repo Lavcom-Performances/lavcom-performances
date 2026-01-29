@@ -80,6 +80,22 @@ const LandingPage = () => {
   const { toast } = useToast();
   const { t } = useTranslation(['landing', 'common', 'errors', 'app']);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
   const [contactForm, setContactForm] = useState({ 
     topic: "", 
     customTopic: "",
@@ -315,40 +331,64 @@ const LandingPage = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <LanguageSelector variant="compact" className="hidden sm:flex" />
             <LanguageSelector variant="compact" className="sm:hidden" />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="btn-bounce">
-                  {t("common:login")}
-                  <ChevronDown className="ml-1 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem asChild>
-                  <Link to="/login?mode=exploitant" className="flex items-center gap-2 cursor-pointer">
-                    <Building2 className="h-4 w-4" />
-                    <div>
-                      <p className="font-medium">{t("app:dropdown.exploitant")}</p>
-                      <p className="text-xs text-muted-foreground">{t("app:dropdown.exploitantDesc")}</p>
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/login?mode=simulateur" className="flex items-center gap-2 cursor-pointer">
-                    <Calculator className="h-4 w-4" />
-                    <div>
-                      <p className="font-medium">{t("app:dropdown.futureExploitant")}</p>
-                      <p className="text-xs text-muted-foreground">{t("app:dropdown.futureExploitantDesc")}</p>
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link to="/signup">
-              <Button className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white font-semibold">
-                {t("common:freeTrial")}
-                <ArrowRight className="ml-1.5 h-4 w-4" />
+            
+            {/* Show "Accéder au SaaS" if authenticated, otherwise show login dropdown */}
+            {isAuthenticated ? (
+              <Button variant="ghost" className="btn-bounce" asChild>
+                <Link to="/dashboard">
+                  {t("common:accessApp")}
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Link>
               </Button>
-            </Link>
+            ) : (
+              <>
+                {/* Mobile: Simple login button */}
+                <Button variant="ghost" className="btn-bounce md:hidden" asChild>
+                  <Link to="/login?mode=exploitant">
+                    {t("common:login")}
+                  </Link>
+                </Button>
+                
+                {/* Desktop: Dropdown with options */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="btn-bounce hidden md:flex">
+                      {t("common:login")}
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem asChild>
+                      <Link to="/login?mode=exploitant" className="flex items-center gap-2 cursor-pointer">
+                        <Building2 className="h-4 w-4" />
+                        <div>
+                          <p className="font-medium">{t("app:dropdown.exploitant")}</p>
+                          <p className="text-xs text-muted-foreground">{t("app:dropdown.exploitantDesc")}</p>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/login?mode=simulateur" className="flex items-center gap-2 cursor-pointer">
+                        <Calculator className="h-4 w-4" />
+                        <div>
+                          <p className="font-medium">{t("app:dropdown.futureExploitant")}</p>
+                          <p className="text-xs text-muted-foreground">{t("app:dropdown.futureExploitantDesc")}</p>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
+            
+            {!isAuthenticated && (
+              <Link to="/signup">
+                <Button className="btn-bounce bg-lavcom-green hover:bg-lavcom-green-dark text-white font-semibold hidden sm:flex">
+                  {t("common:freeTrial")}
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>
