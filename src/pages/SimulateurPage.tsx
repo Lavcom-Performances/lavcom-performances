@@ -15,12 +15,9 @@ import {
   Building2,
   Warehouse,
   Users,
-  ChevronDown,
-  ChevronUp,
   Minus,
   Plus
 } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { Footer } from "@/components/layout/Footer";
 import { SIMULATOR_PLANS } from "@/config/pricingConfig";
@@ -47,12 +44,7 @@ const DEMAND_FACTORS = {
   dryer: { small: 1.0, medium: 1.0, large: 0.95 },
 } as const;
 
-// Prix par défaut par taille (coefficients à appliquer au prix moyen)
-const PRICE_COEFFICIENTS = {
-  small: 0.7,
-  medium: 1.0,
-  large: 1.5,
-} as const;
+// Note: Price coefficients removed - now using direct custom prices only
 
 // ===== TYPES =====
 type TemplateType = 'small' | 'standard' | 'large';
@@ -75,9 +67,6 @@ interface SimulationState {
   template: TemplateType;
   machines: MachineFleet;
   affluence: AffluenceType;
-  avgPriceWash: number;
-  avgPriceDry: number;
-  customPricesEnabled: boolean;
   customPrices: CustomPrices;
 }
 
@@ -127,22 +116,9 @@ function calculateRevenue(state: SimulationState): SimulationResults {
   const washCyclesPerMachine = (state.hoursOpen * occupancyRate) / WASH_CYCLE_HOURS;
   const dryCyclesPerMachine = (state.hoursOpen * occupancyRate) / DRY_CYCLE_HOURS;
   
-  // Prix par taille (custom ou dérivés du prix moyen)
-  const washPrices = state.customPricesEnabled 
-    ? state.customPrices.washers 
-    : {
-        small: state.avgPriceWash * PRICE_COEFFICIENTS.small,
-        medium: state.avgPriceWash * PRICE_COEFFICIENTS.medium,
-        large: state.avgPriceWash * PRICE_COEFFICIENTS.large,
-      };
-  
-  const dryPrices = state.customPricesEnabled
-    ? state.customPrices.dryers
-    : {
-        small: state.avgPriceDry * PRICE_COEFFICIENTS.small,
-        medium: state.avgPriceDry * PRICE_COEFFICIENTS.medium,
-        large: state.avgPriceDry * PRICE_COEFFICIENTS.large,
-      };
+  // Prix par taille (toujours personnalisés maintenant)
+  const washPrices = state.customPrices.washers;
+  const dryPrices = state.customPrices.dryers;
   
   // Calcul CA lavage
   let dailyWashRevenue = 0;
@@ -228,7 +204,6 @@ export default function SimulateurPage() {
   const { t } = useTranslation(['app', 'common']);
   const navigate = useNavigate();
   const [showResults, setShowResults] = useState(false);
-  const [customPricesOpen, setCustomPricesOpen] = useState(false);
   const resultsRef = React.useRef<HTMLDivElement>(null);
   
   // Track if user has manually selected a template (to avoid overriding their choice)
@@ -243,9 +218,6 @@ export default function SimulateurPage() {
       template: recommendedTemplate,
       machines: { ...TEMPLATES[recommendedTemplate] },
       affluence: 'normal',
-      avgPriceWash: 5,
-      avgPriceDry: 3,
-      customPricesEnabled: false,
       customPrices: {
         washers: { small: 3.5, medium: 5, large: 7.5 },
         dryers: { small: 2, medium: 3, large: 4.5 },
@@ -574,107 +546,68 @@ export default function SimulateurPage() {
                   </CardContent>
                 </Card>
 
-                {/* Pricing */}
+                {/* Pricing - Prix par taille directement */}
                 <Card className="border-amber-500/30">
                   <CardHeader className="pb-3 md:pb-4">
                     <CardTitle className="text-base md:text-lg">{t('app:simulateur.pricing.title')}</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">
+                      {t('app:simulateur.pricing.description')}
+                    </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="avgPriceWash" className="text-xs md:text-sm">{t('app:simulateur.pricing.avgPriceWash')}</Label>
-                        <Input
-                          id="avgPriceWash"
-                          type="number"
-                          min={1}
-                          max={20}
-                          step={0.5}
-                          value={simulation.avgPriceWash}
-                          onChange={(e) => setSimulation(prev => ({ ...prev, avgPriceWash: Number(e.target.value) }))}
-                          className="h-9 md:h-10 text-sm"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="avgPriceDry" className="text-xs md:text-sm">{t('app:simulateur.pricing.avgPriceDry')}</Label>
-                        <Input
-                          id="avgPriceDry"
-                          type="number"
-                          min={1}
-                          max={15}
-                          step={0.5}
-                          value={simulation.avgPriceDry}
-                          onChange={(e) => setSimulation(prev => ({ ...prev, avgPriceDry: Number(e.target.value) }))}
-                          className="h-9 md:h-10 text-sm"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Custom prices collapsible */}
-                    <Collapsible open={customPricesOpen} onOpenChange={setCustomPricesOpen}>
-                      <CollapsibleTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          type="button"
-                          className="w-full justify-between text-xs md:text-sm text-muted-foreground hover:text-foreground"
-                        >
-                          {t('app:simulateur.pricing.customizePrices')}
-                          {customPricesOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                        </Button>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="pt-4 space-y-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <input
-                            type="checkbox"
-                            id="enableCustomPrices"
-                            checked={simulation.customPricesEnabled}
-                            onChange={(e) => setSimulation(prev => ({ ...prev, customPricesEnabled: e.target.checked }))}
-                            className="rounded"
-                          />
-                          <Label htmlFor="enableCustomPrices" className="text-xs md:text-sm cursor-pointer">
-                            Activer les prix personnalisés
-                          </Label>
-                        </div>
-                        
-                        {simulation.customPricesEnabled && (
-                          <div className="grid md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <h5 className="text-xs font-medium text-muted-foreground">Lavage (€)</h5>
-                              {(['small', 'medium', 'large'] as MachineSize[]).map(size => (
-                                <div key={size} className="flex items-center gap-2">
-                                  <span className="text-xs min-w-16">{t(`app:simulateur.machineFleet.${size}`)}</span>
-                                  <Input
-                                    type="number"
-                                    min={0}
-                                    max={20}
-                                    step={0.5}
-                                    value={simulation.customPrices.washers[size]}
-                                    onChange={(e) => updateCustomPrice('washers', size, Number(e.target.value))}
-                                    className="h-8 text-xs"
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                            <div className="space-y-2">
-                              <h5 className="text-xs font-medium text-muted-foreground">Séchage (€)</h5>
-                              {(['small', 'medium', 'large'] as MachineSize[]).map(size => (
-                                <div key={size} className="flex items-center gap-2">
-                                  <span className="text-xs min-w-16">{t(`app:simulateur.machineFleet.${size}`)}</span>
-                                  <Input
-                                    type="number"
-                                    min={0}
-                                    max={15}
-                                    step={0.5}
-                                    value={simulation.customPrices.dryers[size]}
-                                    onChange={(e) => updateCustomPrice('dryers', size, Number(e.target.value))}
-                                    className="h-8 text-xs"
-                                  />
-                                </div>
-                              ))}
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {/* Washer prices */}
+                      <div className="space-y-3 p-3 bg-muted/30 rounded-lg">
+                        <h4 className="font-medium text-sm flex items-center gap-2">
+                          🧺 {t('app:simulateur.pricing.washPrices')}
+                        </h4>
+                        {(['small', 'medium', 'large'] as MachineSize[]).map(size => (
+                          <div key={size} className="flex items-center justify-between gap-2">
+                            <span className="text-sm text-muted-foreground">
+                              {t(`app:simulateur.machineFleet.${size}`)}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <Input
+                                type="number"
+                                min={0}
+                                max={20}
+                                step={0.5}
+                                value={simulation.customPrices.washers[size]}
+                                onChange={(e) => updateCustomPrice('washers', size, Number(e.target.value))}
+                                className="h-8 w-20 text-sm text-right"
+                              />
+                              <span className="text-xs text-muted-foreground">€</span>
                             </div>
                           </div>
-                        )}
-                      </CollapsibleContent>
-                    </Collapsible>
+                        ))}
+                      </div>
+                      
+                      {/* Dryer prices */}
+                      <div className="space-y-3 p-3 bg-muted/30 rounded-lg">
+                        <h4 className="font-medium text-sm flex items-center gap-2">
+                          🔥 {t('app:simulateur.pricing.dryPrices')}
+                        </h4>
+                        {(['small', 'medium', 'large'] as MachineSize[]).map(size => (
+                          <div key={size} className="flex items-center justify-between gap-2">
+                            <span className="text-sm text-muted-foreground">
+                              {t(`app:simulateur.machineFleet.${size}`)}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <Input
+                                type="number"
+                                min={0}
+                                max={15}
+                                step={0.5}
+                                value={simulation.customPrices.dryers[size]}
+                                onChange={(e) => updateCustomPrice('dryers', size, Number(e.target.value))}
+                                className="h-8 w-20 text-sm text-right"
+                              />
+                              <span className="text-xs text-muted-foreground">€</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 

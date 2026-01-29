@@ -656,13 +656,10 @@
       "highDesc": "Dense or commercial area"
     },
     "pricing": {
-      "title": "Average prices",
-      "avgPriceWash": "Average wash price (€)",
-      "avgPriceDry": "Average dry price (€)",
-      "customizePrices": "Customize prices by size",
-      "priceSmall": "Small price",
-      "priceMedium": "Medium price",
-      "priceLarge": "Large price"
+      "title": "Machine prices",
+      "description": "Set your machine prices by size",
+      "washPrices": "Wash prices",
+      "dryPrices": "Dry prices"
     },
     "results": {
       "title": "Revenue estimate",

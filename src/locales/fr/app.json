@@ -656,13 +656,10 @@
       "highDesc": "Zone dense ou commerçante"
     },
     "pricing": {
-      "title": "Prix moyens",
-      "avgPriceWash": "Prix moyen lavage (€)",
-      "avgPriceDry": "Prix moyen séchage (€)",
-      "customizePrices": "Personnaliser les prix par taille",
-      "priceSmall": "Prix petit",
-      "priceMedium": "Prix moyen",
-      "priceLarge": "Prix grand"
+      "title": "Tarifs par machine",
+      "description": "Définissez les prix de vos machines par taille",
+      "washPrices": "Tarifs lavage",
+      "dryPrices": "Tarifs séchage"
     },
     "results": {
       "title": "Estimation de votre CA",
