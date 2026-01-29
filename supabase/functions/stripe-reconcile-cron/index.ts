@@ -147,7 +147,16 @@ Deno.serve(async (req) => {
       result.total_checked++;
 
       // Check for missing Stripe IDs
+      // SKIP trial subscriptions without Stripe IDs - this is expected behavior
+      // Trials only get Stripe IDs when user converts to paid plan
       if (!dbSub.stripe_subscription_id || !dbSub.stripe_customer_id) {
+        if (dbSub.plan_type === 'trial') {
+          // This is expected - trials don't have Stripe IDs until conversion
+          logStep("Skipping trial without Stripe IDs (expected)", { user_id: dbSub.user_id });
+          continue;
+        }
+        
+        // Non-trial subscription missing Stripe IDs is an anomaly
         result.anomalies.MISSING_STRIPE_IDS++;
         result.anomaly_details.push({
           type: 'MISSING_STRIPE_IDS',
@@ -155,7 +164,7 @@ Deno.serve(async (req) => {
           stripe_customer_id: dbSub.stripe_customer_id,
           stripe_subscription_id: dbSub.stripe_subscription_id,
           db_status: dbSub.status,
-          details: 'DB subscription active but missing Stripe IDs',
+          details: 'Paid subscription active but missing Stripe IDs',
         });
         continue;
       }
