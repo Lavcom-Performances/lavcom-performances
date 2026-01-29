@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Footer } from "@/components/layout/Footer";
 import { Check, Building2, ArrowRight, Minus, Plus, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,8 +25,20 @@ export default function Pricing() {
     navigate('/signup');
   };
 
-  const incrementCount = () => setLaundryCount(prev => Math.min(prev + 1, 20));
+  const incrementCount = () => setLaundryCount(prev => Math.min(prev + 1, 100));
   const decrementCount = () => setLaundryCount(prev => Math.max(prev - 1, 1));
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '') {
+      setLaundryCount(1);
+      return;
+    }
+    const num = parseInt(value, 10);
+    if (!isNaN(num)) {
+      setLaundryCount(Math.max(1, Math.min(100, num)));
+    }
+  };
 
   const features = t('app:pricing.features', { returnObjects: true }) as string[];
 
@@ -93,15 +106,20 @@ export default function Pricing() {
                   >
                     <Minus className="h-3 w-3 md:h-4 md:w-4" />
                   </Button>
-                  <span className="text-3xl md:text-4xl font-bold text-foreground w-12 md:w-16 text-center">
-                    {laundryCount}
-                  </span>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={laundryCount}
+                    onChange={handleInputChange}
+                    className="w-20 md:w-24 text-center text-3xl md:text-4xl font-bold h-12 md:h-14 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
                   <Button 
                     variant="outline" 
                     size="icon"
                     className="h-8 w-8 md:h-10 md:w-10"
                     onClick={incrementCount}
-                    disabled={laundryCount >= 20}
+                    disabled={laundryCount >= 100}
                   >
                     <Plus className="h-3 w-3 md:h-4 md:w-4" />
                   </Button>
