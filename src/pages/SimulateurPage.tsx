@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -104,6 +104,20 @@ const TEMPLATES: Record<TemplateType, MachineFleet> = {
     dryers: { small: 2, medium: 3, large: 2 },
   },
 };
+
+// Seuils de surface pour recommandation automatique du template
+const SURFACE_THRESHOLDS = {
+  small: { min: 0, max: 40 },      // < 40 m² → petite laverie
+  standard: { min: 40, max: 70 },  // 40-70 m² → laverie standard
+  large: { min: 70, max: Infinity }, // > 70 m² → grande laverie
+} as const;
+
+// Fonction pour déterminer le template recommandé selon la surface
+function getRecommendedTemplate(surface: number): TemplateType {
+  if (surface < SURFACE_THRESHOLDS.standard.min) return 'small';
+  if (surface < SURFACE_THRESHOLDS.large.min) return 'standard';
+  return 'large';
+}
 
 // ===== CALCUL =====
 function calculateRevenue(state: SimulationState): SimulationResults {
@@ -217,30 +231,61 @@ export default function SimulateurPage() {
   const [customPricesOpen, setCustomPricesOpen] = useState(false);
   const resultsRef = React.useRef<HTMLDivElement>(null);
   
-  const [simulation, setSimulation] = useState<SimulationState>({
-    surface: 50,
-    hoursOpen: HOURS_OPEN_DEFAULT,
-    template: 'standard',
-    machines: { ...TEMPLATES.standard },
-    affluence: 'normal',
-    avgPriceWash: 5,
-    avgPriceDry: 3,
-    customPricesEnabled: false,
-    customPrices: {
-      washers: { small: 3.5, medium: 5, large: 7.5 },
-      dryers: { small: 2, medium: 3, large: 4.5 },
-    },
+  // Track if user has manually selected a template (to avoid overriding their choice)
+  const userHasManuallySelectedTemplate = useRef(false);
+  
+  const [simulation, setSimulation] = useState<SimulationState>(() => {
+    const initialSurface = 50;
+    const recommendedTemplate = getRecommendedTemplate(initialSurface);
+    return {
+      surface: initialSurface,
+      hoursOpen: HOURS_OPEN_DEFAULT,
+      template: recommendedTemplate,
+      machines: { ...TEMPLATES[recommendedTemplate] },
+      affluence: 'normal',
+      avgPriceWash: 5,
+      avgPriceDry: 3,
+      customPricesEnabled: false,
+      customPrices: {
+        washers: { small: 3.5, medium: 5, large: 7.5 },
+        dryers: { small: 2, medium: 3, large: 4.5 },
+      },
+    };
   });
+  
+  // Auto-select template when surface changes (unless user manually selected one)
+  useEffect(() => {
+    if (userHasManuallySelectedTemplate.current) return;
+    
+    const recommendedTemplate = getRecommendedTemplate(simulation.surface);
+    if (recommendedTemplate !== simulation.template) {
+      setSimulation(prev => ({
+        ...prev,
+        template: recommendedTemplate,
+        machines: { ...TEMPLATES[recommendedTemplate] },
+      }));
+    }
+  }, [simulation.surface, simulation.template]);
 
   const results = useMemo(() => calculateRevenue(simulation), [simulation]);
   const paywallFeatures = t('app:simulateur.paywall.features', { returnObjects: true }) as string[];
 
   const handleTemplateChange = (template: TemplateType) => {
+    // Mark that user has manually selected a template
+    userHasManuallySelectedTemplate.current = true;
     setSimulation(prev => ({
       ...prev,
       template,
       machines: { ...TEMPLATES[template] },
     }));
+  };
+  
+  // Handler for surface change that resets manual selection flag
+  const handleSurfaceChange = (newSurface: number) => {
+    // Reset the manual selection flag when user changes surface
+    // This allows auto-selection to work again
+    userHasManuallySelectedTemplate.current = false;
+    setSimulation(prev => ({ ...prev, surface: newSurface }));
   };
 
   const updateMachineCount = (
@@ -373,7 +418,7 @@ export default function SimulateurPage() {
                           min={20}
                           max={500}
                           value={simulation.surface}
-                          onChange={(e) => setSimulation(prev => ({ ...prev, surface: Number(e.target.value) }))}
+                          onChange={(e) => handleSurfaceChange(Number(e.target.value))}
                           className="h-9 md:h-10 text-sm"
                         />
                       </div>
