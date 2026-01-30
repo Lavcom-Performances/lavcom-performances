@@ -1503,7 +1503,75 @@
       "peakConcentration": { "title": "Concentration horaire", "description": "L'activité est concentrée sur les heures {{hours}}. Envisagez des promotions hors-pic.", "impact": "Lissage potentiel de l'activité" },
       "highVarCosts": { "title": "Charges variables élevées", "description": "Vos charges variables ({{percent}}%) sont au-dessus de la moyenne.", "impact": "Négociation fournisseurs recommandée" },
       "highFixedCosts": { "title": "Charges fixes élevées", "description": "Vos charges fixes dépassent 60% du CA. Renégociez vos contrats.", "impact": "Réduction des charges prioritaire" },
-      "underperformingMachines": { "title": "Machines sous-performantes", "description": "{{count}} machine(s) génèrent moins de 50% du CA moyen.", "impact": "Maintenance ou remplacement à évaluer" }
+      "underperformingMachines": { "title": "Machines sous-performantes", "description": "{{count}} machine(s) génèrent moins de 50% du CA moyen.", "impact": "Maintenance ou remplacement à évaluer" },
+      "page": {
+        "subtitle": "Insights et actions recommandées basées sur vos données",
+        "downloadPdf": "Télécharger PDF",
+        "generating": "Génération...",
+        "legend": "Légende",
+        "legendStrength": "Point fort",
+        "legendProblem": "Problème à traiter",
+        "legendOpportunity": "Opportunité",
+        "sections": {
+          "performance": "Analyse de Performance",
+          "optimization": "Opportunités d'Optimisation",
+          "actions": "Actions Recommandées",
+          "marketing": "Idées Communication & Marketing"
+        },
+        "marketingIntro": "Ces idées sont générées automatiquement à partir des chiffres de votre laverie (fréquentation, répartition du chiffre d'affaires, machines moins utilisées…). Ce ne sont pas des obligations, mais des pistes simples à tester sur un mois. Adaptez-les à votre quartier, votre clientèle et vos moyens.",
+        "estimatedImpact": "Impact estimé",
+        "effort": "Effort",
+        "effortLow": "Faible",
+        "effortMedium": "Moyen",
+        "effortHigh": "Fort",
+        "perMonth": "€/mois",
+        "summary": {
+          "title": "Résumé des Indicateurs Clés",
+          "revenue2025": "CA 2025 (11 mois)",
+          "vsLastYear": "vs 2024",
+          "peakHour": "Heure de pointe",
+          "busiestDay": "Jour le plus actif",
+          "sunday": "Dimanche"
+        },
+        "insights": {
+          "annualDecline": {
+            "title": "Baisse du CA annuel",
+            "description": "Le CA 2025 est en baisse de 27% par rapport à 2024. Analysez les causes : concurrence, saisonnalité, problèmes techniques ?"
+          },
+          "dryer2Underperforming": {
+            "title": "Sèche-linge 2 sous-performant",
+            "description": "Le sèche-linge 2 génère seulement 219€ (3.8% du CA machines) contre 1606€ pour le sèche-linge 1. Vérifiez son état de fonctionnement."
+          },
+          "sundayBest": {
+            "title": "Dimanche meilleur jour",
+            "description": "Le dimanche représente 21% de l'activité hebdomadaire avec 2443 cycles. Assurez-vous d'avoir suffisamment de produits et machines disponibles."
+          },
+          "peakHours": {
+            "title": "Pic d'affluence 16h-19h",
+            "description": "La tranche 16h-19h concentre 25% des cycles. Envisagez une tarification dynamique ou des promotions sur les heures creuses (7h-9h)."
+          },
+          "offPeakHours": {
+            "title": "Heures creuses à exploiter",
+            "description": "Les tranches 7h-8h ne représentent que 4% de l'activité. Proposez des réductions matinales pour lisser la fréquentation."
+          },
+          "cardMajority": {
+            "title": "CB majoritaire",
+            "description": "81% des paiements sont en CB. Maintenez vos terminaux en parfait état et envisagez le paiement mobile."
+          },
+          "dryer2Diagnostic": {
+            "title": "Diagnostic sèche-linge 2",
+            "description": "Programmer une maintenance préventive et vérifier les temps de cycle. L'écart de performance avec le sèche-linge 1 est anormal."
+          },
+          "offPeakCampaign": {
+            "title": "Campagne heures creuses",
+            "description": "Lancer une offre -20% sur les cycles avant 10h pour augmenter la fréquentation matinale et désengorger les pics."
+          },
+          "competitionAnalysis": {
+            "title": "Analyse concurrence",
+            "description": "La baisse de CA en 2025 nécessite une étude de marché. Vérifiez les ouvertures de laveries dans le quartier."
+          }
+        }
+      }
     }
   },
   "csvImport": {

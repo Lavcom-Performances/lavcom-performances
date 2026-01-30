@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -69,9 +70,10 @@ interface InsightCardProps {
   metric?: string;
   financialImpact?: number;
   effort?: EffortLevel;
+  t: (key: string) => string;
 }
 
-function InsightCard({ title, description, type, icon: Icon, metric, financialImpact, effort }: InsightCardProps) {
+function InsightCard({ title, description, type, icon: Icon, metric, financialImpact, effort, t }: InsightCardProps) {
   // Couleurs Lavcom exactes du logo
   // Vert lime (#A5C800) = point fort (success)
   // Jaune/Or (#FCD259) = problème (warning)
@@ -100,15 +102,15 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
 
   const effortConfig = {
     low: { 
-      label: "Faible", 
+      labelKey: "export.recommendations.page.effortLow", 
       className: "bg-[#A5C800] text-white hover:bg-[#A5C800] border-0" 
     },
     medium: { 
-      label: "Moyen", 
+      labelKey: "export.recommendations.page.effortMedium", 
       className: "bg-[#FCD259] text-gray-800 hover:bg-[#FCD259] border-0" 
     },
     high: { 
-      label: "Fort", 
+      labelKey: "export.recommendations.page.effortHigh", 
       className: "bg-red-500 text-white hover:bg-red-500 border-0" 
     },
   };
@@ -137,12 +139,12 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
             {financialImpact !== undefined && (
               <div className="flex flex-col items-start gap-1">
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                  Impact estimé
+                  {t("export.recommendations.page.estimatedImpact")}
                 </span>
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/30 rounded-md">
                   <Euro className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                    +{financialImpact} €/mois
+                    +{financialImpact} {t("export.recommendations.page.perMonth")}
                   </span>
                 </div>
               </div>
@@ -150,10 +152,10 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
             {effort && (
               <div className="flex flex-col items-end gap-1">
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                  Effort
+                  {t("export.recommendations.page.effort")}
                 </span>
                 <Badge className={`${effortConfig[effort].className} text-xs px-3 py-1`}>
-                  {effortConfig[effort].label}
+                  {t(effortConfig[effort].labelKey)}
                 </Badge>
               </div>
             )}
@@ -169,6 +171,7 @@ export default function RecommendationsPage() {
   const { toast } = useToast();
   const { dateRange, setDateRange } = useDateRange();
   const { hasData, isLoading: dataLoading } = useHasData();
+  const { t } = useTranslation("app");
 
   const handleExportPDF = async () => {
     setIsGenerating(true);
@@ -178,13 +181,13 @@ export default function RecommendationsPage() {
       generateRecommendationsReport(data);
       trackPdfDownload('recommendations');
       toast({
-        title: "PDF généré avec succès",
-        description: "Le rapport a été téléchargé.",
+        title: t("export.pdfExported"),
+        description: t("export.recommendations.page.downloadPdf"),
       });
     } catch (error) {
       toast({
-        title: "Erreur",
-        description: "Impossible de générer le PDF.",
+        title: t("errors.title"),
+        description: t("errors.generic"),
         variant: "destructive",
       });
     } finally {
@@ -192,11 +195,11 @@ export default function RecommendationsPage() {
     }
   };
 
-  // Ces insights seraient générés dynamiquement à partir des données réelles
+  // These insights would be dynamically generated from real data
   const performanceInsights = [
     {
-      title: "Baisse du CA annuel",
-      description: "Le CA 2025 est en baisse de 27% par rapport à 2024. Analysez les causes : concurrence, saisonnalité, problèmes techniques ?",
+      title: t("export.recommendations.page.insights.annualDecline.title"),
+      description: t("export.recommendations.page.insights.annualDecline.description"),
       type: "warning" as const,
       icon: TrendingDown,
       metric: "-27%",
@@ -204,8 +207,8 @@ export default function RecommendationsPage() {
       effort: "high" as EffortLevel,
     },
     {
-      title: "Sèche-linge 2 sous-performant",
-      description: "Le sèche-linge 2 génère seulement 219€ (3.8% du CA machines) contre 1606€ pour le sèche-linge 1. Vérifiez son état de fonctionnement.",
+      title: t("export.recommendations.page.insights.dryer2Underperforming.title"),
+      description: t("export.recommendations.page.insights.dryer2Underperforming.description"),
       type: "warning" as const,
       icon: AlertTriangle,
       metric: "219€",
@@ -213,8 +216,8 @@ export default function RecommendationsPage() {
       effort: "medium" as EffortLevel,
     },
     {
-      title: "Dimanche meilleur jour",
-      description: "Le dimanche représente 21% de l'activité hebdomadaire avec 2443 cycles. Assurez-vous d'avoir suffisamment de produits et machines disponibles.",
+      title: t("export.recommendations.page.insights.sundayBest.title"),
+      description: t("export.recommendations.page.insights.sundayBest.description"),
       type: "success" as const,
       icon: TrendingUp,
       metric: "21%",
@@ -225,8 +228,8 @@ export default function RecommendationsPage() {
 
   const optimizationInsights = [
     {
-      title: "Pic d'affluence 16h-19h",
-      description: "La tranche 16h-19h concentre 25% des cycles. Envisagez une tarification dynamique ou des promotions sur les heures creuses (7h-9h).",
+      title: t("export.recommendations.page.insights.peakHours.title"),
+      description: t("export.recommendations.page.insights.peakHours.description"),
       type: "action" as const,
       icon: Clock,
       metric: "25%",
@@ -234,8 +237,8 @@ export default function RecommendationsPage() {
       effort: "medium" as EffortLevel,
     },
     {
-      title: "Heures creuses à exploiter",
-      description: "Les tranches 7h-8h ne représentent que 4% de l'activité. Proposez des réductions matinales pour lisser la fréquentation.",
+      title: t("export.recommendations.page.insights.offPeakHours.title"),
+      description: t("export.recommendations.page.insights.offPeakHours.description"),
       type: "info" as const,
       icon: Lightbulb,
       metric: "4%",
@@ -243,8 +246,8 @@ export default function RecommendationsPage() {
       effort: "low" as EffortLevel,
     },
     {
-      title: "CB majoritaire",
-      description: "81% des paiements sont en CB. Maintenez vos terminaux en parfait état et envisagez le paiement mobile.",
+      title: t("export.recommendations.page.insights.cardMajority.title"),
+      description: t("export.recommendations.page.insights.cardMajority.description"),
       type: "success" as const,
       icon: Zap,
       metric: "81%",
@@ -255,24 +258,24 @@ export default function RecommendationsPage() {
 
   const actionItems = [
     {
-      title: "Diagnostic sèche-linge 2",
-      description: "Programmer une maintenance préventive et vérifier les temps de cycle. L'écart de performance avec le sèche-linge 1 est anormal.",
+      title: t("export.recommendations.page.insights.dryer2Diagnostic.title"),
+      description: t("export.recommendations.page.insights.dryer2Diagnostic.description"),
       type: "action" as const,
       icon: Target,
       financialImpact: 146,
       effort: "medium" as EffortLevel,
     },
     {
-      title: "Campagne heures creuses",
-      description: "Lancer une offre -20% sur les cycles avant 10h pour augmenter la fréquentation matinale et désengorger les pics.",
+      title: t("export.recommendations.page.insights.offPeakCampaign.title"),
+      description: t("export.recommendations.page.insights.offPeakCampaign.description"),
       type: "action" as const,
       icon: Calendar,
       financialImpact: 250,
       effort: "low" as EffortLevel,
     },
     {
-      title: "Analyse concurrence",
-      description: "La baisse de CA en 2025 nécessite une étude de marché. Vérifiez les ouvertures de laveries dans le quartier.",
+      title: t("export.recommendations.page.insights.competitionAnalysis.title"),
+      description: t("export.recommendations.page.insights.competitionAnalysis.description"),
       type: "action" as const,
       icon: Lightbulb,
       financialImpact: 500,
@@ -285,13 +288,22 @@ export default function RecommendationsPage() {
   const marketingRecommendations = generateMarketingRecommendations(analyticsData);
 
   // Convert marketing recommendations to InsightCard format with specific icons
+  const effortMap: Record<string, EffortLevel> = {
+    "Faible": "low",
+    "Low": "low",
+    "Moyen": "medium",
+    "Medium": "medium",
+    "Élevé": "high",
+    "High": "high",
+  };
+  
   const marketingInsights = marketingRecommendations.map((reco: Recommendation) => ({
     title: reco.title,
     description: reco.description,
     type: "info" as const,
     icon: getMarketingIcon(reco.id),
     financialImpact: reco.impactEstimate ? parseInt(reco.impactEstimate.replace(/[^\d]/g, "")) : undefined,
-    effort: (reco.difficulty === "Faible" ? "low" : reco.difficulty === "Moyen" ? "medium" : "high") as EffortLevel,
+    effort: effortMap[reco.difficulty] || "medium",
   }));
 
   // Loading state
@@ -314,18 +326,18 @@ export default function RecommendationsPage() {
     return (
       <>
         <SEOHead 
-          title="Recommandations"
-          description="Recommandations et actions pour optimiser votre laverie automatique."
+          title={t("export.recommendations.title")}
+          description={t("export.recommendations.page.subtitle")}
           url="/recommendations"
           noindex={true}
         />
         <div className="p-6 lg:p-8">
           <div className="mb-6">
             <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-              Recommandations
+              {t("export.recommendations.title")}
             </h1>
             <p className="text-muted-foreground">
-              Insights et actions recommandées basées sur vos données
+              {t("export.recommendations.page.subtitle")}
             </p>
           </div>
           <div className="card-lavcom">
@@ -339,8 +351,8 @@ export default function RecommendationsPage() {
   return (
     <>
       <SEOHead 
-        title="Recommandations"
-        description="Recommandations et actions pour optimiser votre laverie automatique."
+        title={t("export.recommendations.title")}
+        description={t("export.recommendations.page.subtitle")}
         url="/recommendations"
         noindex={true}
       />
@@ -349,10 +361,10 @@ export default function RecommendationsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-              Recommandations
+              {t("export.recommendations.title")}
             </h1>
             <p className="text-muted-foreground">
-              Insights et actions recommandées basées sur vos données
+              {t("export.recommendations.page.subtitle")}
             </p>
           </div>
           <Button 
@@ -363,12 +375,12 @@ export default function RecommendationsPage() {
             {isGenerating ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Génération...
+                {t("export.recommendations.page.generating")}
               </>
             ) : (
               <>
                 <Download className="h-4 w-4" />
-                Télécharger PDF
+                {t("export.recommendations.page.downloadPdf")}
               </>
             )}
           </Button>
@@ -379,20 +391,20 @@ export default function RecommendationsPage() {
         />
       </div>
 
-      {/* Légende des couleurs */}
+      {/* Legend */}
       <div className="flex flex-wrap items-center gap-6 p-4 bg-muted/50 rounded-lg border border-border">
-        <span className="text-sm font-medium text-muted-foreground">Légende :</span>
+        <span className="text-sm font-medium text-muted-foreground">{t("export.recommendations.page.legend")} :</span>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-sm bg-[#A5C800]" />
-          <span className="text-sm text-foreground">Point fort</span>
+          <span className="text-sm text-foreground">{t("export.recommendations.page.legendStrength")}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-sm bg-[#FCD259]" />
-          <span className="text-sm text-foreground">Problème à traiter</span>
+          <span className="text-sm text-foreground">{t("export.recommendations.page.legendProblem")}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-sm bg-[#6DBFB8]" />
-          <span className="text-sm text-foreground">Opportunité</span>
+          <span className="text-sm text-foreground">{t("export.recommendations.page.legendOpportunity")}</span>
         </div>
       </div>
 
@@ -400,11 +412,11 @@ export default function RecommendationsPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-display font-semibold flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-primary" />
-          Analyse de Performance
+          {t("export.recommendations.page.sections.performance")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {performanceInsights.map((insight, index) => (
-            <InsightCard key={index} {...insight} />
+            <InsightCard key={index} {...insight} t={t} />
           ))}
         </div>
       </section>
@@ -413,11 +425,11 @@ export default function RecommendationsPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-display font-semibold flex items-center gap-2">
           <Lightbulb className="h-5 w-5 text-primary" />
-          Opportunités d'Optimisation
+          {t("export.recommendations.page.sections.optimization")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {optimizationInsights.map((insight, index) => (
-            <InsightCard key={index} {...insight} />
+            <InsightCard key={index} {...insight} t={t} />
           ))}
         </div>
       </section>
@@ -426,11 +438,11 @@ export default function RecommendationsPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-display font-semibold flex items-center gap-2">
           <Target className="h-5 w-5 text-primary" />
-          Actions Recommandées
+          {t("export.recommendations.page.sections.actions")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {actionItems.map((item, index) => (
-            <InsightCard key={index} {...item} />
+            <InsightCard key={index} {...item} t={t} />
           ))}
         </div>
       </section>
@@ -440,17 +452,14 @@ export default function RecommendationsPage() {
         <section className="space-y-4">
           <h2 className="text-lg font-display font-semibold flex items-center gap-2">
             <Megaphone className="h-5 w-5 text-primary" />
-            Idées Communication & Marketing
+            {t("export.recommendations.page.sections.marketing")}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Ces idées sont générées automatiquement à partir des chiffres de votre laverie 
-            (fréquentation, répartition du chiffre d'affaires, machines moins utilisées…). 
-            Ce ne sont pas des obligations, mais des pistes simples à tester sur un mois. 
-            Adaptez-les à votre quartier, votre clientèle et vos moyens.
+            {t("export.recommendations.page.marketingIntro")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {marketingInsights.map((insight, index) => (
-              <InsightCard key={index} {...insight} />
+              <InsightCard key={index} {...insight} t={t} />
             ))}
           </div>
         </section>
@@ -458,23 +467,23 @@ export default function RecommendationsPage() {
 
       {/* Summary KPIs */}
       <section className="kpi-card">
-        <h3 className="font-display font-semibold text-lg mb-4">Résumé des Indicateurs Clés</h3>
+        <h3 className="font-display font-semibold text-lg mb-4">{t("export.recommendations.page.summary.title")}</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-muted/50 rounded-lg">
             <p className="text-2xl font-bold text-primary">64 121€</p>
-            <p className="text-sm text-muted-foreground">CA 2025 (11 mois)</p>
+            <p className="text-sm text-muted-foreground">{t("export.recommendations.page.summary.revenue2025")}</p>
           </div>
           <div className="text-center p-4 bg-muted/50 rounded-lg">
             <p className="text-2xl font-bold text-amber-600">-27%</p>
-            <p className="text-sm text-muted-foreground">vs 2024</p>
+            <p className="text-sm text-muted-foreground">{t("export.recommendations.page.summary.vsLastYear")}</p>
           </div>
           <div className="text-center p-4 bg-muted/50 rounded-lg">
             <p className="text-2xl font-bold text-green-600">18h</p>
-            <p className="text-sm text-muted-foreground">Heure de pointe</p>
+            <p className="text-sm text-muted-foreground">{t("export.recommendations.page.summary.peakHour")}</p>
           </div>
           <div className="text-center p-4 bg-muted/50 rounded-lg">
-            <p className="text-2xl font-bold text-blue-600">Dimanche</p>
-            <p className="text-sm text-muted-foreground">Jour le plus actif</p>
+            <p className="text-2xl font-bold text-blue-600">{t("export.recommendations.page.summary.sunday")}</p>
+            <p className="text-sm text-muted-foreground">{t("export.recommendations.page.summary.busiestDay")}</p>
           </div>
         </div>
       </section>

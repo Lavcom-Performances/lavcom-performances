@@ -1503,7 +1503,75 @@
       "peakConcentration": { "title": "Peak concentration", "description": "Activity is concentrated during {{hours}}. Consider off-peak promotions.", "impact": "Potential activity smoothing" },
       "highVarCosts": { "title": "High variable costs", "description": "Your variable costs ({{percent}}%) are above average.", "impact": "Supplier negotiation recommended" },
       "highFixedCosts": { "title": "High fixed costs", "description": "Your fixed costs exceed 60% of revenue. Renegotiate contracts.", "impact": "Cost reduction priority" },
-      "underperformingMachines": { "title": "Underperforming machines", "description": "{{count}} machine(s) generate less than 50% of average revenue.", "impact": "Maintenance or replacement to evaluate" }
+      "underperformingMachines": { "title": "Underperforming machines", "description": "{{count}} machine(s) generate less than 50% of average revenue.", "impact": "Maintenance or replacement to evaluate" },
+      "page": {
+        "subtitle": "Insights and recommended actions based on your data",
+        "downloadPdf": "Download PDF",
+        "generating": "Generating...",
+        "legend": "Legend",
+        "legendStrength": "Strength",
+        "legendProblem": "Problem to address",
+        "legendOpportunity": "Opportunity",
+        "sections": {
+          "performance": "Performance Analysis",
+          "optimization": "Optimization Opportunities",
+          "actions": "Recommended Actions",
+          "marketing": "Communication & Marketing Ideas"
+        },
+        "marketingIntro": "These ideas are automatically generated from your laundry's data (footfall, revenue breakdown, underused machines…). They are not obligations, but simple suggestions to test over a month. Adapt them to your neighborhood, clientele and resources.",
+        "estimatedImpact": "Estimated impact",
+        "effort": "Effort",
+        "effortLow": "Low",
+        "effortMedium": "Medium",
+        "effortHigh": "High",
+        "perMonth": "€/month",
+        "summary": {
+          "title": "Key Indicators Summary",
+          "revenue2025": "2025 Revenue (11 months)",
+          "vsLastYear": "vs 2024",
+          "peakHour": "Peak hour",
+          "busiestDay": "Busiest day",
+          "sunday": "Sunday"
+        },
+        "insights": {
+          "annualDecline": {
+            "title": "Annual revenue decline",
+            "description": "2025 revenue is down 27% compared to 2024. Analyze causes: competition, seasonality, technical issues?"
+          },
+          "dryer2Underperforming": {
+            "title": "Dryer 2 underperforming",
+            "description": "Dryer 2 generates only €219 (3.8% of machine revenue) vs €1606 for dryer 1. Check its condition."
+          },
+          "sundayBest": {
+            "title": "Sunday best day",
+            "description": "Sunday represents 21% of weekly activity with 2443 cycles. Ensure you have enough products and machines available."
+          },
+          "peakHours": {
+            "title": "Peak hours 4-7 PM",
+            "description": "The 4-7 PM slot accounts for 25% of cycles. Consider dynamic pricing or off-peak promotions (7-9 AM)."
+          },
+          "offPeakHours": {
+            "title": "Off-peak hours to leverage",
+            "description": "The 7-8 AM slots represent only 4% of activity. Offer morning discounts to smooth out traffic."
+          },
+          "cardMajority": {
+            "title": "Card payments majority",
+            "description": "81% of payments are by card. Keep your terminals in perfect condition and consider mobile payments."
+          },
+          "dryer2Diagnostic": {
+            "title": "Dryer 2 diagnostic",
+            "description": "Schedule preventive maintenance and check cycle times. The performance gap with dryer 1 is abnormal."
+          },
+          "offPeakCampaign": {
+            "title": "Off-peak hours campaign",
+            "description": "Launch a -20% offer on cycles before 10 AM to increase morning traffic and reduce peak congestion."
+          },
+          "competitionAnalysis": {
+            "title": "Competition analysis",
+            "description": "The 2025 revenue decline requires a market study. Check for new laundry openings in the area."
+          }
+        }
+      }
     }
   },
   "csvImport": {
