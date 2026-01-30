@@ -1137,7 +1137,75 @@
       "peakConcentration": { "title": "Stundenkonzentration", "description": "Die Aktivität konzentriert sich auf {{hours}} Uhr. Erwägen Sie Aktionen außerhalb der Spitzenzeiten.", "impact": "Mögliche Glättung der Aktivität" },
       "highVarCosts": { "title": "Hohe variable Kosten", "description": "Ihre variablen Kosten ({{percent}}%) liegen über dem Durchschnitt.", "impact": "Lieferantenverhandlung empfohlen" },
       "highFixedCosts": { "title": "Hohe Fixkosten", "description": "Ihre Fixkosten übersteigen 60% des Umsatzes. Verhandeln Sie Ihre Verträge neu.", "impact": "Kostenreduzierung prioritär" },
-      "underperformingMachines": { "title": "Unterperformende Maschinen", "description": "{{count}} Maschine(n) generieren weniger als 50% des durchschnittlichen Umsatzes.", "impact": "Wartung oder Austausch zu prüfen" }
+      "underperformingMachines": { "title": "Unterperformende Maschinen", "description": "{{count}} Maschine(n) generieren weniger als 50% des durchschnittlichen Umsatzes.", "impact": "Wartung oder Austausch zu prüfen" },
+      "page": {
+        "subtitle": "Erkenntnisse und empfohlene Maßnahmen basierend auf Ihren Daten",
+        "downloadPdf": "PDF herunterladen",
+        "generating": "Wird generiert...",
+        "legend": "Legende",
+        "legendStrength": "Stärke",
+        "legendProblem": "Problem zu lösen",
+        "legendOpportunity": "Chance",
+        "sections": {
+          "performance": "Leistungsanalyse",
+          "optimization": "Optimierungsmöglichkeiten",
+          "actions": "Empfohlene Maßnahmen",
+          "marketing": "Kommunikations- & Marketingideen"
+        },
+        "marketingIntro": "Diese Ideen werden automatisch aus den Daten Ihres Waschsalons generiert (Besucherzahlen, Umsatzverteilung, weniger genutzte Maschinen...). Sie sind keine Verpflichtungen, sondern einfache Vorschläge zum Testen über einen Monat. Passen Sie sie an Ihre Nachbarschaft, Kundschaft und Ressourcen an.",
+        "estimatedImpact": "Geschätzter Einfluss",
+        "effort": "Aufwand",
+        "effortLow": "Gering",
+        "effortMedium": "Mittel",
+        "effortHigh": "Hoch",
+        "perMonth": "€/Monat",
+        "summary": {
+          "title": "Zusammenfassung der Schlüsselindikatoren",
+          "revenue2025": "Umsatz 2025 (11 Monate)",
+          "vsLastYear": "vs 2024",
+          "peakHour": "Spitzenstunde",
+          "busiestDay": "Geschäftigster Tag",
+          "sunday": "Sonntag"
+        },
+        "insights": {
+          "annualDecline": {
+            "title": "Jährlicher Umsatzrückgang",
+            "description": "Der Umsatz 2025 ist 27% niedriger als 2024. Analysieren Sie die Ursachen: Wettbewerb, Saisonalität, technische Probleme?"
+          },
+          "dryer2Underperforming": {
+            "title": "Trockner 2 unterperformt",
+            "description": "Trockner 2 generiert nur 219€ (3,8% des Maschinenumsatzes) vs 1606€ für Trockner 1. Überprüfen Sie seinen Zustand."
+          },
+          "sundayBest": {
+            "title": "Sonntag bester Tag",
+            "description": "Sonntag macht 21% der wöchentlichen Aktivität mit 2443 Zyklen aus. Stellen Sie sicher, dass genügend Produkte und Maschinen verfügbar sind."
+          },
+          "peakHours": {
+            "title": "Spitzenzeiten 16-19 Uhr",
+            "description": "Die Zeitspanne 16-19 Uhr macht 25% der Zyklen aus. Erwägen Sie dynamische Preise oder Aktionen außerhalb der Spitzenzeiten (7-9 Uhr)."
+          },
+          "offPeakHours": {
+            "title": "Nebenstunden nutzen",
+            "description": "Die Zeitfenster 7-8 Uhr machen nur 4% der Aktivität aus. Bieten Sie Morgenrabatte an, um den Verkehr zu glätten."
+          },
+          "cardMajority": {
+            "title": "Kartenzahlungen dominieren",
+            "description": "81% der Zahlungen erfolgen per Karte. Halten Sie Ihre Terminals in einwandfreiem Zustand und erwägen Sie mobile Zahlungen."
+          },
+          "dryer2Diagnostic": {
+            "title": "Diagnose Trockner 2",
+            "description": "Planen Sie vorbeugende Wartung und überprüfen Sie die Zykluszeiten. Der Leistungsunterschied zu Trockner 1 ist ungewöhnlich."
+          },
+          "offPeakCampaign": {
+            "title": "Nebenstunden-Kampagne",
+            "description": "Starten Sie ein -20%-Angebot für Zyklen vor 10 Uhr, um den Morgenverkehr zu steigern und die Spitzenüberlastung zu reduzieren."
+          },
+          "competitionAnalysis": {
+            "title": "Wettbewerbsanalyse",
+            "description": "Der Umsatzrückgang 2025 erfordert eine Marktstudie. Prüfen Sie neue Wäscherei-Eröffnungen in der Umgebung."
+          }
+        }
+      }
     }
   },
   "csvImport": {

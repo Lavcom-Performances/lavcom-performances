@@ -1137,7 +1137,75 @@
       "peakConcentration": { "title": "Piekconcentratie", "description": "De activiteit concentreert zich op {{hours}} uur. Overweeg promoties buiten piekuren.", "impact": "Mogelijke spreiding van activiteit" },
       "highVarCosts": { "title": "Hoge variabele kosten", "description": "Uw variabele kosten ({{percent}}%) liggen boven het gemiddelde.", "impact": "Onderhandeling met leveranciers aanbevolen" },
       "highFixedCosts": { "title": "Hoge vaste kosten", "description": "Uw vaste kosten overschrijden 60% van de omzet. Heronderhandel uw contracten.", "impact": "Kostenreductie prioritair" },
-      "underperformingMachines": { "title": "Onderpresterende machines", "description": "{{count}} machine(s) genereren minder dan 50% van de gemiddelde omzet.", "impact": "Onderhoud of vervanging te evalueren" }
+      "underperformingMachines": { "title": "Onderpresterende machines", "description": "{{count}} machine(s) genereren minder dan 50% van de gemiddelde omzet.", "impact": "Onderhoud of vervanging te evalueren" },
+      "page": {
+        "subtitle": "Inzichten en aanbevolen acties op basis van uw gegevens",
+        "downloadPdf": "PDF downloaden",
+        "generating": "Genereren...",
+        "legend": "Legenda",
+        "legendStrength": "Sterk punt",
+        "legendProblem": "Op te lossen probleem",
+        "legendOpportunity": "Kans",
+        "sections": {
+          "performance": "Prestatieanalyse",
+          "optimization": "Optimalisatiekansen",
+          "actions": "Aanbevolen Acties",
+          "marketing": "Communicatie- & Marketingideeën"
+        },
+        "marketingIntro": "Deze ideeën worden automatisch gegenereerd uit de gegevens van uw wasserette (bezoekersaantallen, omzetverdeling, minder gebruikte machines...). Ze zijn geen verplichtingen, maar eenvoudige suggesties om een maand te testen. Pas ze aan aan uw buurt, klanten en middelen.",
+        "estimatedImpact": "Geschatte impact",
+        "effort": "Inspanning",
+        "effortLow": "Laag",
+        "effortMedium": "Gemiddeld",
+        "effortHigh": "Hoog",
+        "perMonth": "€/maand",
+        "summary": {
+          "title": "Samenvatting Kernindicatoren",
+          "revenue2025": "Omzet 2025 (11 maanden)",
+          "vsLastYear": "vs 2024",
+          "peakHour": "Piekuur",
+          "busiestDay": "Drukste dag",
+          "sunday": "Zondag"
+        },
+        "insights": {
+          "annualDecline": {
+            "title": "Jaarlijkse omzetdaling",
+            "description": "De omzet van 2025 is 27% lager dan 2024. Analyseer de oorzaken: concurrentie, seizoensinvloeden, technische problemen?"
+          },
+          "dryer2Underperforming": {
+            "title": "Droger 2 presteert ondermaats",
+            "description": "Droger 2 genereert slechts €219 (3,8% van de machineomzet) vs €1606 voor droger 1. Controleer de staat."
+          },
+          "sundayBest": {
+            "title": "Zondag beste dag",
+            "description": "Zondag vertegenwoordigt 21% van de wekelijkse activiteit met 2443 cycli. Zorg voor voldoende producten en beschikbare machines."
+          },
+          "peakHours": {
+            "title": "Piekuren 16-19u",
+            "description": "Het tijdsblok 16-19u omvat 25% van de cycli. Overweeg dynamische prijzen of promoties tijdens daluren (7-9u)."
+          },
+          "offPeakHours": {
+            "title": "Daluren benutten",
+            "description": "De tijdslots 7-8u vertegenwoordigen slechts 4% van de activiteit. Bied ochtendkortingen aan om het verkeer te spreiden."
+          },
+          "cardMajority": {
+            "title": "Kaartbetalingen domineren",
+            "description": "81% van de betalingen gebeurt per kaart. Houd uw terminals in perfecte staat en overweeg mobiele betalingen."
+          },
+          "dryer2Diagnostic": {
+            "title": "Diagnose droger 2",
+            "description": "Plan preventief onderhoud en controleer de cyclustijden. Het prestatieverschil met droger 1 is abnormaal."
+          },
+          "offPeakCampaign": {
+            "title": "Daluren-campagne",
+            "description": "Lanceer een -20% aanbieding op cycli vóór 10u om het ochtendverkeer te verhogen en de drukte tijdens piekuren te verminderen."
+          },
+          "competitionAnalysis": {
+            "title": "Concurrentieanalyse",
+            "description": "De omzetdaling in 2025 vereist een marktstudie. Controleer nieuwe wasserette-openingen in de buurt."
+          }
+        }
+      }
     }
   },
   "csvImport": {

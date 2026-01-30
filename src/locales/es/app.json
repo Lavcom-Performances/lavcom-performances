@@ -1137,7 +1137,75 @@
       "peakConcentration": { "title": "Concentración horaria", "description": "La actividad se concentra en las {{hours}} horas. Considere promociones fuera de pico.", "impact": "Posible suavizado de la actividad" },
       "highVarCosts": { "title": "Costes variables elevados", "description": "Sus costes variables ({{percent}}%) están por encima del promedio.", "impact": "Negociación con proveedores recomendada" },
       "highFixedCosts": { "title": "Costes fijos elevados", "description": "Sus costes fijos superan el 60% de los ingresos. Renegocie sus contratos.", "impact": "Reducción de costes prioritaria" },
-      "underperformingMachines": { "title": "Máquinas con bajo rendimiento", "description": "{{count}} máquina(s) generan menos del 50% de los ingresos promedio.", "impact": "Mantenimiento o reemplazo a evaluar" }
+      "underperformingMachines": { "title": "Máquinas con bajo rendimiento", "description": "{{count}} máquina(s) generan menos del 50% de los ingresos promedio.", "impact": "Mantenimiento o reemplazo a evaluar" },
+      "page": {
+        "subtitle": "Análisis y acciones recomendadas basadas en sus datos",
+        "downloadPdf": "Descargar PDF",
+        "generating": "Generando...",
+        "legend": "Leyenda",
+        "legendStrength": "Punto fuerte",
+        "legendProblem": "Problema a resolver",
+        "legendOpportunity": "Oportunidad",
+        "sections": {
+          "performance": "Análisis de Rendimiento",
+          "optimization": "Oportunidades de Optimización",
+          "actions": "Acciones Recomendadas",
+          "marketing": "Ideas de Comunicación y Marketing"
+        },
+        "marketingIntro": "Estas ideas se generan automáticamente a partir de los datos de su lavandería (afluencia, distribución de ingresos, máquinas menos utilizadas...). No son obligaciones, sino sugerencias simples para probar durante un mes. Adáptelas a su barrio, clientela y recursos.",
+        "estimatedImpact": "Impacto estimado",
+        "effort": "Esfuerzo",
+        "effortLow": "Bajo",
+        "effortMedium": "Medio",
+        "effortHigh": "Alto",
+        "perMonth": "€/mes",
+        "summary": {
+          "title": "Resumen de Indicadores Clave",
+          "revenue2025": "Ingresos 2025 (11 meses)",
+          "vsLastYear": "vs 2024",
+          "peakHour": "Hora punta",
+          "busiestDay": "Día más activo",
+          "sunday": "Domingo"
+        },
+        "insights": {
+          "annualDecline": {
+            "title": "Descenso de ingresos anuales",
+            "description": "Los ingresos de 2025 han bajado un 27% respecto a 2024. Analice las causas: competencia, estacionalidad, problemas técnicos."
+          },
+          "dryer2Underperforming": {
+            "title": "Secadora 2 con bajo rendimiento",
+            "description": "La secadora 2 genera solo 219€ (3.8% de ingresos de máquinas) vs 1606€ de la secadora 1. Verifique su estado."
+          },
+          "sundayBest": {
+            "title": "Domingo mejor día",
+            "description": "El domingo representa el 21% de la actividad semanal con 2443 ciclos. Asegúrese de tener suficientes productos y máquinas disponibles."
+          },
+          "peakHours": {
+            "title": "Horas punta 16-19h",
+            "description": "El horario de 16-19h concentra el 25% de los ciclos. Considere tarifas dinámicas o promociones en horas valle (7-9h)."
+          },
+          "offPeakHours": {
+            "title": "Horas valle a aprovechar",
+            "description": "Las franjas de 7-8h representan solo el 4% de la actividad. Ofrezca descuentos matutinos para suavizar el tráfico."
+          },
+          "cardMajority": {
+            "title": "Pagos con tarjeta mayoritarios",
+            "description": "El 81% de los pagos son con tarjeta. Mantenga sus terminales en perfecto estado y considere pagos móviles."
+          },
+          "dryer2Diagnostic": {
+            "title": "Diagnóstico secadora 2",
+            "description": "Programe mantenimiento preventivo y verifique los tiempos de ciclo. La diferencia de rendimiento con la secadora 1 es anormal."
+          },
+          "offPeakCampaign": {
+            "title": "Campaña horas valle",
+            "description": "Lance una oferta de -20% en ciclos antes de las 10h para aumentar el tráfico matutino y reducir la congestión en horas punta."
+          },
+          "competitionAnalysis": {
+            "title": "Análisis de competencia",
+            "description": "La caída de ingresos en 2025 requiere un estudio de mercado. Verifique nuevas aperturas de lavanderías en la zona."
+          }
+        }
+      }
     }
   },
   "csvImport": {

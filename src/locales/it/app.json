@@ -1137,7 +1137,75 @@
       "peakConcentration": { "title": "Concentrazione oraria", "description": "L'attività si concentra nelle ore {{hours}}. Considera promozioni fuori picco.", "impact": "Possibile livellamento dell'attività" },
       "highVarCosts": { "title": "Costi variabili elevati", "description": "I tuoi costi variabili ({{percent}}%) sono sopra la media.", "impact": "Negoziazione con i fornitori raccomandata" },
       "highFixedCosts": { "title": "Costi fissi elevati", "description": "I tuoi costi fissi superano il 60% del fatturato. Rinegozia i tuoi contratti.", "impact": "Riduzione dei costi prioritaria" },
-      "underperformingMachines": { "title": "Macchine sottoperformanti", "description": "{{count}} macchina/e generano meno del 50% del fatturato medio.", "impact": "Manutenzione o sostituzione da valutare" }
+      "underperformingMachines": { "title": "Macchine sottoperformanti", "description": "{{count}} macchina/e generano meno del 50% del fatturato medio.", "impact": "Manutenzione o sostituzione da valutare" },
+      "page": {
+        "subtitle": "Approfondimenti e azioni raccomandate basate sui tuoi dati",
+        "downloadPdf": "Scarica PDF",
+        "generating": "Generazione...",
+        "legend": "Legenda",
+        "legendStrength": "Punto di forza",
+        "legendProblem": "Problema da risolvere",
+        "legendOpportunity": "Opportunità",
+        "sections": {
+          "performance": "Analisi delle Prestazioni",
+          "optimization": "Opportunità di Ottimizzazione",
+          "actions": "Azioni Raccomandate",
+          "marketing": "Idee di Comunicazione e Marketing"
+        },
+        "marketingIntro": "Queste idee sono generate automaticamente dai dati della tua lavanderia (affluenza, distribuzione del fatturato, macchine meno utilizzate...). Non sono obblighi, ma suggerimenti semplici da testare per un mese. Adattali al tuo quartiere, clientela e risorse.",
+        "estimatedImpact": "Impatto stimato",
+        "effort": "Sforzo",
+        "effortLow": "Basso",
+        "effortMedium": "Medio",
+        "effortHigh": "Alto",
+        "perMonth": "€/mese",
+        "summary": {
+          "title": "Riepilogo Indicatori Chiave",
+          "revenue2025": "Fatturato 2025 (11 mesi)",
+          "vsLastYear": "vs 2024",
+          "peakHour": "Ora di punta",
+          "busiestDay": "Giorno più attivo",
+          "sunday": "Domenica"
+        },
+        "insights": {
+          "annualDecline": {
+            "title": "Calo del fatturato annuale",
+            "description": "Il fatturato 2025 è in calo del 27% rispetto al 2024. Analizza le cause: concorrenza, stagionalità, problemi tecnici?"
+          },
+          "dryer2Underperforming": {
+            "title": "Asciugatrice 2 sottoperformante",
+            "description": "L'asciugatrice 2 genera solo 219€ (3.8% del fatturato macchine) vs 1606€ per l'asciugatrice 1. Verifica le sue condizioni."
+          },
+          "sundayBest": {
+            "title": "Domenica giorno migliore",
+            "description": "La domenica rappresenta il 21% dell'attività settimanale con 2443 cicli. Assicurati di avere abbastanza prodotti e macchine disponibili."
+          },
+          "peakHours": {
+            "title": "Ore di punta 16-19",
+            "description": "La fascia 16-19 concentra il 25% dei cicli. Considera tariffe dinamiche o promozioni nelle ore basse (7-9)."
+          },
+          "offPeakHours": {
+            "title": "Ore basse da sfruttare",
+            "description": "Le fasce 7-8 rappresentano solo il 4% dell'attività. Offri sconti mattutini per livellare il traffico."
+          },
+          "cardMajority": {
+            "title": "Pagamenti con carta maggioritari",
+            "description": "L'81% dei pagamenti è con carta. Mantieni i tuoi terminali in perfetto stato e considera i pagamenti mobili."
+          },
+          "dryer2Diagnostic": {
+            "title": "Diagnostica asciugatrice 2",
+            "description": "Programma manutenzione preventiva e verifica i tempi di ciclo. La differenza di prestazioni con l'asciugatrice 1 è anomala."
+          },
+          "offPeakCampaign": {
+            "title": "Campagna ore basse",
+            "description": "Lancia un'offerta -20% sui cicli prima delle 10 per aumentare il traffico mattutino e ridurre la congestione nelle ore di punta."
+          },
+          "competitionAnalysis": {
+            "title": "Analisi della concorrenza",
+            "description": "Il calo del fatturato nel 2025 richiede uno studio di mercato. Verifica le nuove aperture di lavanderie nella zona."
+          }
+        }
+      }
     }
   },
   "csvImport": {
