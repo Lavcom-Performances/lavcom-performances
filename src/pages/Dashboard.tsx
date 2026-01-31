@@ -438,15 +438,38 @@ export default function Dashboard() {
 
         {/* Vue d'ensemble */}
         <TabsContent value="overview" className="space-y-6">
-          {/* Setup Progress Card - shows remaining steps */}
-          {!setupProgress.isComplete && !setupProgress.isLoading && (
-            <SetupProgressCard />
-          )}
-
-          {/* KPI Cards principales - Using RPC function */}
+          {/* KPI Cards principales - Using RPC function - PRIORITÉ #1 */}
           <DashboardKPIGrid dateRange={dateRange?.from && dateRange?.to ? { from: dateRange.from, to: dateRange.to } : undefined} />
 
-          {/* Business Actions - Top 3 */}
+          {/* Charts principaux - PRIORITÉ #2 - Pleine largeur */}
+          <motion.div 
+            data-tutorial="charts" 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
+          >
+            {/* En mode simple, graphiques pleine largeur */}
+            <div className={!isExpert ? "lg:col-span-2" : ""}>
+              <MonthlyRevenueChart startDate={dateRange?.from} endDate={dateRange?.to} />
+            </div>
+            {isExpert && stats.dailyData.length > 0 && <DailyRevenueChart data={stats.dailyData} />}
+          </motion.div>
+
+          {/* Charts Row 2 - Pleine largeur en mode simple */}
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
+          >
+            <div className={!isExpert ? "lg:col-span-2" : ""}>
+              <PaymentPieChart data={stats.paymentData} />
+            </div>
+            {isExpert && <WeekdayPerformanceChart data={stats.weekdayData} />}
+          </motion.div>
+
+          {/* Business Actions - Après les graphiques */}
           <BusinessActionsSection stats={stats} isLoading={isLoading} />
 
           {/* Expert: Nouveaux KPIs Rentabilité */}
@@ -505,55 +528,42 @@ export default function Dashboard() {
             </motion.div>
           )}
 
-          {/* Charts Row 1 */}
-          <motion.div 
-            data-tutorial="charts" 
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
-          >
-            <MonthlyRevenueChart startDate={dateRange?.from} endDate={dateRange?.to} />
-            {isExpert && stats.dailyData.length > 0 && <DailyRevenueChart data={stats.dailyData} />}
-          </motion.div>
-
-          {/* Charts Row 2 */}
-          <motion.div 
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
-          >
-            <PaymentPieChart data={stats.paymentData} />
-            {isExpert && <WeekdayPerformanceChart data={stats.weekdayData} />}
-          </motion.div>
-
           {/* Expert: Heatmap */}
           {isExpert && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.4, ease: "easeOut" }}
+              transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
             >
               <SalesHeatmap data={stats.heatmapData} />
             </motion.div>
           )}
 
-          {/* Activity Widgets */}
-          <motion.div 
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.4, ease: "easeOut" }}
-          >
-            {/* User's recent activity */}
-            <RecentActivityWidget limit={8} showFilters={true} />
-            
-            {/* Organization activity feed - only for admins */}
-            {isCompanyAdmin && organization && (
-              <OrgActivityFeed organizationId={organization.id} limit={15} />
-            )}
-          </motion.div>
+          {/* Setup Progress - En bas, discret */}
+          {!setupProgress.isComplete && !setupProgress.isLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.4, ease: "easeOut" }}
+            >
+              <SetupProgressCard />
+            </motion.div>
+          )}
+
+          {/* Activity Widgets - Expert uniquement */}
+          {isExpert && (
+            <motion.div 
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.4, ease: "easeOut" }}
+            >
+              <RecentActivityWidget limit={8} showFilters={true} />
+              {isCompanyAdmin && organization && (
+                <OrgActivityFeed organizationId={organization.id} limit={15} />
+              )}
+            </motion.div>
+          )}
         </TabsContent>
 
         {/* Financier */}
