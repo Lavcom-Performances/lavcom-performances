@@ -97,6 +97,7 @@ export default function ProfileContent() {
       company_name: companyName || null,
       phone: phone || null,
       siret: siret || null,
+      avatar_url: avatarUrl,
     });
 
     setIsLoading(false);
