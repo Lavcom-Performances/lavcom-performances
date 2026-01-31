@@ -1039,6 +1039,39 @@ export type Database = {
         }
         Relationships: []
       }
+      mfa_challenges: {
+        Row: {
+          action: string
+          created_at: string
+          expires_at: string
+          id: string
+          ip_hash: string | null
+          user_agent: string | null
+          user_id: string
+          verified_at: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_hash?: string | null
+          user_agent?: string | null
+          user_id: string
+          verified_at?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_hash?: string | null
+          user_agent?: string | null
+          user_id?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           archive_before_deletion: boolean
@@ -2205,6 +2238,7 @@ export type Database = {
         Args: { p_site_id: string; p_status?: string }
         Returns: number
       }
+      cleanup_expired_mfa_challenges: { Args: never; Returns: undefined }
       cleanup_old_cron_logs: { Args: never; Returns: undefined }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       cleanup_old_system_events: { Args: never; Returns: undefined }
@@ -2223,6 +2257,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      has_valid_mfa_session: {
+        Args: { p_action: string; p_user_id: string }
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
@@ -2410,6 +2448,16 @@ export type Database = {
           severity: string
           title: string
         }[]
+      }
+      rpc_record_mfa_event: {
+        Args: {
+          p_action: string
+          p_event_type: string
+          p_ip_hash?: string
+          p_success: boolean
+          p_user_agent?: string
+        }
+        Returns: undefined
       }
       rpc_run_smoke_tests: {
         Args: { p_site_id: string }

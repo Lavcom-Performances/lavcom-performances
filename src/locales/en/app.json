@@ -245,10 +245,23 @@
     "actionLabels": {
       "delete": "delete this item",
       "export": "export data",
+      "exportFinancial": "export financial data",
       "changePassword": "change your password",
       "deleteSite": "delete this site",
       "deleteAccount": "delete your account",
-      "disableMfa": "disable 2FA"
+      "disableMfa": "disable 2FA",
+      "impersonateUser": "access user account",
+      "changePlatformRole": "modify platform roles",
+      "toggleFeatureFlag": "toggle feature flags",
+      "runDrDrill": "run DR drill",
+      "generateComplianceReport": "generate compliance report",
+      "downloadArchive": "download archive",
+      "accessSecrets": "access secrets",
+      "systemConfig": "modify system configuration",
+      "removeTeamMember": "remove team member",
+      "changeUserRole": "change user role",
+      "billingChange": "modify billing",
+      "cancelSubscription": "cancel subscription"
     }
   },
   "charts": {
