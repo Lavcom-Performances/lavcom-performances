@@ -414,6 +414,81 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_login_events: {
+        Row: {
+          country: string | null
+          created_at: string
+          device_id: string
+          id: string
+          ip_hash: string | null
+          locale: string | null
+          risk_level: string | null
+          risk_reasons: string[] | null
+          timezone: string | null
+          user_agent_hash: string | null
+          user_id: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          device_id: string
+          id?: string
+          ip_hash?: string | null
+          locale?: string | null
+          risk_level?: string | null
+          risk_reasons?: string[] | null
+          timezone?: string | null
+          user_agent_hash?: string | null
+          user_id: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          device_id?: string
+          id?: string
+          ip_hash?: string | null
+          locale?: string | null
+          risk_level?: string | null
+          risk_reasons?: string[] | null
+          timezone?: string | null
+          user_agent_hash?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      auth_login_otps: {
+        Row: {
+          attempts: number | null
+          code_hash: string
+          created_at: string
+          device_id: string
+          expires_at: string
+          id: string
+          user_id: string
+          verified_at: string | null
+        }
+        Insert: {
+          attempts?: number | null
+          code_hash: string
+          created_at?: string
+          device_id: string
+          expires_at: string
+          id?: string
+          user_id: string
+          verified_at?: string | null
+        }
+        Update: {
+          attempts?: number | null
+          code_hash?: string
+          created_at?: string
+          device_id?: string
+          expires_at?: string
+          id?: string
+          user_id?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       churn_alert_settings: {
         Row: {
           alert_cooldown_hours: number
@@ -1648,6 +1723,30 @@ export type Database = {
         }
         Relationships: []
       }
+      recovery_codes: {
+        Row: {
+          code_hash: string
+          created_at: string
+          id: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code_hash: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code_hash?: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       site_access: {
         Row: {
           can_delete: boolean
@@ -2057,6 +2156,36 @@ export type Database = {
           },
         ]
       }
+      trusted_devices: {
+        Row: {
+          created_at: string
+          device_id: string
+          device_name: string | null
+          id: string
+          last_used_at: string
+          trusted_until: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          device_name?: string | null
+          id?: string
+          last_used_at?: string
+          trusted_until: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          device_name?: string | null
+          id?: string
+          last_used_at?: string
+          trusted_until?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_chart_preferences: {
         Row: {
           created_at: string
@@ -2238,11 +2367,15 @@ export type Database = {
         Args: { p_site_id: string; p_status?: string }
         Returns: number
       }
+      cleanup_expired_login_otps: { Args: never; Returns: undefined }
       cleanup_expired_mfa_challenges: { Args: never; Returns: undefined }
+      cleanup_expired_trusted_devices: { Args: never; Returns: undefined }
       cleanup_old_cron_logs: { Args: never; Returns: undefined }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       cleanup_old_system_events: { Args: never; Returns: undefined }
+      count_recovery_codes: { Args: { p_user_id: string }; Returns: number }
       derive_department_code: { Args: { postal_code: string }; Returns: string }
+      get_last_login_country: { Args: { p_user_id: string }; Returns: string }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       grant_platform_role: {
         Args: {
@@ -2266,6 +2399,10 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_company_admin: {
         Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_device_trusted: {
+        Args: { p_device_id: string; p_user_id: string }
         Returns: boolean
       }
       is_org_admin: {
@@ -2477,6 +2614,10 @@ export type Database = {
       trigger_compute_analytics_cron: { Args: never; Returns: undefined }
       user_belongs_to_org: {
         Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
+      was_device_seen_recently: {
+        Args: { p_device_id: string; p_user_id: string }
         Returns: boolean
       }
     }
