@@ -42,74 +42,80 @@ export function KPICard({
 
   return (
     <div className={cn(
-      "kpi-card animate-fade-in overflow-visible",
+      // Fixed height, clean border, consistent padding
+      "bg-card border border-border rounded-lg p-4 h-[120px] flex flex-col justify-between",
+      "transition-all duration-200 hover:shadow-md hover:border-primary/30",
       className
     )}>
+      {/* Header with icon */}
       <div className="flex items-start justify-between gap-2">
-        <div className="space-y-1 min-w-0 flex-1 overflow-visible">
-          <div className="flex items-center gap-1">
-            <p className="text-xs sm:text-sm font-medium text-muted-foreground line-clamp-1">
-              {title}
-            </p>
-            {helpText && (
-              <HelpTooltip content={helpText} side="top" />
-            )}
-          </div>
-          <p className={cn(
-            "text-base sm:text-lg lg:text-xl xl:text-2xl font-display font-bold tracking-tight",
-            "whitespace-nowrap",
-            variant === "primary" && "text-primary",
-            variant === "success" && "text-lime-600",
-            variant === "warning" && "text-amber-500"
-          )}>
-            {value}
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          {Icon && (
+            <div className={cn(
+              "p-1.5 rounded-md shrink-0",
+              variant === "default" && "bg-muted",
+              variant === "primary" && "bg-primary/10",
+              variant === "success" && "bg-lime-100 dark:bg-lime-900/30",
+              variant === "warning" && "bg-amber-100 dark:bg-amber-900/30"
+            )}>
+              <Icon className={cn(
+                "h-4 w-4",
+                variant === "default" && "text-muted-foreground",
+                variant === "primary" && "text-primary",
+                variant === "success" && "text-lime-600",
+                variant === "warning" && "text-amber-500"
+              )} />
+            </div>
+          )}
+          <p className="text-xs font-medium text-muted-foreground truncate uppercase tracking-wide">
+            {title}
           </p>
-          {subtitle && (
-            <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1" title={subtitle}>
-              {subtitle}
-            </p>
+          {helpText && (
+            <HelpTooltip content={helpText} side="top" />
           )}
         </div>
-        {Icon && (
-          <div className={cn(
-            "p-1.5 sm:p-2 rounded-lg shrink-0",
-            variant === "default" && "bg-muted",
-            variant === "primary" && "bg-primary/10",
-            variant === "success" && "bg-lime-100 dark:bg-lime-900/30",
-            variant === "warning" && "bg-amber-100 dark:bg-amber-900/30"
-          )}>
-            <Icon className={cn(
-              "h-4 w-4 sm:h-5 sm:w-5",
-              variant === "default" && "text-muted-foreground",
-              variant === "primary" && "text-primary",
-              variant === "success" && "text-lime-600",
-              variant === "warning" && "text-amber-500"
-            )} />
-          </div>
-        )}
       </div>
       
-      {trend && (
-        <div className="flex items-center gap-1 mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-border/50">
-          {trend.isPositive ? (
-            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-lime-600 shrink-0" />
-          ) : (
-            <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-red-500 shrink-0" />
-          )}
-          <span className={cn(
-            "text-xs sm:text-sm font-medium whitespace-nowrap",
-            trend.isPositive ? "text-lime-600" : "text-red-600"
-          )}>
-            {trend.isPositive ? "+" : "-"}{formatTrendValue(trend.value)}%
-          </span>
-          {/* Show label only in expert mode and on larger screens */}
-          {isExpert && (
-            <span className="hidden sm:inline text-[10px] sm:text-xs text-muted-foreground truncate">
-              vs précédent
+      {/* Value - main focus */}
+      <div className="flex-1 flex items-center">
+        <p className={cn(
+          "text-2xl lg:text-3xl font-bold tracking-tight tabular-nums",
+          variant === "primary" && "text-primary",
+          variant === "success" && "text-lime-600",
+          variant === "warning" && "text-amber-500",
+          variant === "default" && "text-foreground"
+        )}>
+          {value}
+        </p>
+      </div>
+
+      {/* Footer - subtitle or trend */}
+      <div className="h-5 flex items-center">
+        {trend ? (
+          <div className="flex items-center gap-1">
+            {trend.isPositive ? (
+              <TrendingUp className="h-3.5 w-3.5 text-lime-600 shrink-0" />
+            ) : (
+              <TrendingDown className="h-3.5 w-3.5 text-red-500 shrink-0" />
+            )}
+            <span className={cn(
+              "text-xs font-semibold",
+              trend.isPositive ? "text-lime-600" : "text-red-500"
+            )}>
+              {trend.isPositive ? "+" : "-"}{formatTrendValue(trend.value)}%
             </span>
-          )}
-        </div>
-      )}
+            {isExpert && (
+              <span className="text-xs text-muted-foreground ml-1">
+                vs N-1
+              </span>
+            )}
+          </div>
+        ) : subtitle ? (
+          <p className="text-xs text-muted-foreground truncate">
+            {subtitle}
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

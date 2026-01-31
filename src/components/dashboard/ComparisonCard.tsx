@@ -11,7 +11,6 @@ interface ComparisonCardProps {
   className?: string;
 }
 
-// Format percentage to reasonable precision
 function formatPercentage(value: number): string {
   if (Math.abs(value) >= 10) {
     return Math.round(value).toString();
@@ -36,39 +35,44 @@ export function ComparisonCard({
   
   return (
     <div className={cn(
-      "bg-card border border-border rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3",
+      // Fixed height card with clean structure
+      "bg-card border border-border rounded-lg p-4 h-[140px] flex flex-col",
+      "transition-all duration-200 hover:shadow-md hover:border-primary/30",
       className
     )}>
-      <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
+      {/* Title */}
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide truncate mb-3">
         {title}
       </p>
       
-      <div className="grid grid-cols-2 gap-2 sm:gap-4">
-        <div className="space-y-0.5 sm:space-y-1 min-w-0">
-          <p className="text-[10px] sm:text-xs text-muted-foreground">{currentLabel}</p>
-          <p className="text-base sm:text-lg font-bold text-foreground truncate">{current}</p>
+      {/* Values grid - takes remaining space */}
+      <div className="flex-1 grid grid-cols-2 gap-4">
+        <div className="flex flex-col justify-center">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">{currentLabel}</p>
+          <p className="text-xl font-bold text-foreground tabular-nums truncate">{current}</p>
         </div>
-        <div className="space-y-0.5 sm:space-y-1 min-w-0">
-          <p className="text-[10px] sm:text-xs text-muted-foreground">{previousLabel}</p>
-          <p className="text-base sm:text-lg font-semibold text-muted-foreground truncate">{previous}</p>
+        <div className="flex flex-col justify-center">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">{previousLabel}</p>
+          <p className="text-lg font-semibold text-muted-foreground tabular-nums truncate">{previous}</p>
         </div>
       </div>
       
+      {/* Trend indicator */}
       <div className={cn(
-        "flex items-center gap-1 pt-2 border-t border-border/50",
+        "flex items-center gap-1.5 pt-3 border-t border-border/50 mt-auto",
         isPositive ? "text-lime-600" : isNeutral ? "text-muted-foreground" : "text-red-500"
       )}>
         {isPositive ? (
-          <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+          <TrendingUp className="h-4 w-4 shrink-0" />
         ) : isNeutral ? (
-          <Minus className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+          <Minus className="h-4 w-4 shrink-0" />
         ) : (
-          <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+          <TrendingDown className="h-4 w-4 shrink-0" />
         )}
-        <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
+        <span className="text-sm font-semibold tabular-nums">
           {isPositive ? "+" : ""}{formatPercentage(percentageChange)}%
         </span>
-        <span className="hidden sm:inline text-[10px] sm:text-xs text-muted-foreground ml-1">
+        <span className="text-xs text-muted-foreground ml-1">
           vs {previousLabel}
         </span>
       </div>

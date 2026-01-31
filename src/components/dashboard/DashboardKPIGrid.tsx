@@ -7,7 +7,6 @@ import {
   Banknote, 
   ShoppingCart, 
   TrendingUp,
-  Percent,
   Clock,
   RefreshCw,
 } from "lucide-react";
@@ -23,19 +22,18 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
+      staggerChildren: 0.03,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 10, scale: 0.98 },
+  hidden: { opacity: 0, y: 8 },
   visible: { 
     opacity: 1, 
-    y: 0, 
-    scale: 1,
+    y: 0,
     transition: {
-      duration: 0.3,
+      duration: 0.2,
     }
   },
 };
@@ -61,10 +59,15 @@ export function DashboardKPIGrid({ dateRange }: DashboardKPIGridProps) {
     endDate
   );
 
-  // Show skeleton if loading, fetching, or site is being refreshed
   const showRefreshingState = isLoading || isFetching || (currentSiteId ? isRefreshing(currentSiteId) : false);
 
   const formatCurrency = (value: number) => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M €`;
+    }
+    if (value >= 10000) {
+      return `${(value / 1000).toFixed(0)}K €`;
+    }
     return new Intl.NumberFormat('fr-FR', { 
       minimumFractionDigits: 0,
       maximumFractionDigits: 0 
@@ -101,26 +104,18 @@ export function DashboardKPIGrid({ dateRange }: DashboardKPIGridProps) {
     ? Math.round((stats.revenueByCash / stats.totalRevenue) * 100) 
     : 0;
 
-  // Skeleton with "Mise à jour en cours" indicator
   if (showRefreshingState) {
     return (
-      <div className="space-y-2">
+      <div className="space-y-3">
         {(isFetching || (currentSiteId && isRefreshing(currentSiteId))) && !isLoading && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground animate-pulse">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <RefreshCw className="h-4 w-4 animate-spin" />
-            <span>Mise à jour en cours...</span>
+            <span>{t('app:dashboard.refreshing', { defaultValue: 'Mise à jour...' })}</span>
           </div>
         )}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="relative">
-              <Skeleton className="h-[120px] rounded-lg" />
-              {(isFetching || (currentSiteId && isRefreshing(currentSiteId))) && !isLoading && (
-                <div className="absolute inset-0 bg-background/50 backdrop-blur-[1px] rounded-lg flex items-center justify-center">
-                  <RefreshCw className="h-5 w-5 text-muted-foreground animate-spin" />
-                </div>
-              )}
-            </div>
+            <Skeleton key={i} className="h-[120px] rounded-lg" />
           ))}
         </div>
       </div>
@@ -130,7 +125,7 @@ export function DashboardKPIGrid({ dateRange }: DashboardKPIGridProps) {
   return (
     <motion.div 
       data-tutorial="kpis" 
-      className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4"
+      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -166,7 +161,7 @@ export function DashboardKPIGrid({ dateRange }: DashboardKPIGridProps) {
       <motion.div variants={itemVariants}>
         <KPICard
           title={t('app:dashboard.kpi.transactions')}
-          value={stats.totalTransactions.toString()}
+          value={stats.totalTransactions.toLocaleString('fr-FR')}
           icon={ShoppingCart}
           helpText={t('app:dashboard.help.transactions')}
         />
@@ -185,7 +180,7 @@ export function DashboardKPIGrid({ dateRange }: DashboardKPIGridProps) {
           value={stats.peakHour > 0 ? `${stats.peakHour}h` : '—'}
           icon={Clock}
           subtitle={stats.uniqueMachines > 0 ? `${stats.uniqueMachines} machines` : undefined}
-          helpText={t('app:dashboard.help.peakHour', { defaultValue: 'Heure de pointe sur la période' })}
+          helpText={t('app:dashboard.help.peakHour', { defaultValue: 'Heure de pointe' })}
         />
       </motion.div>
     </motion.div>
