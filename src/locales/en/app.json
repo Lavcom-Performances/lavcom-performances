@@ -234,6 +234,23 @@
     "disabledSuccessDescription": "Two-factor authentication has been disabled",
     "disableError": "Error disabling"
   },
+  "mfaChallenge": {
+    "title": "Verification required",
+    "description": "This action requires additional verification. Enter the code from your authenticator app.",
+    "descriptionWithAction": "To {{action}}, enter the code from your authenticator app.",
+    "hint": "Open your authenticator app (Google Authenticator, Authy, etc.) to get the code.",
+    "verifying": "Verifying...",
+    "verify": "Verify",
+    "success": "Verification successful",
+    "actionLabels": {
+      "delete": "delete this item",
+      "export": "export data",
+      "changePassword": "change your password",
+      "deleteSite": "delete this site",
+      "deleteAccount": "delete your account",
+      "disableMfa": "disable 2FA"
+    }
+  },
   "charts": {
     "annualRevenue": "Annual Revenue",
     "monthlyRevenue": "Monthly Revenue",

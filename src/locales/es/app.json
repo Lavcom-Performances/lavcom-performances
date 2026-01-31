@@ -238,6 +238,23 @@
       "noMatch": "Las contraseñas no coinciden"
     }
   },
+  "mfaChallenge": {
+    "title": "Verificación requerida",
+    "description": "Esta acción requiere verificación adicional. Ingrese el código de su aplicación de autenticación.",
+    "descriptionWithAction": "Para {{action}}, ingrese el código de su aplicación de autenticación.",
+    "hint": "Abra su aplicación de autenticación (Google Authenticator, Authy, etc.) para obtener el código.",
+    "verifying": "Verificando...",
+    "verify": "Verificar",
+    "success": "Verificación exitosa",
+    "actionLabels": {
+      "delete": "eliminar este elemento",
+      "export": "exportar datos",
+      "changePassword": "cambiar su contraseña",
+      "deleteSite": "eliminar este sitio",
+      "deleteAccount": "eliminar su cuenta",
+      "disableMfa": "desactivar 2FA"
+    }
+  },
   "charts": {
     "annualRevenue": "Ingresos anuales",
     "monthlyRevenue": "Ingresos mensuales",

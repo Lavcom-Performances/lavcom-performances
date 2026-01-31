@@ -238,6 +238,23 @@
       "noMatch": "Passwörter stimmen nicht überein"
     }
   },
+  "mfaChallenge": {
+    "title": "Verifizierung erforderlich",
+    "description": "Diese Aktion erfordert eine zusätzliche Verifizierung. Geben Sie den Code aus Ihrer Authentifizierungs-App ein.",
+    "descriptionWithAction": "Um {{action}}, geben Sie den Code aus Ihrer Authentifizierungs-App ein.",
+    "hint": "Öffnen Sie Ihre Authentifizierungs-App (Google Authenticator, Authy, etc.), um den Code zu erhalten.",
+    "verifying": "Verifizierung...",
+    "verify": "Verifizieren",
+    "success": "Verifizierung erfolgreich",
+    "actionLabels": {
+      "delete": "dieses Element zu löschen",
+      "export": "Daten zu exportieren",
+      "changePassword": "Ihr Passwort zu ändern",
+      "deleteSite": "diese Website zu löschen",
+      "deleteAccount": "Ihr Konto zu löschen",
+      "disableMfa": "2FA zu deaktivieren"
+    }
+  },
   "charts": {
     "annualRevenue": "Jahresumsatz",
     "monthlyRevenue": "Monatsumsatz",

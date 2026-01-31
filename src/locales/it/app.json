@@ -238,6 +238,23 @@
       "noMatch": "Le password non corrispondono"
     }
   },
+  "mfaChallenge": {
+    "title": "Verifica richiesta",
+    "description": "Questa azione richiede una verifica aggiuntiva. Inserisci il codice dalla tua app di autenticazione.",
+    "descriptionWithAction": "Per {{action}}, inserisci il codice dalla tua app di autenticazione.",
+    "hint": "Apri la tua app di autenticazione (Google Authenticator, Authy, ecc.) per ottenere il codice.",
+    "verifying": "Verifica in corso...",
+    "verify": "Verifica",
+    "success": "Verifica riuscita",
+    "actionLabels": {
+      "delete": "eliminare questo elemento",
+      "export": "esportare i dati",
+      "changePassword": "cambiare la tua password",
+      "deleteSite": "eliminare questo sito",
+      "deleteAccount": "eliminare il tuo account",
+      "disableMfa": "disattivare 2FA"
+    }
+  },
   "charts": {
     "annualRevenue": "Fatturato annuale",
     "monthlyRevenue": "Fatturato mensile",
