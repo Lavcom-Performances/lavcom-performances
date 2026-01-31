@@ -1091,6 +1091,51 @@
       "sessionEnded": "Session ended. Please log in again to retry."
     }
   },
+  "securityHealth": {
+    "title": "Security Health",
+    "description": "Complete the recommended steps to protect your account.",
+    "status": {
+      "good": "Good",
+      "needs_improvement": "Needs improvement",
+      "at_risk": "At risk"
+    },
+    "breakdown": {
+      "recoveryCodes": "Recovery codes",
+      "trustedDevices": "Devices",
+      "riskyLogins": "Risky logins",
+      "otpFailures": "OTP failures"
+    },
+    "actions": {
+      "title": "Recommended actions",
+      "description": "Strengthen your account security",
+      "allComplete": "All security actions are completed",
+      "securityOptimized": "Security optimized",
+      "alertsEnabled": "Alerts enabled",
+      "alertsDisabled": "Alerts disabled",
+      "sessionsRevoked": "Sessions revoked",
+      "sessionsRevokedDescription": "All other sessions have been closed",
+      "enable_mfa": {
+        "label": "Enable two-factor authentication",
+        "benefit": "Protects your account even if your password is compromised"
+      },
+      "generate_recovery_codes": {
+        "label": "Generate recovery codes",
+        "benefit": "Access your account if you lose your phone"
+      },
+      "review_trusted_devices": {
+        "label": "Review trusted devices",
+        "benefit": "Keep an eye on devices with access to your account"
+      },
+      "enable_new_device_alerts": {
+        "label": "Enable new device alerts",
+        "benefit": "Be notified when a new device logs in"
+      },
+      "revoke_sessions": {
+        "label": "Sign out other sessions",
+        "benefit": "Force re-login on all other devices"
+      }
+    }
+  },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Complete overview of your performance",

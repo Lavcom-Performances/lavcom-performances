@@ -966,6 +966,51 @@
       "sessionEnded": "Sessie beëindigd. Log opnieuw in om het opnieuw te proberen."
     }
   },
+  "securityHealth": {
+    "title": "Beveiligingsstatus",
+    "description": "Voltooi de aanbevolen stappen om uw account te beschermen.",
+    "status": {
+      "good": "Goed",
+      "needs_improvement": "Verbetering nodig",
+      "at_risk": "In gevaar"
+    },
+    "breakdown": {
+      "recoveryCodes": "Herstelcodes",
+      "trustedDevices": "Apparaten",
+      "riskyLogins": "Riskante aanmeldingen",
+      "otpFailures": "OTP-fouten"
+    },
+    "actions": {
+      "title": "Aanbevolen acties",
+      "description": "Versterk de beveiliging van uw account",
+      "allComplete": "Alle beveiligingsacties zijn voltooid",
+      "securityOptimized": "Beveiliging geoptimaliseerd",
+      "alertsEnabled": "Meldingen ingeschakeld",
+      "alertsDisabled": "Meldingen uitgeschakeld",
+      "sessionsRevoked": "Sessies ingetrokken",
+      "sessionsRevokedDescription": "Alle andere sessies zijn gesloten",
+      "enable_mfa": {
+        "label": "Twee-factor-authenticatie inschakelen",
+        "benefit": "Beschermt uw account zelfs als uw wachtwoord is gecompromitteerd"
+      },
+      "generate_recovery_codes": {
+        "label": "Herstelcodes genereren",
+        "benefit": "Krijg toegang tot uw account als u uw telefoon verliest"
+      },
+      "review_trusted_devices": {
+        "label": "Vertrouwde apparaten controleren",
+        "benefit": "Houd apparaten met toegang tot uw account in de gaten"
+      },
+      "enable_new_device_alerts": {
+        "label": "Meldingen voor nieuwe apparaten inschakelen",
+        "benefit": "Ontvang een melding wanneer een nieuw apparaat inlogt"
+      },
+      "revoke_sessions": {
+        "label": "Andere sessies uitloggen",
+        "benefit": "Forceer opnieuw inloggen op alle andere apparaten"
+      }
+    }
+  },
   "trialExpired": {
     "title": "Uw gratis proefperiode is beëindigd",
     "subtitle": "Blijf uw wasserettes optimaliseren met Lavcom Performances Pro",

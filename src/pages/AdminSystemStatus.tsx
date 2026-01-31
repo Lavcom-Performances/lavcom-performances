@@ -22,6 +22,7 @@ import { FeatureFlagsPanel } from '@/components/admin/FeatureFlagsPanel';
 import { PermissionTestsWidget } from '@/components/admin/PermissionTestsWidget';
 import { PerformanceSummaryWidget } from '@/components/admin/PerformanceSummaryWidget';
 import { PlatformReadinessWidget } from '@/components/admin/PlatformReadinessWidget';
+import { SecuritySignalsWidget } from '@/components/admin/SecuritySignalsWidget';
 
 interface SystemEvent {
   id: number;
@@ -396,6 +397,9 @@ export default function AdminSystemStatus() {
 
         {/* Performance Monitoring - TAEX-227 */}
         <PerformanceSummaryWidget />
+
+        {/* Security Signals - TAEX-234 */}
+        <SecuritySignalsWidget />
 
         {/* Recompute Analytics Section */}
         <RecomputeAnalyticsWidget />

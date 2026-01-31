@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   Shield, 
   Loader2,
@@ -17,6 +17,8 @@ import { LogRetentionSettings } from "./LogRetentionSettings";
 import { AuthSecurityAuditLog } from "./AuthSecurityAuditLog";
 import { TrustedDevicesManager } from "./TrustedDevicesManager";
 import { RecoveryCodesManager } from "./RecoveryCodesManager";
+import { SecurityHealthCard } from "./SecurityHealthCard";
+import { SecurityRecommendedActions } from "./SecurityRecommendedActions";
 
 export interface SecurityScore {
   score: number;
@@ -27,11 +29,30 @@ export interface SecurityScore {
 export function SecurityCenter() {
   const { t } = useTranslation(['app', 'common']);
   const { user, isEmailVerified } = useAuth();
+  const hasLoggedView = useRef(false);
   
   const [isLoading, setIsLoading] = useState(true);
   const [isMFAEnabled, setIsMFAEnabled] = useState(false);
   const [accountScore, setAccountScore] = useState<SecurityScore>({ score: 0, total: 0, percent: 0 });
   const [projectScore, setProjectScore] = useState<SecurityScore>({ score: 0, total: 0, percent: 0 });
+
+  // Refs for scrolling to sections
+  const recoveryCodesRef = useRef<HTMLDivElement>(null);
+  const trustedDevicesRef = useRef<HTMLDivElement>(null);
+
+  // Log view event once
+  useEffect(() => {
+    if (user && !hasLoggedView.current) {
+      hasLoggedView.current = true;
+      // Log via direct insert since we don't have a SELECT action type
+      supabase.from('audit_logs').insert({
+        actor_id: user.id,
+        action: 'SECURITY_HEALTH_VIEWED',
+        target_table: 'security',
+        metadata: { source: 'SecurityCenter' },
+      }).then(() => {});
+    }
+  }, [user]);
 
   useEffect(() => {
     const checkSecurityStatus = async () => {
@@ -94,8 +115,26 @@ export function SecurityCenter() {
     );
   }
 
+  // Scroll handlers for recommended actions
+  const scrollToRecoveryCodes = () => {
+    recoveryCodesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const scrollToTrustedDevices = () => {
+    trustedDevicesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
   return (
     <div className="space-y-6">
+      {/* Security Health Score - TAEX-234 */}
+      <SecurityHealthCard />
+
+      {/* Recommended Actions - TAEX-234 */}
+      <SecurityRecommendedActions 
+        onOpenRecoveryCodes={scrollToRecoveryCodes}
+        onOpenTrustedDevices={scrollToTrustedDevices}
+      />
+
       {/* Global Score Card */}
       <Card>
         <CardHeader className="pb-4">
@@ -175,10 +214,14 @@ export function SecurityCenter() {
       />
 
       {/* Trusted Devices */}
-      <TrustedDevicesManager />
+      <div ref={trustedDevicesRef}>
+        <TrustedDevicesManager />
+      </div>
 
       {/* Recovery Codes */}
-      <RecoveryCodesManager />
+      <div ref={recoveryCodesRef}>
+        <RecoveryCodesManager />
+      </div>
 
       {/* Login History */}
       <LoginHistory />

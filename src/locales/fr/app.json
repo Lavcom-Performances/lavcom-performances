@@ -1091,6 +1091,51 @@
       "sessionEnded": "Session terminée. Reconnectez-vous pour réessayer."
     }
   },
+  "securityHealth": {
+    "title": "Santé Sécurité",
+    "description": "Complétez les étapes recommandées pour protéger votre compte.",
+    "status": {
+      "good": "Bon",
+      "needs_improvement": "À améliorer",
+      "at_risk": "À risque"
+    },
+    "breakdown": {
+      "recoveryCodes": "Codes de secours",
+      "trustedDevices": "Appareils",
+      "riskyLogins": "Connexions à risque",
+      "otpFailures": "Échecs OTP"
+    },
+    "actions": {
+      "title": "Actions recommandées",
+      "description": "Renforcez la sécurité de votre compte",
+      "allComplete": "Toutes les actions de sécurité sont complétées",
+      "securityOptimized": "Sécurité optimisée",
+      "alertsEnabled": "Alertes activées",
+      "alertsDisabled": "Alertes désactivées",
+      "sessionsRevoked": "Sessions révoquées",
+      "sessionsRevokedDescription": "Toutes les autres sessions ont été fermées",
+      "enable_mfa": {
+        "label": "Activer l'authentification à deux facteurs",
+        "benefit": "Protège votre compte même si votre mot de passe est compromis"
+      },
+      "generate_recovery_codes": {
+        "label": "Générer des codes de récupération",
+        "benefit": "Accédez à votre compte si vous perdez votre téléphone"
+      },
+      "review_trusted_devices": {
+        "label": "Vérifier les appareils de confiance",
+        "benefit": "Gardez un œil sur les appareils ayant accès à votre compte"
+      },
+      "enable_new_device_alerts": {
+        "label": "Activer les alertes de nouvel appareil",
+        "benefit": "Soyez notifié lorsqu'un nouvel appareil se connecte"
+      },
+      "revoke_sessions": {
+        "label": "Déconnecter les autres sessions",
+        "benefit": "Forcez la reconnexion sur tous les autres appareils"
+      }
+    }
+  },
   "dashboard": {
     "title": "Tableau de bord",
     "subtitle": "Vue d'ensemble complète de vos performances",
