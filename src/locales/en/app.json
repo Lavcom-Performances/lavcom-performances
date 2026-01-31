@@ -1001,7 +1001,7 @@
       "signOutError": "An error occurred while signing out"
     },
     "loginHistory": {
-      "title": "Login History",
+      "title": "Login history",
       "description": "Kept for {{days}} days",
       "entries": "logins",
       "noLogs": "No logins recorded",
@@ -1012,7 +1012,7 @@
       "showAll": "Show all ({{count}} logins)"
     },
     "logRetention": {
-      "title": "Retention Period",
+      "title": "Retention period",
       "description": "Configure how long your login logs are kept",
       "daysLabel": "days",
       "days": "{{count}} days",
@@ -1021,11 +1021,73 @@
       "threeMonths": "3 months",
       "sixMonths": "6 months",
       "oneYear": "1 year",
-      "infoText": "Login logs older than this period will be automatically deleted every night.",
+      "infoText": "Login logs older than this duration will be automatically deleted each night.",
       "saveSuccess": "Preference saved",
       "saveSuccessDescription": "Your logs will be kept for {{days}} days"
     },
-    "openBackend": "Open backend"
+    "openBackend": "Open backend",
+    "trustedDevices": {
+      "title": "Trusted devices",
+      "description": "Devices that can sign in without additional verification",
+      "noDevices": "No trusted devices registered",
+      "unknownDevice": "Unknown device",
+      "currentDevice": "This device",
+      "expired": "Expired",
+      "lastUsed": "Last used {{time}}",
+      "expiresOn": "Expires on {{date}}",
+      "removeTitle": "Remove trusted device?",
+      "removeDescription": "The device \"{{device}}\" will need to pass security verification on next sign in.",
+      "removed": "Device removed",
+      "removedDescription": "This device is no longer trusted",
+      "removeError": "Unable to remove device"
+    },
+    "recoveryCodes": {
+      "title": "Recovery codes",
+      "description": "Use these codes to access your account if you lose access to your other authentication methods",
+      "generate": "Generate codes",
+      "regenerate": "Regenerate codes",
+      "codesRemaining": "{{count}} codes remaining",
+      "noCodesYet": "You haven't generated recovery codes yet",
+      "warningLow": "You only have {{count}} codes left. Consider generating new ones.",
+      "generating": "Generating...",
+      "generated": "Codes generated",
+      "generatedDescription": "{{count}} new recovery codes have been created",
+      "generateError": "Unable to generate codes",
+      "saveWarning": "Save these codes in a safe place. They won't be shown again.",
+      "download": "Download (.txt)",
+      "copied": "Codes copied",
+      "copiedDescription": "The codes have been copied to clipboard"
+    },
+    "riskLogin": {
+      "title": "Security verification",
+      "description": "We detected an unusual sign-in. Please confirm your identity.",
+      "tabs": {
+        "mfa": "Authenticator",
+        "email": "Email",
+        "recovery": "Recovery code"
+      },
+      "reasons": {
+        "newDevice": "New device",
+        "newCountry": "New country",
+        "newIp": "New IP address"
+      },
+      "mfaDescription": "Use your authenticator app to verify your identity",
+      "verifyWithMfa": "Verify with authenticator",
+      "mfaTitle": "MFA Verification",
+      "mfaDialogDescription": "Enter the code from your authenticator app",
+      "emailDescription": "We'll send you a verification code by email",
+      "sendCode": "Send code",
+      "enterCode": "Verification code",
+      "resendCode": "Resend",
+      "verify": "Verify",
+      "recoveryDescription": "Enter one of your recovery codes",
+      "enterRecoveryCode": "Recovery code",
+      "sendOtpError": "Unable to send verification code",
+      "verifyError": "Unable to verify code",
+      "invalidCodeFormat": "Code must contain 6 digits",
+      "invalidRecoveryFormat": "Recovery code must contain 8 characters",
+      "attemptsRemaining": "{{count}} attempt(s) remaining"
+    }
   },
   "dashboard": {
     "title": "Dashboard",

@@ -7,7 +7,6 @@ import {
   Key,
   Smartphone,
   AlertTriangle,
-  X
 } from 'lucide-react';
 import {
   Dialog,
@@ -21,8 +20,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLoginSecurity, RiskLevel } from '@/hooks/useLoginSecurity';
+import { MfaChallengeDialog } from '@/components/auth/MfaChallengeDialog';
+import { supabase } from '@/integrations/supabase/client';
 
-// MFA Challenge will be handled inline for simplicity
 interface RiskLoginVerificationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -43,7 +43,7 @@ export function RiskLoginVerificationModal({
   mfaEnrolled,
 }: RiskLoginVerificationModalProps) {
   const { t } = useTranslation(['app', 'common']);
-  const { sendLoginOtp, verifyLoginOtp, verifyRecoveryCode, isLoading } = useLoginSecurity();
+  const { sendLoginOtp, verifyLoginOtp, verifyRecoveryCode, trustDevice, isLoading } = useLoginSecurity();
   
   const [activeTab, setActiveTab] = useState<VerificationMethod>(mfaEnrolled ? 'mfa' : 'email');
   const [otpCode, setOtpCode] = useState('');
@@ -52,6 +52,7 @@ export function RiskLoginVerificationModal({
   const [otpSent, setOtpSent] = useState(false);
   const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
   const [showMfaDialog, setShowMfaDialog] = useState(false);
+  const [isMfaVerifying, setIsMfaVerifying] = useState(false);
 
   // Reset state when dialog opens
   useEffect(() => {
@@ -62,6 +63,7 @@ export function RiskLoginVerificationModal({
       setOtpSent(false);
       setRemainingAttempts(null);
       setActiveTab(mfaEnrolled ? 'mfa' : 'email');
+      setShowMfaDialog(false);
     }
   }, [isOpen, mfaEnrolled]);
 
@@ -110,6 +112,49 @@ export function RiskLoginVerificationModal({
     }
   };
 
+  const handleMfaVerify = async (code: string): Promise<{ success: boolean; error?: string }> => {
+    setIsMfaVerifying(true);
+    try {
+      // Get the user's MFA factors
+      const { data: factorsData } = await supabase.auth.mfa.listFactors();
+      const totpFactor = factorsData?.totp?.find(f => f.status === 'verified');
+      
+      if (!totpFactor) {
+        return { success: false, error: t('app:mfa.noFactorEnrolled') };
+      }
+      
+      // Create a challenge
+      const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId: totpFactor.id,
+      });
+      
+      if (challengeError || !challengeData) {
+        return { success: false, error: challengeError?.message || 'Challenge failed' };
+      }
+      
+      // Verify the code
+      const { error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: totpFactor.id,
+        challengeId: challengeData.id,
+        code,
+      });
+      
+      if (verifyError) {
+        return { success: false, error: verifyError.message };
+      }
+      
+      // Trust the device after successful MFA
+      await trustDevice();
+      
+      return { success: true };
+    } catch (err) {
+      console.error('[RiskLoginVerification] MFA verification error:', err);
+      return { success: false, error: 'Verification failed' };
+    } finally {
+      setIsMfaVerifying(false);
+    }
+  };
+
   const handleMfaSuccess = () => {
     setShowMfaDialog(false);
     onVerified();
@@ -127,6 +172,9 @@ export function RiskLoginVerificationModal({
         return reason;
     }
   };
+
+  // Determine the grid columns based on available tabs
+  const tabCount = mfaEnrolled ? 3 : 2;
 
   return (
     <>
@@ -156,7 +204,7 @@ export function RiskLoginVerificationModal({
               {reasons.map((reason) => (
                 <div 
                   key={reason}
-                  className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded text-sm"
+                  className="flex items-center gap-1 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded text-sm"
                 >
                   <AlertTriangle className="h-3 w-3" />
                   {getReasonLabel(reason)}
@@ -166,7 +214,7 @@ export function RiskLoginVerificationModal({
           )}
 
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as VerificationMethod)}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className={`grid w-full ${tabCount === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
               {mfaEnrolled && (
                 <TabsTrigger value="mfa" className="gap-1">
                   <Smartphone className="h-3 w-3" />
@@ -304,7 +352,16 @@ export function RiskLoginVerificationModal({
         </DialogContent>
       </Dialog>
 
-      {/* MFA Challenge - TODO: Integrate with existing MFA system */}
+      {/* MFA Challenge Dialog */}
+      <MfaChallengeDialog
+        open={showMfaDialog}
+        onOpenChange={setShowMfaDialog}
+        onVerify={handleMfaVerify}
+        onSuccess={handleMfaSuccess}
+        onCancel={() => setShowMfaDialog(false)}
+        isVerifying={isMfaVerifying}
+        actionLabel={t('app:securityCenter.riskLogin.title')}
+      />
     </>
   );
 }

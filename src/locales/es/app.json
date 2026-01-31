@@ -900,7 +900,69 @@
       "saveSuccess": "Preferencia guardada",
       "saveSuccessDescription": "Sus registros se conservarán durante {{days}} días"
     },
-    "openBackend": "Abrir backend"
+    "openBackend": "Abrir backend",
+    "trustedDevices": {
+      "title": "Dispositivos de confianza",
+      "description": "Dispositivos que pueden iniciar sesión sin verificación adicional",
+      "noDevices": "No hay dispositivos de confianza registrados",
+      "unknownDevice": "Dispositivo desconocido",
+      "currentDevice": "Este dispositivo",
+      "expired": "Expirado",
+      "lastUsed": "Último uso {{time}}",
+      "expiresOn": "Expira el {{date}}",
+      "removeTitle": "¿Eliminar dispositivo de confianza?",
+      "removeDescription": "El dispositivo \"{{device}}\" deberá pasar la verificación de seguridad en el próximo inicio de sesión.",
+      "removed": "Dispositivo eliminado",
+      "removedDescription": "Este dispositivo ya no es de confianza",
+      "removeError": "No se pudo eliminar el dispositivo"
+    },
+    "recoveryCodes": {
+      "title": "Códigos de recuperación",
+      "description": "Use estos códigos para acceder a su cuenta si pierde el acceso a sus otros métodos de autenticación",
+      "generate": "Generar códigos",
+      "regenerate": "Regenerar códigos",
+      "codesRemaining": "{{count}} códigos restantes",
+      "noCodesYet": "Aún no ha generado códigos de recuperación",
+      "warningLow": "Solo le quedan {{count}} códigos. Considere generar nuevos.",
+      "generating": "Generando...",
+      "generated": "Códigos generados",
+      "generatedDescription": "Se han creado {{count}} nuevos códigos de recuperación",
+      "generateError": "No se pudieron generar los códigos",
+      "saveWarning": "Guarde estos códigos en un lugar seguro. No se mostrarán de nuevo.",
+      "download": "Descargar (.txt)",
+      "copied": "Códigos copiados",
+      "copiedDescription": "Los códigos se han copiado al portapapeles"
+    },
+    "riskLogin": {
+      "title": "Verificación de seguridad",
+      "description": "Detectamos un inicio de sesión inusual. Por favor confirme su identidad.",
+      "tabs": {
+        "mfa": "Authenticator",
+        "email": "Correo",
+        "recovery": "Código de recuperación"
+      },
+      "reasons": {
+        "newDevice": "Nuevo dispositivo",
+        "newCountry": "Nuevo país",
+        "newIp": "Nueva dirección IP"
+      },
+      "mfaDescription": "Use su aplicación de autenticación para verificar su identidad",
+      "verifyWithMfa": "Verificar con authenticator",
+      "mfaTitle": "Verificación MFA",
+      "mfaDialogDescription": "Ingrese el código de su aplicación de autenticación",
+      "emailDescription": "Le enviaremos un código de verificación por correo",
+      "sendCode": "Enviar código",
+      "enterCode": "Código de verificación",
+      "resendCode": "Reenviar",
+      "verify": "Verificar",
+      "recoveryDescription": "Ingrese uno de sus códigos de recuperación",
+      "enterRecoveryCode": "Código de recuperación",
+      "sendOtpError": "No se pudo enviar el código de verificación",
+      "verifyError": "No se pudo verificar el código",
+      "invalidCodeFormat": "El código debe contener 6 dígitos",
+      "invalidRecoveryFormat": "El código de recuperación debe contener 8 caracteres",
+      "attemptsRemaining": "{{count}} intento(s) restante(s)"
+    }
   },
   "trialExpired": {
     "title": "Su prueba gratuita ha terminado",

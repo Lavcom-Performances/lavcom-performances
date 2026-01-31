@@ -900,7 +900,69 @@
       "saveSuccess": "Preferenza salvata",
       "saveSuccessDescription": "I tuoi log verranno conservati per {{days}} giorni"
     },
-    "openBackend": "Apri backend"
+    "openBackend": "Apri backend",
+    "trustedDevices": {
+      "title": "Dispositivi attendibili",
+      "description": "Dispositivi che possono accedere senza verifica aggiuntiva",
+      "noDevices": "Nessun dispositivo attendibile registrato",
+      "unknownDevice": "Dispositivo sconosciuto",
+      "currentDevice": "Questo dispositivo",
+      "expired": "Scaduto",
+      "lastUsed": "Ultimo utilizzo {{time}}",
+      "expiresOn": "Scade il {{date}}",
+      "removeTitle": "Rimuovere dispositivo attendibile?",
+      "removeDescription": "Il dispositivo \"{{device}}\" dovrà passare la verifica di sicurezza al prossimo accesso.",
+      "removed": "Dispositivo rimosso",
+      "removedDescription": "Questo dispositivo non è più attendibile",
+      "removeError": "Impossibile rimuovere il dispositivo"
+    },
+    "recoveryCodes": {
+      "title": "Codici di recupero",
+      "description": "Usa questi codici per accedere al tuo account se perdi l'accesso agli altri metodi di autenticazione",
+      "generate": "Genera codici",
+      "regenerate": "Rigenera codici",
+      "codesRemaining": "{{count}} codici rimanenti",
+      "noCodesYet": "Non hai ancora generato codici di recupero",
+      "warningLow": "Ti restano solo {{count}} codici. Considera di generarne di nuovi.",
+      "generating": "Generazione in corso...",
+      "generated": "Codici generati",
+      "generatedDescription": "Sono stati creati {{count}} nuovi codici di recupero",
+      "generateError": "Impossibile generare i codici",
+      "saveWarning": "Salva questi codici in un luogo sicuro. Non verranno più mostrati.",
+      "download": "Scarica (.txt)",
+      "copied": "Codici copiati",
+      "copiedDescription": "I codici sono stati copiati negli appunti"
+    },
+    "riskLogin": {
+      "title": "Verifica di sicurezza",
+      "description": "Abbiamo rilevato un accesso insolito. Per favore conferma la tua identità.",
+      "tabs": {
+        "mfa": "Authenticator",
+        "email": "Email",
+        "recovery": "Codice di recupero"
+      },
+      "reasons": {
+        "newDevice": "Nuovo dispositivo",
+        "newCountry": "Nuovo paese",
+        "newIp": "Nuovo indirizzo IP"
+      },
+      "mfaDescription": "Usa la tua app di autenticazione per verificare la tua identità",
+      "verifyWithMfa": "Verifica con authenticator",
+      "mfaTitle": "Verifica MFA",
+      "mfaDialogDescription": "Inserisci il codice dalla tua app di autenticazione",
+      "emailDescription": "Ti invieremo un codice di verifica via email",
+      "sendCode": "Invia codice",
+      "enterCode": "Codice di verifica",
+      "resendCode": "Reinvia",
+      "verify": "Verifica",
+      "recoveryDescription": "Inserisci uno dei tuoi codici di recupero",
+      "enterRecoveryCode": "Codice di recupero",
+      "sendOtpError": "Impossibile inviare il codice di verifica",
+      "verifyError": "Impossibile verificare il codice",
+      "invalidCodeFormat": "Il codice deve contenere 6 cifre",
+      "invalidRecoveryFormat": "Il codice di recupero deve contenere 8 caratteri",
+      "attemptsRemaining": "{{count}} tentativo/i rimanente/i"
+    }
   },
   "trialExpired": {
     "title": "La tua prova gratuita è terminata",
