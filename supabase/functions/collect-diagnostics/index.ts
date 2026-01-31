@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { verifyAuth, isPlatformAdmin, getServiceClient } from "../_shared/auth.ts";
+import { assertPlatformMfaOr403 } from "../_shared/mfa.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -48,20 +49,16 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Auth check
-    const authResult = await verifyAuth(req);
-    if (authResult.error || !authResult.user) {
-      console.error('[collect-diagnostics] Auth failed:', authResult.error);
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // TAEX-232: Enforce MFA for platform admins
+    const mfaCheck = await assertPlatformMfaOr403(req, 'access_secrets');
+    if (!mfaCheck.allowed) {
+      return mfaCheck.response!;
     }
 
-    const userId = authResult.user.id;
-    const userEmail = authResult.user.email;
+    const userId = mfaCheck.userId!;
+    const userEmail = mfaCheck.userEmail;
 
-    // Check platform admin role
+    // Check platform admin role (MFA already verified authentication)
     const isAdmin = await isPlatformAdmin(userId);
     if (!isAdmin) {
       console.warn(`[collect-diagnostics] Non-admin access attempt by ${userId}`);

@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkFeatureOrBlock } from "../_shared/feature-flags.ts";
+import { assertPlatformMfaOr403 } from "../_shared/mfa.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -108,39 +109,25 @@ Deno.serve(async (req) => {
       return flagCheck.response;
     }
 
-    // Verify authorization
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // TAEX-232: Enforce MFA for platform admins
+    const mfaCheck = await assertPlatformMfaOr403(req, 'run_dr_drill');
+    if (!mfaCheck.allowed) {
+      return mfaCheck.response!;
     }
 
-    // User client for auth check
-    const supabaseUser = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY") ?? "", {
-      global: { headers: { Authorization: authHeader } },
-      auth: { autoRefreshToken: false, persistSession: false },
-    });
+    const userId = mfaCheck.userId!;
+    const userEmail = mfaCheck.userEmail;
 
     // Admin client for operations
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    // Verify user is platform super admin
-    const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
+    // Verify user is platform super admin (MFA check already passed, but verify role level)
     const { data: roleCheck } = await supabaseAdmin
       .from("platform_roles")
       .select("role")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     if (!roleCheck || roleCheck.role !== "super_admin") {
@@ -149,6 +136,8 @@ Deno.serve(async (req) => {
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const user = { id: userId, email: userEmail };
 
     const body = await req.json().catch(() => ({}));
     const requestedEnv = body.environment || "staging";

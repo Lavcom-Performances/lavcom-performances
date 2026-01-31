@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { assertPlatformMfaOr403 } from '../_shared/mfa.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -44,33 +45,20 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Auth: super_admin only
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { 
-        status: 401, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      });
+    // TAEX-232: Enforce MFA for platform admins
+    const mfaCheck = await assertPlatformMfaOr403(req, 'access_secrets');
+    if (!mfaCheck.allowed) {
+      return mfaCheck.response!;
     }
 
+    const userId = mfaCheck.userId!;
+
+    // Verify super_admin role (MFA check already verified auth)
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { 
-        status: 401, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      });
-    }
-
-    const userId = claimsData.claims.sub as string;
-
-    // Check if user is platform super_admin
     const { data: platformRole } = await supabase
       .from('platform_roles')
       .select('role')
@@ -83,7 +71,7 @@ Deno.serve(async (req) => {
       await supabase.rpc('rpc_log_system_event', {
         p_source: 'secrets-health',
         p_severity: 'warn',
-        p_message: 'Unauthorized secrets-health access attempt',
+        p_message: 'Unauthorized secrets-health access attempt (admin without super_admin)',
         p_code: 'SECRETS_HEALTH_UNAUTHORIZED',
         p_meta: { actor_id: userId },
         p_env: Deno.env.get('ENVIRONMENT') || 'staging',
