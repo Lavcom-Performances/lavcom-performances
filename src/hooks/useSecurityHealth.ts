@@ -84,10 +84,10 @@ export function useSecurityHealth(): UseSecurityHealthResult {
           .is('verified_at', null)
           .gte('created_at', thirtyDaysAgo.toISOString()),
         
-        // Get notification preferences
+        // Get notification preferences (cast to any to handle new column)
         supabase
           .from('notification_preferences')
-          .select('notify_new_device_login')
+          .select('*')
           .eq('user_id', user.id)
           .maybeSingle(),
       ]);
@@ -100,7 +100,9 @@ export function useSecurityHealth(): UseSecurityHealthResult {
       const otpFailuresLast30Days = otpFailuresResult.count ?? 0;
 
       // Notification preference (default to true if not set)
-      const notifyPref = notificationPrefsResult.data?.notify_new_device_login ?? true;
+      // Use type assertion since the column was just added
+      const prefsData = notificationPrefsResult.data as Record<string, unknown> | null;
+      const notifyPref = (prefsData?.notify_new_device_login as boolean) ?? true;
       setNotifyNewDeviceLoginState(notifyPref);
 
       const securityInputs: SecurityHealthInputs = {

@@ -1160,6 +1160,7 @@ export type Database = {
           last_audit_report_sent_at: string | null
           maintenance_alerts: boolean
           member_removal_alerts: boolean
+          notify_new_device_login: boolean
           permission_change_alerts: boolean
           push_alerts: boolean
           revenue_alerts: boolean
@@ -1180,6 +1181,7 @@ export type Database = {
           last_audit_report_sent_at?: string | null
           maintenance_alerts?: boolean
           member_removal_alerts?: boolean
+          notify_new_device_login?: boolean
           permission_change_alerts?: boolean
           push_alerts?: boolean
           revenue_alerts?: boolean
@@ -1200,6 +1202,7 @@ export type Database = {
           last_audit_report_sent_at?: string | null
           maintenance_alerts?: boolean
           member_removal_alerts?: boolean
+          notify_new_device_login?: boolean
           permission_change_alerts?: boolean
           push_alerts?: boolean
           revenue_alerts?: boolean

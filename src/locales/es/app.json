@@ -966,6 +966,51 @@
       "sessionEnded": "Sesión terminada. Por favor inicie sesión de nuevo."
     }
   },
+  "securityHealth": {
+    "title": "Estado de Seguridad",
+    "description": "Complete los pasos recomendados para proteger su cuenta.",
+    "status": {
+      "good": "Bueno",
+      "needs_improvement": "Necesita mejoras",
+      "at_risk": "En riesgo"
+    },
+    "breakdown": {
+      "recoveryCodes": "Códigos de recuperación",
+      "trustedDevices": "Dispositivos",
+      "riskyLogins": "Inicios de sesión riesgosos",
+      "otpFailures": "Fallos OTP"
+    },
+    "actions": {
+      "title": "Acciones recomendadas",
+      "description": "Refuerce la seguridad de su cuenta",
+      "allComplete": "Todas las acciones de seguridad están completas",
+      "securityOptimized": "Seguridad optimizada",
+      "alertsEnabled": "Alertas activadas",
+      "alertsDisabled": "Alertas desactivadas",
+      "sessionsRevoked": "Sesiones revocadas",
+      "sessionsRevokedDescription": "Todas las demás sesiones han sido cerradas",
+      "enable_mfa": {
+        "label": "Activar autenticación de dos factores",
+        "benefit": "Protege su cuenta incluso si su contraseña es comprometida"
+      },
+      "generate_recovery_codes": {
+        "label": "Generar códigos de recuperación",
+        "benefit": "Acceda a su cuenta si pierde su teléfono"
+      },
+      "review_trusted_devices": {
+        "label": "Revisar dispositivos de confianza",
+        "benefit": "Vigile los dispositivos con acceso a su cuenta"
+      },
+      "enable_new_device_alerts": {
+        "label": "Activar alertas de nuevo dispositivo",
+        "benefit": "Sea notificado cuando un nuevo dispositivo inicie sesión"
+      },
+      "revoke_sessions": {
+        "label": "Cerrar otras sesiones",
+        "benefit": "Forzar reconexión en todos los demás dispositivos"
+      }
+    }
+  },
   "trialExpired": {
     "title": "Su prueba gratuita ha terminado",
     "subtitle": "Continúe optimizando sus lavanderías con Lavcom Performances Pro",

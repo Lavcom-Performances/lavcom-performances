@@ -966,6 +966,51 @@
       "sessionEnded": "Sitzung beendet. Bitte melden Sie sich erneut an."
     }
   },
+  "securityHealth": {
+    "title": "Sicherheitsstatus",
+    "description": "Führen Sie die empfohlenen Schritte aus, um Ihr Konto zu schützen.",
+    "status": {
+      "good": "Gut",
+      "needs_improvement": "Verbesserungsbedürftig",
+      "at_risk": "Gefährdet"
+    },
+    "breakdown": {
+      "recoveryCodes": "Wiederherstellungscodes",
+      "trustedDevices": "Geräte",
+      "riskyLogins": "Riskante Anmeldungen",
+      "otpFailures": "OTP-Fehler"
+    },
+    "actions": {
+      "title": "Empfohlene Aktionen",
+      "description": "Verstärken Sie die Sicherheit Ihres Kontos",
+      "allComplete": "Alle Sicherheitsmaßnahmen sind abgeschlossen",
+      "securityOptimized": "Sicherheit optimiert",
+      "alertsEnabled": "Benachrichtigungen aktiviert",
+      "alertsDisabled": "Benachrichtigungen deaktiviert",
+      "sessionsRevoked": "Sitzungen widerrufen",
+      "sessionsRevokedDescription": "Alle anderen Sitzungen wurden geschlossen",
+      "enable_mfa": {
+        "label": "Zwei-Faktor-Authentifizierung aktivieren",
+        "benefit": "Schützt Ihr Konto, auch wenn Ihr Passwort kompromittiert wird"
+      },
+      "generate_recovery_codes": {
+        "label": "Wiederherstellungscodes generieren",
+        "benefit": "Zugriff auf Ihr Konto, wenn Sie Ihr Telefon verlieren"
+      },
+      "review_trusted_devices": {
+        "label": "Vertrauenswürdige Geräte überprüfen",
+        "benefit": "Behalten Sie die Geräte mit Zugriff auf Ihr Konto im Auge"
+      },
+      "enable_new_device_alerts": {
+        "label": "Benachrichtigungen für neue Geräte aktivieren",
+        "benefit": "Werden Sie benachrichtigt, wenn sich ein neues Gerät anmeldet"
+      },
+      "revoke_sessions": {
+        "label": "Andere Sitzungen abmelden",
+        "benefit": "Erzwingen Sie eine erneute Anmeldung auf allen anderen Geräten"
+      }
+    }
+  },
   "trialExpired": {
     "title": "Ihre kostenlose Testversion ist beendet",
     "subtitle": "Optimieren Sie Ihre Waschsalons weiter mit Lavcom Performances Pro",

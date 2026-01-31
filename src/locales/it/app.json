@@ -966,6 +966,51 @@
       "sessionEnded": "Sessione terminata. Effettua nuovamente l'accesso."
     }
   },
+  "securityHealth": {
+    "title": "Stato Sicurezza",
+    "description": "Completa i passaggi consigliati per proteggere il tuo account.",
+    "status": {
+      "good": "Buono",
+      "needs_improvement": "Da migliorare",
+      "at_risk": "A rischio"
+    },
+    "breakdown": {
+      "recoveryCodes": "Codici di recupero",
+      "trustedDevices": "Dispositivi",
+      "riskyLogins": "Accessi rischiosi",
+      "otpFailures": "Errori OTP"
+    },
+    "actions": {
+      "title": "Azioni consigliate",
+      "description": "Rafforza la sicurezza del tuo account",
+      "allComplete": "Tutte le azioni di sicurezza sono completate",
+      "securityOptimized": "Sicurezza ottimizzata",
+      "alertsEnabled": "Avvisi attivati",
+      "alertsDisabled": "Avvisi disattivati",
+      "sessionsRevoked": "Sessioni revocate",
+      "sessionsRevokedDescription": "Tutte le altre sessioni sono state chiuse",
+      "enable_mfa": {
+        "label": "Attiva autenticazione a due fattori",
+        "benefit": "Protegge il tuo account anche se la password è compromessa"
+      },
+      "generate_recovery_codes": {
+        "label": "Genera codici di recupero",
+        "benefit": "Accedi al tuo account se perdi il telefono"
+      },
+      "review_trusted_devices": {
+        "label": "Controlla i dispositivi attendibili",
+        "benefit": "Tieni d'occhio i dispositivi con accesso al tuo account"
+      },
+      "enable_new_device_alerts": {
+        "label": "Attiva avvisi per nuovi dispositivi",
+        "benefit": "Ricevi una notifica quando un nuovo dispositivo effettua l'accesso"
+      },
+      "revoke_sessions": {
+        "label": "Disconnetti altre sessioni",
+        "benefit": "Forza il nuovo accesso su tutti gli altri dispositivi"
+      }
+    }
+  },
   "trialExpired": {
     "title": "La tua prova gratuita è terminata",
     "subtitle": "Continua a ottimizzare le tue lavanderie con Lavcom Performances Pro",

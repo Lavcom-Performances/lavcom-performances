@@ -17,6 +17,7 @@ import { useSecurityHealth } from '@/hooks/useSecurityHealth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { useDeviceFingerprint } from '@/hooks/useDeviceFingerprint';
 
 interface ActionConfig {
   id: string;
@@ -39,6 +40,7 @@ export function SecurityRecommendedActions({
   const { t } = useTranslation(['app', 'common']);
   const { toast } = useToast();
   const { user } = useAuth();
+  const { deviceId } = useDeviceFingerprint();
   const { 
     recommendedActions, 
     isLoading, 
@@ -75,7 +77,9 @@ export function SecurityRecommendedActions({
     try {
       setRevokingSessions(true);
       
-      const { error } = await supabase.functions.invoke('revoke-other-sessions');
+      const { error } = await supabase.functions.invoke('revoke-other-sessions', {
+        body: { current_device_id: deviceId },
+      });
       
       if (error) throw error;
 
