@@ -234,6 +234,23 @@
     "disabledSuccessDescription": "L'authentification à deux facteurs a été désactivée",
     "disableError": "Erreur lors de la désactivation"
   },
+  "mfaChallenge": {
+    "title": "Vérification requise",
+    "description": "Cette action nécessite une vérification supplémentaire. Entrez le code de votre application d'authentification.",
+    "descriptionWithAction": "Pour {{action}}, entrez le code de votre application d'authentification.",
+    "hint": "Ouvrez votre application d'authentification (Google Authenticator, Authy, etc.) pour obtenir le code.",
+    "verifying": "Vérification...",
+    "verify": "Vérifier",
+    "success": "Vérification réussie",
+    "actionLabels": {
+      "delete": "supprimer cet élément",
+      "export": "exporter les données",
+      "changePassword": "changer votre mot de passe",
+      "deleteSite": "supprimer ce site",
+      "deleteAccount": "supprimer votre compte",
+      "disableMfa": "désactiver la 2FA"
+    }
+  },
   "charts": {
     "annualRevenue": "CA Annuel",
     "monthlyRevenue": "CA Mensuel",

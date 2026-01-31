@@ -238,6 +238,23 @@
       "noMatch": "Wachtwoorden komen niet overeen"
     }
   },
+  "mfaChallenge": {
+    "title": "Verificatie vereist",
+    "description": "Deze actie vereist extra verificatie. Voer de code van uw authenticatie-app in.",
+    "descriptionWithAction": "Om {{action}}, voer de code van uw authenticatie-app in.",
+    "hint": "Open uw authenticatie-app (Google Authenticator, Authy, etc.) om de code te krijgen.",
+    "verifying": "Verifiëren...",
+    "verify": "Verifiëren",
+    "success": "Verificatie succesvol",
+    "actionLabels": {
+      "delete": "dit item te verwijderen",
+      "export": "gegevens te exporteren",
+      "changePassword": "uw wachtwoord te wijzigen",
+      "deleteSite": "deze site te verwijderen",
+      "deleteAccount": "uw account te verwijderen",
+      "disableMfa": "2FA uit te schakelen"
+    }
+  },
   "charts": {
     "annualRevenue": "Jaaromzet",
     "monthlyRevenue": "Maandomzet",
