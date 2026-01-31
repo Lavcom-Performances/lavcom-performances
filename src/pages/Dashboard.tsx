@@ -441,7 +441,7 @@ export default function Dashboard() {
           {/* KPI Cards principales - Using RPC function - PRIORITÉ #1 */}
           <DashboardKPIGrid dateRange={dateRange?.from && dateRange?.to ? { from: dateRange.from, to: dateRange.to } : undefined} />
 
-          {/* Charts principaux - PRIORITÉ #2 - Pleine largeur */}
+          {/* 4 Graphiques principaux - Grille 2x2 */}
           <motion.div 
             data-tutorial="charts" 
             className="grid grid-cols-1 lg:grid-cols-2 gap-6"
@@ -449,24 +449,17 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
           >
-            {/* En mode simple, graphiques pleine largeur */}
-            <div className={!isExpert ? "lg:col-span-2" : ""}>
-              <MonthlyRevenueChart startDate={dateRange?.from} endDate={dateRange?.to} />
-            </div>
-            {isExpert && stats.dailyData.length > 0 && <DailyRevenueChart data={stats.dailyData} />}
-          </motion.div>
-
-          {/* Charts Row 2 - Pleine largeur en mode simple */}
-          <motion.div 
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
-          >
-            <div className={!isExpert ? "lg:col-span-2" : ""}>
-              <PaymentPieChart data={stats.paymentData} />
-            </div>
-            {isExpert && <WeekdayPerformanceChart data={stats.weekdayData} />}
+            {/* 1. CA mensuel - Tendance principale */}
+            <MonthlyRevenueChart startDate={dateRange?.from} endDate={dateRange?.to} />
+            
+            {/* 2. Répartition des paiements - CB/ESP/FI */}
+            <PaymentPieChart data={stats.paymentData} />
+            
+            {/* 3. CA quotidien - Activité récente */}
+            <DailyRevenueChart data={stats.dailyData} />
+            
+            {/* 4. Performance par jour de semaine */}
+            <WeekdayPerformanceChart data={stats.weekdayData} />
           </motion.div>
 
           {/* Business Actions - Après les graphiques */}
