@@ -1905,6 +1905,76 @@
       "ops": "Ops"
     }
   },
+  "marketingRecommendations": {
+    "perMonth": "month",
+    "difficulty": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "dropCa": {
+      "title": "Boost your local visibility",
+      "description": "Your revenue is down {{percent}}% compared to last year. Recommended action plan: post at least once a week on your Google Business profile and social media (Facebook, Instagram), update your laundromat photos and distribute some flyers in the neighborhood. The goal is to remind residents of your presence and attract new customers."
+    },
+    "morningOffer": {
+      "title": "Animate your off-peak morning hours",
+      "description": "The early hours of the day only represent {{percent}}% of your revenue. You can test a specific offer for this time slot (e.g., -20% before 10am or loyalty benefit). Announce this offer on your social media and via an A4 poster at the laundromat entrance."
+    },
+    "highlightWeakDryer": {
+      "title": "Better promote your {{machine}}",
+      "description": "The {{machine}} generates significantly less revenue than your other dryers. In addition to a technical check, you can improve its visibility: add a sticker on the machine, arrows or floor pictograms, and a small message explaining it's available to reduce waiting time."
+    },
+    "sundayPush": {
+      "title": "Capitalize on your strong Sundays",
+      "description": "Sunday represents about {{percent}}% of your cycles. You can reinforce this strong day with recurring communication: a Facebook/Instagram post every Saturday evening to remind customers of your Sunday hours, and a message in the laundromat like \"Think about your comforters and sheets this weekend\"."
+    },
+    "promoteCard": {
+      "title": "Highlight contactless payment",
+      "description": "Over {{percent}}% of your payments are made by card or contactless. This is a real asset to reassure new customers. Add a clear visual in your window (\"Cards / Contactless / Smartphone accepted\") and highlight this on your Google Business profile."
+    },
+    "loyaltyProgram": {
+      "title": "Launch a simple loyalty program",
+      "description": "Only {{percent}}% of your customers return regularly. Try a paper loyalty card (10 washes = 1 free) or a QR code points system. Announce it on your social media and with a poster in your window."
+    },
+    "basketBoost": {
+      "title": "Boost average basket",
+      "description": "Your average basket has dropped by {{percent}}% this month. Offer combo deals: \"Wash + Dry at reduced rate\" or highlight your large capacity machines with a sticker \"Ideal for comforters & sheets\"."
+    },
+    "promoteBigLoads": {
+      "title": "Promote large capacity machines",
+      "description": "Cycles over €10 only represent {{percent}}% of your revenue. Target families and Airbnb rentals with dedicated communication: \"Wash comforters, curtains and sheets in one go\". Distribute flyers in nearby residences."
+    },
+    "lowSeasonAction": {
+      "title": "Special {{month}} promotion",
+      "description": "{{month}} is typically a slow month ({{percent}}% vs average). Launch a temporary offer: \"-15% on drying\" or \"2nd wash at -50%\" to boost attendance. Share on Google Business and your social media."
+    },
+    "momentumCapitalize": {
+      "title": "Capitalize on your positive momentum",
+      "description": "You're up {{percent}}% vs the same month last year. Take advantage of this momentum to collect Google reviews, post photos of your busy laundromat and thank your loyal customers on social media."
+    },
+    "increaseFrequency": {
+      "title": "Increase visit frequency",
+      "description": "Your loyal customers come an average of {{visits}} times/month. Send a mid-month SMS or email reminder: \"Laundry piling up? Think of us!\" or offer a preferential weekday rate for regulars."
+    },
+    "premiumServices": {
+      "title": "Offer premium services",
+      "description": "Your average basket of €{{amount}} shows customers willing to pay. Consider additional services: express dry cleaning, folding, home delivery. Start with a poster \"Folding service available on request\"."
+    }
+  },
   "cookies": {
     "title": "We respect your privacy",
     "description": "We use cookies to improve your experience, analyze traffic and personalize content. You can choose which cookies to accept.",

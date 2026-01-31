@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { generateMarketingRecommendations, getMockAnalyticsData } from "@/utils/marketingRecommendations";
 import type { Recommendation } from "@/types/recommendations";
+import { pdfTranslationFr } from "@/utils/pdfTranslations";
 
 interface InsightData {
   title: string;
@@ -295,9 +296,9 @@ export function getRecommendationsData(includeMarketing: boolean = true): Recomm
   const today = new Date();
   const dateStr = today.toLocaleDateString("fr-FR");
 
-  // Generate marketing recommendations from analytics data
+  // Generate marketing recommendations from analytics data (FR for PDF)
   const analyticsData = getMockAnalyticsData();
-  const marketingRecos = generateMarketingRecommendations(analyticsData);
+  const marketingRecos = generateMarketingRecommendations(analyticsData, pdfTranslationFr);
 
   // IMPORTANT : ne jamais utiliser "My Co'Laverie" en dur.
   // Toujours utiliser laundromat.name ou un libellé générique ("Votre laverie", "Laverie Démo").

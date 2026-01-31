@@ -285,25 +285,18 @@ export default function RecommendationsPage() {
 
   // Generate marketing recommendations from analytics data
   const analyticsData = getMockAnalyticsData();
-  const marketingRecommendations = generateMarketingRecommendations(analyticsData);
+  // Wrap t function to match TranslateFunction signature
+  const translateFn = (key: string, options?: Record<string, unknown>) => String(t(key, options));
+  const marketingRecommendations = generateMarketingRecommendations(analyticsData, translateFn);
 
   // Convert marketing recommendations to InsightCard format with specific icons
-  const effortMap: Record<string, EffortLevel> = {
-    "Faible": "low",
-    "Low": "low",
-    "Moyen": "medium",
-    "Medium": "medium",
-    "Élevé": "high",
-    "High": "high",
-  };
-  
   const marketingInsights = marketingRecommendations.map((reco: Recommendation) => ({
     title: reco.title,
     description: reco.description,
     type: "info" as const,
     icon: getMarketingIcon(reco.id),
     financialImpact: reco.impactEstimate ? parseInt(reco.impactEstimate.replace(/[^\d]/g, "")) : undefined,
-    effort: effortMap[reco.difficulty] || "medium",
+    effort: reco.difficulty || ("medium" as EffortLevel),
   }));
 
   // Loading state
