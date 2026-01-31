@@ -262,6 +262,10 @@
       "changeUserRole": "change user role",
       "billingChange": "modify billing",
       "cancelSubscription": "cancel subscription"
+    },
+    "enrollmentRequired": {
+      "title": "MFA Required",
+      "description": "Platform administrators must enable two-factor authentication (MFA) to perform this action. Please set up MFA in your security settings."
     }
   },
   "charts": {

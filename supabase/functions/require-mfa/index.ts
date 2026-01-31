@@ -7,7 +7,7 @@ const corsHeaders = {
 
 // Sensitive actions requiring MFA verification
 const SENSITIVE_ACTIONS = {
-  // Platform Admin actions (always require MFA)
+  // Platform Admin actions (MUST have MFA enrolled)
   platform_admin: [
     'impersonate_user',
     'change_platform_role',
@@ -18,7 +18,7 @@ const SENSITIVE_ACTIONS = {
     'access_secrets',
     'system_config',
   ],
-  // Company Admin / SaaS user actions
+  // Company Admin / SaaS user actions (flexible MFA)
   company_admin: [
     'export_csv',
     'export_financial',
@@ -44,6 +44,9 @@ interface MfaCheckResponse {
   has_valid_session: boolean;
   challenge_id?: string;
   error?: string;
+  // New fields for platform admin enforcement
+  is_platform_admin?: boolean;
+  enrollment_required?: boolean;
 }
 
 Deno.serve(async (req: Request) => {
@@ -96,6 +99,19 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Check if user is platform admin
+    const { data: platformRoleData } = await serviceClient
+      .from('platform_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .in('role', ['admin', 'super_admin'])
+      .limit(1);
+
+    const isPlatformAdmin = platformRoleData && platformRoleData.length > 0;
+    const isPlatformAdminAction = SENSITIVE_ACTIONS.platform_admin.includes(action);
+
     // Check if action requires MFA
     const allSensitiveActions = [
       ...SENSITIVE_ACTIONS.platform_admin,
@@ -111,6 +127,7 @@ Deno.serve(async (req: Request) => {
           mfa_required: false,
           mfa_enrolled: false,
           has_valid_session: true,
+          is_platform_admin: isPlatformAdmin,
         } as MfaCheckResponse),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -130,23 +147,56 @@ Deno.serve(async (req: Request) => {
     const verifiedFactor = mfaData.totp.find(f => f.status === 'verified');
     const mfaEnrolled = !!verifiedFactor;
 
+    // TAEX-231: Platform admin enforcement
+    // If user is platform admin AND action is a platform admin action AND MFA not enrolled → BLOCK
+    if (isPlatformAdmin && isPlatformAdminAction && !mfaEnrolled) {
+      console.warn(`[require-mfa] Platform admin ${userEmail} blocked: MFA not enrolled for ${action}`);
+      
+      // Log the blocked attempt
+      await serviceClient.from('system_events').insert({
+        env: 'prod',
+        source: 'require-mfa',
+        severity: 'warn',
+        code: 'PLATFORM_MFA_NOT_ENROLLED',
+        message: `Platform admin ${userEmail} blocked from ${action}: MFA not enrolled`,
+        meta: {
+          actor_id: userId,
+          actor_email: userEmail,
+          action,
+          ip_hash: req.headers.get('x-forwarded-for')?.split(',')[0].trim() || null,
+        },
+      });
+
+      return new Response(
+        JSON.stringify({
+          mfa_required: true,
+          mfa_enrolled: false,
+          has_valid_session: false,
+          is_platform_admin: true,
+          enrollment_required: true,
+          error: 'MFA enrollment required for platform administrators',
+          message: 'Platform administrators must enable MFA to perform sensitive actions. Please set up MFA in your security settings.',
+        } as MfaCheckResponse),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     if (!mfaEnrolled) {
-      // User doesn't have MFA enrolled - allow action but log it
+      // Non-platform admin without MFA enrolled - allow action but log it
       console.log(`[require-mfa] User ${userId} performing ${action} without MFA enrollment`);
       
       return new Response(
         JSON.stringify({
           mfa_required: true,
           mfa_enrolled: false,
-          has_valid_session: true, // Allow since not enrolled
+          has_valid_session: true, // Allow since not enrolled (for non-platform users)
+          is_platform_admin: isPlatformAdmin,
         } as MfaCheckResponse),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     // User has MFA enrolled - check for valid session
-    const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
-    
     const { data: validSession, error: sessionError } = await serviceClient.rpc(
       'has_valid_mfa_session',
       { p_user_id: userId, p_action: action }
@@ -167,6 +217,7 @@ Deno.serve(async (req: Request) => {
           mfa_required: true,
           mfa_enrolled: true,
           has_valid_session: true,
+          is_platform_admin: isPlatformAdmin,
         } as MfaCheckResponse),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -213,6 +264,7 @@ Deno.serve(async (req: Request) => {
         mfa_enrolled: true,
         has_valid_session: false,
         challenge_id: challengeId,
+        is_platform_admin: isPlatformAdmin,
       } as MfaCheckResponse),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
