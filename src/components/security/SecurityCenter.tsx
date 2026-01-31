@@ -15,6 +15,8 @@ import { SecurityProjectChecklist } from "./SecurityProjectChecklist";
 import { LoginHistory } from "./LoginHistory";
 import { LogRetentionSettings } from "./LogRetentionSettings";
 import { AuthSecurityAuditLog } from "./AuthSecurityAuditLog";
+import { TrustedDevicesManager } from "./TrustedDevicesManager";
+import { RecoveryCodesManager } from "./RecoveryCodesManager";
 
 export interface SecurityScore {
   score: number;
@@ -171,6 +173,12 @@ export function SecurityCenter() {
         isMFAEnabled={isMFAEnabled}
         onScoreChange={setAccountScore}
       />
+
+      {/* Trusted Devices */}
+      <TrustedDevicesManager />
+
+      {/* Recovery Codes */}
+      <RecoveryCodesManager />
 
       {/* Login History */}
       <LoginHistory />

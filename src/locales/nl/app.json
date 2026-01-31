@@ -900,7 +900,69 @@
       "saveSuccess": "Voorkeur opgeslagen",
       "saveSuccessDescription": "Uw logboeken worden {{days}} dagen bewaard"
     },
-    "openBackend": "Backend openen"
+    "openBackend": "Backend openen",
+    "trustedDevices": {
+      "title": "Vertrouwde apparaten",
+      "description": "Apparaten die kunnen inloggen zonder extra verificatie",
+      "noDevices": "Geen vertrouwde apparaten geregistreerd",
+      "unknownDevice": "Onbekend apparaat",
+      "currentDevice": "Dit apparaat",
+      "expired": "Verlopen",
+      "lastUsed": "Laatst gebruikt {{time}}",
+      "expiresOn": "Verloopt op {{date}}",
+      "removeTitle": "Vertrouwd apparaat verwijderen?",
+      "removeDescription": "Het apparaat \"{{device}}\" moet bij de volgende aanmelding opnieuw worden geverifieerd.",
+      "removed": "Apparaat verwijderd",
+      "removedDescription": "Dit apparaat wordt niet langer vertrouwd",
+      "removeError": "Kon apparaat niet verwijderen"
+    },
+    "recoveryCodes": {
+      "title": "Herstelcodes",
+      "description": "Gebruik deze codes om toegang te krijgen tot uw account als u de toegang tot uw andere authenticatiemethoden verliest",
+      "generate": "Codes genereren",
+      "regenerate": "Codes opnieuw genereren",
+      "codesRemaining": "{{count}} codes resterend",
+      "noCodesYet": "U heeft nog geen herstelcodes gegenereerd",
+      "warningLow": "U heeft nog maar {{count}} codes over. Overweeg nieuwe te genereren.",
+      "generating": "Genereren...",
+      "generated": "Codes gegenereerd",
+      "generatedDescription": "{{count}} nieuwe herstelcodes zijn aangemaakt",
+      "generateError": "Kon codes niet genereren",
+      "saveWarning": "Bewaar deze codes op een veilige plaats. Ze worden niet opnieuw getoond.",
+      "download": "Downloaden (.txt)",
+      "copied": "Codes gekopieerd",
+      "copiedDescription": "De codes zijn naar het klembord gekopieerd"
+    },
+    "riskLogin": {
+      "title": "Beveiligingsverificatie",
+      "description": "We hebben een ongebruikelijke aanmelding gedetecteerd. Bevestig uw identiteit.",
+      "tabs": {
+        "mfa": "Authenticator",
+        "email": "E-mail",
+        "recovery": "Herstelcode"
+      },
+      "reasons": {
+        "newDevice": "Nieuw apparaat",
+        "newCountry": "Nieuw land",
+        "newIp": "Nieuw IP-adres"
+      },
+      "mfaDescription": "Gebruik uw authenticator-app om uw identiteit te verifiëren",
+      "verifyWithMfa": "Verifiëren met authenticator",
+      "mfaTitle": "MFA-verificatie",
+      "mfaDialogDescription": "Voer de code uit uw authenticator-app in",
+      "emailDescription": "We sturen u een verificatiecode per e-mail",
+      "sendCode": "Code verzenden",
+      "enterCode": "Verificatiecode",
+      "resendCode": "Opnieuw verzenden",
+      "verify": "Verifiëren",
+      "recoveryDescription": "Voer een van uw herstelcodes in",
+      "enterRecoveryCode": "Herstelcode",
+      "sendOtpError": "Kon verificatiecode niet verzenden",
+      "verifyError": "Kon code niet verifiëren",
+      "invalidCodeFormat": "Code moet 6 cijfers bevatten",
+      "invalidRecoveryFormat": "Herstelcode moet 8 tekens bevatten",
+      "attemptsRemaining": "{{count}} poging(en) resterend"
+    }
   },
   "trialExpired": {
     "title": "Uw gratis proefperiode is beëindigd",

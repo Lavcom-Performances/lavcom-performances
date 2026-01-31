@@ -900,7 +900,69 @@
       "saveSuccess": "Einstellung gespeichert",
       "saveSuccessDescription": "Ihre Protokolle werden für {{days}} Tage aufbewahrt"
     },
-    "openBackend": "Backend öffnen"
+    "openBackend": "Backend öffnen",
+    "trustedDevices": {
+      "title": "Vertrauenswürdige Geräte",
+      "description": "Geräte, die sich ohne zusätzliche Verifizierung anmelden können",
+      "noDevices": "Keine vertrauenswürdigen Geräte registriert",
+      "unknownDevice": "Unbekanntes Gerät",
+      "currentDevice": "Dieses Gerät",
+      "expired": "Abgelaufen",
+      "lastUsed": "Zuletzt verwendet {{time}}",
+      "expiresOn": "Läuft ab am {{date}}",
+      "removeTitle": "Vertrauenswürdiges Gerät entfernen?",
+      "removeDescription": "Das Gerät \"{{device}}\" muss bei der nächsten Anmeldung erneut verifiziert werden.",
+      "removed": "Gerät entfernt",
+      "removedDescription": "Dieses Gerät ist nicht mehr vertrauenswürdig",
+      "removeError": "Gerät konnte nicht entfernt werden"
+    },
+    "recoveryCodes": {
+      "title": "Wiederherstellungscodes",
+      "description": "Verwenden Sie diese Codes, um auf Ihr Konto zuzugreifen, wenn Sie den Zugang zu Ihren anderen Authentifizierungsmethoden verlieren",
+      "generate": "Codes generieren",
+      "regenerate": "Codes neu generieren",
+      "codesRemaining": "{{count}} Codes übrig",
+      "noCodesYet": "Sie haben noch keine Wiederherstellungscodes generiert",
+      "warningLow": "Sie haben nur noch {{count}} Codes. Erwägen Sie, neue zu generieren.",
+      "generating": "Wird generiert...",
+      "generated": "Codes generiert",
+      "generatedDescription": "{{count}} neue Wiederherstellungscodes wurden erstellt",
+      "generateError": "Codes konnten nicht generiert werden",
+      "saveWarning": "Speichern Sie diese Codes an einem sicheren Ort. Sie werden nicht erneut angezeigt.",
+      "download": "Herunterladen (.txt)",
+      "copied": "Codes kopiert",
+      "copiedDescription": "Die Codes wurden in die Zwischenablage kopiert"
+    },
+    "riskLogin": {
+      "title": "Sicherheitsüberprüfung",
+      "description": "Wir haben eine ungewöhnliche Anmeldung erkannt. Bitte bestätigen Sie Ihre Identität.",
+      "tabs": {
+        "mfa": "Authenticator",
+        "email": "E-Mail",
+        "recovery": "Wiederherstellungscode"
+      },
+      "reasons": {
+        "newDevice": "Neues Gerät",
+        "newCountry": "Neues Land",
+        "newIp": "Neue IP-Adresse"
+      },
+      "mfaDescription": "Verwenden Sie Ihre Authenticator-App, um Ihre Identität zu bestätigen",
+      "verifyWithMfa": "Mit Authenticator verifizieren",
+      "mfaTitle": "MFA-Verifizierung",
+      "mfaDialogDescription": "Geben Sie den Code aus Ihrer Authenticator-App ein",
+      "emailDescription": "Wir senden Ihnen einen Verifizierungscode per E-Mail",
+      "sendCode": "Code senden",
+      "enterCode": "Verifizierungscode",
+      "resendCode": "Erneut senden",
+      "verify": "Verifizieren",
+      "recoveryDescription": "Geben Sie einen Ihrer Wiederherstellungscodes ein",
+      "enterRecoveryCode": "Wiederherstellungscode",
+      "sendOtpError": "Verifizierungscode konnte nicht gesendet werden",
+      "verifyError": "Code konnte nicht verifiziert werden",
+      "invalidCodeFormat": "Der Code muss 6 Ziffern enthalten",
+      "invalidRecoveryFormat": "Der Wiederherstellungscode muss 8 Zeichen enthalten",
+      "attemptsRemaining": "{{count}} Versuch(e) übrig"
+    }
   },
   "trialExpired": {
     "title": "Ihre kostenlose Testversion ist beendet",

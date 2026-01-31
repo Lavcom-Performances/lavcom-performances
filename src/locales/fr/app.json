@@ -1025,7 +1025,69 @@
       "saveSuccess": "Préférence enregistrée",
       "saveSuccessDescription": "Vos logs seront conservés pendant {{days}} jours"
     },
-    "openBackend": "Ouvrir le backend"
+    "openBackend": "Ouvrir le backend",
+    "trustedDevices": {
+      "title": "Appareils de confiance",
+      "description": "Appareils qui peuvent se connecter sans vérification supplémentaire",
+      "noDevices": "Aucun appareil de confiance enregistré",
+      "unknownDevice": "Appareil inconnu",
+      "currentDevice": "Cet appareil",
+      "expired": "Expiré",
+      "lastUsed": "Dernière utilisation {{time}}",
+      "expiresOn": "Expire le {{date}}",
+      "removeTitle": "Retirer l'appareil de confiance ?",
+      "removeDescription": "L'appareil \"{{device}}\" devra à nouveau passer la vérification de sécurité lors de la prochaine connexion.",
+      "removed": "Appareil retiré",
+      "removedDescription": "Cet appareil n'est plus considéré comme de confiance",
+      "removeError": "Impossible de retirer l'appareil"
+    },
+    "recoveryCodes": {
+      "title": "Codes de récupération",
+      "description": "Utilisez ces codes pour accéder à votre compte si vous perdez l'accès à vos autres méthodes d'authentification",
+      "generate": "Générer des codes",
+      "regenerate": "Régénérer les codes",
+      "codesRemaining": "{{count}} codes restants",
+      "noCodesYet": "Vous n'avez pas encore généré de codes de récupération",
+      "warningLow": "Il ne vous reste que {{count}} codes. Pensez à en générer de nouveaux.",
+      "generating": "Génération en cours...",
+      "generated": "Codes générés",
+      "generatedDescription": "{{count}} nouveaux codes de récupération ont été créés",
+      "generateError": "Impossible de générer les codes",
+      "saveWarning": "Sauvegardez ces codes dans un endroit sûr. Ils ne seront plus affichés.",
+      "download": "Télécharger (.txt)",
+      "copied": "Codes copiés",
+      "copiedDescription": "Les codes ont été copiés dans le presse-papier"
+    },
+    "riskLogin": {
+      "title": "Vérification de sécurité",
+      "description": "Nous avons détecté une connexion inhabituelle. Veuillez confirmer votre identité.",
+      "tabs": {
+        "mfa": "Authenticator",
+        "email": "Email",
+        "recovery": "Code de secours"
+      },
+      "reasons": {
+        "newDevice": "Nouvel appareil",
+        "newCountry": "Nouveau pays",
+        "newIp": "Nouvelle adresse IP"
+      },
+      "mfaDescription": "Utilisez votre application d'authentification pour vérifier votre identité",
+      "verifyWithMfa": "Vérifier avec l'authenticator",
+      "mfaTitle": "Vérification MFA",
+      "mfaDialogDescription": "Entrez le code de votre application d'authentification",
+      "emailDescription": "Nous allons vous envoyer un code de vérification par email",
+      "sendCode": "Envoyer le code",
+      "enterCode": "Code de vérification",
+      "resendCode": "Renvoyer",
+      "verify": "Vérifier",
+      "recoveryDescription": "Entrez l'un de vos codes de récupération",
+      "enterRecoveryCode": "Code de récupération",
+      "sendOtpError": "Impossible d'envoyer le code de vérification",
+      "verifyError": "Impossible de vérifier le code",
+      "invalidCodeFormat": "Le code doit contenir 6 chiffres",
+      "invalidRecoveryFormat": "Le code de récupération doit contenir 8 caractères",
+      "attemptsRemaining": "{{count}} tentative(s) restante(s)"
+    }
   },
   "dashboard": {
     "title": "Tableau de bord",
