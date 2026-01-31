@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLoginSecurity, RiskLevel } from '@/hooks/useLoginSecurity';
 
 // MFA Challenge will be handled inline for simplicity
+interface RiskLoginVerificationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onVerified: () => void;
@@ -303,17 +304,7 @@ export function RiskLoginVerificationModal({
         </DialogContent>
       </Dialog>
 
-      {/* MFA Challenge Dialog */}
-      {showMfaDialog && (
-        <MfaChallengeDialog
-          isOpen={showMfaDialog}
-          onClose={() => setShowMfaDialog(false)}
-          onSuccess={handleMfaSuccess}
-          action="login_verification"
-          title={t('app:securityCenter.riskLogin.mfaTitle')}
-          description={t('app:securityCenter.riskLogin.mfaDialogDescription')}
-        />
-      )}
+      {/* MFA Challenge - TODO: Integrate with existing MFA system */}
     </>
   );
 }
