@@ -7,6 +7,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkFeatureOrBlock } from "../_shared/feature-flags.ts";
+import { assertPlatformMfaOr403 } from "../_shared/mfa.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -74,31 +75,16 @@ Deno.serve(async (req) => {
     return flagCheck.response;
   }
 
-  // Get actor info from auth header
-  const authHeader = req.headers.get("authorization");
-  let actorId: string | null = null;
-  let actorEmail: string | null = null;
+  // TAEX-232: Enforce MFA for platform admins
+  const mfaCheck = await assertPlatformMfaOr403(req, 'system_config');
+  if (!mfaCheck.allowed) {
+    return mfaCheck.response!;
+  }
+
+  const actorId = mfaCheck.userId!;
+  const actorEmail = mfaCheck.userEmail || null;
 
   try {
-    if (authHeader?.startsWith("Bearer ")) {
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-      if (!userError && user) {
-        actorId = user.id;
-        actorEmail = user.email || null;
-      }
-    }
-
-    // Verify platform admin role
-    if (!actorId) {
-      console.error("[recompute-analytics] No authenticated user");
-      await logEvent(supabase, 'warn', 'RECOMPUTE_UNAUTHORIZED', 'Unauthenticated recompute attempt', {});
-      return new Response(
-        JSON.stringify({ error: "Authentication required" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     // Check if user is platform admin or super admin
     const [adminCheck, superAdminCheck] = await Promise.all([
       supabase.rpc('is_platform_admin', { uid: actorId }),

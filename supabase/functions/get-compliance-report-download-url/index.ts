@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { assertPlatformMfaOr403 } from "../_shared/mfa.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,27 +27,21 @@ serve(async (req) => {
       throw new Error('Missing Supabase environment variables');
     }
 
-    // Get auth token from request
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader) {
-      throw new Error('Missing authorization header');
+    // TAEX-232: Enforce MFA for platform admins
+    const mfaCheck = await assertPlatformMfaOr403(req, 'download_archive');
+    if (!mfaCheck.allowed) {
+      return mfaCheck.response!;
     }
+
+    const userId = mfaCheck.userId!;
 
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
-    const supabaseUser = createClient(supabaseUrl, supabaseServiceKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
 
-    // Verify user is platform admin
-    const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
-    if (authError || !user) {
-      throw new Error('Unauthorized');
-    }
-
+    // Verify user is platform admin (MFA already verified auth)
     const { data: platformRole } = await supabaseAdmin
       .from('platform_roles')
       .select('role')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .in('role', ['super_admin', 'admin'])
       .single();
 
@@ -96,7 +91,7 @@ serve(async (req) => {
 
     // Log to audit_logs
     await supabaseAdmin.rpc('rpc_create_audit_log', {
-      p_actor_id: user.id,
+      p_actor_id: userId,
       p_action: 'COMPLIANCE_REPORT_DOWNLOAD',
       p_target_table: 'compliance_reports',
       p_target_id: report_id,
@@ -118,7 +113,7 @@ serve(async (req) => {
       p_message: `Compliance report downloaded: ${report.period_label}`,
       p_meta: {
         report_id,
-        actor_id: user.id,
+        actor_id: userId,
         generated_at: report.generated_at,
       },
     });

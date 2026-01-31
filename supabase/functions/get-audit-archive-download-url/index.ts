@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { assertPlatformMfaOr403 } from "../_shared/mfa.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,6 +9,7 @@ const corsHeaders = {
 
 /**
  * TAEX-214: Secure signed URL generation for audit archive downloads
+ * TAEX-232: Enforce MFA for platform admins
  * 
  * - Validates user permissions (platform admin or org member or archive owner)
  * - Generates time-limited signed URL (5 minutes)
@@ -24,8 +26,8 @@ serve(async (req) => {
     
     // Create service client for admin operations
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
-    
-    // Get user from auth header
+
+    // Get user from auth header first
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -44,6 +46,7 @@ serve(async (req) => {
       );
     }
 
+    // Parse request body
     const { archive_id } = await req.json();
     
     if (!archive_id) {
@@ -73,12 +76,20 @@ serve(async (req) => {
     // Determine archive scope from file_path
     const pathParts = archive.file_path.split('/');
     const scope = pathParts[0]; // 'platform', 'org', or 'user'
+
+    // TAEX-232: Enforce MFA for platform archive downloads
+    if (scope === 'platform') {
+      const mfaCheck = await assertPlatformMfaOr403(req, 'download_archive');
+      if (!mfaCheck.allowed) {
+        return mfaCheck.response!;
+      }
+    }
     
     let hasAccess = false;
     let scopeInfo: Record<string, unknown> = { scope };
 
     if (scope === 'platform') {
-      // Only platform admins can access platform archives
+      // Platform admins can access (MFA already verified above)
       const { data: platformRole } = await supabaseAdmin
         .from('platform_roles')
         .select('role')

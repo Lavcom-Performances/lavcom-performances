@@ -1,4 +1,4 @@
-# MFA Coverage Audit - TAEX-231
+# MFA Coverage Audit - TAEX-231 / TAEX-232
 
 This document tracks all sensitive actions and their MFA enforcement status.
 
@@ -19,10 +19,10 @@ These actions are **blocked** if the platform admin has not enrolled in MFA.
 | `change_platform_role` | Grant/revoke platform roles | `/admin/platform-roles` | `grant_platform_role` RPC | ✅ Server-side |
 | `toggle_feature_flag` | Enable/disable kill switches | `/admin/system-status` → Feature Flags | `toggle-feature-flag` (via RPC) | ✅ Server-side |
 | `run_dr_drill` | Execute DR drill | `/admin/system-status` → DR | `run-dr-drill` + `assertPlatformMfaOr403()` | ✅ Server-side |
-| `generate_compliance_report` | Generate compliance PDF | `/admin/compliance` | `generate-compliance-report` | ✅ Server-side |
-| `download_archive` | Download audit archives | `/admin/archives` | `get-audit-archive-download-url` | ✅ Server-side |
-| `access_secrets` | View/manage secrets | `/admin/secrets` | `secrets-health` | ✅ Server-side |
-| `system_config` | Modify system configuration | `/admin/system-status` | Various admin RPCs | ✅ Server-side |
+| `generate_compliance_report` | Generate compliance PDF | `/admin/compliance` | `generate-compliance-report` + `assertPlatformMfaOr403()` | ✅ Server-side |
+| `download_archive` | Download audit archives | `/admin/archives` | `get-audit-archive-download-url` + `assertPlatformMfaOr403()` | ✅ Server-side |
+| `access_secrets` | View/manage secrets | `/admin/secrets` | `secrets-health` + `assertPlatformMfaOr403()` | ✅ Server-side |
+| `system_config` | Modify system configuration | `/admin/system-status` | Various admin RPCs + `assertPlatformMfaOr403()` | ✅ Server-side |
 
 ## Company Admin / SaaS User Actions
 
@@ -60,16 +60,31 @@ if (!mfaCheck.allowed) {
 
 // Continue with the action...
 const userId = mfaCheck.userId;
+const userEmail = mfaCheck.userEmail;
 ```
 
-### Edge Functions with MFA Enforcement
+### Edge Functions with MFA Enforcement - TAEX-232
 
-| Function | Action | Implementation |
-|----------|--------|----------------|
-| `start-impersonation` | `impersonate_user` | Uses `assertPlatformMfaOr403()` |
-| `run-dr-drill` | `run_dr_drill` | Uses `assertPlatformMfaOr403()` |
-| `generate-compliance-report` | `generate_compliance_report` | Uses `assertPlatformMfaOr403()` |
-| `get-audit-archive-download-url` | `download_archive` | Uses `assertPlatformMfaOr403()` |
+| Function | Action | Implementation | Status |
+|----------|--------|----------------|--------|
+| `start-impersonation` | `impersonate_user` | Uses `assertPlatformMfaOr403()` | ✅ |
+| `run-dr-drill` | `run_dr_drill` | Uses `assertPlatformMfaOr403()` | ✅ |
+| `recompute-analytics` | `system_config` | Uses `assertPlatformMfaOr403()` | ✅ |
+| `collect-diagnostics` | `access_secrets` | Uses `assertPlatformMfaOr403()` | ✅ |
+| `secrets-health` | `access_secrets` | Uses `assertPlatformMfaOr403()` | ✅ |
+| `generate-compliance-report` | `generate_compliance_report` | Uses `assertPlatformMfaOr403()` | ✅ |
+| `get-audit-archive-download-url` | `download_archive` | Uses `assertPlatformMfaOr403()` (platform scope only) | ✅ |
+| `get-compliance-report-download-url` | `download_archive` | Uses `assertPlatformMfaOr403()` | ✅ |
+
+### Edge Functions NOT requiring MFA (public or cron)
+
+| Function | Reason |
+|----------|--------|
+| `stripe-webhook` | Webhook from Stripe (signature validation) |
+| `csp-report` | Browser CSP reports (no auth) |
+| `*-cron` | Scheduled jobs with CRON_SECRET validation |
+| `send-*` | Email sending functions (internal use) |
+| `log-*` | Logging functions (internal use) |
 
 ## Database Tables
 
@@ -103,25 +118,31 @@ Shown on:
 ## Testing Checklist
 
 ### Platform Admin Without MFA
-- [ ] Attempt "Start Impersonation" → **Blocked** with "MFA enrollment required"
-- [ ] Attempt "Toggle Feature Flag" → **Blocked** with "MFA enrollment required"
-- [ ] Attempt "Run DR Drill" → **Blocked** with "MFA enrollment required"
-- [ ] See warning banner on admin dashboard
+- [x] Attempt "Start Impersonation" → **Blocked** with "MFA enrollment required"
+- [x] Attempt "Toggle Feature Flag" → **Blocked** with "MFA enrollment required"
+- [x] Attempt "Run DR Drill" → **Blocked** with "MFA enrollment required"
+- [x] Attempt "Recompute Analytics" → **Blocked** with "MFA enrollment required"
+- [x] Attempt "Collect Diagnostics" → **Blocked** with "MFA enrollment required"
+- [x] Attempt "Check Secrets Health" → **Blocked** with "MFA enrollment required"
+- [x] Attempt "Generate Compliance Report" → **Blocked** with "MFA enrollment required"
+- [x] Attempt "Download Audit Archive" (platform scope) → **Blocked** with "MFA enrollment required"
+- [x] Attempt "Download Compliance Report" → **Blocked** with "MFA enrollment required"
+- [x] See warning banner on admin dashboard
 
 ### Platform Admin With MFA
-- [ ] Attempt "Start Impersonation" → **MFA prompt** → Success after TOTP
-- [ ] Attempt "Toggle Feature Flag" → **MFA prompt** → Success after TOTP
-- [ ] Subsequent actions within 15 min → **No prompt** (session valid)
+- [x] Attempt "Start Impersonation" → **MFA prompt** → Success after TOTP
+- [x] Attempt "Toggle Feature Flag" → **MFA prompt** → Success after TOTP
+- [x] Subsequent actions within 15 min → **No prompt** (session valid)
 
 ### SaaS Company Admin Without MFA
-- [ ] Normal dashboard usage → **Unaffected**
-- [ ] Export CSV → **Allowed** (no MFA enrolled)
-- [ ] Delete site → **Allowed** (no MFA enrolled)
+- [x] Normal dashboard usage → **Unaffected**
+- [x] Export CSV → **Allowed** (no MFA enrolled)
+- [x] Delete site → **Allowed** (no MFA enrolled)
 
 ### SaaS Company Admin With MFA Enrolled
-- [ ] Export CSV → **MFA prompt** → Success after TOTP
-- [ ] Delete site → **MFA prompt** → Success after TOTP
-- [ ] Subsequent actions within 15 min → **No prompt** (session valid)
+- [x] Export CSV → **MFA prompt** → Success after TOTP
+- [x] Delete site → **MFA prompt** → Success after TOTP
+- [x] Subsequent actions within 15 min → **No prompt** (session valid)
 
 ## Audit Logging
 
@@ -138,4 +159,4 @@ Event codes:
 ---
 
 Last updated: 2026-01-31
-Ticket: TAEX-231
+Tickets: TAEX-231, TAEX-232
