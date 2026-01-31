@@ -1486,5 +1486,75 @@
         "step3": "Verdelingswijzigingen volgen"
       }
     }
+  },
+  "marketingRecommendations": {
+    "perMonth": "maand",
+    "difficulty": {
+      "low": "Laag",
+      "medium": "Gemiddeld",
+      "high": "Hoog"
+    },
+    "months": {
+      "1": "januari",
+      "2": "februari",
+      "3": "maart",
+      "4": "april",
+      "5": "mei",
+      "6": "juni",
+      "7": "juli",
+      "8": "augustus",
+      "9": "september",
+      "10": "oktober",
+      "11": "november",
+      "12": "december"
+    },
+    "dropCa": {
+      "title": "Lokale zichtbaarheid versterken",
+      "description": "Uw omzet is {{percent}}% gedaald ten opzichte van vorig jaar. Aanbevolen actieplan: minstens wekelijks posten op Google Business en sociale media, foto's van de wasserette bijwerken en flyers verspreiden in de buurt."
+    },
+    "morningOffer": {
+      "title": "Rustige ochtenduren animeren",
+      "description": "De vroege ochtenduren vertegenwoordigen slechts {{percent}}% van uw omzet. Test een specifiek aanbod voor dit tijdslot (bijv. -20% vóór 10 uur)."
+    },
+    "highlightWeakDryer": {
+      "title": "Uw {{machine}} beter promoten",
+      "description": "De {{machine}} genereert aanzienlijk minder omzet dan andere drogers. Verbeter de zichtbaarheid met vloermarkering en borden."
+    },
+    "sundayPush": {
+      "title": "Sterke zondagen benutten",
+      "description": "Zondag vertegenwoordigt ongeveer {{percent}}% van uw cycli. Versterk deze dag met regelmatige communicatie op sociale media."
+    },
+    "promoteCard": {
+      "title": "Contactloos betalen benadrukken",
+      "description": "Meer dan {{percent}}% van de betalingen gebeurt met kaart of contactloos. Benadruk deze informatie in de etalage en op Google Business."
+    },
+    "loyaltyProgram": {
+      "title": "Eenvoudig loyaliteitsprogramma lanceren",
+      "description": "Slechts {{percent}}% van uw klanten komt regelmatig terug. Probeer een klantenkaart (10 wasbeurten = 1 gratis)."
+    },
+    "basketBoost": {
+      "title": "Gemiddelde bon verhogen",
+      "description": "Uw gemiddelde bon is deze maand met {{percent}}% gedaald. Bied combi-aanbiedingen: \"Wassen + Drogen aan verlaagd tarief\"."
+    },
+    "promoteBigLoads": {
+      "title": "Grote capaciteit machines promoten",
+      "description": "Cycli boven €10 vertegenwoordigen slechts {{percent}}% van de omzet. Richt u op gezinnen en vakantieverhuur."
+    },
+    "lowSeasonAction": {
+      "title": "Speciale actie {{month}}",
+      "description": "{{month}} is normaal een rustige maand ({{percent}}% vs gemiddeld). Lanceer een tijdelijke aanbieding om de frequentatie te stimuleren."
+    },
+    "momentumCapitalize": {
+      "title": "Positieve dynamiek benutten",
+      "description": "U bent {{percent}}% gestegen ten opzichte van dezelfde maand vorig jaar. Profiteer hiervan om Google-reviews te verzamelen."
+    },
+    "increaseFrequency": {
+      "title": "Bezoekfrequentie verhogen",
+      "description": "Uw trouwe klanten komen gemiddeld {{visits}} keer/maand. Stuur halverwege de maand een SMS- of e-mailherinnering."
+    },
+    "premiumServices": {
+      "title": "Premiumdiensten aanbieden",
+      "description": "Uw gemiddelde bon van €{{amount}} toont een klantenbestand dat bereid is te betalen. Overweeg extra diensten zoals strijken of thuisbezorging."
+    }
   }
 }

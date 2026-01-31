@@ -1486,5 +1486,75 @@
         "step3": "Monitorare i cambiamenti nella distribuzione"
       }
     }
+  },
+  "marketingRecommendations": {
+    "perMonth": "mese",
+    "difficulty": {
+      "low": "Basso",
+      "medium": "Medio",
+      "high": "Alto"
+    },
+    "months": {
+      "1": "gennaio",
+      "2": "febbraio",
+      "3": "marzo",
+      "4": "aprile",
+      "5": "maggio",
+      "6": "giugno",
+      "7": "luglio",
+      "8": "agosto",
+      "9": "settembre",
+      "10": "ottobre",
+      "11": "novembre",
+      "12": "dicembre"
+    },
+    "dropCa": {
+      "title": "Rafforzare la visibilità locale",
+      "description": "Il vostro fatturato è in calo del {{percent}}% rispetto all'anno scorso. Piano d'azione consigliato: pubblicare almeno una volta a settimana su Google Business e social network, aggiornare le foto della lavanderia e distribuire volantini nel quartiere."
+    },
+    "morningOffer": {
+      "title": "Animare le ore tranquille del mattino",
+      "description": "Le prime ore della giornata rappresentano solo il {{percent}}% del fatturato. Testate un'offerta specifica per questa fascia oraria (es. -20% prima delle 10)."
+    },
+    "highlightWeakDryer": {
+      "title": "Promuovere di più la vostra {{machine}}",
+      "description": "La {{machine}} genera significativamente meno fatturato delle altre asciugatrici. Migliorate la sua visibilità con segnaletica a terra e cartelli."
+    },
+    "sundayPush": {
+      "title": "Capitalizzare le domeniche forti",
+      "description": "La domenica rappresenta circa il {{percent}}% dei cicli. Rafforzate questo giorno con comunicazione ricorrente sui social network."
+    },
+    "promoteCard": {
+      "title": "Evidenziare il pagamento contactless",
+      "description": "Più del {{percent}}% dei pagamenti avviene con carta o contactless. Mettete in evidenza questa informazione in vetrina e su Google Business."
+    },
+    "loyaltyProgram": {
+      "title": "Lanciare un programma fedeltà semplice",
+      "description": "Solo il {{percent}}% dei clienti torna regolarmente. Provate una carta fedeltà (10 lavaggi = 1 gratis)."
+    },
+    "basketBoost": {
+      "title": "Aumentare lo scontrino medio",
+      "description": "Lo scontrino medio è diminuito del {{percent}}% questo mese. Proponete offerte combinate: \"Lavaggio + Asciugatura a prezzo ridotto\"."
+    },
+    "promoteBigLoads": {
+      "title": "Promuovere le lavatrici grande capacità",
+      "description": "I cicli oltre 10€ rappresentano solo il {{percent}}% del fatturato. Rivolgetevi a famiglie e affitti vacanzieri."
+    },
+    "lowSeasonAction": {
+      "title": "Azione speciale {{month}}",
+      "description": "{{month}} è solitamente un mese debole ({{percent}}% vs media). Lanciate un'offerta temporanea per dinamizzare la frequentazione."
+    },
+    "momentumCapitalize": {
+      "title": "Capitalizzare la dinamica positiva",
+      "description": "Siete in crescita del {{percent}}% rispetto allo stesso mese dell'anno scorso. Approfittatene per raccogliere recensioni su Google."
+    },
+    "increaseFrequency": {
+      "title": "Aumentare la frequenza delle visite",
+      "description": "I clienti fedeli vengono in media {{visits}} volte/mese. Inviate un promemoria SMS o email a metà mese."
+    },
+    "premiumServices": {
+      "title": "Offrire servizi premium",
+      "description": "Lo scontrino medio di {{amount}}€ mostra una clientela disposta a pagare. Considerate servizi aggiuntivi come stiratura o consegna a domicilio."
+    }
   }
 }

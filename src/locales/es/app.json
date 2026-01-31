@@ -1486,5 +1486,75 @@
         "step3": "Seguir cambios en la distribución"
       }
     }
+  },
+  "marketingRecommendations": {
+    "perMonth": "mes",
+    "difficulty": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto"
+    },
+    "months": {
+      "1": "enero",
+      "2": "febrero",
+      "3": "marzo",
+      "4": "abril",
+      "5": "mayo",
+      "6": "junio",
+      "7": "julio",
+      "8": "agosto",
+      "9": "septiembre",
+      "10": "octubre",
+      "11": "noviembre",
+      "12": "diciembre"
+    },
+    "dropCa": {
+      "title": "Reforzar su visibilidad local",
+      "description": "Su facturación ha bajado un {{percent}}% respecto al año pasado. Plan de acción recomendado: publicar al menos una vez por semana en Google Business y redes sociales, actualizar las fotos de la lavandería y distribuir folletos en el barrio."
+    },
+    "morningOffer": {
+      "title": "Animar las horas tranquilas de la mañana",
+      "description": "Las primeras horas del día solo representan el {{percent}}% de su facturación. Pruebe una oferta específica para este horario (ej. -20% antes de las 10h)."
+    },
+    "highlightWeakDryer": {
+      "title": "Promocionar más su {{machine}}",
+      "description": "La {{machine}} genera significativamente menos ingresos que otras secadoras. Mejore su visibilidad con señalización en el suelo y carteles."
+    },
+    "sundayPush": {
+      "title": "Capitalizar sus domingos fuertes",
+      "description": "El domingo representa aproximadamente el {{percent}}% de sus ciclos. Refuerce este día con comunicación recurrente en redes sociales."
+    },
+    "promoteCard": {
+      "title": "Destacar el pago sin contacto",
+      "description": "Más del {{percent}}% de sus pagos son con tarjeta o sin contacto. Destaque esta información en su vitrina y Google Business."
+    },
+    "loyaltyProgram": {
+      "title": "Lanzar un programa de fidelidad simple",
+      "description": "Solo el {{percent}}% de sus clientes vuelven regularmente. Pruebe una tarjeta de fidelidad (10 lavados = 1 gratis)."
+    },
+    "basketBoost": {
+      "title": "Aumentar el ticket medio",
+      "description": "Su ticket medio ha bajado un {{percent}}% este mes. Proponga ofertas combinadas: \"Lavado + Secado a precio reducido\"."
+    },
+    "promoteBigLoads": {
+      "title": "Promocionar las máquinas de gran capacidad",
+      "description": "Los ciclos de más de 10€ solo representan el {{percent}}% de su facturación. Diríjase a familias y alquileres vacacionales."
+    },
+    "lowSeasonAction": {
+      "title": "Acción especial {{month}}",
+      "description": "{{month}} es habitualmente un mes flojo ({{percent}}% vs media). Lance una oferta temporal para dinamizar la frecuentación."
+    },
+    "momentumCapitalize": {
+      "title": "Capitalizar su dinámica positiva",
+      "description": "Está en alza del {{percent}}% vs el mismo mes del año pasado. Aproveche para recoger reseñas en Google."
+    },
+    "increaseFrequency": {
+      "title": "Aumentar la frecuencia de visita",
+      "description": "Sus clientes fieles vienen una media de {{visits}} veces/mes. Envíe un recordatorio por SMS o email a mitad de mes."
+    },
+    "premiumServices": {
+      "title": "Ofrecer servicios premium",
+      "description": "Su ticket medio de {{amount}}€ muestra una clientela dispuesta a pagar. Considere servicios adicionales como planchado o entrega a domicilio."
+    }
   }
 }

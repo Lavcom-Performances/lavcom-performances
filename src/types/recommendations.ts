@@ -1,7 +1,7 @@
 // Types for recommendation system
 
 export type RecommendationCategory = "pricing" | "operations" | "maintenance" | "marketing";
-export type DifficultyLevel = "Faible" | "Moyen" | "Élevé";
+export type DifficultyLevel = "low" | "medium" | "high";
 
 export interface Recommendation {
   id: string;
