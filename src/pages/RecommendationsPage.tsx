@@ -37,6 +37,9 @@ import { useHasData } from "@/hooks/useHasData";
 import { RecommendationsEmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Translation prefix for this page
+const T_PREFIX = "profitability.recommendations";
+
 // Map recommendation IDs to specific icons
 const getMarketingIcon = (recoId: string): LucideIcon => {
   // Fidélisation
@@ -80,10 +83,10 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
   // Cyan/Teal (#6DBFB8) = opportunité (info/action)
   
   const borderColors = {
-    success: "border-l-[#A5C800]",      // Vert Lavcom - point fort
-    warning: "border-l-[#FCD259]",       // Jaune Lavcom - problème
-    info: "border-l-[#6DBFB8]",          // Cyan Lavcom - opportunité
-    action: "border-l-[#6DBFB8]",        // Cyan Lavcom - opportunité
+    success: "border-l-[#A5C800]",
+    warning: "border-l-[#FCD259]",
+    info: "border-l-[#6DBFB8]",
+    action: "border-l-[#6DBFB8]",
   };
 
   const iconColors = {
@@ -95,67 +98,64 @@ function InsightCard({ title, description, type, icon: Icon, metric, financialIm
 
   const metricColors = {
     success: "text-[#A5C800]",
-    warning: "text-[#d4a843]",           // Jaune plus foncé pour lisibilité
+    warning: "text-[#d4a843]",
     info: "text-[#6DBFB8]",
     action: "text-[#6DBFB8]",
   };
 
   const effortConfig = {
     low: { 
-      labelKey: "export.recommendations.page.effortLow", 
+      label: t(`${T_PREFIX}.page.effortLow`), 
       className: "bg-[#A5C800] text-white hover:bg-[#A5C800] border-0" 
     },
     medium: { 
-      labelKey: "export.recommendations.page.effortMedium", 
+      label: t(`${T_PREFIX}.page.effortMedium`), 
       className: "bg-[#FCD259] text-gray-800 hover:bg-[#FCD259] border-0" 
     },
     high: { 
-      labelKey: "export.recommendations.page.effortHigh", 
+      label: t(`${T_PREFIX}.page.effortHigh`), 
       className: "bg-red-500 text-white hover:bg-red-500 border-0" 
     },
   };
 
-
   return (
-    <Card className={`border-l-4 ${borderColors[type]} bg-card hover:shadow-md transition-shadow h-full flex flex-col`}>
+    <Card className={`border-l-4 ${borderColors[type]} bg-card hover:shadow-md transition-shadow h-full flex flex-col overflow-hidden`}>
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <Icon className={`h-5 w-5 shrink-0 ${iconColors[type]}`} />
-            <CardTitle className="text-base font-semibold text-foreground truncate">{title}</CardTitle>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-2 min-w-0 flex-1">
+            <Icon className={`h-5 w-5 shrink-0 mt-0.5 ${iconColors[type]}`} />
+            <CardTitle className="text-sm font-semibold text-foreground leading-tight line-clamp-2">{title}</CardTitle>
           </div>
           {metric && (
-            <span className={`text-lg font-bold shrink-0 ${metricColors[type]}`}>{metric}</span>
+            <span className={`text-base font-bold shrink-0 ${metricColors[type]}`}>{metric}</span>
           )}
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col flex-1">
-        {/* Description avec flex-grow pour pousser le footer en bas */}
-        <p className="text-sm text-muted-foreground leading-relaxed flex-1">{description}</p>
+      <CardContent className="flex flex-col flex-1 pt-0">
+        <p className="text-xs text-muted-foreground leading-relaxed flex-1 line-clamp-4">{description}</p>
         
-        {/* Impact financier et Effort - Toujours aligné en bas */}
         {(financialImpact !== undefined || effort) && (
-          <div className="flex items-center justify-between gap-4 pt-4 mt-4 border-t border-border">
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-3 mt-3 border-t border-border">
             {financialImpact !== undefined && (
-              <div className="flex flex-col items-start gap-1">
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                  {t("export.recommendations.page.estimatedImpact")}
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium">
+                  {t(`${T_PREFIX}.page.estimatedImpact`)}
                 </span>
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/30 rounded-md">
-                  <Euro className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                    +{financialImpact} {t("export.recommendations.page.perMonth")}
+                <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 rounded">
+                  <Euro className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                    +{financialImpact} {t(`${T_PREFIX}.page.perMonth`)}
                   </span>
                 </div>
               </div>
             )}
             {effort && (
-              <div className="flex flex-col items-end gap-1">
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                  {t("export.recommendations.page.effort")}
+              <div className="flex flex-col items-end gap-0.5">
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-medium">
+                  {t(`${T_PREFIX}.page.effort`)}
                 </span>
-                <Badge className={`${effortConfig[effort].className} text-xs px-3 py-1`}>
-                  {t(effortConfig[effort].labelKey)}
+                <Badge className={`${effortConfig[effort].className} text-[10px] px-2 py-0.5 whitespace-nowrap`}>
+                  {effortConfig[effort].label}
                 </Badge>
               </div>
             )}
@@ -181,8 +181,8 @@ export default function RecommendationsPage() {
       generateRecommendationsReport(data);
       trackPdfDownload('recommendations');
       toast({
-        title: t("export.pdfExported"),
-        description: t("export.recommendations.page.downloadPdf"),
+        title: t("profitability.pdfExported"),
+        description: t(`${T_PREFIX}.page.downloadPdf`),
       });
     } catch (error) {
       toast({
@@ -198,8 +198,8 @@ export default function RecommendationsPage() {
   // These insights would be dynamically generated from real data
   const performanceInsights = [
     {
-      title: t("export.recommendations.page.insights.annualDecline.title"),
-      description: t("export.recommendations.page.insights.annualDecline.description"),
+      title: t(`${T_PREFIX}.page.insights.annualDecline.title`),
+      description: t(`${T_PREFIX}.page.insights.annualDecline.description`),
       type: "warning" as const,
       icon: TrendingDown,
       metric: "-27%",
@@ -207,8 +207,8 @@ export default function RecommendationsPage() {
       effort: "high" as EffortLevel,
     },
     {
-      title: t("export.recommendations.page.insights.dryer2Underperforming.title"),
-      description: t("export.recommendations.page.insights.dryer2Underperforming.description"),
+      title: t(`${T_PREFIX}.page.insights.dryer2Underperforming.title`),
+      description: t(`${T_PREFIX}.page.insights.dryer2Underperforming.description`),
       type: "warning" as const,
       icon: AlertTriangle,
       metric: "219€",
@@ -216,8 +216,8 @@ export default function RecommendationsPage() {
       effort: "medium" as EffortLevel,
     },
     {
-      title: t("export.recommendations.page.insights.sundayBest.title"),
-      description: t("export.recommendations.page.insights.sundayBest.description"),
+      title: t(`${T_PREFIX}.page.insights.sundayBest.title`),
+      description: t(`${T_PREFIX}.page.insights.sundayBest.description`),
       type: "success" as const,
       icon: TrendingUp,
       metric: "21%",
@@ -228,8 +228,8 @@ export default function RecommendationsPage() {
 
   const optimizationInsights = [
     {
-      title: t("export.recommendations.page.insights.peakHours.title"),
-      description: t("export.recommendations.page.insights.peakHours.description"),
+      title: t(`${T_PREFIX}.page.insights.peakHours.title`),
+      description: t(`${T_PREFIX}.page.insights.peakHours.description`),
       type: "action" as const,
       icon: Clock,
       metric: "25%",
@@ -237,8 +237,8 @@ export default function RecommendationsPage() {
       effort: "medium" as EffortLevel,
     },
     {
-      title: t("export.recommendations.page.insights.offPeakHours.title"),
-      description: t("export.recommendations.page.insights.offPeakHours.description"),
+      title: t(`${T_PREFIX}.page.insights.offPeakHours.title`),
+      description: t(`${T_PREFIX}.page.insights.offPeakHours.description`),
       type: "info" as const,
       icon: Lightbulb,
       metric: "4%",
@@ -246,8 +246,8 @@ export default function RecommendationsPage() {
       effort: "low" as EffortLevel,
     },
     {
-      title: t("export.recommendations.page.insights.cardMajority.title"),
-      description: t("export.recommendations.page.insights.cardMajority.description"),
+      title: t(`${T_PREFIX}.page.insights.cardMajority.title`),
+      description: t(`${T_PREFIX}.page.insights.cardMajority.description`),
       type: "success" as const,
       icon: Zap,
       metric: "81%",
@@ -258,24 +258,24 @@ export default function RecommendationsPage() {
 
   const actionItems = [
     {
-      title: t("export.recommendations.page.insights.dryer2Diagnostic.title"),
-      description: t("export.recommendations.page.insights.dryer2Diagnostic.description"),
+      title: t(`${T_PREFIX}.page.insights.dryer2Diagnostic.title`),
+      description: t(`${T_PREFIX}.page.insights.dryer2Diagnostic.description`),
       type: "action" as const,
       icon: Target,
       financialImpact: 146,
       effort: "medium" as EffortLevel,
     },
     {
-      title: t("export.recommendations.page.insights.offPeakCampaign.title"),
-      description: t("export.recommendations.page.insights.offPeakCampaign.description"),
+      title: t(`${T_PREFIX}.page.insights.offPeakCampaign.title`),
+      description: t(`${T_PREFIX}.page.insights.offPeakCampaign.description`),
       type: "action" as const,
       icon: Calendar,
       financialImpact: 250,
       effort: "low" as EffortLevel,
     },
     {
-      title: t("export.recommendations.page.insights.competitionAnalysis.title"),
-      description: t("export.recommendations.page.insights.competitionAnalysis.description"),
+      title: t(`${T_PREFIX}.page.insights.competitionAnalysis.title`),
+      description: t(`${T_PREFIX}.page.insights.competitionAnalysis.description`),
       type: "action" as const,
       icon: Lightbulb,
       financialImpact: 500,
@@ -319,18 +319,18 @@ export default function RecommendationsPage() {
     return (
       <>
         <SEOHead 
-          title={t("export.recommendations.title")}
-          description={t("export.recommendations.page.subtitle")}
+          title={t(`${T_PREFIX}.title`)}
+          description={t(`${T_PREFIX}.page.subtitle`)}
           url="/recommendations"
           noindex={true}
         />
         <div className="p-6 lg:p-8">
           <div className="mb-6">
             <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-              {t("export.recommendations.title")}
+              {t(`${T_PREFIX}.title`)}
             </h1>
             <p className="text-muted-foreground">
-              {t("export.recommendations.page.subtitle")}
+              {t(`${T_PREFIX}.page.subtitle`)}
             </p>
           </div>
           <div className="card-lavcom">
@@ -344,8 +344,8 @@ export default function RecommendationsPage() {
   return (
     <>
       <SEOHead 
-        title={t("export.recommendations.title")}
-        description={t("export.recommendations.page.subtitle")}
+        title={t(`${T_PREFIX}.title`)}
+        description={t(`${T_PREFIX}.page.subtitle`)}
         url="/recommendations"
         noindex={true}
       />
@@ -354,10 +354,10 @@ export default function RecommendationsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-              {t("export.recommendations.title")}
+              {t(`${T_PREFIX}.title`)}
             </h1>
             <p className="text-muted-foreground">
-              {t("export.recommendations.page.subtitle")}
+              {t(`${T_PREFIX}.page.subtitle`)}
             </p>
           </div>
           <Button 
@@ -368,12 +368,12 @@ export default function RecommendationsPage() {
             {isGenerating ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                {t("export.recommendations.page.generating")}
+                {t(`${T_PREFIX}.page.generating`)}
               </>
             ) : (
               <>
                 <Download className="h-4 w-4" />
-                {t("export.recommendations.page.downloadPdf")}
+                {t(`${T_PREFIX}.page.downloadPdf`)}
               </>
             )}
           </Button>
@@ -385,19 +385,19 @@ export default function RecommendationsPage() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-6 p-4 bg-muted/50 rounded-lg border border-border">
-        <span className="text-sm font-medium text-muted-foreground">{t("export.recommendations.page.legend")} :</span>
+      <div className="flex flex-wrap items-center gap-4 sm:gap-6 p-4 bg-muted/50 rounded-lg border border-border">
+        <span className="text-sm font-medium text-muted-foreground">{t(`${T_PREFIX}.page.legend`)} :</span>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-sm bg-[#A5C800]" />
-          <span className="text-sm text-foreground">{t("export.recommendations.page.legendStrength")}</span>
+          <span className="text-sm text-foreground">{t(`${T_PREFIX}.page.legendStrength`)}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-sm bg-[#FCD259]" />
-          <span className="text-sm text-foreground">{t("export.recommendations.page.legendProblem")}</span>
+          <span className="text-sm text-foreground">{t(`${T_PREFIX}.page.legendProblem`)}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded-sm bg-[#6DBFB8]" />
-          <span className="text-sm text-foreground">{t("export.recommendations.page.legendOpportunity")}</span>
+          <span className="text-sm text-foreground">{t(`${T_PREFIX}.page.legendOpportunity`)}</span>
         </div>
       </div>
 
@@ -405,7 +405,7 @@ export default function RecommendationsPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-display font-semibold flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-primary" />
-          {t("export.recommendations.page.sections.performance")}
+          {t(`${T_PREFIX}.page.sections.performance`)}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {performanceInsights.map((insight, index) => (
@@ -418,7 +418,7 @@ export default function RecommendationsPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-display font-semibold flex items-center gap-2">
           <Lightbulb className="h-5 w-5 text-primary" />
-          {t("export.recommendations.page.sections.optimization")}
+          {t(`${T_PREFIX}.page.sections.optimization`)}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {optimizationInsights.map((insight, index) => (
@@ -431,7 +431,7 @@ export default function RecommendationsPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-display font-semibold flex items-center gap-2">
           <Target className="h-5 w-5 text-primary" />
-          {t("export.recommendations.page.sections.actions")}
+          {t(`${T_PREFIX}.page.sections.actions`)}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {actionItems.map((item, index) => (
@@ -445,10 +445,10 @@ export default function RecommendationsPage() {
         <section className="space-y-4">
           <h2 className="text-lg font-display font-semibold flex items-center gap-2">
             <Megaphone className="h-5 w-5 text-primary" />
-            {t("export.recommendations.page.sections.marketing")}
+            {t(`${T_PREFIX}.page.sections.marketing`)}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {t("export.recommendations.page.marketingIntro")}
+            {t(`${T_PREFIX}.page.marketingIntro`)}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {marketingInsights.map((insight, index) => (
@@ -460,23 +460,23 @@ export default function RecommendationsPage() {
 
       {/* Summary KPIs */}
       <section className="kpi-card">
-        <h3 className="font-display font-semibold text-lg mb-4">{t("export.recommendations.page.summary.title")}</h3>
+        <h3 className="font-display font-semibold text-lg mb-4">{t(`${T_PREFIX}.page.summary.title`)}</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-muted/50 rounded-lg">
             <p className="text-2xl font-bold text-primary">64 121€</p>
-            <p className="text-sm text-muted-foreground">{t("export.recommendations.page.summary.revenue2025")}</p>
+            <p className="text-sm text-muted-foreground">{t(`${T_PREFIX}.page.summary.revenue2025`)}</p>
           </div>
           <div className="text-center p-4 bg-muted/50 rounded-lg">
             <p className="text-2xl font-bold text-amber-600">-27%</p>
-            <p className="text-sm text-muted-foreground">{t("export.recommendations.page.summary.vsLastYear")}</p>
+            <p className="text-sm text-muted-foreground">{t(`${T_PREFIX}.page.summary.vsLastYear`)}</p>
           </div>
           <div className="text-center p-4 bg-muted/50 rounded-lg">
             <p className="text-2xl font-bold text-green-600">18h</p>
-            <p className="text-sm text-muted-foreground">{t("export.recommendations.page.summary.peakHour")}</p>
+            <p className="text-sm text-muted-foreground">{t(`${T_PREFIX}.page.summary.peakHour`)}</p>
           </div>
           <div className="text-center p-4 bg-muted/50 rounded-lg">
-            <p className="text-2xl font-bold text-blue-600">{t("export.recommendations.page.summary.sunday")}</p>
-            <p className="text-sm text-muted-foreground">{t("export.recommendations.page.summary.busiestDay")}</p>
+            <p className="text-2xl font-bold text-blue-600">{t(`${T_PREFIX}.page.summary.sunday`)}</p>
+            <p className="text-sm text-muted-foreground">{t(`${T_PREFIX}.page.summary.busiestDay`)}</p>
           </div>
         </div>
       </section>
