@@ -14,7 +14,7 @@ import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format, startOfYear, endOfYear } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Minus, CalendarDays } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -25,7 +25,6 @@ import {
 
 const MONTH_NAMES = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
 
-// Generate available years (last 10 years)
 const generateYearOptions = () => {
   const currentYear = new Date().getFullYear();
   const years: number[] = [];
@@ -46,11 +45,8 @@ export function YearComparisonChart() {
   const currentYear = selectedYear;
   const previousYear = comparisonYear;
   
-  // Fetch current year data
   const currentYearStart = format(startOfYear(new Date(currentYear, 0, 1)), "yyyy-MM-dd");
   const currentYearEnd = format(endOfYear(new Date(currentYear, 0, 1)), "yyyy-MM-dd");
-  
-  // Fetch previous year data
   const previousYearStart = format(startOfYear(new Date(previousYear, 0, 1)), "yyyy-MM-dd");
   const previousYearEnd = format(endOfYear(new Date(previousYear, 0, 1)), "yyyy-MM-dd");
   
@@ -68,7 +64,6 @@ export function YearComparisonChart() {
 
   const isLoading = isLoadingCurrent || isLoadingPrevious;
 
-  // Merge data for comparison
   const chartData = useMemo(() => {
     const merged: { month: string; monthNum: number; current: number; previous: number }[] = [];
     
@@ -87,22 +82,22 @@ export function YearComparisonChart() {
     return merged;
   }, [currentData, previousData]);
 
-  // Calculate totals and variation
   const stats = useMemo(() => {
     const currentTotal = chartData.reduce((sum, item) => sum + item.current, 0);
     const previousTotal = chartData.reduce((sum, item) => sum + item.previous, 0);
     const variation = previousTotal > 0 
       ? ((currentTotal - previousTotal) / previousTotal) * 100 
       : 0;
-    
     return { currentTotal, previousTotal, variation };
   }, [chartData]);
 
   if (isLoading) {
     return (
-      <div className="kpi-card h-[450px]">
-        <h3 className="font-display font-semibold text-lg mb-4">Comparaison annuelle</h3>
-        <Skeleton className="h-[390px] w-full" />
+      <div className="dashboard-card h-[400px]">
+        <div className="dashboard-card-header">
+          <h3 className="dashboard-card-title">Comparaison annuelle</h3>
+        </div>
+        <Skeleton className="h-[320px] w-full" />
       </div>
     );
   }
@@ -111,125 +106,128 @@ export function YearComparisonChart() {
 
   if (!hasData) {
     return (
-      <div className="kpi-card h-[450px]">
-        <h3 className="font-display font-semibold text-lg mb-4">Comparaison annuelle</h3>
-        <div className="flex items-center justify-center h-[390px] text-muted-foreground">
-          Aucune donnée disponible pour la comparaison
+      <div className="dashboard-card h-[400px]">
+        <div className="dashboard-card-header">
+          <h3 className="dashboard-card-title">Comparaison annuelle</h3>
+        </div>
+        <div className="flex items-center justify-center h-[320px] text-sm text-muted-foreground">
+          Aucune donnée disponible
         </div>
       </div>
     );
   }
 
   const VariationIcon = stats.variation > 0 ? TrendingUp : stats.variation < 0 ? TrendingDown : Minus;
-  const variationColor = stats.variation > 0 ? "text-green-500" : stats.variation < 0 ? "text-red-500" : "text-muted-foreground";
 
   return (
-    <div data-pdf-chart="year-comparison" className="kpi-card h-[450px]">
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-3">
-          <h3 className="font-display font-semibold text-lg">Comparaison</h3>
-          <div className="flex items-center gap-2">
+    <div data-pdf-chart="year-comparison" className="dashboard-card h-[400px]">
+      <div className="dashboard-card-header flex-wrap">
+        <div className="flex items-center gap-2">
+          <h3 className="dashboard-card-title">Comparaison</h3>
+          <div className="flex items-center gap-1.5">
             <Select
               value={comparisonYear.toString()}
               onValueChange={(value) => setComparisonYear(parseInt(value))}
             >
-              <SelectTrigger className="w-[90px] h-8">
+              <SelectTrigger className="w-[80px] h-7 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {YEAR_OPTIONS.filter(y => y !== selectedYear).map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
+                  <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-muted-foreground">vs</span>
+            <span className="text-xs text-muted-foreground">vs</span>
             <Select
               value={selectedYear.toString()}
               onValueChange={(value) => setSelectedYear(parseInt(value))}
             >
-              <SelectTrigger className="w-[90px] h-8">
+              <SelectTrigger className="w-[80px] h-7 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {YEAR_OPTIONS.filter(y => y !== comparisonYear).map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
+                  <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="gap-1.5">
-            <span className="font-normal text-muted-foreground">{previousYear}:</span>
-            <span className="font-semibold">{stats.previousTotal.toLocaleString("fr-FR")} €</span>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Badge variant="outline" className="gap-1 text-xs h-6">
+            <span className="text-muted-foreground">{previousYear}:</span>
+            <span className="font-semibold tabular-nums">{stats.previousTotal.toLocaleString("fr-FR")} €</span>
           </Badge>
-          <Badge variant="secondary" className="gap-1.5">
-            <span className="font-normal text-muted-foreground">{currentYear}:</span>
-            <span className="font-semibold">{stats.currentTotal.toLocaleString("fr-FR")} €</span>
+          <Badge variant="secondary" className="gap-1 text-xs h-6">
+            <span className="text-muted-foreground">{currentYear}:</span>
+            <span className="font-semibold tabular-nums">{stats.currentTotal.toLocaleString("fr-FR")} €</span>
           </Badge>
           <Badge 
             variant={stats.variation >= 0 ? "default" : "destructive"} 
-            className={`gap-1 ${stats.variation >= 0 ? "bg-green-500/10 text-green-600 hover:bg-green-500/20" : ""}`}
+            className={`gap-1 text-xs h-6 ${stats.variation >= 0 ? "bg-lime-100 text-lime-700 dark:bg-lime-900/30 dark:text-lime-400" : ""}`}
           >
-            <VariationIcon className="h-3.5 w-3.5" />
-            {stats.variation >= 0 ? "+" : ""}{stats.variation.toFixed(1)}%
+            <VariationIcon className="h-3 w-3" />
+            <span className="tabular-nums">{stats.variation >= 0 ? "+" : ""}{stats.variation.toFixed(1)}%</span>
           </Badge>
         </div>
       </div>
       
-      <ResponsiveContainer width="100%" height="85%">
-        <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis 
-            dataKey="month" 
-            tick={{ fontSize: 12 }}
-            stroke="hsl(var(--muted-foreground))"
-          />
-          <YAxis 
-            tick={{ fontSize: 12 }}
-            stroke="hsl(var(--muted-foreground))"
-            tickFormatter={(value) => `${(value / 1000).toFixed(0)}k€`}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "hsl(var(--card))",
-              border: "1px solid hsl(var(--border))",
-              borderRadius: "8px",
-            }}
-            formatter={(value: number, name: string) => [
-              `${value.toLocaleString("fr-FR")} €`, 
-              name === "previous" ? previousYear : currentYear
-            ]}
-            labelFormatter={(label) => `${label}`}
-          />
-          <Legend 
-            formatter={(value) => value === "previous" ? previousYear : currentYear}
-          />
-          <Line
-            type="monotone"
-            dataKey="previous"
-            name="previous"
-            stroke="hsl(var(--muted-foreground))"
-            strokeWidth={2}
-            strokeDasharray="5 5"
-            dot={{ fill: "hsl(var(--muted-foreground))", r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="current"
-            name="current"
-            stroke="hsl(var(--lavcom-green))"
-            strokeWidth={3}
-            dot={{ fill: "hsl(var(--lavcom-green))", r: 4 }}
-            activeDot={{ r: 6 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <div className="h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis 
+              dataKey="month" 
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis 
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `${(value / 1000).toFixed(0)}k€`}
+              width={45}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "hsl(var(--card))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: "6px",
+                fontSize: "12px",
+              }}
+              formatter={(value: number, name: string) => [
+                `${value.toLocaleString("fr-FR")} €`, 
+                name === "previous" ? previousYear : currentYear
+              ]}
+            />
+            <Legend 
+              wrapperStyle={{ fontSize: '11px' }}
+              formatter={(value) => value === "previous" ? previousYear : currentYear}
+            />
+            <Line
+              type="monotone"
+              dataKey="previous"
+              name="previous"
+              stroke="hsl(var(--muted-foreground))"
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={{ fill: "hsl(var(--muted-foreground))", r: 3, strokeWidth: 0 }}
+              activeDot={{ r: 5 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="current"
+              name="current"
+              stroke="hsl(var(--lavcom-green))"
+              strokeWidth={2}
+              dot={{ fill: "hsl(var(--lavcom-green))", r: 3, strokeWidth: 0 }}
+              activeDot={{ r: 5 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

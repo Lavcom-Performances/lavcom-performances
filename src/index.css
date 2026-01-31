@@ -145,21 +145,31 @@ html {
 }
 
 @layer components {
+  /* Clean card system - aligned, consistent borders */
   .card-lavcom {
-    @apply bg-card rounded-xl shadow-sm border border-border/50 transition-all duration-300;
+    @apply bg-card rounded-lg border border-border shadow-sm;
   }
 
   .card-lavcom-hover {
-    @apply bg-card rounded-xl shadow-sm border border-border/50 transition-all duration-300 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1;
+    @apply bg-card rounded-lg border border-border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/30;
   }
 
-  .kpi-card {
-    @apply bg-card rounded-xl p-4 sm:p-6 shadow-sm border border-border/50 transition-all duration-300 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 cursor-default overflow-visible;
+  /* Dashboard section card - for charts and tables */
+  .dashboard-card {
+    @apply bg-card rounded-lg border border-border p-5;
   }
-  
-  /* Ensure KPI values don't get truncated */
-  .kpi-card p {
-    @apply overflow-visible;
+
+  .dashboard-card-header {
+    @apply flex items-center justify-between gap-3 mb-4 pb-3 border-b border-border/50;
+  }
+
+  .dashboard-card-title {
+    @apply text-sm font-semibold text-foreground uppercase tracking-wide;
+  }
+
+  /* Deprecated - kept for compatibility */
+  .kpi-card {
+    @apply bg-card rounded-lg p-4 border border-border transition-all duration-200 hover:shadow-md hover:border-primary/30;
   }
   
   /* Payment mode badges */

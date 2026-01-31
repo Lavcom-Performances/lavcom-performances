@@ -39,25 +39,28 @@ export function MonthlyRevenueChart({ startDate, endDate }: MonthlyRevenueChartP
     revenue: Number(item.revenue_total) || 0,
   })) ?? [];
 
-  // Format date range for title
   const dateRangeLabel = startDate && endDate 
     ? `${format(startDate, "MMM yyyy", { locale: fr })} - ${format(endDate, "MMM yyyy", { locale: fr })}`
     : "";
 
   if (isLoading) {
     return (
-      <div className="kpi-card h-[400px]">
-        <h3 className="font-display font-semibold text-lg mb-4">CA par mois</h3>
-        <Skeleton className="h-[340px] w-full" />
+      <div className="dashboard-card h-[360px]">
+        <div className="dashboard-card-header">
+          <h3 className="dashboard-card-title">CA par mois</h3>
+        </div>
+        <Skeleton className="h-[280px] w-full" />
       </div>
     );
   }
 
   if (!startDate || !endDate) {
     return (
-      <div className="kpi-card h-[400px]">
-        <h3 className="font-display font-semibold text-lg mb-4">CA par mois</h3>
-        <div className="flex items-center justify-center h-[340px] text-muted-foreground">
+      <div className="dashboard-card h-[360px]">
+        <div className="dashboard-card-header">
+          <h3 className="dashboard-card-title">CA par mois</h3>
+        </div>
+        <div className="flex items-center justify-center h-[280px] text-sm text-muted-foreground">
           Sélectionnez une plage de dates
         </div>
       </div>
@@ -66,52 +69,63 @@ export function MonthlyRevenueChart({ startDate, endDate }: MonthlyRevenueChartP
 
   if (chartData.length === 0) {
     return (
-      <div className="kpi-card h-[400px]">
-        <h3 className="font-display font-semibold text-lg mb-4">CA par mois</h3>
-        <div className="flex items-center justify-center h-[340px] text-muted-foreground">
-          Aucune donnée disponible pour cette période
+      <div className="dashboard-card h-[360px]">
+        <div className="dashboard-card-header">
+          <h3 className="dashboard-card-title">CA par mois</h3>
+        </div>
+        <div className="flex items-center justify-center h-[280px] text-sm text-muted-foreground">
+          Aucune donnée disponible
         </div>
       </div>
     );
   }
 
   return (
-    <div data-pdf-chart="monthly-revenue" className="kpi-card h-[400px]">
-      <h3 className="font-display font-semibold text-lg mb-4">
-        CA par mois {dateRangeLabel && <span className="text-muted-foreground font-normal text-sm">({dateRangeLabel})</span>}
-      </h3>
-      <ResponsiveContainer width="100%" height="90%">
-        <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis 
-            dataKey="label" 
-            tick={{ fontSize: 12 }}
-            stroke="hsl(var(--muted-foreground))"
-            angle={-45}
-            textAnchor="end"
-            height={60}
-          />
-          <YAxis 
-            tick={{ fontSize: 12 }}
-            stroke="hsl(var(--muted-foreground))"
-            tickFormatter={(value) => `${value}€`}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "hsl(var(--card))",
-              border: "1px solid hsl(var(--border))",
-              borderRadius: "8px",
-            }}
-            formatter={(value: number) => [`${value.toFixed(2)} €`, "CA"]}
-          />
-          <Bar 
-            dataKey="revenue" 
-            name="CA" 
-            fill="hsl(var(--lavcom-green))"
-            radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+    <div data-pdf-chart="monthly-revenue" className="dashboard-card h-[360px]">
+      <div className="dashboard-card-header">
+        <h3 className="dashboard-card-title">CA par mois</h3>
+        {dateRangeLabel && (
+          <span className="text-xs text-muted-foreground">{dateRangeLabel}</span>
+        )}
+      </div>
+      <div className="h-[280px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 40 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis 
+              dataKey="label" 
+              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+              tickLine={false}
+              axisLine={false}
+              angle={-45}
+              textAnchor="end"
+              height={50}
+            />
+            <YAxis 
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `${value}€`}
+              width={50}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "hsl(var(--card))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: "6px",
+                fontSize: "12px",
+              }}
+              formatter={(value: number) => [`${value.toFixed(2)} €`, "CA"]}
+            />
+            <Bar 
+              dataKey="revenue" 
+              name="CA" 
+              fill="hsl(var(--lavcom-green))"
+              radius={[3, 3, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
