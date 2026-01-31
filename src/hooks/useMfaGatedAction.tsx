@@ -3,30 +3,31 @@ import { useMfaChallenge } from './useMfaChallenge';
 import { MfaChallengeDialog } from '@/components/auth/MfaChallengeDialog';
 import { useToast } from './use-toast';
 import { useTranslation } from 'react-i18next';
+import type { SensitiveAction } from '@/lib/mfa/sensitiveActions';
+import { getActionLabelKey, isSensitiveAction } from '@/lib/mfa/sensitiveActions';
 
-export type SensitiveActionType = 
-  | 'delete'
-  | 'export'
-  | 'changePassword'
-  | 'deleteSite'
-  | 'deleteAccount'
-  | 'disableMfa';
+export type { SensitiveAction };
 
 interface UseMfaGatedActionOptions {
-  actionType?: SensitiveActionType;
+  /** The sensitive action type for backend session tracking */
+  actionType?: SensitiveAction;
+  /** Custom label override (uses i18n by default) */
   customActionLabel?: string;
 }
 
 /**
  * Hook to wrap sensitive actions with MFA verification (if MFA is enrolled).
  * 
+ * Now with backend session tracking - verified actions are valid for 15 minutes.
+ * 
  * Usage:
  * ```tsx
- * const { executeMfaGated, MfaDialogComponent } = useMfaGatedAction({ actionType: 'delete' });
+ * const { executeMfaGated, MfaDialogComponent } = useMfaGatedAction({ 
+ *   actionType: 'delete_site' 
+ * });
  * 
  * const handleDelete = async () => {
  *   await executeMfaGated(async () => {
- *     // Your delete logic here
  *     await deleteItem(id);
  *   });
  * };
@@ -46,6 +47,7 @@ export function useMfaGatedAction(options: UseMfaGatedActionOptions = {}) {
     isVerifying,
     showChallengeDialog,
     mfaStatus,
+    pendingActionType,
     verifyCode,
     requireMfaFor,
     executePendingAction,
@@ -60,18 +62,31 @@ export function useMfaGatedAction(options: UseMfaGatedActionOptions = {}) {
     if (options.customActionLabel) {
       return options.customActionLabel;
     }
-    if (options.actionType) {
-      return t(`app:mfaChallenge.actionLabels.${options.actionType}`, { defaultValue: '' });
+    
+    // Use pending action type if available (for dynamic actions)
+    const actionType = pendingActionType || options.actionType;
+    
+    if (actionType && isSensitiveAction(actionType)) {
+      const key = getActionLabelKey(actionType);
+      const translated = t(key, { defaultValue: '' });
+      return translated || undefined;
     }
+    
     return undefined;
-  }, [options.actionType, options.customActionLabel, t]);
+  }, [options.actionType, options.customActionLabel, pendingActionType, t]);
 
   // Execute an action with MFA verification if enrolled
-  const executeMfaGated = useCallback(async (action: () => Promise<void>) => {
+  const executeMfaGated = useCallback(async (
+    action: () => Promise<void>,
+    /** Override action type for this specific call */
+    overrideActionType?: SensitiveAction
+  ) => {
     setIsPending(true);
     try {
-      const executed = await requireMfaFor(action);
-      // If executed is true, action was performed immediately (no MFA enrolled)
+      const actionType = overrideActionType || options.actionType;
+      const executed = await requireMfaFor(action, actionType);
+      
+      // If executed is true, action was performed immediately (no MFA needed)
       // If false, we're waiting for MFA verification
       if (executed) {
         setIsPending(false);
@@ -80,7 +95,7 @@ export function useMfaGatedAction(options: UseMfaGatedActionOptions = {}) {
       setIsPending(false);
       throw error;
     }
-  }, [requireMfaFor]);
+  }, [requireMfaFor, options.actionType]);
 
   // Handle successful verification
   const handleVerifySuccess = useCallback(async () => {

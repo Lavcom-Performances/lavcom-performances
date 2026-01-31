@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { SensitiveAction } from '@/lib/mfa/sensitiveActions';
 
 export interface MfaStatus {
   isEnrolled: boolean;
@@ -11,11 +12,46 @@ export interface MfaChallengeResult {
   error?: string;
 }
 
+interface MfaSession {
+  action: string;
+  expiresAt: Date;
+}
+
+// In-memory session cache (cleared on page refresh)
+const mfaSessions = new Map<string, MfaSession>();
+
+/**
+ * Check if we have a valid in-memory MFA session for an action
+ */
+function hasValidLocalSession(action: string): boolean {
+  const session = mfaSessions.get(action);
+  if (!session) return false;
+  
+  if (new Date() >= session.expiresAt) {
+    mfaSessions.delete(action);
+    return false;
+  }
+  
+  return true;
+}
+
+/**
+ * Store a valid MFA session locally
+ */
+function storeLocalSession(action: string, expiresAt: string): void {
+  mfaSessions.set(action, {
+    action,
+    expiresAt: new Date(expiresAt),
+  });
+}
+
 export function useMfaChallenge() {
   const [isChecking, setIsChecking] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [showChallengeDialog, setShowChallengeDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => Promise<void>) | null>(null);
+  const [pendingActionType, setPendingActionType] = useState<SensitiveAction | null>(null);
+  const [challengeId, setChallengeId] = useState<string | null>(null);
   const [mfaStatus, setMfaStatus] = useState<MfaStatus>({ isEnrolled: false, factorId: null });
 
   // Check if user has MFA enrolled
@@ -44,44 +80,80 @@ export function useMfaChallenge() {
     }
   }, []);
 
-  // Verify TOTP code
+  // Check backend for valid MFA session
+  const checkBackendSession = useCallback(async (action: SensitiveAction): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('require-mfa', {
+        body: { action, create_challenge: false },
+      });
+
+      if (error) {
+        console.error('Error checking MFA requirement:', error);
+        return false;
+      }
+
+      // If no MFA enrolled, allow action
+      if (!data.mfa_enrolled) {
+        return true;
+      }
+
+      // If has valid session, allow action
+      return data.has_valid_session;
+    } catch (err) {
+      console.error('Error in checkBackendSession:', err);
+      return false;
+    }
+  }, []);
+
+  // Verify TOTP code via backend
   const verifyCode = useCallback(async (code: string): Promise<MfaChallengeResult> => {
-    if (!mfaStatus.factorId) {
-      return { success: false, error: 'No MFA factor enrolled' };
+    if (!pendingActionType) {
+      return { success: false, error: 'No pending action' };
     }
 
     setIsVerifying(true);
     try {
-      // First create a challenge
-      const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
-        factorId: mfaStatus.factorId,
-      });
-
-      if (challengeError) {
-        return { success: false, error: challengeError.message };
-      }
-
-      // Then verify it
-      const { data, error } = await supabase.auth.mfa.verify({
-        factorId: mfaStatus.factorId,
-        challengeId: challengeData.id,
-        code,
+      const { data, error } = await supabase.functions.invoke('verify-mfa-challenge', {
+        body: {
+          action: pendingActionType,
+          code,
+          challenge_id: challengeId,
+        },
       });
 
       if (error) {
         return { success: false, error: error.message };
       }
 
+      if (!data.success) {
+        return { success: false, error: data.error || 'Verification failed' };
+      }
+
+      // Store session locally for quick access
+      if (data.expires_at) {
+        storeLocalSession(pendingActionType, data.expires_at);
+      }
+
       return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err.message || 'Verification failed' };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Verification failed';
+      return { success: false, error: message };
     } finally {
       setIsVerifying(false);
     }
-  }, [mfaStatus.factorId]);
+  }, [pendingActionType, challengeId]);
 
   // Gate a sensitive action with MFA verification
-  const requireMfaFor = useCallback(async (action: () => Promise<void>): Promise<boolean> => {
+  const requireMfaFor = useCallback(async (
+    action: () => Promise<void>,
+    actionType?: SensitiveAction
+  ): Promise<boolean> => {
+    // Check local session first (fastest)
+    if (actionType && hasValidLocalSession(actionType)) {
+      await action();
+      return true;
+    }
+
     const status = await checkMfaStatus();
     
     // If MFA is not enrolled, proceed without verification
@@ -89,18 +161,39 @@ export function useMfaChallenge() {
       await action();
       return true;
     }
+
+    // If we have an action type, check backend for valid session
+    if (actionType) {
+      const hasBackendSession = await checkBackendSession(actionType);
+      if (hasBackendSession) {
+        await action();
+        return true;
+      }
+
+      // Create a challenge record
+      const { data } = await supabase.functions.invoke('require-mfa', {
+        body: { action: actionType, create_challenge: true },
+      });
+
+      if (data?.challenge_id) {
+        setChallengeId(data.challenge_id);
+      }
+    }
     
-    // MFA is enrolled - show challenge dialog
+    // MFA is enrolled and no valid session - show challenge dialog
     setPendingAction(() => action);
+    setPendingActionType(actionType || null);
     setShowChallengeDialog(true);
     return false; // Action is pending MFA verification
-  }, [checkMfaStatus]);
+  }, [checkMfaStatus, checkBackendSession]);
 
   // Execute pending action after successful verification
   const executePendingAction = useCallback(async () => {
     if (pendingAction) {
       await pendingAction();
       setPendingAction(null);
+      setPendingActionType(null);
+      setChallengeId(null);
       setShowChallengeDialog(false);
     }
   }, [pendingAction]);
@@ -108,6 +201,8 @@ export function useMfaChallenge() {
   // Cancel the pending action
   const cancelChallenge = useCallback(() => {
     setPendingAction(null);
+    setPendingActionType(null);
+    setChallengeId(null);
     setShowChallengeDialog(false);
   }, []);
 
@@ -117,6 +212,7 @@ export function useMfaChallenge() {
     isVerifying,
     showChallengeDialog,
     mfaStatus,
+    pendingActionType,
     
     // Actions
     checkMfaStatus,

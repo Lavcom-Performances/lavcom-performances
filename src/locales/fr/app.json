@@ -245,10 +245,23 @@
     "actionLabels": {
       "delete": "supprimer cet élément",
       "export": "exporter les données",
+      "exportFinancial": "exporter les données financières",
       "changePassword": "changer votre mot de passe",
       "deleteSite": "supprimer ce site",
       "deleteAccount": "supprimer votre compte",
-      "disableMfa": "désactiver la 2FA"
+      "disableMfa": "désactiver la 2FA",
+      "impersonateUser": "accéder au compte utilisateur",
+      "changePlatformRole": "modifier les rôles plateforme",
+      "toggleFeatureFlag": "modifier les flags de fonctionnalités",
+      "runDrDrill": "exécuter un test DR",
+      "generateComplianceReport": "générer un rapport de conformité",
+      "downloadArchive": "télécharger une archive",
+      "accessSecrets": "accéder aux secrets",
+      "systemConfig": "modifier la configuration système",
+      "removeTeamMember": "retirer un membre de l'équipe",
+      "changeUserRole": "modifier un rôle utilisateur",
+      "billingChange": "modifier la facturation",
+      "cancelSubscription": "annuler l'abonnement"
     }
   },
   "charts": {

@@ -38,6 +38,7 @@ import { RetentionDashboard } from '@/components/admin/RetentionDashboard';
 import { SystemStatusWidget } from '@/components/admin/SystemStatusWidget';
 import { ChurnPredictionsDashboard } from '@/components/admin/ChurnPredictionsDashboard';
 import { ExportAuditLogsWidget } from '@/components/admin/ExportAuditLogsWidget';
+import { MfaMonitoringWidget } from '@/components/admin/MfaMonitoringWidget';
 
 interface GlobalStats {
   total_users: number;
@@ -336,8 +337,9 @@ export default function AdminDashboard() {
         {/* System Status Widget + Quick Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
           {/* System Status Widget - Admin site uniquement */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-4">
             <SystemStatusWidget />
+            <MfaMonitoringWidget />
           </div>
           
           <Card>

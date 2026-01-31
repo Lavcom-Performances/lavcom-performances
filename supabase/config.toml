@@ -191,3 +191,9 @@ verify_jwt = false
 
 [functions.evaluate-platform-readiness]
 verify_jwt = false
+
+[functions.require-mfa]
+verify_jwt = false
+
+[functions.verify-mfa-challenge]
+verify_jwt = false
