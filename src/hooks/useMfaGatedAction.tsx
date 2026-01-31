@@ -93,9 +93,22 @@ export function useMfaGatedAction(options: UseMfaGatedActionOptions = {}) {
       }
     } catch (error) {
       setIsPending(false);
+      
+      // TAEX-231: Handle platform admin MFA enrollment requirement
+      if (error instanceof Error && error.message === 'MFA_ENROLLMENT_REQUIRED') {
+        toast({
+          title: t('app:mfaChallenge.enrollmentRequired.title', { defaultValue: 'MFA Required' }),
+          description: t('app:mfaChallenge.enrollmentRequired.description', { 
+            defaultValue: 'Platform administrators must enable MFA to perform this action. Please set up MFA in your security settings.' 
+          }),
+          variant: 'destructive',
+        });
+        return;
+      }
+      
       throw error;
     }
-  }, [requireMfaFor, options.actionType]);
+  }, [requireMfaFor, options.actionType, t, toast]);
 
   // Handle successful verification
   const handleVerifySuccess = useCallback(async () => {

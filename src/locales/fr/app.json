@@ -262,6 +262,10 @@
       "changeUserRole": "modifier un rôle utilisateur",
       "billingChange": "modifier la facturation",
       "cancelSubscription": "annuler l'abonnement"
+    },
+    "enrollmentRequired": {
+      "title": "MFA requis",
+      "description": "Les administrateurs de plateforme doivent activer l'authentification à deux facteurs (MFA) pour effectuer cette action. Veuillez configurer le MFA dans vos paramètres de sécurité."
     }
   },
   "charts": {

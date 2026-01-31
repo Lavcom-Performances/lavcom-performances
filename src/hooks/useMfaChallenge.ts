@@ -81,7 +81,11 @@ export function useMfaChallenge() {
   }, []);
 
   // Check backend for valid MFA session
-  const checkBackendSession = useCallback(async (action: SensitiveAction): Promise<boolean> => {
+  const checkBackendSession = useCallback(async (action: SensitiveAction): Promise<{
+    hasSession: boolean;
+    enrollmentRequired?: boolean;
+    isPlatformAdmin?: boolean;
+  }> => {
     try {
       const { data, error } = await supabase.functions.invoke('require-mfa', {
         body: { action, create_challenge: false },
@@ -89,19 +93,28 @@ export function useMfaChallenge() {
 
       if (error) {
         console.error('Error checking MFA requirement:', error);
-        return false;
+        return { hasSession: false };
       }
 
-      // If no MFA enrolled, allow action
+      // TAEX-231: If platform admin without MFA enrolled → block
+      if (data.enrollment_required) {
+        return { 
+          hasSession: false, 
+          enrollmentRequired: true,
+          isPlatformAdmin: data.is_platform_admin,
+        };
+      }
+
+      // If no MFA enrolled (for non-platform users), allow action
       if (!data.mfa_enrolled) {
-        return true;
+        return { hasSession: true };
       }
 
       // If has valid session, allow action
-      return data.has_valid_session;
+      return { hasSession: data.has_valid_session };
     } catch (err) {
       console.error('Error in checkBackendSession:', err);
-      return false;
+      return { hasSession: false };
     }
   }, []);
 
@@ -154,18 +167,16 @@ export function useMfaChallenge() {
       return true;
     }
 
-    const status = await checkMfaStatus();
-    
-    // If MFA is not enrolled, proceed without verification
-    if (!status.isEnrolled) {
-      await action();
-      return true;
-    }
-
     // If we have an action type, check backend for valid session
     if (actionType) {
-      const hasBackendSession = await checkBackendSession(actionType);
-      if (hasBackendSession) {
+      const sessionCheck = await checkBackendSession(actionType);
+      
+      // TAEX-231: Platform admin without MFA enrolled → throw error
+      if (sessionCheck.enrollmentRequired) {
+        throw new Error('MFA_ENROLLMENT_REQUIRED');
+      }
+      
+      if (sessionCheck.hasSession) {
         await action();
         return true;
       }
@@ -177,6 +188,15 @@ export function useMfaChallenge() {
 
       if (data?.challenge_id) {
         setChallengeId(data.challenge_id);
+      }
+    } else {
+      // Fallback: check local MFA status
+      const status = await checkMfaStatus();
+      
+      // If MFA is not enrolled, proceed without verification
+      if (!status.isEnrolled) {
+        await action();
+        return true;
       }
     }
     

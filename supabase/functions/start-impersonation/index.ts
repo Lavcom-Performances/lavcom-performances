@@ -1,8 +1,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { assertPlatformMfaOr403 } from "../_shared/mfa.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 interface StartImpersonationRequest {
@@ -27,44 +28,31 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // TAEX-231: Enforce MFA for platform admins
+    const mfaCheck = await assertPlatformMfaOr403(req, 'impersonate_user');
+    if (!mfaCheck.allowed) {
+      return mfaCheck.response!;
+    }
+
+    const adminUserId = mfaCheck.userId!;
+    const adminUserEmail = mfaCheck.userEmail;
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-
-    // Verify the admin user
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
-
-    const { data: { user: adminUser }, error: authError } = await userClient.auth.getUser();
-    if (authError || !adminUser) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
     // Service client for privileged operations
     const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check if admin is super_admin
+    // Check if admin is super_admin (already verified as platform admin by MFA check)
     const { data: roleData } = await serviceClient
       .from('platform_roles')
       .select('role')
-      .eq('user_id', adminUser.id)
+      .eq('user_id', adminUserId)
       .eq('role', 'super_admin')
       .maybeSingle();
 
     if (!roleData) {
-      console.warn(`[start-impersonation] Non-super_admin attempted impersonation: ${adminUser.email}`);
+      console.warn(`[start-impersonation] Non-super_admin attempted impersonation: ${adminUserEmail}`);
       return new Response(JSON.stringify({ error: 'Only super_admin can impersonate users' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -91,7 +79,7 @@ Deno.serve(async (req) => {
     }
 
     // Prevent impersonating self
-    if (target_user_id === adminUser.id) {
+    if (target_user_id === adminUserId) {
       return new Response(JSON.stringify({ error: 'Cannot impersonate yourself' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -135,7 +123,7 @@ Deno.serve(async (req) => {
     const { count: todayCount } = await serviceClient
       .from('impersonation_sessions')
       .select('*', { count: 'exact', head: true })
-      .eq('admin_id', adminUser.id)
+      .eq('admin_id', adminUserId)
       .gte('created_at', todayStart.toISOString());
 
     if ((todayCount ?? 0) >= MAX_SESSIONS_PER_DAY) {
@@ -151,7 +139,7 @@ Deno.serve(async (req) => {
     const { data: existingSession } = await serviceClient
       .from('impersonation_sessions')
       .select('id')
-      .eq('admin_id', adminUser.id)
+      .eq('admin_id', adminUserId)
       .is('revoked_at', null)
       .gt('expires_at', new Date().toISOString())
       .maybeSingle();
@@ -169,7 +157,7 @@ Deno.serve(async (req) => {
     const { data: session, error: insertError } = await serviceClient
       .from('impersonation_sessions')
       .insert({
-        admin_id: adminUser.id,
+        admin_id: adminUserId,
         target_user_id,
         reason: reason.trim(),
         ticket_id: ticket_id?.trim() || null,
@@ -188,7 +176,7 @@ Deno.serve(async (req) => {
 
     // Log to audit_logs
     await serviceClient.rpc('rpc_create_audit_log', {
-      p_actor_id: adminUser.id,
+      p_actor_id: adminUserId,
       p_action: 'IMPERSONATION_START',
       p_target_table: 'impersonation_sessions',
       p_target_id: session.id,
@@ -198,7 +186,7 @@ Deno.serve(async (req) => {
         reason: reason.trim(),
         ticket_id: ticket_id?.trim() || null,
         expires_at: expiresAt.toISOString(),
-        admin_email: adminUser.email,
+        admin_email: adminUserEmail,
       },
       p_user_agent: req.headers.get('user-agent'),
       p_ip_hash: null,
@@ -210,10 +198,10 @@ Deno.serve(async (req) => {
       source: 'start-impersonation',
       severity: 'warn',
       code: 'IMPERSONATION_STARTED',
-      message: `Super admin ${adminUser.email} started impersonating ${targetProfile.email}`,
+      message: `Super admin ${adminUserEmail} started impersonating ${targetProfile.email}`,
       meta: {
         session_id: session.id,
-        admin_id: adminUser.id,
+        admin_id: adminUserId,
         target_user_id,
         reason: reason.trim(),
         ticket_id: ticket_id?.trim() || null,
@@ -221,7 +209,7 @@ Deno.serve(async (req) => {
       },
     });
 
-    console.log(`[start-impersonation] Session started: admin=${adminUser.email}, target=${targetProfile.email}, session=${session.id}`);
+    console.log(`[start-impersonation] Session started: admin=${adminUserEmail}, target=${targetProfile.email}, session=${session.id}`);
 
     return new Response(JSON.stringify({
       success: true,
