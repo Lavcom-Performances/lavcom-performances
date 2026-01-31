@@ -1086,7 +1086,9 @@
       "verifyError": "Unable to verify code",
       "invalidCodeFormat": "Code must contain 6 digits",
       "invalidRecoveryFormat": "Recovery code must contain 8 characters",
-      "attemptsRemaining": "{{count}} attempt(s) remaining"
+      "attemptsRemaining": "{{count}} attempt(s) remaining",
+      "verificationRequired": "Verification required",
+      "sessionEnded": "Session ended. Please log in again to retry."
     }
   },
   "dashboard": {

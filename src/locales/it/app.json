@@ -961,7 +961,9 @@
       "verifyError": "Impossibile verificare il codice",
       "invalidCodeFormat": "Il codice deve contenere 6 cifre",
       "invalidRecoveryFormat": "Il codice di recupero deve contenere 8 caratteri",
-      "attemptsRemaining": "{{count}} tentativo/i rimanente/i"
+      "attemptsRemaining": "{{count}} tentativo/i rimanente/i",
+      "verificationRequired": "Verifica richiesta",
+      "sessionEnded": "Sessione terminata. Effettua nuovamente l'accesso."
     }
   },
   "trialExpired": {

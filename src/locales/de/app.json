@@ -961,7 +961,9 @@
       "verifyError": "Code konnte nicht verifiziert werden",
       "invalidCodeFormat": "Der Code muss 6 Ziffern enthalten",
       "invalidRecoveryFormat": "Der Wiederherstellungscode muss 8 Zeichen enthalten",
-      "attemptsRemaining": "{{count}} Versuch(e) übrig"
+      "attemptsRemaining": "{{count}} Versuch(e) übrig",
+      "verificationRequired": "Verifizierung erforderlich",
+      "sessionEnded": "Sitzung beendet. Bitte melden Sie sich erneut an."
     }
   },
   "trialExpired": {
