@@ -75,13 +75,13 @@ export function SalesHeatmap({ data }: SalesHeatmapProps) {
         <table className="w-full border-collapse text-xs min-w-[600px]">
           <thead>
             <tr>
-              <th className="p-1.5 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wide border border-border bg-muted/30 w-14">
+              <th className="p-1.5 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wide bg-muted/30 w-14">
                 Heures
               </th>
               {DAYS_FULL.map((day) => (
                 <th 
                   key={day} 
-                  className="p-1.5 text-center text-[10px] font-medium text-muted-foreground uppercase tracking-wide border border-border bg-muted/30"
+                  className="p-1.5 text-center text-[10px] font-medium text-muted-foreground uppercase tracking-wide bg-muted/30"
                 >
                   {day.slice(0, 3)}
                 </th>
@@ -91,40 +91,24 @@ export function SalesHeatmap({ data }: SalesHeatmapProps) {
           <tbody>
             {HOURS.map((hour) => (
               <tr key={hour}>
-                <td className="p-1.5 text-center text-xs font-medium text-muted-foreground border border-border bg-muted/20 tabular-nums">
+                <td className="p-1.5 text-center text-xs font-medium text-muted-foreground bg-muted/20 tabular-nums">
                   {hour}h
                 </td>
                 {DAYS_ORDER.map((day) => {
                   const value = gridMap.get(`${hour}-${day}`) || 0;
                   const bgColor = getIntensityColor(value, maxValue);
-                  const textColor = getTextColor(value, maxValue);
                   
                   return (
                     <td
                       key={`${hour}-${day}`}
-                      className="p-1.5 text-center text-xs font-medium border border-border tabular-nums"
-                      style={{ backgroundColor: bgColor, color: textColor }}
+                      className="p-2"
+                      style={{ backgroundColor: bgColor }}
                       title={`${day} ${hour}h: ${value} cycles`}
-                    >
-                      {value}
-                    </td>
+                    />
                   );
                 })}
               </tr>
             ))}
-            <tr>
-              <td className="p-1.5 text-center text-xs font-semibold text-foreground border border-border bg-muted/50">
-                Total
-              </td>
-              {DAYS_ORDER.map((day) => (
-                <td
-                  key={`total-${day}`}
-                  className="p-1.5 text-center text-xs font-semibold border border-border bg-muted/50 tabular-nums"
-                >
-                  {dayTotals[day]}
-                </td>
-              ))}
-            </tr>
           </tbody>
         </table>
       </div>
