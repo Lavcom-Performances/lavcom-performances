@@ -961,7 +961,9 @@
       "verifyError": "Kon code niet verifiëren",
       "invalidCodeFormat": "Code moet 6 cijfers bevatten",
       "invalidRecoveryFormat": "Herstelcode moet 8 tekens bevatten",
-      "attemptsRemaining": "{{count}} poging(en) resterend"
+      "attemptsRemaining": "{{count}} poging(en) resterend",
+      "verificationRequired": "Verificatie vereist",
+      "sessionEnded": "Sessie beëindigd. Log opnieuw in om het opnieuw te proberen."
     }
   },
   "trialExpired": {

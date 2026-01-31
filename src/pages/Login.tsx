@@ -21,6 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useDemoMode } from "@/hooks/useDemoMode";
 import { usePlatformRole } from "@/hooks/usePlatformRole";
+import { useLoginSecurity, RiskLevel, LoginRiskResult } from "@/hooks/useLoginSecurity";
+import { supabase } from "@/integrations/supabase/client";
 import lavcomLogo from "@/assets/lavcom-performances-logo.png";
 import { useTranslation } from "react-i18next";
 import { 
@@ -31,6 +33,7 @@ import {
 } from "@/lib/rateLimiter";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { LanguageSelector } from "@/components/ui/language-selector";
+import { RiskLoginVerificationModal } from "@/components/security/RiskLoginVerificationModal";
 
 export default function Login() {
   const { t } = useTranslation(['app', 'common']);
@@ -51,6 +54,11 @@ export default function Login() {
   // Rate limiting state (cooldown in seconds after too many attempts)
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   
+  // Risk-based login verification state
+  const [showRiskModal, setShowRiskModal] = useState(false);
+  const [riskResult, setRiskResult] = useState<LoginRiskResult | null>(null);
+  const [pendingRedirect, setPendingRedirect] = useState(false);
+  
   // ============================================
   // HOOKS
   // ============================================
@@ -68,6 +76,9 @@ export default function Login() {
   // Platform role check - determines if user is a platform admin/billing
   // Used to bypass laundromat selection for admin users
   const { isPlatformAdmin, isPlatformBilling, isLoading: platformRoleLoading } = usePlatformRole();
+  
+  // Login security - risk assessment
+  const { checkLoginRisk } = useLoginSecurity();
 
   // ============================================
   // URL PARAMETERS
@@ -241,12 +252,11 @@ export default function Login() {
     recordClientRequest('auth/login', email);
     
     // Attempt authentication
-    const { error } = await signIn(email, password);
-    
-    setIsLoading(false);
+    const { data, error } = await signIn(email, password);
     
     // Handle authentication errors
     if (error) {
+      setIsLoading(false);
       let errorMessage = error.message;
       
       // Translate common error messages
@@ -264,26 +274,69 @@ export default function Login() {
       return;
     }
     
+    // Check login risk BEFORE allowing navigation
+    const userId = data?.user?.id;
+    if (userId) {
+      const risk = await checkLoginRisk(userId);
+      
+      if (risk && risk.risk_level !== 'low' && !risk.is_trusted_device) {
+        // High or medium risk detected on untrusted device - show verification modal
+        setRiskResult(risk);
+        setShowRiskModal(true);
+        setIsLoading(false);
+        // Don't proceed with navigation until verified
+        return;
+      }
+    }
+    
+    setIsLoading(false);
+    
     // Success toast
     toast({
       title: t('app:login.loginSuccess'),
       description: isSimulatorMode ? t('app:login.welcomeSimulator') : t('app:login.welcomeExploitant'),
     });
     
-    // Note: Actual redirect is handled by the useEffect above
-    // This is a fallback in case the effect doesn't trigger
-    if (redirectUrl) {
-      navigate(redirectUrl);
-    } else if (isSimulatorMode) {
-      navigate("/simulation");
-    } else {
-      navigate("/select-laundromat");
-    }
+    // Mark that we should redirect
+    setPendingRedirect(true);
   };
 
   // ============================================
-  // LOADING STATE
+  // RISK VERIFICATION HANDLERS
   // ============================================
+  
+  /**
+   * Called when user successfully verifies their identity
+   * via MFA, OTP, or recovery code in the risk modal
+   */
+  const handleRiskVerified = () => {
+    setShowRiskModal(false);
+    setRiskResult(null);
+    
+    toast({
+      title: t('app:login.loginSuccess'),
+      description: isSimulatorMode ? t('app:login.welcomeSimulator') : t('app:login.welcomeExploitant'),
+    });
+    
+    // Now proceed with redirect
+    setPendingRedirect(true);
+  };
+
+  /**
+   * Called when user closes the risk modal without verifying
+   * We sign them out for security
+   */
+  const handleRiskModalClose = async () => {
+    setShowRiskModal(false);
+    setRiskResult(null);
+    // Sign out for security if they don't verify
+    await supabase.auth.signOut();
+    toast({
+      title: t('app:securityCenter.riskLogin.verificationRequired'),
+      description: t('app:securityCenter.riskLogin.sessionEnded'),
+    });
+  };
+
   
   /**
    * Show loading spinner while:
@@ -622,6 +675,16 @@ export default function Login() {
           </div>
         </div>
       </div>
+
+      {/* Risk-based verification modal */}
+      <RiskLoginVerificationModal
+        isOpen={showRiskModal}
+        onClose={handleRiskModalClose}
+        onVerified={handleRiskVerified}
+        riskLevel={riskResult?.risk_level || 'medium'}
+        reasons={riskResult?.reasons || []}
+        mfaEnrolled={riskResult?.mfa_enrolled || false}
+      />
     </>
   );
 }

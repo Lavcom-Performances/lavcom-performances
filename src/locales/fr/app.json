@@ -1086,7 +1086,9 @@
       "verifyError": "Impossible de vérifier le code",
       "invalidCodeFormat": "Le code doit contenir 6 chiffres",
       "invalidRecoveryFormat": "Le code de récupération doit contenir 8 caractères",
-      "attemptsRemaining": "{{count}} tentative(s) restante(s)"
+      "attemptsRemaining": "{{count}} tentative(s) restante(s)",
+      "verificationRequired": "Vérification requise",
+      "sessionEnded": "Session terminée. Reconnectez-vous pour réessayer."
     }
   },
   "dashboard": {
