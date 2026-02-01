@@ -1,4 +1,122 @@
 {
+  "loginHelp": {
+    "title": "Besoin d'aide ?",
+    "description": "Trouvez des solutions aux problèmes de connexion courants",
+    "sections": {
+      "emailOtp": {
+        "title": "Je n'ai pas reçu le code email",
+        "checklist": {
+          "title": "Vérifications à faire :",
+          "checkSpam": "Vérifiez votre dossier spam/indésirables",
+          "confirmEmail": "Confirmez que l'adresse email est correcte",
+          "wait": "Attendez 1-2 minutes avant de renvoyer"
+        }
+      },
+      "lostMfa": {
+        "title": "J'ai perdu mon authenticator",
+        "description": "Si vous n'avez plus accès à votre application d'authentification, utilisez un code de récupération.",
+        "generateNewCodes": "Générer de nouveaux codes",
+        "warning": "Si vous n'avez plus de codes de récupération, contactez le support."
+      },
+      "accountRisk": {
+        "title": "Mon compte est peut-être compromis",
+        "description": "Si vous suspectez une activité non autorisée sur votre compte :",
+        "openSecurityCenter": "Ouvrir le centre de sécurité",
+        "logoutOtherSessions": "Déconnecter les autres sessions",
+        "loginFirst": "Connectez-vous d'abord pour accéder à ces options."
+      }
+    },
+    "resendCode": "Renvoyer le code",
+    "resendIn": "Renvoyer dans {{seconds}}s",
+    "sending": "Envoi...",
+    "otpResent": "Code envoyé !",
+    "checkEmail": "Vérifiez votre boîte de réception",
+    "resendFailed": "Échec de l'envoi. Réessayez.",
+    "useRecoveryCode": "Utiliser un code de récupération",
+    "suggestRecoveryCode": "Plusieurs échecs de vérification. Essayez un code de récupération.",
+    "stillStuck": "Toujours bloqué ?",
+    "referenceId": "Référence",
+    "traceIdCopied": "Référence copiée",
+    "copyTraceId": "Copier la référence",
+    "revokeSessionsFailed": "Échec de la déconnexion des sessions"
+  },
+  "authErrors": {
+    "invalidCredentials": {
+      "title": "Identifiants incorrects",
+      "message": "L'email ou le mot de passe est incorrect.",
+      "nextStep": "Vérifiez vos identifiants ou réinitialisez votre mot de passe."
+    },
+    "otpExpired": {
+      "title": "Code expiré",
+      "message": "Le code de vérification a expiré.",
+      "nextStep": "Demandez un nouveau code."
+    },
+    "otpInvalid": {
+      "title": "Code invalide",
+      "message": "Le code saisi est incorrect.",
+      "nextStep": "Vérifiez le code et réessayez."
+    },
+    "otpRateLimited": {
+      "title": "Trop de demandes",
+      "message": "Veuillez patienter avant de demander un nouveau code.",
+      "nextStep": "Attendez quelques minutes."
+    },
+    "otpTooManyAttempts": {
+      "title": "Trop de tentatives",
+      "message": "Nombre maximum de tentatives atteint.",
+      "nextStep": "Utilisez un code de récupération ou contactez le support."
+    },
+    "mfaRequiredPlatformAdmin": {
+      "title": "MFA requis",
+      "message": "L'authentification à deux facteurs est obligatoire pour les administrateurs.",
+      "nextStep": "Configurez le MFA dans vos paramètres de sécurité."
+    },
+    "mfaInvalidCode": {
+      "title": "Code MFA invalide",
+      "message": "Le code d'authentification est incorrect.",
+      "nextStep": "Vérifiez le code de votre application."
+    },
+    "recoveryCodeInvalid": {
+      "title": "Code de récupération invalide",
+      "message": "Ce code de récupération n'est pas valide.",
+      "nextStep": "Vérifiez le format (XXXX-XXXX)."
+    },
+    "recoveryCodeUsed": {
+      "title": "Code déjà utilisé",
+      "message": "Ce code de récupération a déjà été utilisé.",
+      "nextStep": "Utilisez un autre code de récupération."
+    },
+    "recoveryCodeExhausted": {
+      "title": "Plus de codes disponibles",
+      "message": "Tous vos codes de récupération ont été utilisés.",
+      "nextStep": "Contactez le support pour récupérer l'accès."
+    },
+    "emailNotConfirmed": {
+      "title": "Email non confirmé",
+      "message": "Votre adresse email n'a pas été vérifiée.",
+      "nextStep": "Vérifiez votre boîte de réception."
+    },
+    "accountLocked": {
+      "title": "Compte verrouillé",
+      "message": "Votre compte a été temporairement verrouillé.",
+      "nextStep": "Contactez le support."
+    },
+    "sessionExpired": {
+      "title": "Session expirée",
+      "message": "Votre session a expiré.",
+      "nextStep": "Reconnectez-vous."
+    },
+    "networkError": {
+      "title": "Erreur réseau",
+      "message": "Impossible de contacter le serveur.",
+      "nextStep": "Vérifiez votre connexion internet."
+    },
+    "genericError": {
+      "title": "Erreur",
+      "message": "Une erreur inattendue s'est produite.",
+      "nextStep": "Réessayez ou contactez le support."
+    }
+  },
   "reportIssue": {
     "title": "Signaler un problème",
     "topic": "Problème / Bug",

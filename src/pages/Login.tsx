@@ -13,7 +13,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Eye, EyeOff, Loader2, Home, Sparkles, Clock } from "lucide-react";
+import { Eye, EyeOff, Loader2, Home, Sparkles, Clock, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,6 +34,10 @@ import {
 import { SEOHead } from "@/components/seo/SEOHead";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { RiskLoginVerificationModal } from "@/components/security/RiskLoginVerificationModal";
+import { LoginHelpPanel } from "@/components/auth/LoginHelpPanel";
+import { AuthErrorBanner } from "@/components/auth/AuthErrorBanner";
+import { AuthErrorCode, parseAuthErrorCode, generateTraceId } from "@/lib/auth/authErrorCodes";
+import { logAuthErrorShown } from "@/lib/auth/loginHelpLogger";
 
 export default function Login() {
   const { t } = useTranslation(['app', 'common']);
@@ -58,6 +62,10 @@ export default function Login() {
   const [showRiskModal, setShowRiskModal] = useState(false);
   const [riskResult, setRiskResult] = useState<LoginRiskResult | null>(null);
   const [pendingRedirect, setPendingRedirect] = useState(false);
+  
+  // Help panel state
+  const [showHelpPanel, setShowHelpPanel] = useState(false);
+  const [loginError, setLoginError] = useState<{ code: AuthErrorCode; message: string; traceId: string } | null>(null);
   
   // ============================================
   // HOOKS
@@ -257,9 +265,23 @@ export default function Login() {
     // Handle authentication errors
     if (error) {
       setIsLoading(false);
-      let errorMessage = error.message;
+      const errorCode = parseAuthErrorCode(error.message);
+      const traceId = generateTraceId();
       
-      // Translate common error messages
+      setLoginError({
+        code: errorCode,
+        message: error.message,
+        traceId,
+      });
+      
+      // Log the error for analytics
+      logAuthErrorShown(errorCode, { 
+        context: 'login',
+        trace_id: traceId,
+      });
+      
+      // Also show toast for immediate feedback
+      let errorMessage = error.message;
       if (error.message.includes("Invalid login credentials")) {
         errorMessage = t('app:login.invalidCredentials');
       } else if (error.message.includes("Email not confirmed")) {
@@ -273,6 +295,9 @@ export default function Login() {
       });
       return;
     }
+    
+    // Clear any previous errors on successful auth
+    setLoginError(null);
     
     // Check login risk BEFORE allowing navigation
     const userId = data?.user?.id;
@@ -546,6 +571,16 @@ export default function Login() {
                 </Link>
               </div>
 
+              {/* Error banner */}
+              {loginError && (
+                <AuthErrorBanner
+                  errorCode={loginError.code}
+                  traceId={loginError.traceId}
+                  onContactSupport={() => setShowHelpPanel(true)}
+                  compact
+                />
+              )}
+
               {/* Submit button - shows different states: loading, rate limited, or normal */}
               <Button
                 type="submit"
@@ -568,6 +603,16 @@ export default function Login() {
                   t('app:login.form.submit')
                 )}
               </Button>
+
+              {/* Need Help link */}
+              <button
+                type="button"
+                onClick={() => setShowHelpPanel(true)}
+                className="w-full flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+              >
+                <HelpCircle className="h-4 w-4" />
+                {t('common:needHelp')}
+              </button>
             </form>
 
             {/* ========== ALTERNATIVE LOGIN OPTIONS ========== */}
@@ -684,6 +729,15 @@ export default function Login() {
         riskLevel={riskResult?.risk_level || 'medium'}
         reasons={riskResult?.reasons || []}
         mfaEnrolled={riskResult?.mfa_enrolled || false}
+      />
+
+      {/* Login Help Panel */}
+      <LoginHelpPanel
+        open={showHelpPanel}
+        onOpenChange={setShowHelpPanel}
+        context="login"
+        lastErrorCode={loginError?.code}
+        userEmail={email || undefined}
       />
     </>
   );
