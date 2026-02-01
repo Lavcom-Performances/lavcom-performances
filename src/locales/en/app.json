@@ -1,4 +1,62 @@
 {
+  "loginHelp": {
+    "title": "Need help?",
+    "description": "Find solutions to common login issues",
+    "sections": {
+      "emailOtp": {
+        "title": "I didn't receive the email code",
+        "checklist": {
+          "title": "Things to check:",
+          "checkSpam": "Check your spam/junk folder",
+          "confirmEmail": "Confirm your email address is correct",
+          "wait": "Wait 1-2 minutes before resending"
+        }
+      },
+      "lostMfa": {
+        "title": "I lost my authenticator",
+        "description": "If you no longer have access to your authentication app, use a recovery code.",
+        "generateNewCodes": "Generate new codes",
+        "warning": "If you have no recovery codes left, contact support."
+      },
+      "accountRisk": {
+        "title": "My account may be compromised",
+        "description": "If you suspect unauthorized activity on your account:",
+        "openSecurityCenter": "Open Security Center",
+        "logoutOtherSessions": "Log out other sessions",
+        "loginFirst": "Log in first to access these options."
+      }
+    },
+    "resendCode": "Resend code",
+    "resendIn": "Resend in {{seconds}}s",
+    "sending": "Sending...",
+    "otpResent": "Code sent!",
+    "checkEmail": "Check your inbox",
+    "resendFailed": "Failed to send. Try again.",
+    "useRecoveryCode": "Use a recovery code",
+    "suggestRecoveryCode": "Multiple verification failures. Try a recovery code.",
+    "stillStuck": "Still stuck?",
+    "referenceId": "Reference",
+    "traceIdCopied": "Reference copied",
+    "copyTraceId": "Copy reference",
+    "revokeSessionsFailed": "Failed to revoke sessions"
+  },
+  "authErrors": {
+    "invalidCredentials": { "title": "Invalid credentials", "message": "The email or password is incorrect.", "nextStep": "Check your credentials or reset your password." },
+    "otpExpired": { "title": "Code expired", "message": "The verification code has expired.", "nextStep": "Request a new code." },
+    "otpInvalid": { "title": "Invalid code", "message": "The code you entered is incorrect.", "nextStep": "Check the code and try again." },
+    "otpRateLimited": { "title": "Too many requests", "message": "Please wait before requesting a new code.", "nextStep": "Wait a few minutes." },
+    "otpTooManyAttempts": { "title": "Too many attempts", "message": "Maximum attempts reached.", "nextStep": "Use a recovery code or contact support." },
+    "mfaRequiredPlatformAdmin": { "title": "MFA required", "message": "Two-factor authentication is required for administrators.", "nextStep": "Set up MFA in your security settings." },
+    "mfaInvalidCode": { "title": "Invalid MFA code", "message": "The authentication code is incorrect.", "nextStep": "Check your authenticator app." },
+    "recoveryCodeInvalid": { "title": "Invalid recovery code", "message": "This recovery code is not valid.", "nextStep": "Check the format (XXXX-XXXX)." },
+    "recoveryCodeUsed": { "title": "Code already used", "message": "This recovery code has already been used.", "nextStep": "Use another recovery code." },
+    "recoveryCodeExhausted": { "title": "No codes left", "message": "All your recovery codes have been used.", "nextStep": "Contact support to recover access." },
+    "emailNotConfirmed": { "title": "Email not confirmed", "message": "Your email address has not been verified.", "nextStep": "Check your inbox." },
+    "accountLocked": { "title": "Account locked", "message": "Your account has been temporarily locked.", "nextStep": "Contact support." },
+    "sessionExpired": { "title": "Session expired", "message": "Your session has expired.", "nextStep": "Log in again." },
+    "networkError": { "title": "Network error", "message": "Unable to reach the server.", "nextStep": "Check your internet connection." },
+    "genericError": { "title": "Error", "message": "An unexpected error occurred.", "nextStep": "Try again or contact support." }
+  },
   "reportIssue": {
     "title": "Report an issue",
     "topic": "Issue / Bug",

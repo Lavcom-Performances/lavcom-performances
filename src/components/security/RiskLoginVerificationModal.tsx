@@ -7,6 +7,9 @@ import {
   Key,
   Smartphone,
   AlertTriangle,
+  HelpCircle,
+  Clock,
+  RefreshCw,
 } from 'lucide-react';
 import {
   Dialog,
@@ -21,6 +24,10 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLoginSecurity, RiskLevel } from '@/hooks/useLoginSecurity';
 import { MfaChallengeDialog } from '@/components/auth/MfaChallengeDialog';
+import { LoginHelpPanel } from '@/components/auth/LoginHelpPanel';
+import { AuthErrorBanner } from '@/components/auth/AuthErrorBanner';
+import { AuthErrorCode, parseAuthErrorCode, generateTraceId } from '@/lib/auth/authErrorCodes';
+import { logAuthErrorShown } from '@/lib/auth/loginHelpLogger';
 import { supabase } from '@/integrations/supabase/client';
 
 interface RiskLoginVerificationModalProps {
@@ -49,10 +56,23 @@ export function RiskLoginVerificationModal({
   const [otpCode, setOtpCode] = useState('');
   const [recoveryCode, setRecoveryCode] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<AuthErrorCode | null>(null);
   const [otpSent, setOtpSent] = useState(false);
   const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
   const [showMfaDialog, setShowMfaDialog] = useState(false);
   const [isMfaVerifying, setIsMfaVerifying] = useState(false);
+  const [showHelpPanel, setShowHelpPanel] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [traceId] = useState(() => generateTraceId());
+  const [otpFailureCount, setOtpFailureCount] = useState(0);
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
 
   // Reset state when dialog opens
   useEffect(() => {
@@ -60,40 +80,60 @@ export function RiskLoginVerificationModal({
       setOtpCode('');
       setRecoveryCode('');
       setError(null);
+      setErrorCode(null);
       setOtpSent(false);
       setRemainingAttempts(null);
       setActiveTab(mfaEnrolled ? 'mfa' : 'email');
       setShowMfaDialog(false);
+      setResendCooldown(0);
+      setOtpFailureCount(0);
     }
   }, [isOpen, mfaEnrolled]);
 
   const handleSendOtp = async () => {
     setError(null);
+    setErrorCode(null);
     const result = await sendLoginOtp();
     if (result.success) {
       setOtpSent(true);
+      setResendCooldown(60); // 60 second cooldown
     } else {
+      const code = parseAuthErrorCode(result.error || 'rate limit');
+      setErrorCode(code);
       setError(result.error || t('app:securityCenter.riskLogin.sendOtpError'));
+      logAuthErrorShown(code, { context: 'verification', trace_id: traceId });
     }
   };
 
   const handleVerifyOtp = async () => {
     if (otpCode.length !== 6) {
       setError(t('app:securityCenter.riskLogin.invalidCodeFormat'));
+      setErrorCode('OTP_INVALID');
       return;
     }
     
     setError(null);
+    setErrorCode(null);
     const result = await verifyLoginOtp(otpCode);
     
     if (result.success) {
       onVerified();
     } else {
+      setOtpFailureCount(prev => prev + 1);
+      const code = parseAuthErrorCode(result.error || 'invalid');
+      setErrorCode(code);
       setError(result.error || t('app:securityCenter.riskLogin.verifyError'));
+      logAuthErrorShown(code, { context: 'verification', trace_id: traceId });
       if (result.remaining_attempts !== undefined) {
         setRemainingAttempts(result.remaining_attempts);
       }
     }
+  };
+
+  const handleSwitchToRecovery = () => {
+    setActiveTab('recovery');
+    setError(null);
+    setErrorCode(null);
   };
 
   const handleVerifyRecoveryCode = async () => {
@@ -282,7 +322,7 @@ export function RiskLoginVerificationModal({
                       className="text-center text-2xl tracking-widest font-mono"
                     />
                     {remainingAttempts !== null && remainingAttempts <= 2 && (
-                      <p className="text-xs text-amber-600">
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
                         {t('app:securityCenter.riskLogin.attemptsRemaining', { count: remainingAttempts })}
                       </p>
                     )}
@@ -291,10 +331,20 @@ export function RiskLoginVerificationModal({
                     <Button 
                       variant="outline"
                       onClick={handleSendOtp} 
-                      disabled={isLoading}
-                      className="flex-1"
+                      disabled={isLoading || resendCooldown > 0}
+                      className="flex-1 gap-1"
                     >
-                      {t('app:securityCenter.riskLogin.resendCode')}
+                      {resendCooldown > 0 ? (
+                        <>
+                          <Clock className="h-3 w-3" />
+                          {resendCooldown}s
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw className="h-3 w-3" />
+                          {t('app:securityCenter.riskLogin.resendCode')}
+                        </>
+                      )}
                     </Button>
                     <Button 
                       onClick={handleVerifyOtp} 
@@ -305,6 +355,26 @@ export function RiskLoginVerificationModal({
                       {t('app:securityCenter.riskLogin.verify')}
                     </Button>
                   </div>
+                  
+                  {/* Suggest recovery code after 3 failures */}
+                  {otpFailureCount >= 3 && (
+                    <div className="flex items-center gap-2 p-3 bg-accent rounded-lg">
+                      <Key className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm text-muted-foreground">
+                          {t('app:loginHelp.suggestRecoveryCode')}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleSwitchToRecovery}
+                        className="shrink-0"
+                      >
+                        {t('app:loginHelp.useRecoveryCode')}
+                      </Button>
+                    </div>
+                  )}
                 </>
               )}
             </TabsContent>
@@ -343,12 +413,27 @@ export function RiskLoginVerificationModal({
             </TabsContent>
           </Tabs>
 
-          {error && (
-            <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
-              <AlertTriangle className="h-4 w-4 shrink-0" />
-              {error}
-            </div>
+          {/* Error display with AuthErrorBanner */}
+          {errorCode && error && (
+            <AuthErrorBanner
+              errorCode={errorCode}
+              message={error}
+              traceId={traceId}
+              onSwitchToRecovery={handleSwitchToRecovery}
+              onContactSupport={() => setShowHelpPanel(true)}
+              compact
+            />
           )}
+
+          {/* Need Help link */}
+          <button
+            type="button"
+            onClick={() => setShowHelpPanel(true)}
+            className="w-full flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+          >
+            <HelpCircle className="h-4 w-4" />
+            {t('common:needHelp')}
+          </button>
         </DialogContent>
       </Dialog>
 
@@ -361,6 +446,21 @@ export function RiskLoginVerificationModal({
         onCancel={() => setShowMfaDialog(false)}
         isVerifying={isMfaVerifying}
         actionLabel={t('app:securityCenter.riskLogin.title')}
+      />
+
+      {/* Login Help Panel */}
+      <LoginHelpPanel
+        open={showHelpPanel}
+        onOpenChange={setShowHelpPanel}
+        onSwitchToRecovery={handleSwitchToRecovery}
+        onResendOtp={async () => {
+          const result = await sendLoginOtp();
+          if (result.success) setResendCooldown(60);
+          return result;
+        }}
+        isResending={isLoading}
+        context="verification"
+        lastErrorCode={errorCode || undefined}
       />
     </>
   );
