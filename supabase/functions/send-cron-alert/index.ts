@@ -12,7 +12,7 @@ interface AlertRequest {
   failed_at: string;
   email_enabled?: boolean;
   slack_enabled?: boolean;
-  severity?: "warning" | "critical";
+  severity?: "warn" | "critical";
   warning_threshold?: number;
   critical_threshold?: number;
 }
@@ -22,6 +22,7 @@ function getSeverityInfo(severity: string) {
   if (severity === "critical") {
     return { emoji: "🔴", text: "CRITIQUE", color: "#dc2626" };
   }
+  // "warn" is the canonical value (matches system_events constraint)
   return { emoji: "🟠", text: "AVERTISSEMENT", color: "#f97316" };
 }
 
@@ -113,7 +114,7 @@ Deno.serve(async (req) => {
     const toEmail = Deno.env.get("RESEND_TO_EMAIL");
     const slackWebhookUrl = Deno.env.get("SLACK_WEBHOOK_URL");
 
-    const { job_name, consecutive_failures, last_error, failed_at, email_enabled = true, slack_enabled = true, severity = "warning" }: AlertRequest = await req.json();
+    const { job_name, consecutive_failures, last_error, failed_at, email_enabled = true, slack_enabled = true, severity = "warn" }: AlertRequest = await req.json();
 
     console.log(`[send-cron-alert] Sending ${severity} alert for ${job_name} with ${consecutive_failures} consecutive failures (email: ${email_enabled}, slack: ${slack_enabled})`);
 
