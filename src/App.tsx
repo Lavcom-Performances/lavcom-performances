@@ -52,6 +52,7 @@ import PlatformSalesOverview from "./pages/platform/PlatformSalesOverview";
 import PlatformSalesInvoices from "./pages/platform/PlatformSalesInvoices";
 import PlatformSalesProducts from "./pages/platform/PlatformSalesProducts";
 import PlatformSalesReports from "./pages/platform/PlatformSalesReports";
+import PlatformBetaCompanies from "./pages/platform/PlatformBetaCompanies";
 import PlatformOrphanPages from "./pages/platform/PlatformOrphanPages";
 import PlatformOrphanFiles from "./pages/platform/PlatformOrphanFiles";
 import PlatformAIUsage from "./pages/platform/PlatformAIUsage";
@@ -201,6 +202,7 @@ const App = () => (
             <Route path="/admin/sales/invoices" element={<PlatformSalesInvoices />} />
             <Route path="/admin/sales/products" element={<PlatformSalesProducts />} />
             <Route path="/admin/sales/reports" element={<PlatformSalesReports />} />
+            <Route path="/admin/sales/beta" element={<PlatformBetaCompanies />} />
           </Route>
           
           {/* Protected app routes with sidebar layout */}

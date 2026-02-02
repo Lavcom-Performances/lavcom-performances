@@ -24,6 +24,7 @@ import {
   Bot,
   Archive,
   ClipboardCheck,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -94,6 +95,7 @@ export function AdminSidebar({
     { name: t('app:platformAdmin.nav.invoices'), href: "/admin/sales/invoices", icon: FileText },
     { name: t('app:platformAdmin.nav.products'), href: "/admin/sales/products", icon: Package },
     { name: t('app:platformAdmin.nav.reports'), href: "/admin/sales/reports", icon: BarChart3 },
+    { name: t('app:platformAdmin.nav.betaProgram', 'Programme Bêta'), href: "/admin/sales/beta", icon: Sparkles },
   ] : [];
 
   // System navigation

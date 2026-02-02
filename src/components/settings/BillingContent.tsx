@@ -7,6 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { ExternalLink, FileText, Receipt, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useOrganization } from "@/hooks/useOrganization";
+import { useBetaStatus } from "@/hooks/useBetaStatus";
+import { useSites } from "@/hooks/useSites";
+import { PricingSummary } from "@/components/billing/PricingSummary";
 
 interface Invoice {
   id: string;
@@ -24,6 +28,12 @@ export default function BillingContent() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const { organization } = useOrganization();
+  const { betaStatus } = useBetaStatus(organization?.id || null);
+  const { sites } = useSites();
+  
+  const activeLaundromatCount = sites.filter(s => s.status === "active").length;
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -67,6 +77,13 @@ export default function BillingContent() {
 
   return (
     <div className="space-y-6 max-w-4xl">
+      {/* Pricing Summary with Beta Status */}
+      <PricingSummary 
+        betaStatus={betaStatus} 
+        activeLaundromatCount={activeLaundromatCount} 
+      />
+
+      {/* Invoices */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">

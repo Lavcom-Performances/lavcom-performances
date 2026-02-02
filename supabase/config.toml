@@ -212,3 +212,9 @@ verify_jwt = false
 
 [functions.reactivate-laundromat]
 verify_jwt = false
+
+[functions.enroll-company-in-beta]
+verify_jwt = true
+
+[functions.end-beta-early]
+verify_jwt = true

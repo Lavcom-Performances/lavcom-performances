@@ -12,7 +12,8 @@ import {
   ShoppingCart,
   FileText,
   Package,
-  BarChart3
+  BarChart3,
+  Sparkles
 } from 'lucide-react';
 import { formatCentsToEuros } from '@/lib/salePriceUtils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -78,6 +79,7 @@ export default function PlatformSalesOverview() {
     { href: '/admin/sales/invoices', icon: FileText, label: 'Factures', desc: 'Liste des factures Stripe' },
     { href: '/admin/sales/products', icon: Package, label: 'Produits', desc: 'CA par produit' },
     { href: '/admin/sales/reports', icon: BarChart3, label: 'Rapports', desc: 'Exports et rapports' },
+    { href: '/admin/sales/beta', icon: Sparkles, label: 'Programme Bêta', desc: 'Entreprises en bêta' },
   ];
 
   return (
