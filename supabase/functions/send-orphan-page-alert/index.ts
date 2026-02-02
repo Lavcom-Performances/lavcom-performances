@@ -216,7 +216,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Log to alert_history
     await supabaseAdmin.from("alert_history").insert({
       alert_type: "orphan_page_flagged",
-      severity: "warning",
+      severity: "warn",
       title: `Orphan Page Flagged: ${page_name}`,
       message: `Route ${route_path} was flagged for cleanup${notes ? `: ${notes}` : ''}`,
       recipient: toEmail,

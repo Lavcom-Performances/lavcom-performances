@@ -363,12 +363,12 @@ async function checkAndSendFailureAlert(
       }
     }
 
-    // Determine current severity level
+    // Determine current severity level (use "warn" to match system_events constraint)
     let currentSeverity: string | null = null;
     if (consecutiveFailures >= criticalThreshold) {
       currentSeverity = "critical";
     } else if (consecutiveFailures >= warningThreshold) {
-      currentSeverity = "warning";
+      currentSeverity = "warn";
     }
 
     console.log(`[compute-analytics-cron] Consecutive failures: ${consecutiveFailures}, warning: ${warningThreshold}, critical: ${criticalThreshold}, severity: ${currentSeverity || 'none'}`);
@@ -378,7 +378,7 @@ async function checkAndSendFailureAlert(
       return;
     }
 
-    // Check cooldown - but allow upgrade from warning to critical
+    // Check cooldown - but allow upgrade from warn to critical
     if (lastAlertAt) {
       const cooldownMs = cooldownMinutes * 60 * 1000;
       const timeSinceLastAlert = Date.now() - lastAlertAt.getTime();
@@ -389,9 +389,9 @@ async function checkAndSendFailureAlert(
         return;
       }
       
-      // If upgrading from warning to critical, allow immediately
-      if (currentSeverity === "critical" && lastAlertSeverity === "warning") {
-        console.log("[compute-analytics-cron] Upgrading from warning to critical alert");
+      // If upgrading from warn to critical, allow immediately
+      if (currentSeverity === "critical" && lastAlertSeverity === "warn") {
+        console.log("[compute-analytics-cron] Upgrading from warn to critical alert");
       }
     }
 
