@@ -1411,24 +1411,39 @@ export type Database = {
       }
       organizations: {
         Row: {
+          beta_ends_at: string | null
+          beta_price_cents: number | null
+          beta_started_at: string | null
           created_at: string
           id: string
+          is_beta: boolean
           name: string
           owner_id: string
+          standard_price_cents: number
           updated_at: string
         }
         Insert: {
+          beta_ends_at?: string | null
+          beta_price_cents?: number | null
+          beta_started_at?: string | null
           created_at?: string
           id?: string
+          is_beta?: boolean
           name: string
           owner_id: string
+          standard_price_cents?: number
           updated_at?: string
         }
         Update: {
+          beta_ends_at?: string | null
+          beta_price_cents?: number | null
+          beta_started_at?: string | null
           created_at?: string
           id?: string
+          is_beta?: boolean
           name?: string
           owner_id?: string
+          standard_price_cents?: number
           updated_at?: string
         }
         Relationships: []
@@ -2586,9 +2601,17 @@ export type Database = {
           total_count: number
         }[]
       }
+      rpc_effective_price_per_laundromat: {
+        Args: { p_organization_id: string }
+        Returns: number
+      }
       rpc_get_ai_usage_today: { Args: { p_actor_id: string }; Returns: Json }
       rpc_get_benchmarks: {
         Args: { p_end_date: string; p_site_id: string; p_start_date: string }
+        Returns: Json
+      }
+      rpc_get_company_beta_status: {
+        Args: { p_organization_id: string }
         Returns: Json
       }
       rpc_increment_ai_usage: {
@@ -2642,6 +2665,10 @@ export type Database = {
           revenue_esp: number
           revenue_total: number
         }[]
+      }
+      rpc_platform_admin_beta_companies: {
+        Args: { p_limit?: number; p_offset?: number }
+        Returns: Json
       }
       rpc_platform_admin_billing: {
         Args: { p_limit?: number; p_offset?: number; p_status?: string }
