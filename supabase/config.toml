@@ -218,3 +218,9 @@ verify_jwt = true
 
 [functions.end-beta-early]
 verify_jwt = true
+
+[functions.log-beta-event]
+verify_jwt = true
+
+[functions.submit-beta-feedback]
+verify_jwt = true

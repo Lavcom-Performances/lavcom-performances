@@ -53,6 +53,7 @@ import PlatformSalesInvoices from "./pages/platform/PlatformSalesInvoices";
 import PlatformSalesProducts from "./pages/platform/PlatformSalesProducts";
 import PlatformSalesReports from "./pages/platform/PlatformSalesReports";
 import PlatformBetaCompanies from "./pages/platform/PlatformBetaCompanies";
+import PlatformBetaHealth from "./pages/platform/PlatformBetaHealth";
 import PlatformOrphanPages from "./pages/platform/PlatformOrphanPages";
 import PlatformOrphanFiles from "./pages/platform/PlatformOrphanFiles";
 import PlatformAIUsage from "./pages/platform/PlatformAIUsage";
@@ -188,6 +189,7 @@ const App = () => (
             <Route path="/admin/compliance-reports" element={<PlatformAdminComplianceReports />} />
             <Route path="/admin/recompute-audit" element={<RecomputeAuditTrail />} />
             <Route path="/admin/exports" element={<AdminExportsPage />} />
+            <Route path="/admin/beta/health" element={<PlatformBetaHealth />} />
           </Route>
           
           {/* Platform Admin billing routes (require billing access) */}
