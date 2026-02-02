@@ -4,16 +4,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AppSidebar } from "./AppSidebar";
 import { MobileHeader } from "./MobileHeader";
 import { AdminSwitchButton } from "./AdminSwitchButton";
+import { LaundromatSelector } from "./LaundromatSelector";
 import { TrialBanner } from "@/components/trial/TrialBanner";
 import { DemoBanner } from "@/components/demo/DemoBanner";
 import { DemoTutorial } from "@/components/demo/DemoTutorial";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
 import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 import { RequireOperationsData } from "@/components/RequireOperationsData";
+import { ClosedLaundromatBanner } from "@/components/laundromat/ClosedLaundromatBanner";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { useOnboarding } from "@/hooks/useOnboarding";
-
+import { useActiveLaundromat } from "@/hooks/useActiveLaundromat";
 const pageVariants = {
   initial: {
     opacity: 0,
@@ -51,9 +53,11 @@ export function AppLayout({
   const { daysRemaining, trialStatus, planType } = useSubscription();
   const { isDemo, siteName } = useCurrentSite();
   const { showOnboarding, completeOnboarding, skipOnboarding } = useOnboarding();
+  const { activeLaundromat, isClosed, isAllLaundromats, sites } = useActiveLaundromat();
 
   const showTrialWarning = planType === 'trial' && (trialStatus === 'warning' || trialStatus === 'critical');
-  const displayName = siteName || currentLaundromat;
+  const displayName = activeLaundromat?.name || siteName || currentLaundromat;
+  const hasMultipleSites = sites.filter(s => s.status === 'active').length > 1;
 
   return (
     <div className="flex flex-col h-screen w-full bg-background">
@@ -88,14 +92,31 @@ export function AppLayout({
         </div>
         
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Top bar with view mode toggle and admin switch */}
+          {/* Top bar with laundromat selector, view mode toggle and admin switch */}
           <div className="hidden lg:flex items-center justify-between px-6 py-3 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex-1" />
+            <div className="flex items-center gap-3">
+              {/* Show selector when user has multiple sites or closed sites */}
+              {(hasMultipleSites || sites.some(s => s.status === 'closed')) && (
+                <LaundromatSelector variant="default" />
+              )}
+              {isAllLaundromats && (
+                <span className="text-xs text-muted-foreground bg-primary/10 px-2 py-1 rounded-md">
+                  Vue globale
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-3">
               <AdminSwitchButton />
               <ViewModeToggle />
             </div>
           </div>
+          
+          {/* Closed laundromat banner */}
+          {isClosed && activeLaundromat && (
+            <div className="hidden lg:block">
+              <ClosedLaundromatBanner siteName={activeLaundromat.name} />
+            </div>
+          )}
           
           {/* Trial warning banner - only show on desktop when trial is warning/critical */}
           {showTrialWarning && (

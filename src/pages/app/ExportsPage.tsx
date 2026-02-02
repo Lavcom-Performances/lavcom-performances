@@ -7,6 +7,8 @@ import { ExportJobsList } from '@/components/exports/ExportJobsList';
 import { useExportJobs } from '@/hooks/useExportJobs';
 import { useIsFeatureBlocked } from '@/hooks/usePlatformReadiness';
 import { useSites } from '@/hooks/useSites';
+import { useActiveLaundromat } from '@/hooks/useActiveLaundromat';
+import { ClosedLaundromatBanner } from '@/components/laundromat/ClosedLaundromatBanner';
 
 export default function ExportsPage() {
   const { i18n } = useTranslation();
@@ -15,13 +17,23 @@ export default function ExportsPage() {
   const { jobs, isLoading, isCreating, createExport, downloadExport, cancelExport } = useExportJobs('saas_user');
   const { isBlocked, reason } = useIsFeatureBlocked('exports_enabled');
   const { sites } = useSites();
+  const { activeLaundromatId, activeLaundromat, isClosed, isAllLaundromats } = useActiveLaundromat();
 
   const handleExport = async (params: { export_type: string; filters: Record<string, unknown>; site_id?: string }) => {
-    await createExport(params);
+    // Use active laundromat context if not "all"
+    const siteId = !isAllLaundromats && activeLaundromatId ? activeLaundromatId : params.site_id;
+    await createExport({ ...params, site_id: siteId });
   };
 
   return (
     <div className="container mx-auto py-6 space-y-6">
+      {/* Closed laundromat banner - mobile */}
+      {isClosed && activeLaundromat && (
+        <div className="lg:hidden">
+          <ClosedLaundromatBanner siteName={activeLaundromat.name} />
+        </div>
+      )}
+      
       <div>
         <h1 className="text-2xl font-bold">
           {lang === 'fr' ? 'Exports' : 'Exports'}
@@ -30,6 +42,9 @@ export default function ExportsPage() {
           {lang === 'fr'
             ? 'Exportez vos données en quelques clics'
             : 'Export your data in a few clicks'}
+          {!isAllLaundromats && activeLaundromat && (
+            <span className="ml-2 text-primary">— {activeLaundromat.name}</span>
+          )}
         </p>
       </div>
 

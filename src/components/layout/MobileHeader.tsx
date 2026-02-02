@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AppSidebar } from "./AppSidebar";
 import { AdminSwitchButton } from "./AdminSwitchButton";
+import { LaundromatSelector } from "./LaundromatSelector";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
@@ -10,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useActiveLaundromat } from "@/hooks/useActiveLaundromat";
 import { Link } from "react-router-dom";
 
 interface MobileHeaderProps {
@@ -23,6 +25,9 @@ export function MobileHeader({
 }: MobileHeaderProps) {
   const [open, setOpen] = useState(false);
   const { profile } = useAuth();
+  const { sites, activeLaundromat } = useActiveLaundromat();
+  
+  const hasMultipleSites = sites.filter(s => s.status === 'active').length > 1 || sites.some(s => s.status === 'closed');
 
   const getInitials = () => {
     const first = profile?.first_name?.charAt(0)?.toUpperCase() || "";
@@ -45,6 +50,11 @@ export function MobileHeader({
       </a>
 
       <div className="flex items-center gap-1">
+        {/* Laundromat selector for multi-site users */}
+        {hasMultipleSites && (
+          <LaundromatSelector variant="compact" className="mr-1" />
+        )}
+        
         {/* Admin Switch Button - only for super admins */}
         <AdminSwitchButton variant="compact" />
         
