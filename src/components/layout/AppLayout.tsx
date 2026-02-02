@@ -16,6 +16,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useCurrentSite } from "@/hooks/useCurrentSite";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useActiveLaundromat } from "@/hooks/useActiveLaundromat";
+import { BetaIndicator } from "@/components/beta/BetaIndicator";
 const pageVariants = {
   initial: {
     opacity: 0,
@@ -106,6 +107,7 @@ export function AppLayout({
               )}
             </div>
             <div className="flex items-center gap-3">
+              <BetaIndicator />
               <AdminSwitchButton />
               <ViewModeToggle />
             </div>

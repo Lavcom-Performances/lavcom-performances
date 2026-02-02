@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { HelpCircle, Upload, CreditCard, FileDown, Send, Loader2, CheckCircle, Mail, MessageSquare, ChevronDown } from "lucide-react";
+import { HelpCircle, Upload, CreditCard, FileDown, Send, Loader2, CheckCircle, Mail, MessageSquare, ChevronDown, ListChecks } from "lucide-react";
 import { SupportChatbot } from "@/components/help/SupportChatbot";
 import { z } from "zod";
 import { SEOHead } from "@/components/seo/SEOHead";
@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSites } from "@/hooks/useSites";
+import { useIsBetaCompany } from "@/hooks/useIsBetaCompany";
 
 export default function HelpPage() {
   const { t, i18n } = useTranslation("app");
@@ -25,6 +26,7 @@ export default function HelpPage() {
   const { toast } = useToast();
   const { user, profile } = useAuth();
   const { sites, getDefaultSite } = useSites();
+  const { isBeta } = useIsBetaCompany();
   const contactFormRef = useRef<HTMLDivElement>(null);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -122,6 +124,21 @@ export default function HelpPage() {
       buttonText: lang === "fr" ? "Voir le Tableau de bord" : "View Dashboard",
     },
   ];
+
+  // Add beta checklist card if user is in beta
+  const betaChecklistCard = isBeta ? {
+    icon: ListChecks,
+    title: lang === "fr" ? "Checklist bêta" : "Beta Checklist",
+    description: lang === "fr"
+      ? "Suivez les étapes pour bien démarrer avec le programme bêta Lavcom."
+      : "Follow the steps to get started with the Lavcom beta program.",
+    action: () => navigate("/beta"),
+    buttonText: lang === "fr" ? "Voir la checklist" : "View Checklist",
+  } : null;
+
+  const allQuickStartCards = betaChecklistCard 
+    ? [betaChecklistCard, ...quickStartCards]
+    : quickStartCards;
 
   const contactSchema = z.object({
     name: z.string().min(2, lang === "fr" ? "Nom requis (2 caractères min)" : "Name required (2 chars min)"),
@@ -231,7 +248,7 @@ export default function HelpPage() {
             {lang === "fr" ? "Démarrage rapide" : "Quick Start"}
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
-            {quickStartCards.map((card, i) => (
+            {allQuickStartCards.map((card, i) => (
               <Card key={i} className="card-lavcom">
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-3">

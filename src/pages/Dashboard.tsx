@@ -66,6 +66,7 @@ import { BusinessActionsSection } from "@/components/dashboard/BusinessActionsSe
 import { RecentActivityWidget } from "@/components/dashboard/RecentActivityWidget";
 import { OrgActivityFeed } from "@/components/dashboard/OrgActivityFeed";
 import { useOrganization } from "@/hooks/useOrganization";
+import { BetaWelcomeCard } from "@/components/beta/BetaWelcomeCard";
 // Animation variants for staggered cards
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -328,6 +329,9 @@ export default function Dashboard() {
       />
 
       <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+      {/* Beta Welcome Card - shows only for beta companies */}
+      <BetaWelcomeCard />
+      
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div className="flex items-start justify-between flex-wrap gap-3">

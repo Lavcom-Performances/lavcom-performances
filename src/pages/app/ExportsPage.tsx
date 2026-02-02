@@ -9,6 +9,7 @@ import { useIsFeatureBlocked } from '@/hooks/usePlatformReadiness';
 import { useSites } from '@/hooks/useSites';
 import { useActiveLaundromat } from '@/hooks/useActiveLaundromat';
 import { ClosedLaundromatBanner } from '@/components/laundromat/ClosedLaundromatBanner';
+import { useBetaChecklistComplete } from '@/components/beta/BetaChecklistTracker';
 
 export default function ExportsPage() {
   const { i18n } = useTranslation();
@@ -18,11 +19,17 @@ export default function ExportsPage() {
   const { isBlocked, reason } = useIsFeatureBlocked('exports_enabled');
   const { sites } = useSites();
   const { activeLaundromatId, activeLaundromat, isClosed, isAllLaundromats } = useActiveLaundromat();
+  const { complete: completeChecklistItem, isBeta } = useBetaChecklistComplete();
 
   const handleExport = async (params: { export_type: string; filters: Record<string, unknown>; site_id?: string }) => {
     // Use active laundromat context if not "all"
     const siteId = !isAllLaundromats && activeLaundromatId ? activeLaundromatId : params.site_id;
     await createExport({ ...params, site_id: siteId });
+    
+    // Complete the export checklist item for beta users
+    if (isBeta) {
+      completeChecklistItem("first_export");
+    }
   };
 
   return (
