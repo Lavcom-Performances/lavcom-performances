@@ -197,3 +197,12 @@ verify_jwt = false
 
 [functions.verify-mfa-challenge]
 verify_jwt = false
+
+[functions.create-export-job]
+verify_jwt = true
+
+[functions.run-export-job]
+verify_jwt = false
+
+[functions.get-export-download-url]
+verify_jwt = true

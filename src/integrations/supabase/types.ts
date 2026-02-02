@@ -932,6 +932,77 @@ export type Database = {
         }
         Relationships: []
       }
+      export_jobs: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          created_by: string
+          error_message: string | null
+          expires_at: string | null
+          export_type: string
+          filters: Json
+          finished_at: string | null
+          id: string
+          progress: number
+          result_filename: string | null
+          result_mime: string
+          result_path: string | null
+          role_scope: string
+          site_id: string | null
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          created_by: string
+          error_message?: string | null
+          expires_at?: string | null
+          export_type: string
+          filters?: Json
+          finished_at?: string | null
+          id?: string
+          progress?: number
+          result_filename?: string | null
+          result_mime?: string
+          result_path?: string | null
+          role_scope: string
+          site_id?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          created_by?: string
+          error_message?: string | null
+          expires_at?: string | null
+          export_type?: string
+          filters?: Json
+          finished_at?: string | null
+          id?: string
+          progress?: number
+          result_filename?: string | null
+          result_mime?: string
+          result_path?: string | null
+          role_scope?: string
+          site_id?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "export_jobs_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       file_metadata: {
         Row: {
           created_at: string
@@ -2641,6 +2712,7 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      user_company_id: { Args: { p_user_id: string }; Returns: string }
       was_device_seen_recently: {
         Args: { p_device_id: string; p_user_id: string }
         Returns: boolean
