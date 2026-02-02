@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useActiveLaundromat } from "@/hooks/useActiveLaundromat";
 import { Link } from "react-router-dom";
+import { BetaIndicator } from "@/components/beta/BetaIndicator";
 
 interface MobileHeaderProps {
   userRole?: string;
@@ -50,6 +51,9 @@ export function MobileHeader({
       </a>
 
       <div className="flex items-center gap-1">
+        {/* Beta indicator */}
+        <BetaIndicator variant="compact" className="mr-1" />
+        
         {/* Laundromat selector for multi-site users */}
         {hasMultipleSites && (
           <LaundromatSelector variant="compact" className="mr-1" />

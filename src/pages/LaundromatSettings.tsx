@@ -64,6 +64,7 @@ import { useSiteCosts } from "@/hooks/useSiteCosts";
 import { useSites } from "@/hooks/useSites";
 import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { BetaChecklistTracker } from "@/components/beta/BetaChecklistTracker";
 
 interface Machine {
   id: string;
@@ -349,6 +350,9 @@ export default function LaundromatSettings() {
 
   return (
     <div className="space-y-6">
+      {/* Track beta checklist completion */}
+      <BetaChecklistTracker itemId="confirm_details" />
+      
       {/* Closed Laundromat Banner */}
       {isClosed && (
         <ClosedLaundromatBanner siteName={selectedSite?.name} />

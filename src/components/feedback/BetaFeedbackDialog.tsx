@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveLaundromat } from "@/hooks/useActiveLaundromat";
+import { useBetaChecklistComplete } from "@/components/beta/BetaChecklistTracker";
 import { Loader2, Bug, HelpCircle, Lightbulb } from "lucide-react";
 
 const feedbackSchema = z.object({
@@ -61,6 +62,7 @@ export function BetaFeedbackDialog({ open, onOpenChange }: BetaFeedbackDialogPro
   const [isSubmitting, setIsSubmitting] = useState(false);
   const location = useLocation();
   const { activeLaundromatId } = useActiveLaundromat();
+  const { complete: completeChecklistItem } = useBetaChecklistComplete();
 
   const form = useForm<FeedbackFormData>({
     resolver: zodResolver(feedbackSchema),
@@ -90,6 +92,9 @@ export function BetaFeedbackDialog({ open, onOpenChange }: BetaFeedbackDialogPro
         title: "Merci pour votre retour !",
         description: "Nous l'examinerons rapidement.",
       });
+
+      // Complete the feedback checklist item
+      completeChecklistItem("send_feedback");
 
       form.reset();
       onOpenChange(false);

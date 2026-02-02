@@ -14,7 +14,13 @@ type BetaEventType =
   | "laundromat_closed"
   | "laundromat_reactivated"
   | "active_laundromat_changed"
-  | "read_only_block_shown";
+  | "read_only_block_shown"
+  // TAEX-241: Beta onboarding events
+  | "beta_onboarding_shown"
+  | "beta_onboarding_skipped"
+  | "beta_checklist_opened"
+  | "beta_checklist_item_completed"
+  | "beta_rules_page_viewed";
 
 /**
  * Hook for logging beta events with automatic context enrichment
