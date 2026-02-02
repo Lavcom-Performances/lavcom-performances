@@ -206,3 +206,9 @@ verify_jwt = false
 
 [functions.get-export-download-url]
 verify_jwt = true
+
+[functions.close-laundromat]
+verify_jwt = false
+
+[functions.reactivate-laundromat]
+verify_jwt = false
