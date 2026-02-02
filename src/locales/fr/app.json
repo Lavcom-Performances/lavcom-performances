@@ -2220,5 +2220,28 @@
     "analyticsDescription": "Pour comprendre comment vous utilisez notre site",
     "marketing": "Cookies marketing",
     "marketingDescription": "Pour personnaliser les publicités"
+  },
+  "duplicateWarning": {
+    "title": "Site potentiellement en double",
+    "description": "Nous avons trouvé des sites similaires. Voulez-vous continuer quand même ?",
+    "goBack": "Retour",
+    "createAnyway": "Créer quand même",
+    "confirmMessage": "Êtes-vous sûr ? Cela peut créer une entrée en double.",
+    "confirmCreate": "Oui, créer quand même"
+  },
+  "platformAdmin": {
+    "globalSearch": {
+      "placeholder": "Rechercher utilisateurs, sites...",
+      "inputPlaceholder": "Rechercher par email, nom, site...",
+      "noResults": "Aucun résultat trouvé",
+      "users": "Utilisateurs",
+      "sites": "Sites",
+      "navigate": "Naviguer",
+      "select": "Sélectionner",
+      "close": "Fermer"
+    }
+  },
+  "newLaundry": {
+    "checkingDuplicates": "Vérification des doublons..."
   }
 }

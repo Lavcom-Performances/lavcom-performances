@@ -24,10 +24,12 @@ import { AddressAutocomplete } from "@/components/laundromat/AddressAutocomplete
 import { CityAutocomplete, CitySearchResult, deriveDepartmentCode } from "@/components/laundromat/CityAutocomplete";
 import { NafCodeSelect } from "@/components/laundromat/NafCodeSelect";
 import { CountrySelect } from "@/components/laundromat/CountrySelect";
+import { DuplicateWarningDialog, type DuplicateSite } from "@/components/laundromat/DuplicateWarningDialog";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { AddressSearchResult } from "@/hooks/useAddressSearch";
 import { supabase } from "@/integrations/supabase/client";
+import { useDuplicateCheck } from "@/hooks/useDuplicateCheck";
 import {
   loadPostalCityIndex,
   getCitiesForPostalCode,
@@ -138,6 +140,12 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
   const [frPostalCodeValid, setFrPostalCodeValid] = useState<boolean | null>(null);
   const [frIndexLoading, setFrIndexLoading] = useState(false);
   const [frIndexLoaded, setFrIndexLoaded] = useState(false);
+
+  // Duplicate detection state (TAEX-236)
+  const { checkDuplicates, isChecking: isCheckingDuplicates } = useDuplicateCheck();
+  const [duplicatesFound, setDuplicatesFound] = useState<DuplicateSite[]>([]);
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [bypassDuplicateCheck, setBypassDuplicateCheck] = useState(false);
 
   // Check if persisted data has values to show restore message
   const hasRestoredDraft = useMemo(() => {
@@ -565,6 +573,36 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
     setIsCreating(true);
     try {
+      // TAEX-236: Check for duplicates before creating (unless bypassed)
+      if (!bypassDuplicateCheck && formData.postalCode) {
+        const duplicates = await checkDuplicates({
+          name: formData.name,
+          address: formData.address,
+          postalCode: formData.postalCode,
+          city: formData.city,
+          country: formData.country,
+        });
+
+        if (duplicates.length > 0) {
+          setDuplicatesFound(duplicates);
+          setShowDuplicateWarning(true);
+          setIsCreating(false);
+          return;
+        }
+      }
+
+      // Proceed with creation
+      await proceedWithCreation();
+    } catch (error) {
+      console.error("Error creating site:", error);
+      setIsCreating(false);
+    }
+  };
+
+  // Separate function for actual creation logic
+  const proceedWithCreation = async () => {
+    setIsCreating(true);
+    try {
       // Server-side postal code validation
       const { data: validation, error: validationError } = await supabase.functions.invoke("validate-postal-code", {
         body: {
@@ -603,6 +641,10 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       clearSavedData();
       resetPersistedForm();
       
+      // Reset duplicate check state
+      setBypassDuplicateCheck(false);
+      setDuplicatesFound([]);
+      
       handleDialogClose(false);
     } catch (error) {
       console.error("Error creating site:", error);
@@ -610,6 +652,19 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
       setIsCreating(false);
     }
   };
+
+  // Handle duplicate warning dialog actions
+  const handleDuplicateGoBack = useCallback(() => {
+    setShowDuplicateWarning(false);
+    setBypassDuplicateCheck(false);
+  }, []);
+
+  const handleDuplicateCreateAnyway = useCallback(() => {
+    setShowDuplicateWarning(false);
+    setBypassDuplicateCheck(true);
+    // Proceed with creation
+    proceedWithCreation();
+  }, [formData]);
 
   // Clear draft handler
   const handleClearDraft = useCallback(() => {
@@ -945,18 +1000,20 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
 
           {/* Fallback mode notice */}
           {fallbackMode && (
-            <div className="flex items-start gap-2 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 p-3 rounded-md">
+            <div className="flex items-start gap-2 text-sm text-warning bg-warning/10 p-3 rounded-md">
               <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
               <span>{t("app:newLaundry.fallbackModeNotice")}</span>
             </div>
           )}
 
           {/* Submit Button */}
-          <Button onClick={handleSubmit} className="w-full" disabled={isCreating}>
-            {isCreating ? (
+          <Button onClick={handleSubmit} className="w-full" disabled={isCreating || isCheckingDuplicates}>
+            {isCreating || isCheckingDuplicates ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {t("app:newLaundry.creating")}
+                {isCheckingDuplicates 
+                  ? t("app:newLaundry.checkingDuplicates", "Checking for duplicates...") 
+                  : t("app:newLaundry.creating")}
               </>
             ) : (
               t("app:newLaundry.submit")
@@ -964,6 +1021,20 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
           </Button>
         </div>
       </DialogContent>
+
+      {/* TAEX-236: Duplicate Warning Dialog */}
+      <DuplicateWarningDialog
+        open={showDuplicateWarning}
+        onOpenChange={setShowDuplicateWarning}
+        duplicates={duplicatesFound}
+        onGoBack={handleDuplicateGoBack}
+        onCreateAnyway={handleDuplicateCreateAnyway}
+        formData={{
+          postalCode: formData.postalCode,
+          city: formData.city,
+          country: formData.country,
+        }}
+      />
     </Dialog>
   );
 }

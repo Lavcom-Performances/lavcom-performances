@@ -2370,6 +2370,24 @@ export type Database = {
         Args: { p_site_id: string; p_status?: string }
         Returns: number
       }
+      check_duplicate_sites: {
+        Args: {
+          p_address: string
+          p_city: string
+          p_country?: string
+          p_name: string
+          p_postal_code: string
+        }
+        Returns: {
+          address: string
+          city: string
+          country_code: string
+          id: string
+          name: string
+          owner_id: string
+          postal_code: string
+        }[]
+      }
       cleanup_expired_login_otps: { Args: never; Returns: undefined }
       cleanup_expired_mfa_challenges: { Args: never; Returns: undefined }
       cleanup_expired_trusted_devices: { Args: never; Returns: undefined }
@@ -2421,6 +2439,10 @@ export type Database = {
       }
       owns_site: { Args: { _site_id: string }; Returns: boolean }
       rpc_admin_churn_predictions: { Args: never; Returns: Json }
+      rpc_admin_global_search: {
+        Args: { p_limit?: number; p_query: string }
+        Returns: Json
+      }
       rpc_admin_global_stats: { Args: never; Returns: Json }
       rpc_admin_monthly_series: {
         Args: { p_end_date: string; p_start_date: string }
