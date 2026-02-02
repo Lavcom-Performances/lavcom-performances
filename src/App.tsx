@@ -58,6 +58,8 @@ import PlatformAIUsage from "./pages/platform/PlatformAIUsage";
 import PlatformAdminArchives from "./pages/platform/PlatformAdminArchives";
 import PlatformAdminComplianceReports from "./pages/platform/PlatformAdminComplianceReports";
 import RecomputeAuditTrail from "./pages/platform/RecomputeAuditTrail";
+import AdminExportsPage from "./pages/admin/AdminExportsPage";
+import ExportsPage from "./pages/app/ExportsPage";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
 import CGV from "./pages/CGV";
@@ -184,6 +186,7 @@ const App = () => (
             <Route path="/admin/archives" element={<PlatformAdminArchives />} />
             <Route path="/admin/compliance-reports" element={<PlatformAdminComplianceReports />} />
             <Route path="/admin/recompute-audit" element={<RecomputeAuditTrail />} />
+            <Route path="/admin/exports" element={<AdminExportsPage />} />
           </Route>
           
           {/* Platform Admin billing routes (require billing access) */}
@@ -226,7 +229,7 @@ const App = () => (
             <Route path="/audit-logs" element={<AuditLogsPage />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
-            
+            <Route path="/exports" element={<ExportsPage />} />
             {/* Chart pages */}
             <Route path="/charts/monthly" element={<MonthlyRevenuePage />} />
             <Route path="/charts/daily" element={<DailyRevenuePage />} />
