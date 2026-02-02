@@ -2,9 +2,12 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, Linkedin, Instagram, Facebook } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
+import { BetaFeedbackButton } from "@/components/feedback/BetaFeedbackButton";
+import { useIsBetaCompany } from "@/hooks/useIsBetaCompany";
 
 export function Footer() {
   const { t } = useTranslation('common');
+  const { isBeta } = useIsBetaCompany();
 
   return (
     <footer className="bg-muted/30 border-t border-border">
@@ -117,20 +120,28 @@ export function Footer() {
 
         {/* Footer discret - style minimaliste */}
         <div className="border-t border-border pt-6">
-          <p className="text-[11px] text-muted-foreground/70 text-center">
-            © 2026 Lavcom. {t('footer.allRightsReserved')}{" "}
-            <Link to="/mentions-legales" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">
-              {t('footer.legalNotice')}
-            </Link>
-            {"   "}
-            <Link to="/politique-confidentialite" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">
-              {t('footer.privacyPolicy')}
-            </Link>
-            {"   "}
-            <Link to="/cgv" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">
-              {t('footer.termsOfService')}
-            </Link>
-          </p>
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            {isBeta && (
+              <BetaFeedbackButton 
+                variant="ghost" 
+                className="text-muted-foreground hover:text-foreground text-xs" 
+              />
+            )}
+            <p className="text-[11px] text-muted-foreground/70 text-center">
+              © 2026 Lavcom. {t('footer.allRightsReserved')}{" "}
+              <Link to="/mentions-legales" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">
+                {t('footer.legalNotice')}
+              </Link>
+              {"   "}
+              <Link to="/politique-confidentialite" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">
+                {t('footer.privacyPolicy')}
+              </Link>
+              {"   "}
+              <Link to="/cgv" className="hover:text-foreground/80 transition-colors underline-offset-2 hover:underline">
+                {t('footer.termsOfService')}
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

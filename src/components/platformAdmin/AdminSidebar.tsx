@@ -25,6 +25,7 @@ import {
   Archive,
   ClipboardCheck,
   Sparkles,
+  HeartPulse,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -101,6 +102,7 @@ export function AdminSidebar({
   // System navigation
   const systemNavigation = [
     { name: t('app:platformAdmin.nav.systemStatus'), href: "/admin/system-status", icon: AlertTriangle },
+    { name: t('app:platformAdmin.nav.betaHealth', 'Beta Health'), href: "/admin/beta/health", icon: HeartPulse },
     { name: t('app:platformAdmin.nav.aiUsage', 'AI Usage'), href: "/admin/ai-usage", icon: Bot },
     { name: t('app:platformAdmin.nav.expertRequests'), href: "/admin/expert-requests", icon: Handshake },
     { name: t('app:platformAdmin.nav.cronLogs'), href: "/admin/cron-logs", icon: Clock },
