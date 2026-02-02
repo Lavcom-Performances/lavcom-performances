@@ -34,8 +34,11 @@ import {
   TrendingDown,
   Info,
   FileDown,
-  Lock
+  Lock,
+  PowerOff
 } from "lucide-react";
+import { LaundromatStatusSection } from "@/components/laundromat/LaundromatStatusSection";
+import { ClosedLaundromatBanner } from "@/components/laundromat/ClosedLaundromatBanner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   calculateFixedCostsTotal, 
@@ -117,7 +120,7 @@ export default function LaundromatSettings() {
   const { permissions } = useCurrentUserPermissions();
   
   // Get sites
-  const { sites, getDefaultSite } = useSites();
+  const { sites, getDefaultSite, fetchSites } = useSites();
   
   // Validate site and handle fallback
   const { selectedSite, siteWasInvalid } = useMemo(() => {
@@ -336,11 +339,23 @@ export default function LaundromatSettings() {
   };
 
   const canEdit = permissions.can_edit_sites;
+  const isClosed = selectedSite?.status === 'closed';
+  const canEditWhenActive = canEdit && !isClosed;
+
+  // Handle status change - refetch sites to get updated status
+  const handleStatusChange = () => {
+    fetchSites(true); // Include closed sites to keep current site visible
+  };
 
   return (
     <div className="space-y-6">
+      {/* Closed Laundromat Banner */}
+      {isClosed && (
+        <ClosedLaundromatBanner siteName={selectedSite?.name} />
+      )}
+
       {/* Read-only Mode Alert */}
-      {!canEdit && (
+      {!canEdit && !isClosed && (
         <Alert className="border-amber-200 bg-amber-50/50">
           <Lock className="h-4 w-4 text-amber-600" />
           <AlertDescription className="text-amber-800">
@@ -424,12 +439,13 @@ export default function LaundromatSettings() {
       )}
 
       <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
+        <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-flex">
           <TabsTrigger value="general">Général</TabsTrigger>
           <TabsTrigger value="machines">Machines</TabsTrigger>
           <TabsTrigger value="costs">Charges / Coûts</TabsTrigger>
           <TabsTrigger value="objectives">Objectifs</TabsTrigger>
           <TabsTrigger value="summary">Récapitulatif</TabsTrigger>
+          <TabsTrigger value="status">Statut</TabsTrigger>
         </TabsList>
 
         {/* General Tab */}
@@ -1299,6 +1315,19 @@ export default function LaundromatSettings() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Status Tab */}
+        <TabsContent value="status" className="space-y-6">
+          {selectedSite && (
+            <LaundromatStatusSection
+              siteId={selectedSite.id}
+              siteName={selectedSite.name}
+              status={(selectedSite.status as 'active' | 'closed') || 'active'}
+              closedAt={selectedSite.closed_at}
+              onStatusChange={handleStatusChange}
+            />
+          )}
         </TabsContent>
       </Tabs>
 

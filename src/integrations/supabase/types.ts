@@ -1954,6 +1954,8 @@ export type Database = {
         Row: {
           address: string | null
           city: string | null
+          closed_at: string | null
+          closed_by: string | null
           country_code: string | null
           created_at: string
           department_code: string | null
@@ -1963,12 +1965,17 @@ export type Database = {
           name: string
           organization_id: string | null
           postal_code: string | null
+          reactivated_at: string | null
+          reactivated_by: string | null
+          status: string
           updated_at: string
           user_id: string
         }
         Insert: {
           address?: string | null
           city?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
           country_code?: string | null
           created_at?: string
           department_code?: string | null
@@ -1978,12 +1985,17 @@ export type Database = {
           name: string
           organization_id?: string | null
           postal_code?: string | null
+          reactivated_at?: string | null
+          reactivated_by?: string | null
+          status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           address?: string | null
           city?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
           country_code?: string | null
           created_at?: string
           department_code?: string | null
@@ -1993,6 +2005,9 @@ export type Database = {
           name?: string
           organization_id?: string | null
           postal_code?: string | null
+          reactivated_at?: string | null
+          reactivated_by?: string | null
+          status?: string
           updated_at?: string
           user_id?: string
         }

@@ -11,6 +11,11 @@ export interface Site {
   postal_code?: string;
   is_default: boolean;
   is_demo?: boolean;
+  status?: string;
+  closed_at?: string | null;
+  closed_by?: string | null;
+  reactivated_at?: string | null;
+  reactivated_by?: string | null;
 }
 
 export function useSites() {
@@ -30,20 +35,29 @@ export function useSites() {
     fetchSites();
   }, [user]);
 
-  const fetchSites = async () => {
+  const fetchSites = async (includeClosedSites: boolean = false) => {
     if (!user) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const { data, error: fetchError } = await supabase
+      let query = supabase
         .from("sites")
         .select("*")
         .eq("user_id", user.id)
-        .eq("is_demo", false) // Exclude demo sites by default
+        .eq("is_demo", false); // Exclude demo sites by default
+      
+      // By default, only show active sites
+      if (!includeClosedSites) {
+        query = query.eq("status", "active");
+      }
+      
+      query = query
         .order("is_default", { ascending: false })
         .order("name");
+
+      const { data, error: fetchError } = await query;
 
       if (fetchError) throw fetchError;
 
