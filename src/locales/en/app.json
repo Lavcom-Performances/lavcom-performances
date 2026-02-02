@@ -2160,5 +2160,25 @@
     "analyticsDescription": "To understand how you use our site",
     "marketing": "Marketing cookies",
     "marketingDescription": "To personalize ads"
+  },
+  "duplicateWarning": {
+    "title": "Possible duplicate site",
+    "description": "We found similar sites. Do you want to continue anyway?",
+    "goBack": "Go back",
+    "createAnyway": "Create anyway",
+    "confirmMessage": "Are you sure? This may create a duplicate entry.",
+    "confirmCreate": "Yes, create anyway"
+  },
+  "platformAdmin": {
+    "globalSearch": {
+      "placeholder": "Search users, sites...",
+      "inputPlaceholder": "Search by email, name, site...",
+      "noResults": "No results found",
+      "users": "Users",
+      "sites": "Sites",
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close"
+    }
   }
 }

@@ -36,6 +36,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageSelector } from "@/components/ui/language-selector";
+import { AdminGlobalSearch } from "./AdminGlobalSearch";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlatformRole } from "@/hooks/usePlatformRole";
 import { useLogout } from "@/hooks/useLogout";
@@ -216,6 +217,11 @@ export function AdminSidebar({
             )}
           </Tooltip>
         </TooltipProvider>
+      </div>
+
+      {/* Global Search - TAEX-236 */}
+      <div className="px-3 py-2 border-b border-[#6B7AA0]/30">
+        <AdminGlobalSearch collapsed={collapsed} />
       </div>
 
       {/* Navigation */}
