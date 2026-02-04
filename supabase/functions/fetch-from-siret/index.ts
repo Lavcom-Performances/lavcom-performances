@@ -1,6 +1,6 @@
+// Edge function for fetching company data from French SIRET number
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { checkRateLimit, hashIP, maskEmail, rateLimitResponse } from "../_shared/rate-limiter.ts";
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -79,11 +79,13 @@ serve(async (req) => {
       );
     }
 
-    // Appel à l'API SIRENE
-    const response = await fetch(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`);
+    // Use recherche-entreprises API (free, no auth required, reliable)
+    const apiUrl = `https://recherche-entreprises.api.gouv.fr/search?q=${siret}&page=1&per_page=1`;
+    console.log(`Calling recherche-entreprises API...`);
     
+    const response = await fetch(apiUrl);
     console.log(`API Response status: ${response.status}`);
-
+    
     if (!response.ok) {
       if (response.status === 404) {
         console.log('SIRET not found');
@@ -97,58 +99,41 @@ serve(async (req) => {
       }
       throw new Error(`API Error: ${response.status}`);
     }
-
+    
     const data = await response.json();
-    console.log('API Response data received');
-
-    // Extraction des données de l'établissement
-    const etablissement = data.etablissement;
-    if (!etablissement) {
+    const results = data?.results || [];
+    
+    if (results.length === 0) {
+      console.log('SIRET not found in results');
       return new Response(
-        JSON.stringify({ error: "Données établissement non trouvées." }),
+        JSON.stringify({ error: "SIRET introuvable dans la base SIRENE." }),
         { 
           status: 404, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
     }
-
-    // Construction de l'adresse
-    const adresse = etablissement.adresse || {};
-    const uniteLegale = etablissement.unite_legale || {};
-
-    // Nom de l'entreprise (raison sociale)
-    let companyName = "";
-    if (uniteLegale.denomination) {
-      companyName = uniteLegale.denomination;
-    } else if (uniteLegale.nom && uniteLegale.prenom_1) {
-      companyName = `${uniteLegale.prenom_1} ${uniteLegale.nom}`;
-    } else if (uniteLegale.nom) {
-      companyName = uniteLegale.nom;
-    }
-
-    // Enseigne / Nom commercial
-    const tradeName = etablissement.enseigne_1 || etablissement.enseigne_2 || etablissement.enseigne_3 || null;
-
-    // Adresse ligne 1
+    
+    const etablissement = results[0];
+    const siege = etablissement?.siege || {};
+    
+    // Build address parts
     const addressParts = [];
-    if (adresse.numero_voie) addressParts.push(adresse.numero_voie);
-    if (adresse.indice_repetition) addressParts.push(adresse.indice_repetition);
-    if (adresse.type_voie) addressParts.push(adresse.type_voie);
-    if (adresse.libelle_voie) addressParts.push(adresse.libelle_voie);
-    const addressLine1 = addressParts.join(' ').toUpperCase();
-
-    const result: SiretResponse = {
-      company_name: companyName,
-      trade_name: tradeName,
-      address_line1: addressLine1,
-      postal_code: adresse.code_postal || "",
-      city: adresse.libelle_commune || "",
-      naf_code: etablissement.activite_principale || uniteLegale.activite_principale || "",
+    if (siege.numero_voie) addressParts.push(siege.numero_voie);
+    if (siege.type_voie) addressParts.push(siege.type_voie);
+    if (siege.libelle_voie) addressParts.push(siege.libelle_voie);
+    
+    const result = {
+      company_name: etablissement.nom_complet || etablissement.nom_raison_sociale || "",
+      trade_name: siege.enseigne_1 || siege.enseigne_2 || siege.enseigne_3 || null,
+      address_line1: addressParts.join(' ').toUpperCase(),
+      postal_code: siege.code_postal || "",
+      city: siege.libelle_commune || "",
+      naf_code: etablissement.activite_principale || "",
     };
-
+    
     console.log('Returning data successfully');
-
+    
     return new Response(
       JSON.stringify(result),
       { 

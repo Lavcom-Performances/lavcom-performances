@@ -47,7 +47,7 @@ export function OnboardingStepLaundry({ onNext, onNavigate }: OnboardingStepLaun
           </div>
           
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => onNavigate('/laundromat')}>
+            <Button variant="outline" onClick={() => onNavigate('/select-laundromat')}>
               <Plus className="mr-2 h-4 w-4" />
               Ajouter une autre laverie
             </Button>
@@ -65,7 +65,7 @@ export function OnboardingStepLaundry({ onNext, onNavigate }: OnboardingStepLaun
             <p className="text-sm text-muted-foreground mb-4">
               Ajoutez votre première laverie pour débloquer toutes les fonctionnalités.
             </p>
-            <Button onClick={() => onNavigate('/laundromat')}>
+            <Button onClick={() => onNavigate('/select-laundromat')}>
               <Plus className="mr-2 h-4 w-4" />
               Ajouter ma laverie
             </Button>
