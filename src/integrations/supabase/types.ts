@@ -522,6 +522,47 @@ export type Database = {
         }
         Relationships: []
       }
+      company_payment_config: {
+        Row: {
+          accepted_denominations: number[] | null
+          cash_step: number | null
+          company_id: string
+          created_at: string
+          has_card: boolean
+          id: string
+          payment_stack: string | null
+          updated_at: string
+        }
+        Insert: {
+          accepted_denominations?: number[] | null
+          cash_step?: number | null
+          company_id: string
+          created_at?: string
+          has_card?: boolean
+          id?: string
+          payment_stack?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accepted_denominations?: number[] | null
+          cash_step?: number | null
+          company_id?: string
+          created_at?: string
+          has_card?: boolean
+          id?: string
+          payment_stack?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_payment_config_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_reports: {
         Row: {
           created_at: string
@@ -1148,6 +1189,248 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      kb_faq: {
+        Row: {
+          answer_simple: string
+          audience: string
+          created_at: string
+          faq_id: string
+          id: string
+          is_published: boolean
+          knowledge_id: string | null
+          question: string
+          tone: string
+          updated_at: string
+        }
+        Insert: {
+          answer_simple: string
+          audience?: string
+          created_at?: string
+          faq_id: string
+          id?: string
+          is_published?: boolean
+          knowledge_id?: string | null
+          question: string
+          tone?: string
+          updated_at?: string
+        }
+        Update: {
+          answer_simple?: string
+          audience?: string
+          created_at?: string
+          faq_id?: string
+          id?: string
+          is_published?: boolean
+          knowledge_id?: string | null
+          question?: string
+          tone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_faq_knowledge_id_fkey"
+            columns: ["knowledge_id"]
+            isOneToOne: false
+            referencedRelation: "kb_knowledge"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_knowledge: {
+        Row: {
+          ai_usage: string[] | null
+          applicable_if: Json | null
+          business_impact: string
+          created_at: string
+          created_by: string | null
+          description_long: string
+          id: string
+          is_active: boolean
+          know_id: string
+          not_applicable_if: Json | null
+          pillar: string
+          reliability_label: string
+          source_id: string | null
+          status: string
+          sub_pillar: string | null
+          title_short: string
+          truth_type: string
+          updated_at: string
+          urgency: string
+          version: number
+        }
+        Insert: {
+          ai_usage?: string[] | null
+          applicable_if?: Json | null
+          business_impact: string
+          created_at?: string
+          created_by?: string | null
+          description_long: string
+          id?: string
+          is_active?: boolean
+          know_id: string
+          not_applicable_if?: Json | null
+          pillar: string
+          reliability_label: string
+          source_id?: string | null
+          status?: string
+          sub_pillar?: string | null
+          title_short: string
+          truth_type: string
+          updated_at?: string
+          urgency: string
+          version?: number
+        }
+        Update: {
+          ai_usage?: string[] | null
+          applicable_if?: Json | null
+          business_impact?: string
+          created_at?: string
+          created_by?: string | null
+          description_long?: string
+          id?: string
+          is_active?: boolean
+          know_id?: string
+          not_applicable_if?: Json | null
+          pillar?: string
+          reliability_label?: string
+          source_id?: string | null
+          status?: string
+          sub_pillar?: string | null
+          title_short?: string
+          truth_type?: string
+          updated_at?: string
+          urgency?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_knowledge_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "kb_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_knowledge_versions: {
+        Row: {
+          change_summary: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          knowledge_id: string
+          snapshot: Json
+          version: number
+        }
+        Insert: {
+          change_summary?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          knowledge_id: string
+          snapshot: Json
+          version: number
+        }
+        Update: {
+          change_summary?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          knowledge_id?: string
+          snapshot?: Json
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_knowledge_versions_knowledge_id_fkey"
+            columns: ["knowledge_id"]
+            isOneToOne: false
+            referencedRelation: "kb_knowledge"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_rules: {
+        Row: {
+          actions: Json
+          conditions: Json
+          created_at: string
+          id: string
+          is_active: boolean
+          knowledge_id: string | null
+          priority: number
+          rule_id: string
+          severity: string
+          trigger: string
+          updated_at: string
+        }
+        Insert: {
+          actions?: Json
+          conditions?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          knowledge_id?: string | null
+          priority?: number
+          rule_id: string
+          severity?: string
+          trigger: string
+          updated_at?: string
+        }
+        Update: {
+          actions?: Json
+          conditions?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          knowledge_id?: string | null
+          priority?: number
+          rule_id?: string
+          severity?: string
+          trigger?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_rules_knowledge_id_fkey"
+            columns: ["knowledge_id"]
+            isOneToOne: false
+            referencedRelation: "kb_knowledge"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_sources: {
+        Row: {
+          created_at: string
+          default_reliability_label: string
+          id: string
+          notes_internal: string | null
+          source_name: string
+          source_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_reliability_label: string
+          id?: string
+          notes_internal?: string | null
+          source_name: string
+          source_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_reliability_label?: string
+          id?: string
+          notes_internal?: string | null
+          source_name?: string
+          source_type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       login_logs: {
         Row: {
@@ -2266,6 +2549,162 @@ export type Database = {
           },
         ]
       }
+      trust_day: {
+        Row: {
+          company_id: string
+          created_at: string
+          day: string
+          dts_score: number
+          excluded_revenue: number
+          id: string
+          invalid_rate: number
+          top_flags: Json | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          day: string
+          dts_score: number
+          excluded_revenue?: number
+          id?: string
+          invalid_rate?: number
+          top_flags?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          day?: string
+          dts_score?: number
+          excluded_revenue?: number
+          id?: string
+          invalid_rate?: number
+          top_flags?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_day_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_import: {
+        Row: {
+          company_id: string
+          created_at: string
+          dts_score: number
+          duplicate_rate: number
+          id: string
+          import_id: string
+          invalid_rate: number
+          mapping_rate: number
+          top_flags: Json | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          dts_score: number
+          duplicate_rate?: number
+          id?: string
+          import_id: string
+          invalid_rate?: number
+          mapping_rate?: number
+          top_flags?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          dts_score?: number
+          duplicate_rate?: number
+          id?: string
+          import_id?: string
+          invalid_rate?: number
+          mapping_rate?: number
+          top_flags?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_import_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trust_import_import_id_fkey"
+            columns: ["import_id"]
+            isOneToOne: false
+            referencedRelation: "import_batches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_line: {
+        Row: {
+          company_id: string
+          created_at: string
+          dts_score: number
+          flags: string[] | null
+          id: string
+          import_id: string | null
+          is_blocking_invalid: boolean
+          operation_id: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          dts_score: number
+          flags?: string[] | null
+          id?: string
+          import_id?: string | null
+          is_blocking_invalid?: boolean
+          operation_id: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          dts_score?: number
+          flags?: string[] | null
+          id?: string
+          import_id?: string | null
+          is_blocking_invalid?: boolean
+          operation_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_line_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trust_line_import_id_fkey"
+            columns: ["import_id"]
+            isOneToOne: false
+            referencedRelation: "import_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trust_line_operation_id_fkey"
+            columns: ["operation_id"]
+            isOneToOne: true
+            referencedRelation: "operations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trusted_devices: {
         Row: {
           created_at: string
@@ -2501,6 +2940,10 @@ export type Database = {
       cleanup_old_cron_logs: { Args: never; Returns: undefined }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       cleanup_old_system_events: { Args: never; Returns: undefined }
+      compute_dts_for_import: {
+        Args: { p_company_id: string; p_import_id: string }
+        Returns: Json
+      }
       count_recovery_codes: { Args: { p_user_id: string }; Returns: number }
       derive_department_code: { Args: { postal_code: string }; Returns: string }
       get_last_login_country: { Args: { p_user_id: string }; Returns: string }

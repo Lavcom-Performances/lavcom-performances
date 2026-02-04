@@ -60,6 +60,11 @@ import PlatformAIUsage from "./pages/platform/PlatformAIUsage";
 import PlatformAdminArchives from "./pages/platform/PlatformAdminArchives";
 import PlatformAdminComplianceReports from "./pages/platform/PlatformAdminComplianceReports";
 import RecomputeAuditTrail from "./pages/platform/RecomputeAuditTrail";
+import KnowledgeBasePage from "./pages/platform/KnowledgeBasePage";
+import KnowledgeSourcesPage from "./pages/platform/KnowledgeSourcesPage";
+import FaqBuilderPage from "./pages/platform/FaqBuilderPage";
+import RulesEnginePage from "./pages/platform/RulesEnginePage";
+import DataTrustScorePage from "./pages/platform/DataTrustScorePage";
 import AdminExportsPage from "./pages/admin/AdminExportsPage";
 import ExportsPage from "./pages/app/ExportsPage";
 import NotFound from "./pages/NotFound";
@@ -191,6 +196,12 @@ const App = () => (
             <Route path="/admin/recompute-audit" element={<RecomputeAuditTrail />} />
             <Route path="/admin/exports" element={<AdminExportsPage />} />
             <Route path="/admin/beta/health" element={<PlatformBetaHealth />} />
+            {/* Knowledge System routes */}
+            <Route path="/admin/knowledge" element={<KnowledgeBasePage />} />
+            <Route path="/admin/knowledge/sources" element={<KnowledgeSourcesPage />} />
+            <Route path="/admin/knowledge/faq" element={<FaqBuilderPage />} />
+            <Route path="/admin/knowledge/rules" element={<RulesEnginePage />} />
+            <Route path="/admin/knowledge/dts" element={<DataTrustScorePage />} />
           </Route>
           
           {/* Platform Admin billing routes (require billing access) */}
