@@ -198,6 +198,7 @@ export async function fetchAddressDetails(fullAddress: string): Promise<{
   country: "FR";
 } | null> {
   try {
+    // Try the geopf search endpoint first
     const url = `${SEARCH_URL}?q=${encodeURIComponent(fullAddress)}&limit=1`;
     let res = await fetch(url);
     
@@ -207,23 +208,60 @@ export async function fetchAddressDetails(fullAddress: string): Promise<{
       res = await fetch(url);
     }
     
-    if (!res.ok) throw new Error(`Search failed: ${res.status}`);
+    if (res.ok) {
+      const json = await res.json();
+      const feature = json?.features?.[0];
+      const props = feature?.properties || {};
+      
+      const postcode = String(props?.postcode || props?.postCode || props?.postalcode || "").trim();
+      const city = String(props?.city || props?.municipality || props?.locality || "").trim();
+      const department = getDepartmentFromPostcode(postcode);
+      
+      if (postcode && city) {
+        return {
+          address: fullAddress,
+          postcode,
+          city,
+          department,
+          country: "FR",
+        };
+      }
+    }
     
-    const json = await res.json();
-    const feature = json?.features?.[0];
-    const props = feature?.properties || {};
+    // Fallback to geo.api.gouv.fr which has better structured data
+    console.log("[fetchAddressDetails] geopf failed, trying geo.api.gouv.fr...");
+    const fallbackUrl = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(fullAddress)}&limit=1`;
+    const fallbackRes = await fetch(fallbackUrl);
     
-    const postcode = String(props?.postcode || props?.postCode || props?.postalcode || "").trim();
-    const city = String(props?.city || props?.municipality || props?.locality || "").trim();
-    const department = getDepartmentFromPostcode(postcode);
+    if (fallbackRes.ok) {
+      const fallbackJson = await fallbackRes.json();
+      const fallbackFeature = fallbackJson?.features?.[0];
+      const fallbackProps = fallbackFeature?.properties || {};
+      
+      const postcode = String(fallbackProps?.postcode || "").trim();
+      const city = String(fallbackProps?.city || "").trim();
+      const department = getDepartmentFromPostcode(postcode);
+      
+      // Use the street name from properties if available, otherwise keep original
+      let addressLine = fullAddress;
+      if (fallbackProps?.name) {
+        addressLine = fallbackProps.name;
+        if (fallbackProps?.housenumber) {
+          addressLine = `${fallbackProps.housenumber} ${fallbackProps.name}`;
+        }
+      }
+      
+      return {
+        address: addressLine,
+        postcode,
+        city,
+        department,
+        country: "FR",
+      };
+    }
     
-    return {
-      address: fullAddress,
-      postcode,
-      city,
-      department,
-      country: "FR",
-    };
+    console.error("[fetchAddressDetails] Both APIs failed");
+    return null;
   } catch (err) {
     console.error("Failed to fetch address details:", err);
     return null;
