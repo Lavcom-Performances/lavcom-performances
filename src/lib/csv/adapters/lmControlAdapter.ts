@@ -19,6 +19,7 @@ import {
   TransactionCategory,
   enforceBusinessInvariants 
 } from './types';
+import { classifyOperationCategory } from '../operationCategory';
 import { NormalizedPaymentMode, normalizePaymentMode } from '../normalizePaymentMode';
 import { normalizeCsvText, detectSeparator, parseCsvLine } from '../normalizeCsvText';
 
@@ -312,6 +313,7 @@ export const lmControlAdapter: CsvAdapter = {
         display_label: displayLabel,
         machine_label: name || null,
         category,
+        operation_category: classifyOperationCategory(type, name || displayLabel),
         payment_mode,
         inserted_cents: payment_mode === 'ESP' && amountCentimes > 0 ? amountCentimes : null,
         price_cents: priceCentimes,

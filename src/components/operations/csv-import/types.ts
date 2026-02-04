@@ -51,6 +51,13 @@ export interface ImportResult {
   rechEspFixed?: number;
   /** Whether amounts were converted from centimes to euros */
   centimesConverted?: boolean;
+  /** TAEX-301: Data Trust Score results */
+  dts?: {
+    score: number;
+    invalidCount: number;
+    excludedRevenue: number;
+    topFlags: string[];
+  };
 }
 
 export const COLUMN_OPTIONS = [

@@ -19,6 +19,7 @@ import {
   TransactionCategory,
   enforceBusinessInvariants 
 } from './types';
+import { classifyOperationCategory } from '../operationCategory';
 import { NormalizedPaymentMode } from '../normalizePaymentMode';
 import { normalizeCsvText, detectSeparator, parseCsvLine } from '../normalizeCsvText';
 
@@ -441,6 +442,7 @@ export const wilineAdapter: CsvAdapter = {
         display_label: displayLabel,
         machine_label: description.trim() || null,
         category,
+        operation_category: classifyOperationCategory(description, displayLabel),
         payment_mode: payment.mode === 'MIX' ? 'CB' : payment.mode,
         inserted_cents: payment.mode === 'ESP' && inseree > 0 ? eurosToCents(inseree) : null,
         price_cents: eurosToCents(prix),
