@@ -231,18 +231,19 @@ export function AddLaundromatDialog({ open, onOpenChange, onSubmit }: AddLaundro
     setSiretSuccess(false);
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-from-siret?siret=${siret}`,
-        {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-        },
-      );
+      // Use supabase.functions.invoke for robust invocation with proper headers
+      const { data: result, error } = await supabase.functions.invoke('fetch-from-siret', {
+        body: { siret },
+      });
 
-      const result = await response.json();
+      if (error) {
+        console.error("SIRET lookup error:", error);
+        setSiretInfo(t("app:newLaundry.siretUnavailable"));
+        return;
+      }
 
-      if (!response.ok) {
+      // Check for error in result (e.g., SIRET not found)
+      if (result?.error) {
         setSiretInfo(t("app:newLaundry.siretUnavailable"));
         return;
       }

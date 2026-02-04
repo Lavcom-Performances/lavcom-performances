@@ -1,9 +1,10 @@
 // Edge function for fetching company data from French SIRET number
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { checkRateLimit, hashIP, maskEmail, rateLimitResponse } from "../_shared/rate-limiter.ts";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 interface SiretResponse {
@@ -13,20 +14,46 @@ interface SiretResponse {
   postal_code: string;
   city: string;
   naf_code: string;
+  department?: string;
 }
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response('ok', { headers: corsHeaders });
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
   try {
+    // Health check: GET without siret param returns status
     const url = new URL(req.url);
-    const siret = url.searchParams.get('siret');
+    let siret: string | null = null;
+
+    // Support both GET with query param and POST with JSON body
+    if (req.method === 'POST') {
+      try {
+        const body = await req.json();
+        siret = body.siret;
+      } catch {
+        // If no body or invalid JSON, treat as health check
+      }
+    } else if (req.method === 'GET') {
+      siret = url.searchParams.get('siret');
+    }
+
+    // Health check endpoint (no siret provided)
+    if (!siret) {
+      console.log('[fetch-from-siret] Health check requested');
+      return new Response(
+        JSON.stringify({ ok: true, function: "fetch-from-siret" }),
+        { 
+          status: 200, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
 
     // Get client IP for rate limiting
     const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() 
@@ -61,17 +88,20 @@ serve(async (req) => {
     );
 
     if (!rateLimitResult.allowed) {
-      console.log(`Rate limit hit: fetch-from-siret, identifier=${maskEmail(identifier)}`);
+      console.log(`[fetch-from-siret] Rate limit hit: identifier=${maskEmail(identifier)}`);
       return rateLimitResponse(rateLimitResult.cooldownSeconds!, 'edge/fetch-from-siret', corsHeaders);
     }
 
-    console.log(`Fetching data for SIRET: ${siret?.slice(0, 4)}****`);
+    // Mask SIRET for logging (show only last 4 digits)
+    const maskedSiret = siret.length > 4 ? '****' + siret.slice(-4) : siret;
+    console.log(`[fetch-from-siret] Fetching data for SIRET: ${maskedSiret}`);
 
     // Validation du SIRET
-    if (!siret || siret.length !== 14 || !/^[0-9]+$/.test(siret)) {
-      console.log('Invalid SIRET format');
+    const cleanSiret = siret.replace(/\s/g, '');
+    if (cleanSiret.length !== 14 || !/^[0-9]+$/.test(cleanSiret)) {
+      console.log('[fetch-from-siret] Invalid SIRET format');
       return new Response(
-        JSON.stringify({ error: "SIRET invalide. Il doit contenir exactement 14 chiffres." }),
+        JSON.stringify({ error: "INVALID_SIRET", message: "SIRET invalide. Il doit contenir exactement 14 chiffres." }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -80,17 +110,17 @@ serve(async (req) => {
     }
 
     // Use recherche-entreprises API (free, no auth required, reliable)
-    const apiUrl = `https://recherche-entreprises.api.gouv.fr/search?q=${siret}&page=1&per_page=1`;
-    console.log(`Calling recherche-entreprises API...`);
+    const apiUrl = `https://recherche-entreprises.api.gouv.fr/search?q=${cleanSiret}&page=1&per_page=1`;
+    console.log(`[fetch-from-siret] Calling recherche-entreprises API...`);
     
     const response = await fetch(apiUrl);
-    console.log(`API Response status: ${response.status}`);
+    console.log(`[fetch-from-siret] API Response status: ${response.status}`);
     
     if (!response.ok) {
       if (response.status === 404) {
-        console.log('SIRET not found');
+        console.log('[fetch-from-siret] SIRET not found');
         return new Response(
-          JSON.stringify({ error: "SIRET introuvable dans la base SIRENE." }),
+          JSON.stringify({ error: "SIRET_NOT_FOUND", message: "SIRET introuvable dans la base SIRENE." }),
           { 
             status: 404, 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -104,9 +134,9 @@ serve(async (req) => {
     const results = data?.results || [];
     
     if (results.length === 0) {
-      console.log('SIRET not found in results');
+      console.log('[fetch-from-siret] SIRET not found in results');
       return new Response(
-        JSON.stringify({ error: "SIRET introuvable dans la base SIRENE." }),
+        JSON.stringify({ error: "SIRET_NOT_FOUND", message: "SIRET introuvable dans la base SIRENE." }),
         { 
           status: 404, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -123,16 +153,32 @@ serve(async (req) => {
     if (siege.type_voie) addressParts.push(siege.type_voie);
     if (siege.libelle_voie) addressParts.push(siege.libelle_voie);
     
-    const result = {
+    // Derive department from postal code
+    const postalCode = siege.code_postal || "";
+    let department = "";
+    if (postalCode.length >= 2) {
+      if (postalCode.startsWith('20')) {
+        // Corsica
+        department = parseInt(postalCode.substring(0, 3)) <= 201 ? '2A' : '2B';
+      } else if (['971', '972', '973', '974', '976'].includes(postalCode.substring(0, 3))) {
+        // DOM-TOM
+        department = postalCode.substring(0, 3);
+      } else {
+        department = postalCode.substring(0, 2);
+      }
+    }
+    
+    const result: SiretResponse = {
       company_name: etablissement.nom_complet || etablissement.nom_raison_sociale || "",
       trade_name: siege.enseigne_1 || siege.enseigne_2 || siege.enseigne_3 || null,
       address_line1: addressParts.join(' ').toUpperCase(),
-      postal_code: siege.code_postal || "",
+      postal_code: postalCode,
       city: siege.libelle_commune || "",
       naf_code: etablissement.activite_principale || "",
+      department: department,
     };
     
-    console.log('Returning data successfully');
+    console.log(`[fetch-from-siret] Success for SIRET ${maskedSiret}: ${result.company_name}`);
     
     return new Response(
       JSON.stringify(result),
@@ -143,9 +189,9 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error fetching SIRET data:', error);
+    console.error('[fetch-from-siret] Error:', error);
     return new Response(
-      JSON.stringify({ error: "Service externe indisponible. Veuillez réessayer plus tard." }),
+      JSON.stringify({ error: "SERVICE_UNAVAILABLE", message: "Service externe indisponible. Veuillez réessayer plus tard." }),
       { 
         status: 502, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
