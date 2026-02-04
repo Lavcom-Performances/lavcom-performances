@@ -525,6 +525,7 @@ export type Database = {
       company_payment_config: {
         Row: {
           accepted_denominations: number[] | null
+          allowed_bills: number[] | null
           cash_step: number | null
           company_id: string
           created_at: string
@@ -535,6 +536,7 @@ export type Database = {
         }
         Insert: {
           accepted_denominations?: number[] | null
+          allowed_bills?: number[] | null
           cash_step?: number | null
           company_id: string
           created_at?: string
@@ -545,6 +547,7 @@ export type Database = {
         }
         Update: {
           accepted_denominations?: number[] | null
+          allowed_bills?: number[] | null
           cash_step?: number | null
           company_id?: string
           created_at?: string
@@ -1579,6 +1582,7 @@ export type Database = {
           inserted_eur: number | null
           machine: string | null
           machine_name: string | null
+          operation_category: string | null
           operation_date: string
           operation_time: string | null
           payment_mode: string | null
@@ -1605,6 +1609,7 @@ export type Database = {
           inserted_eur?: number | null
           machine?: string | null
           machine_name?: string | null
+          operation_category?: string | null
           operation_date: string
           operation_time?: string | null
           payment_mode?: string | null
@@ -1631,6 +1636,7 @@ export type Database = {
           inserted_eur?: number | null
           machine?: string | null
           machine_name?: string | null
+          operation_category?: string | null
           operation_date?: string
           operation_time?: string | null
           payment_mode?: string | null
@@ -2656,6 +2662,7 @@ export type Database = {
           id: string
           import_id: string | null
           is_blocking_invalid: boolean
+          occurred_at: string | null
           operation_id: string
           updated_at: string
         }
@@ -2667,6 +2674,7 @@ export type Database = {
           id?: string
           import_id?: string | null
           is_blocking_invalid?: boolean
+          occurred_at?: string | null
           operation_id: string
           updated_at?: string
         }
@@ -2678,6 +2686,7 @@ export type Database = {
           id?: string
           import_id?: string | null
           is_blocking_invalid?: boolean
+          occurred_at?: string | null
           operation_id?: string
           updated_at?: string
         }
@@ -2933,6 +2942,10 @@ export type Database = {
           owner_id: string
           postal_code: string
         }[]
+      }
+      classify_operation_category: {
+        Args: { p_description: string; p_machine?: string }
+        Returns: string
       }
       cleanup_expired_login_otps: { Args: never; Returns: undefined }
       cleanup_expired_mfa_challenges: { Args: never; Returns: undefined }

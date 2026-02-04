@@ -8,6 +8,7 @@
  */
 
 import { NormalizedPaymentMode } from '../normalizePaymentMode';
+import { OperationCategory } from '../operationCategory';
 
 /**
  * Supported CSV providers
@@ -46,6 +47,7 @@ export interface CanonicalTransaction {
   display_label: string;           // Main label shown in UI (machine/service name)
   machine_label: string | null;    // Separate machine name if applicable
   category: TransactionCategory | null;  // washing/drying/service
+  operation_category: OperationCategory | null; // TAEX-301: CYCLE/PRODUCT/OPTION
   
   // Payment
   payment_mode: NormalizedPaymentMode | null;

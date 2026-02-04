@@ -2243,5 +2243,53 @@
   },
   "newLaundry": {
     "checkingDuplicates": "Vérification des doublons..."
+  },
+  "dts": {
+    "title": "Score de fiabilité des données",
+    "score": "Score DTS",
+    "reliable": "Données fiables",
+    "moderate": "Fiabilité modérée",
+    "limited": "Fiabilité limitée",
+    "feedback": {
+      "excludedData": {
+        "title": "Données partiellement exclues",
+        "description": "Certaines opérations ont été exclues des analyses car leurs montants ne correspondent pas aux pièces acceptées par votre centrale.",
+        "solution": "Cela n'affecte pas votre encaissement réel. Vos revenus sont correctement enregistrés."
+      },
+      "lowDts": {
+        "title": "Fiabilité des données limitée",
+        "description": "Les données de cette période présentent plusieurs incohérences techniques.",
+        "solution": "Les indicateurs sont affichés à titre informatif, sans recommandations automatiques."
+      },
+      "underusedMachine": {
+        "title": "Machine sous-utilisée",
+        "description": "Cette machine fonctionne correctement mais est moins utilisée que la moyenne.",
+        "solution": "L'emplacement ou la visibilité peuvent influencer le choix des clients."
+      },
+      "importWarnings": {
+        "title": "Import avec avertissements",
+        "description": "L'import a été traité avec quelques lignes exclues. Les données valides sont incluses dans vos analyses.",
+        "solution": "Principales raisons: {{flags}}"
+      },
+      "cashStepMismatch": {
+        "title": "Configuration paiement",
+        "description": "Certains montants ne correspondent pas aux pas de paiement configurés pour votre centrale.",
+        "solution": "Vérifiez la configuration des pièces acceptées dans les paramètres de votre site."
+      },
+      "highInvalidRate": {
+        "title": "Taux d'anomalies élevé",
+        "description": "{{rate}}% des opérations présentent des incohérences.",
+        "solution": "Les données valides restent incluses dans les analyses principales."
+      }
+    },
+    "flags": {
+      "INVALID_CASH_STEP": "Montant cash impossible",
+      "INVALID_AMOUNT": "Montant invalide",
+      "INVALID_TIMESTAMP": "Date invalide",
+      "UNKNOWN_MACHINE": "Machine inconnue",
+      "POSSIBLE_DUPLICATE": "Doublon probable",
+      "PRICE_OUTLIER": "Prix atypique",
+      "LOW_METADATA": "Métadonnées manquantes"
+    }
   }
 }

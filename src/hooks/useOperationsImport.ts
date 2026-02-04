@@ -11,6 +11,7 @@ import {
   round2,
   centsToEurosValue 
 } from "@/lib/csv/businessRules";
+import { classifyOperationCategory } from "@/lib/csv/operationCategory";
 import { useAnalyticsRefresh } from "@/hooks/useAnalyticsRefresh";
 
 // Type guard to check if row is EventsParsedRow
@@ -177,6 +178,8 @@ export function useOperationsImport() {
             price_cb: priceCb,
             price_esp: priceEsp,
             type: operationType,
+            // TAEX-301: Auto-classify operation category
+            operation_category: classifyOperationCategory(row.program, machine),
           };
           
           // Extended fields for Events format
@@ -263,6 +266,18 @@ export function useOperationsImport() {
           // Don't await - let it run in background
           refreshWithNotification(siteId, insertedCount).catch((err) => {
             console.warn("Analytics refresh failed:", err);
+          });
+          
+          // TAEX-301: Trigger DTS scoring in background
+          supabase.rpc('compute_dts_for_import', {
+            p_company_id: siteId,
+            p_import_id: batch.id
+          }).then((result) => {
+            if (result.error) {
+              console.warn("DTS computation failed:", result.error);
+            } else {
+              console.log("DTS computed:", result.data);
+            }
           });
         }
 
