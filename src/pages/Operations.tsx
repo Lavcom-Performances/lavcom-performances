@@ -1014,13 +1014,13 @@ export default function Operations() {
                       {formatRendu(isESP ? op.change_eur : null)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatCurrency(isCB ? price : null)}
+                      {formatCurrency(isCB ? (op.price_cb ?? price) : null)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatCurrency(isESP ? op.price_esp : null)}
+                      {formatCurrency(isESP ? (op.price_esp ?? price) : null)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatCurrency(isFI ? price : null)}
+                      {formatCurrency(isFI ? ((op as any).price_fi ?? price) : null)}
                     </TableCell>
                     <TableCell className="text-center">
                       {isNotCounted && (

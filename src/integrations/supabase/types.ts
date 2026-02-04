@@ -1302,6 +1302,7 @@ export type Database = {
           price_cb: number | null
           price_esp: number | null
           price_eur: number | null
+          price_fi: number | null
           program: string | null
           raw: Json | null
           raw_data: Json | null
@@ -1327,6 +1328,7 @@ export type Database = {
           price_cb?: number | null
           price_esp?: number | null
           price_eur?: number | null
+          price_fi?: number | null
           program?: string | null
           raw?: Json | null
           raw_data?: Json | null
@@ -1352,6 +1354,7 @@ export type Database = {
           price_cb?: number | null
           price_esp?: number | null
           price_eur?: number | null
+          price_fi?: number | null
           program?: string | null
           raw?: Json | null
           raw_data?: Json | null
@@ -1980,6 +1983,7 @@ export type Database = {
           name: string
           organization_id: string | null
           postal_code: string | null
+          provider: string | null
           reactivated_at: string | null
           reactivated_by: string | null
           status: string
@@ -2000,6 +2004,7 @@ export type Database = {
           name: string
           organization_id?: string | null
           postal_code?: string | null
+          provider?: string | null
           reactivated_at?: string | null
           reactivated_by?: string | null
           status?: string
@@ -2020,6 +2025,7 @@ export type Database = {
           name?: string
           organization_id?: string | null
           postal_code?: string | null
+          provider?: string | null
           reactivated_at?: string | null
           reactivated_by?: string | null
           status?: string
