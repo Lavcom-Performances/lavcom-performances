@@ -1672,5 +1672,20 @@
       "title": "Premiumdiensten aanbieden",
       "description": "Uw gemiddelde bon van €{{amount}} toont een klantenbestand dat bereid is te betalen. Overweeg extra diensten zoals strijken of thuisbezorging."
     }
+  },
+  "cookies": {
+    "title": "Wij respecteren uw privacy",
+    "description": "Wij gebruiken cookies om uw ervaring te verbeteren, verkeer te analyseren en inhoud te personaliseren. U kunt kiezen welke cookies u accepteert.",
+    "acceptAll": "Alles accepteren",
+    "reject": "Weigeren",
+    "customize": "Aanpassen",
+    "saveChoices": "Mijn keuzes opslaan",
+    "privacyPolicy": "Privacybeleid",
+    "essential": "Essentiële cookies",
+    "essentialAlways": "(altijd actief)",
+    "analytics": "Analytische cookies",
+    "analyticsDescription": "Om te begrijpen hoe u onze site gebruikt",
+    "marketing": "Marketing cookies",
+    "marketingDescription": "Om advertenties te personaliseren"
   }
 }
