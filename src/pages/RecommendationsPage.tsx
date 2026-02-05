@@ -36,6 +36,8 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { useHasData } from "@/hooks/useHasData";
 import { RecommendationsEmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRecommendationsSuppressed } from "@/hooks/useRecommendationsSuppressed";
+import { RecommendationsSuppressedBanner } from "@/components/beta/RecommendationsSuppressedBanner";
 
 // Translation prefix for this page
 const T_PREFIX = "profitability.recommendations";
@@ -171,6 +173,7 @@ export default function RecommendationsPage() {
   const { toast } = useToast();
   const { dateRange, setDateRange } = useDateRange();
   const { hasData, isLoading: dataLoading } = useHasData();
+  const { isSuppressed: recommendationsSuppressed, isLoading: suppressedLoading } = useRecommendationsSuppressed();
   const { t } = useTranslation("app");
 
   const handleExportPDF = async () => {
@@ -300,7 +303,7 @@ export default function RecommendationsPage() {
   }));
 
   // Loading state
-  if (dataLoading) {
+  if (dataLoading || suppressedLoading) {
     return (
       <div className="p-6 lg:p-8 space-y-6">
         <Skeleton className="h-10 w-64" />
@@ -311,6 +314,31 @@ export default function RecommendationsPage() {
           <Skeleton className="h-48" />
         </div>
       </div>
+    );
+  }
+
+  // Recommendations suppressed by support
+  if (recommendationsSuppressed) {
+    return (
+      <>
+        <SEOHead 
+          title={t(`${T_PREFIX}.title`)}
+          description={t(`${T_PREFIX}.page.subtitle`)}
+          url="/recommendations"
+          noindex={true}
+        />
+        <div className="p-6 lg:p-8">
+          <div className="mb-6">
+            <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
+              {t(`${T_PREFIX}.title`)}
+            </h1>
+            <p className="text-muted-foreground">
+              {t(`${T_PREFIX}.page.subtitle`)}
+            </p>
+          </div>
+          <RecommendationsSuppressedBanner className="max-w-2xl" />
+        </div>
+      </>
     );
   }
 
