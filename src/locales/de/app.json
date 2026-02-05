@@ -1672,5 +1672,20 @@
       "title": "Premium-Services anbieten",
       "description": "Ihr durchschnittlicher Warenkorb von {{amount}}€ zeigt eine zahlungsbereite Kundschaft. Erwägen Sie zusätzliche Services wie Bügeln oder Lieferung."
     }
+  },
+  "cookies": {
+    "title": "Wir respektieren Ihre Privatsphäre",
+    "description": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern, den Datenverkehr zu analysieren und Inhalte zu personalisieren. Sie können wählen, welche Cookies Sie akzeptieren möchten.",
+    "acceptAll": "Alle akzeptieren",
+    "reject": "Ablehnen",
+    "customize": "Anpassen",
+    "saveChoices": "Meine Auswahl speichern",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "essential": "Essentielle Cookies",
+    "essentialAlways": "(immer aktiv)",
+    "analytics": "Analyse-Cookies",
+    "analyticsDescription": "Um zu verstehen, wie Sie unsere Website nutzen",
+    "marketing": "Marketing-Cookies",
+    "marketingDescription": "Um Werbung zu personalisieren"
   }
 }

@@ -1672,5 +1672,20 @@
       "title": "Ofrecer servicios premium",
       "description": "Su ticket medio de {{amount}}€ muestra una clientela dispuesta a pagar. Considere servicios adicionales como planchado o entrega a domicilio."
     }
+  },
+  "cookies": {
+    "title": "Respetamos su privacidad",
+    "description": "Utilizamos cookies para mejorar su experiencia, analizar el tráfico y personalizar el contenido. Puede elegir qué cookies aceptar.",
+    "acceptAll": "Aceptar todo",
+    "reject": "Rechazar",
+    "customize": "Personalizar",
+    "saveChoices": "Guardar mis preferencias",
+    "privacyPolicy": "Política de privacidad",
+    "essential": "Cookies esenciales",
+    "essentialAlways": "(siempre activas)",
+    "analytics": "Cookies analíticas",
+    "analyticsDescription": "Para entender cómo utiliza nuestro sitio",
+    "marketing": "Cookies de marketing",
+    "marketingDescription": "Para personalizar los anuncios"
   }
 }

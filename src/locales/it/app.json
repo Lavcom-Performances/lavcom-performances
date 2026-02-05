@@ -1672,5 +1672,20 @@
       "title": "Offrire servizi premium",
       "description": "Lo scontrino medio di {{amount}}€ mostra una clientela disposta a pagare. Considerate servizi aggiuntivi come stiratura o consegna a domicilio."
     }
+  },
+  "cookies": {
+    "title": "Rispettiamo la tua privacy",
+    "description": "Utilizziamo i cookie per migliorare la tua esperienza, analizzare il traffico e personalizzare i contenuti. Puoi scegliere quali cookie accettare.",
+    "acceptAll": "Accetta tutto",
+    "reject": "Rifiuta",
+    "customize": "Personalizza",
+    "saveChoices": "Salva le mie scelte",
+    "privacyPolicy": "Informativa sulla privacy",
+    "essential": "Cookie essenziali",
+    "essentialAlways": "(sempre attivi)",
+    "analytics": "Cookie analitici",
+    "analyticsDescription": "Per capire come utilizzi il nostro sito",
+    "marketing": "Cookie di marketing",
+    "marketingDescription": "Per personalizzare le pubblicità"
   }
 }
