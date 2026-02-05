@@ -54,6 +54,8 @@ import PlatformSalesProducts from "./pages/platform/PlatformSalesProducts";
 import PlatformSalesReports from "./pages/platform/PlatformSalesReports";
 import PlatformBetaCompanies from "./pages/platform/PlatformBetaCompanies";
 import PlatformBetaHealth from "./pages/platform/PlatformBetaHealth";
+import BetaBillingCheck from "./pages/platform/BetaBillingCheck";
+import BetaOpsPage from "./pages/platform/BetaOpsPage";
 import PlatformOrphanPages from "./pages/platform/PlatformOrphanPages";
 import PlatformOrphanFiles from "./pages/platform/PlatformOrphanFiles";
 import PlatformAIUsage from "./pages/platform/PlatformAIUsage";
@@ -196,6 +198,8 @@ const App = () => (
             <Route path="/admin/recompute-audit" element={<RecomputeAuditTrail />} />
             <Route path="/admin/exports" element={<AdminExportsPage />} />
             <Route path="/admin/beta/health" element={<PlatformBetaHealth />} />
+            <Route path="/admin/beta/billing-check" element={<BetaBillingCheck />} />
+            <Route path="/admin/beta/ops" element={<BetaOpsPage />} />
             {/* Knowledge System routes */}
             <Route path="/admin/knowledge" element={<KnowledgeBasePage />} />
             <Route path="/admin/knowledge/sources" element={<KnowledgeSourcesPage />} />

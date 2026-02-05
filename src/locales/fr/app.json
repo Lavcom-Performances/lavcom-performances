@@ -1753,6 +1753,10 @@
       "title": "Recommandations",
       "count": "recommandations",
       "noData": "Pas assez de données pour générer des recommandations.",
+      "suppressed": {
+        "title": "Recommandations en pause",
+        "description": "Les recommandations sont temporairement suspendues par le support pendant que nous examinons la qualité de vos données. Elles seront réactivées automatiquement une fois la vérification terminée."
+      },
       "priorityHigh": "Priorité haute",
       "priorityMedium": "Priorité moyenne",
       "priorityLow": "Information",

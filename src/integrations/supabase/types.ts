@@ -489,6 +489,44 @@ export type Database = {
         }
         Relationships: []
       }
+      beta_company_overrides: {
+        Row: {
+          company_id: string
+          created_at: string
+          recommendations_suppressed: boolean
+          suppressed_at: string | null
+          suppressed_by: string | null
+          suppressed_reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          recommendations_suppressed?: boolean
+          suppressed_at?: string | null
+          suppressed_by?: string | null
+          suppressed_reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          recommendations_suppressed?: boolean
+          suppressed_at?: string | null
+          suppressed_by?: string | null
+          suppressed_reason?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beta_company_overrides_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       churn_alert_settings: {
         Row: {
           alert_cooldown_hours: number
@@ -3021,6 +3059,56 @@ export type Database = {
         Args: { p_end_date: string; p_limit?: number; p_start_date: string }
         Returns: Json
       }
+      rpc_beta_billing_check: {
+        Args: never
+        Returns: {
+          active_laundromats_count: number
+          beta_ends_at: string
+          beta_started_at: string
+          company_id: string
+          company_name: string
+          effective_price_cents: number
+          estimated_monthly_amount: number
+          warnings: Json
+        }[]
+      }
+      rpc_beta_ops_actions_log: {
+        Args: { p_limit?: number }
+        Returns: {
+          action_type: string
+          actor_user_id: string
+          company_id: string
+          created_at: string
+          id: number
+          message: string
+          meta: Json
+        }[]
+      }
+      rpc_beta_ops_alerts: {
+        Args: never
+        Returns: {
+          alert_reason: string
+          alert_type: string
+          company_id: string
+          company_name: string
+          detected_at: string
+          severity: string
+        }[]
+      }
+      rpc_beta_ops_overview: {
+        Args: never
+        Returns: {
+          company_id: string
+          company_name: string
+          days_since_activity: number
+          dts_avg_7d: number
+          export_failures_7d: number
+          feedback_count_7d: number
+          import_flag_rate: number
+          last_activity: string
+          recommendations_suppressed: boolean
+        }[]
+      }
       rpc_create_audit_log: {
         Args: {
           p_action: string
@@ -3087,6 +3175,15 @@ export type Database = {
         }
         Returns: Json
       }
+      rpc_is_recommendations_suppressed: {
+        Args: { p_organization_id: string }
+        Returns: boolean
+      }
+      rpc_log_beta_contact: {
+        Args: { p_channel: string; p_company_id: string; p_notes: string }
+        Returns: Json
+      }
+      rpc_log_billing_check_view: { Args: never; Returns: undefined }
       rpc_log_system_event: {
         Args: {
           p_code: string
@@ -3174,6 +3271,7 @@ export type Database = {
         Args: { p_limit?: number; p_offset?: number; p_search?: string }
         Returns: Json
       }
+      rpc_recalc_latest_dts: { Args: { p_company_id: string }; Returns: Json }
       rpc_recommendations_v1: {
         Args: { p_end_date: string; p_site_id: string; p_start_date: string }
         Returns: {
@@ -3210,6 +3308,10 @@ export type Database = {
           created_at: string
           event_type: string
         }[]
+      }
+      rpc_toggle_recommendations_suppression: {
+        Args: { p_company_id: string; p_reason?: string; p_suppressed: boolean }
+        Returns: Json
       }
       trigger_compute_analytics_cron: { Args: never; Returns: undefined }
       user_belongs_to_org: {
