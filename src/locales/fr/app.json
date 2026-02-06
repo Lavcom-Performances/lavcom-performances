@@ -1547,6 +1547,17 @@
       "ctaDescription": "Essayez gratuitement pendant 14 jours, sans engagement et sans carte bancaire.",
       "footer": "Appuyez sur Échap ou cliquez sur le bouton fermer pour revenir à l'accueil"
     },
+    "preview": {
+      "revenue": "Chiffre d'affaires",
+      "transactions": "Transactions",
+      "growth": "Croissance",
+      "weeklyRevenue": "CA Hebdomadaire",
+      "live": "En direct",
+      "paymentDistribution": "Répartition des paiements",
+      "weeklyTraffic": "Affluence hebdomadaire",
+      "cardPayment": "Carte bancaire",
+      "cashPayment": "Espèces"
+    },
     "features": {
       "dashboard": {
         "title": "Tableau de bord intelligent",

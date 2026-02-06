@@ -1487,6 +1487,17 @@
       "ctaDescription": "Try free for 14 days, no commitment and no credit card required.",
       "footer": "Press Escape or click the close button to return home"
     },
+    "preview": {
+      "revenue": "Revenue",
+      "transactions": "Transactions",
+      "growth": "Growth",
+      "weeklyRevenue": "Weekly Revenue",
+      "live": "Live",
+      "paymentDistribution": "Payment distribution",
+      "weeklyTraffic": "Weekly traffic",
+      "cardPayment": "Card payment",
+      "cashPayment": "Cash payment"
+    },
     "features": {
       "dashboard": {
         "title": "Smart dashboard",

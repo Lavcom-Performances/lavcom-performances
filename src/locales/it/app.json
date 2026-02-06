@@ -1449,6 +1449,17 @@
       "ctaDescription": "Prova gratis per 14 giorni, senza impegno e senza carta di credito.",
       "footer": "Premi Escape o clicca su chiudi per tornare alla home"
     },
+    "preview": {
+      "revenue": "Fatturato",
+      "transactions": "Transazioni",
+      "growth": "Crescita",
+      "weeklyRevenue": "Fatturato settimanale",
+      "live": "In diretta",
+      "paymentDistribution": "Distribuzione pagamenti",
+      "weeklyTraffic": "Affluenza settimanale",
+      "cardPayment": "Carta di credito",
+      "cashPayment": "Contanti"
+    },
     "features": {
       "dashboard": {
         "title": "Dashboard intelligente",

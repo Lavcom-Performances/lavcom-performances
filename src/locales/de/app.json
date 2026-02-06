@@ -1449,6 +1449,17 @@
       "ctaDescription": "14 Tage kostenlos testen, ohne Bindung und ohne Kreditkarte.",
       "footer": "Drücken Sie Escape oder klicken Sie auf Schließen, um zur Startseite zurückzukehren"
     },
+    "preview": {
+      "revenue": "Umsatz",
+      "transactions": "Transaktionen",
+      "growth": "Wachstum",
+      "weeklyRevenue": "Wöchentlicher Umsatz",
+      "live": "Live",
+      "paymentDistribution": "Zahlungsverteilung",
+      "weeklyTraffic": "Wöchentliche Auslastung",
+      "cardPayment": "Kreditkarte",
+      "cashPayment": "Bargeld"
+    },
     "features": {
       "dashboard": {
         "title": "Intelligentes Dashboard",
