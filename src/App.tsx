@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SimulationLayout } from "@/components/layout/SimulationLayout";
+import { FinProjectLayout } from "@/components/layout/FinProjectLayout";
 import { AdminLayout } from "@/components/platformAdmin/AdminLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ViewModeProvider } from "@/hooks/useViewMode";
@@ -86,7 +87,11 @@ import SimulationProjectPage from "./pages/simulation/SimulationProjectPage";
 import SimulationLocalPage from "./pages/simulation/SimulationLocalPage";
 import SimulationChargesPage from "./pages/simulation/SimulationChargesPage";
 import SimulationResultsPage from "./pages/simulation/SimulationResultsPage";
-
+import ProjectionsListPage from "./pages/projections/ProjectionsListPage";
+import HypothesesPage from "./pages/projections/HypothesesPage";
+import PrevisionnelPage from "./pages/projections/PrevisionnelPage";
+import ScenariosPage from "./pages/projections/ScenariosPage";
+import ProjectExportsPage from "./pages/projections/ExportsPage";
 import MonthlyRevenuePage from "./pages/charts/MonthlyRevenuePage";
 import DailyRevenuePage from "./pages/charts/DailyRevenuePage";
 import PaymentDistributionPage from "./pages/charts/PaymentDistributionPage";
@@ -171,6 +176,18 @@ const App = () => (
             <Route path="/simulation/results" element={<SimulationResultsPage />} />
           </Route>
           
+          {/* Financial Projections routes with dedicated layout */}
+          <Route element={
+            <ProtectedRoute>
+              <FinProjectLayout />
+            </ProtectedRoute>
+          }>
+            <Route path="/projections" element={<ProjectionsListPage />} />
+            <Route path="/projections/hypotheses" element={<HypothesesPage />} />
+            <Route path="/projections/previsionnel" element={<PrevisionnelPage />} />
+            <Route path="/projections/scenarios" element={<ScenariosPage />} />
+            <Route path="/projections/exports" element={<ProjectExportsPage />} />
+          </Route>
           {/* Platform Admin routes with dedicated admin layout */}
           <Route element={
             <ProtectedRoute>

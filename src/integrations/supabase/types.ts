@@ -1133,6 +1133,316 @@ export type Database = {
         }
         Relationships: []
       }
+      fin_exports: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          file_name: string | null
+          file_path: string | null
+          format: Database["public"]["Enums"]["fin_export_format"]
+          id: string
+          metadata: Json | null
+          project_id: string
+          status: Database["public"]["Enums"]["fin_export_status"]
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          format: Database["public"]["Enums"]["fin_export_format"]
+          id?: string
+          metadata?: Json | null
+          project_id: string
+          status?: Database["public"]["Enums"]["fin_export_status"]
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          format?: Database["public"]["Enums"]["fin_export_format"]
+          id?: string
+          metadata?: Json | null
+          project_id?: string
+          status?: Database["public"]["Enums"]["fin_export_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fin_exports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "fin_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fin_forecasts: {
+        Row: {
+          cashflow: number
+          costs: number
+          created_at: string
+          cumulative_cashflow: number
+          depreciation: number
+          ebitda: number
+          hypothesis_version: number
+          id: string
+          month: number
+          net_income: number
+          project_id: string
+          revenue: number
+          scenario_id: string | null
+          year: number
+        }
+        Insert: {
+          cashflow?: number
+          costs?: number
+          created_at?: string
+          cumulative_cashflow?: number
+          depreciation?: number
+          ebitda?: number
+          hypothesis_version?: number
+          id?: string
+          month: number
+          net_income?: number
+          project_id: string
+          revenue?: number
+          scenario_id?: string | null
+          year: number
+        }
+        Update: {
+          cashflow?: number
+          costs?: number
+          created_at?: string
+          cumulative_cashflow?: number
+          depreciation?: number
+          ebitda?: number
+          hypothesis_version?: number
+          id?: string
+          month?: number
+          net_income?: number
+          project_id?: string
+          revenue?: number
+          scenario_id?: string | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fin_forecasts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "fin_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fin_forecasts_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "fin_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fin_hypotheses: {
+        Row: {
+          category: Database["public"]["Enums"]["fin_hypothesis_category"]
+          created_at: string
+          id: string
+          key: string
+          label: string | null
+          meta: Json | null
+          project_id: string
+          unit: string | null
+          updated_at: string
+          value: number
+          version: number
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["fin_hypothesis_category"]
+          created_at?: string
+          id?: string
+          key: string
+          label?: string | null
+          meta?: Json | null
+          project_id: string
+          unit?: string | null
+          updated_at?: string
+          value: number
+          version?: number
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["fin_hypothesis_category"]
+          created_at?: string
+          id?: string
+          key?: string
+          label?: string | null
+          meta?: Json | null
+          project_id?: string
+          unit?: string | null
+          updated_at?: string
+          value?: number
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fin_hypotheses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "fin_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fin_hypothesis_snapshots: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          project_id: string
+          snapshot: Json
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          project_id: string
+          snapshot: Json
+          version: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          project_id?: string
+          snapshot?: Json
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fin_hypothesis_snapshots_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "fin_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fin_projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          project_type: string
+          status: Database["public"]["Enums"]["fin_project_status"]
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          project_type?: string
+          status?: Database["public"]["Enums"]["fin_project_status"]
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          project_type?: string
+          status?: Database["public"]["Enums"]["fin_project_status"]
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fin_projects_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "fin_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fin_scenarios: {
+        Row: {
+          created_at: string
+          hypotheses_override: Json | null
+          id: string
+          is_baseline: boolean
+          name: string
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          hypotheses_override?: Json | null
+          id?: string
+          is_baseline?: boolean
+          name: string
+          project_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          hypotheses_override?: Json | null
+          id?: string
+          is_baseline?: boolean
+          name?: string
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fin_scenarios_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "fin_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fin_workspaces: {
+        Row: {
+          access_ends_at: string | null
+          created_at: string
+          id: string
+          max_projects: number
+          max_scenarios_per_project: number
+          owner_user_id: string
+          plan_code: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_ends_at?: string | null
+          created_at?: string
+          id?: string
+          max_projects?: number
+          max_scenarios_per_project?: number
+          owner_user_id: string
+          plan_code?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_ends_at?: string | null
+          created_at?: string
+          id?: string
+          max_projects?: number
+          max_scenarios_per_project?: number
+          owner_user_id?: string
+          plan_code?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fr_geo_regions: {
         Row: {
           department_code: string
@@ -3034,6 +3344,8 @@ export type Database = {
       is_platform_admin: { Args: { uid?: string }; Returns: boolean }
       is_platform_billing: { Args: { uid?: string }; Returns: boolean }
       is_platform_super_admin: { Args: { uid?: string }; Returns: boolean }
+      owns_fin_project: { Args: { proj_id: string }; Returns: boolean }
+      owns_fin_workspace: { Args: { ws_id: string }; Returns: boolean }
       owns_operation_site: {
         Args: { _site_id: string; _user_id: string }
         Returns: boolean
@@ -3109,6 +3421,18 @@ export type Database = {
           recommendations_suppressed: boolean
         }[]
       }
+      rpc_compute_fin_forecast: {
+        Args: {
+          p_horizon_years?: number
+          p_project_id: string
+          p_scenario_id?: string
+        }
+        Returns: Json
+      }
+      rpc_convert_fin_to_operations: {
+        Args: { p_project_id: string; p_site_name?: string }
+        Returns: string
+      }
       rpc_create_audit_log: {
         Args: {
           p_action: string
@@ -3164,6 +3488,17 @@ export type Database = {
         Args: { p_organization_id: string }
         Returns: Json
       }
+      rpc_get_fin_export_data: { Args: { p_project_id: string }; Returns: Json }
+      rpc_get_or_create_fin_workspace: {
+        Args: {
+          p_access_days?: number
+          p_max_projects?: number
+          p_max_scenarios?: number
+          p_plan_code?: string
+        }
+        Returns: string
+      }
+      rpc_has_fin_access: { Args: never; Returns: Json }
       rpc_increment_ai_usage: {
         Args: {
           p_actor_id: string
@@ -3302,6 +3637,7 @@ export type Database = {
           test_key: string
         }[]
       }
+      rpc_save_fin_snapshot: { Args: { p_project_id: string }; Returns: number }
       rpc_stripe_last_event: {
         Args: never
         Returns: {
@@ -3332,6 +3668,10 @@ export type Database = {
         | "user"
         | "guest"
         | "company_admin"
+      fin_export_format: "PDF" | "XLSX"
+      fin_export_status: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED"
+      fin_hypothesis_category: "INVESTMENT" | "REVENUE" | "COST" | "FINANCING"
+      fin_project_status: "DRAFT" | "ACTIVE" | "ARCHIVED"
       platform_role: "super_admin" | "admin" | "billing"
     }
     CompositeTypes: {
@@ -3468,6 +3808,10 @@ export const Constants = {
         "guest",
         "company_admin",
       ],
+      fin_export_format: ["PDF", "XLSX"],
+      fin_export_status: ["PENDING", "PROCESSING", "COMPLETED", "FAILED"],
+      fin_hypothesis_category: ["INVESTMENT", "REVENUE", "COST", "FINANCING"],
+      fin_project_status: ["DRAFT", "ACTIVE", "ARCHIVED"],
       platform_role: ["super_admin", "admin", "billing"],
     },
   },
