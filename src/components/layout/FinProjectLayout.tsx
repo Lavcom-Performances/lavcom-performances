@@ -6,7 +6,8 @@ import {
   TrendingUp, 
   GitBranch, 
   Download,
-  ChevronLeft 
+  ChevronLeft,
+  Cog 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFinAccess } from "@/hooks/useFinAccess";
@@ -15,6 +16,7 @@ import { fr } from "date-fns/locale";
 
 const navItems = [
   { path: "/projections", label: "Mes projets", icon: FolderKanban },
+  { path: "/projections/machines", label: "Machines & Services", icon: Cog },
   { path: "/projections/hypotheses", label: "Hypothèses", icon: Settings2 },
   { path: "/projections/previsionnel", label: "Prévisionnel", icon: TrendingUp },
   { path: "/projections/scenarios", label: "Scénarios", icon: GitBranch },
