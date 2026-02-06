@@ -1331,6 +1331,81 @@ export type Database = {
           },
         ]
       }
+      fin_line_items: {
+        Row: {
+          capacity_kg: number | null
+          category: Database["public"]["Enums"]["fin_line_item_category"]
+          code: string | null
+          created_at: string
+          cycles_per_day_per_unit: number
+          id: string
+          is_active: boolean
+          item_type: string
+          label: string
+          open_days_per_month: number
+          price_ttc_cents: number
+          project_id: string
+          quantity: number
+          scenario_id: string | null
+          sort_order: number
+          updated_at: string
+          utilization_rate: number
+        }
+        Insert: {
+          capacity_kg?: number | null
+          category?: Database["public"]["Enums"]["fin_line_item_category"]
+          code?: string | null
+          created_at?: string
+          cycles_per_day_per_unit?: number
+          id?: string
+          is_active?: boolean
+          item_type: string
+          label: string
+          open_days_per_month?: number
+          price_ttc_cents?: number
+          project_id: string
+          quantity?: number
+          scenario_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          utilization_rate?: number
+        }
+        Update: {
+          capacity_kg?: number | null
+          category?: Database["public"]["Enums"]["fin_line_item_category"]
+          code?: string | null
+          created_at?: string
+          cycles_per_day_per_unit?: number
+          id?: string
+          is_active?: boolean
+          item_type?: string
+          label?: string
+          open_days_per_month?: number
+          price_ttc_cents?: number
+          project_id?: string
+          quantity?: number
+          scenario_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          utilization_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fin_line_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "fin_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fin_line_items_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "fin_scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fin_projects: {
         Row: {
           created_at: string
@@ -1340,6 +1415,8 @@ export type Database = {
           project_type: string
           status: Database["public"]["Enums"]["fin_project_status"]
           updated_at: string
+          vat_frequency: string
+          vat_rate: number
           workspace_id: string
         }
         Insert: {
@@ -1350,6 +1427,8 @@ export type Database = {
           project_type?: string
           status?: Database["public"]["Enums"]["fin_project_status"]
           updated_at?: string
+          vat_frequency?: string
+          vat_rate?: number
           workspace_id: string
         }
         Update: {
@@ -1360,6 +1439,8 @@ export type Database = {
           project_type?: string
           status?: Database["public"]["Enums"]["fin_project_status"]
           updated_at?: string
+          vat_frequency?: string
+          vat_rate?: number
           workspace_id?: string
         }
         Relationships: [
@@ -3429,6 +3510,15 @@ export type Database = {
         }
         Returns: Json
       }
+      rpc_compute_line_revenue: {
+        Args: {
+          p_month?: number
+          p_project_id: string
+          p_scenario_id?: string
+          p_year?: number
+        }
+        Returns: Json
+      }
       rpc_convert_fin_to_operations: {
         Args: { p_project_id: string; p_site_name?: string }
         Returns: string
@@ -3489,6 +3579,10 @@ export type Database = {
         Returns: Json
       }
       rpc_get_fin_export_data: { Args: { p_project_id: string }; Returns: Json }
+      rpc_get_fin_pdf_bundle: {
+        Args: { p_project_id: string; p_scenario_id?: string }
+        Returns: Json
+      }
       rpc_get_or_create_fin_workspace: {
         Args: {
           p_access_days?: number
@@ -3671,6 +3765,7 @@ export type Database = {
       fin_export_format: "PDF" | "XLSX"
       fin_export_status: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED"
       fin_hypothesis_category: "INVESTMENT" | "REVENUE" | "COST" | "FINANCING"
+      fin_line_item_category: "CYCLE" | "PRODUCT" | "OPTION"
       fin_project_status: "DRAFT" | "ACTIVE" | "ARCHIVED"
       platform_role: "super_admin" | "admin" | "billing"
     }
@@ -3811,6 +3906,7 @@ export const Constants = {
       fin_export_format: ["PDF", "XLSX"],
       fin_export_status: ["PENDING", "PROCESSING", "COMPLETED", "FAILED"],
       fin_hypothesis_category: ["INVESTMENT", "REVENUE", "COST", "FINANCING"],
+      fin_line_item_category: ["CYCLE", "PRODUCT", "OPTION"],
       fin_project_status: ["DRAFT", "ACTIVE", "ARCHIVED"],
       platform_role: ["super_admin", "admin", "billing"],
     },

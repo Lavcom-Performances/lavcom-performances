@@ -91,6 +91,7 @@ import ProjectionsListPage from "./pages/projections/ProjectionsListPage";
 import HypothesesPage from "./pages/projections/HypothesesPage";
 import PrevisionnelPage from "./pages/projections/PrevisionnelPage";
 import ScenariosPage from "./pages/projections/ScenariosPage";
+import LineItemsPage from "./pages/projections/LineItemsPage";
 import ProjectExportsPage from "./pages/projections/ExportsPage";
 import MonthlyRevenuePage from "./pages/charts/MonthlyRevenuePage";
 import DailyRevenuePage from "./pages/charts/DailyRevenuePage";
@@ -183,6 +184,7 @@ const App = () => (
             </ProtectedRoute>
           }>
             <Route path="/projections" element={<ProjectionsListPage />} />
+            <Route path="/projections/machines" element={<LineItemsPage />} />
             <Route path="/projections/hypotheses" element={<HypothesesPage />} />
             <Route path="/projections/previsionnel" element={<PrevisionnelPage />} />
             <Route path="/projections/scenarios" element={<ScenariosPage />} />
