@@ -35,6 +35,7 @@ function KPICard({ title, value, trend, className }: {
       </CardContent>
     </Card>
   );
+}
 
 export default function PrevisionnelPage() {
   const [searchParams] = useSearchParams();
