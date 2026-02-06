@@ -1449,6 +1449,17 @@
       "ctaDescription": "Prueba gratis durante 14 días, sin compromiso y sin tarjeta de crédito.",
       "footer": "Pulsa Escape o haz clic en cerrar para volver al inicio"
     },
+    "preview": {
+      "revenue": "Ingresos",
+      "transactions": "Transacciones",
+      "growth": "Crecimiento",
+      "weeklyRevenue": "Ingresos semanales",
+      "live": "En directo",
+      "paymentDistribution": "Distribución de pagos",
+      "weeklyTraffic": "Afluencia semanal",
+      "cardPayment": "Tarjeta de crédito",
+      "cashPayment": "Efectivo"
+    },
     "features": {
       "dashboard": {
         "title": "Panel inteligente",

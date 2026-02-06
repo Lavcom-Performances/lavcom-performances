@@ -45,7 +45,7 @@ const demoFeatures = [
 ];
 
 // Animated dashboard preview component
-function AnimatedDashboardPreview() {
+function AnimatedDashboardPreview({ t }: { t: (key: string) => string }) {
   const [activeBar, setActiveBar] = useState(0);
   const [revenue, setRevenue] = useState(0);
   const [transactions, setTransactions] = useState(0);
@@ -89,17 +89,17 @@ function AnimatedDashboardPreview() {
         <div className="bg-lavcom-green/10 rounded-lg p-3 text-center">
           <Euro className="h-4 w-4 text-lavcom-green mx-auto mb-1" />
           <div className="text-lg md:text-xl font-bold text-lavcom-green">{revenue.toLocaleString()} €</div>
-          <div className="text-[10px] md:text-xs text-muted-foreground">Chiffre d'affaires</div>
+          <div className="text-[10px] md:text-xs text-muted-foreground">{t('app:demo.preview.revenue')}</div>
         </div>
         <div className="bg-lavcom-blue/10 rounded-lg p-3 text-center">
           <Users className="h-4 w-4 text-lavcom-blue mx-auto mb-1" />
           <div className="text-lg md:text-xl font-bold text-lavcom-blue">{transactions}</div>
-          <div className="text-[10px] md:text-xs text-muted-foreground">Transactions</div>
+          <div className="text-[10px] md:text-xs text-muted-foreground">{t('app:demo.preview.transactions')}</div>
         </div>
         <div className="bg-lavcom-orange/10 rounded-lg p-3 text-center">
           <Zap className="h-4 w-4 text-lavcom-orange mx-auto mb-1" />
           <div className="text-lg md:text-xl font-bold text-lavcom-orange">+18%</div>
-          <div className="text-[10px] md:text-xs text-muted-foreground">Croissance</div>
+          <div className="text-[10px] md:text-xs text-muted-foreground">{t('app:demo.preview.growth')}</div>
         </div>
       </div>
 
@@ -107,7 +107,7 @@ function AnimatedDashboardPreview() {
       <div className="bg-muted/30 rounded-lg p-4">
         <div className="text-xs text-muted-foreground mb-3 flex items-center gap-2">
           <BarChart3 className="h-3 w-3" />
-          CA Hebdomadaire
+          {t('app:demo.preview.weeklyRevenue')}
         </div>
         <div className="flex items-end justify-between h-24 gap-2">
           {barHeights.map((height, index) => (
@@ -135,14 +135,14 @@ function AnimatedDashboardPreview() {
         <div className="flex-1">
           <div className="h-2 bg-gradient-to-r from-lavcom-green via-lavcom-blue to-lavcom-green bg-[length:200%_100%] animate-[shimmer_2s_infinite] rounded-full" />
         </div>
-        <span className="text-xs font-medium text-lavcom-green">En direct</span>
+        <span className="text-xs font-medium text-lavcom-green">{t('app:demo.preview.live')}</span>
       </div>
     </div>
   );
 }
 
 // Animated pie chart preview
-function AnimatedPieChartPreview() {
+function AnimatedPieChartPreview({ t }: { t: (key: string) => string }) {
   const [rotation, setRotation] = useState(0);
   
   useEffect(() => {
@@ -156,7 +156,7 @@ function AnimatedPieChartPreview() {
     <div className="bg-background rounded-xl border border-border shadow-lg p-4 md:p-6">
       <div className="text-xs text-muted-foreground mb-3 flex items-center gap-2">
         <PieChart className="h-3 w-3" />
-        Répartition des paiements
+        {t('app:demo.preview.paymentDistribution')}
       </div>
       
       <div className="flex items-center gap-6">
@@ -188,11 +188,11 @@ function AnimatedPieChartPreview() {
         <div className="space-y-2 text-xs">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-lavcom-green" />
-            <span>Carte bancaire (65%)</span>
+            <span>{t('app:demo.preview.cardPayment')} (65%)</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-lavcom-blue" />
-            <span>Espèces (35%)</span>
+            <span>{t('app:demo.preview.cashPayment')} (35%)</span>
           </div>
         </div>
       </div>
@@ -201,7 +201,7 @@ function AnimatedPieChartPreview() {
 }
 
 // Animated heatmap preview
-function AnimatedHeatmapPreview() {
+function AnimatedHeatmapPreview({ t }: { t: (key: string) => string }) {
   const [highlight, setHighlight] = useState({ row: 0, col: 0 });
   
   useEffect(() => {
@@ -226,7 +226,7 @@ function AnimatedHeatmapPreview() {
     <div className="bg-background rounded-xl border border-border shadow-lg p-4 md:p-6">
       <div className="text-xs text-muted-foreground mb-3 flex items-center gap-2">
         <Calendar className="h-3 w-3" />
-        Affluence hebdomadaire
+        {t('app:demo.preview.weeklyTraffic')}
       </div>
       
       <div className="space-y-1">
@@ -343,14 +343,14 @@ export default function DemoPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Main dashboard preview */}
               <div className="lg:col-span-2">
-                <AnimatedDashboardPreview />
+                <AnimatedDashboardPreview t={t} />
               </div>
               
               {/* Pie chart preview */}
-              <AnimatedPieChartPreview />
+              <AnimatedPieChartPreview t={t} />
               
               {/* Heatmap preview */}
-              <AnimatedHeatmapPreview />
+              <AnimatedHeatmapPreview t={t} />
             </div>
           </div>
 

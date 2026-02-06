@@ -1449,6 +1449,17 @@
       "ctaDescription": "Probeer 14 dagen gratis, zonder verplichtingen en zonder creditcard.",
       "footer": "Druk op Escape of klik op sluiten om terug te keren naar home"
     },
+    "preview": {
+      "revenue": "Omzet",
+      "transactions": "Transacties",
+      "growth": "Groei",
+      "weeklyRevenue": "Wekelijkse omzet",
+      "live": "Live",
+      "paymentDistribution": "Betalingsverdeling",
+      "weeklyTraffic": "Wekelijkse drukte",
+      "cardPayment": "Creditcard",
+      "cashPayment": "Contant"
+    },
     "features": {
       "dashboard": {
         "title": "Slim dashboard",
