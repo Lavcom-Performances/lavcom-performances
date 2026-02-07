@@ -163,10 +163,10 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
               <AddressAutocomplete
                 value={project.address || ""}
                 onSelect={handleAddressSelect}
-                placeholder="Rechercher une adresse..."
+                placeholder="Tapez et sélectionnez une adresse..."
               />
               <p className="text-xs text-muted-foreground">
-                Renseigner l'adresse remplit automatiquement la ville et le code postal
+                💡 Sélectionnez une adresse dans la liste pour remplir automatiquement la ville et le code postal
               </p>
             </div>
           )}
