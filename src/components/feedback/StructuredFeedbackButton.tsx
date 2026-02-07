@@ -1,8 +1,8 @@
 /**
- * TAEX-306: Beta Feedback Button (Updated to use structured dialog)
+ * TAEX-306: Structured Beta Feedback Button
  * 
  * Entry point for beta users to submit structured feedback.
- * For backwards compatibility, this replaces the old unstructured dialog.
+ * Can be placed in footer or /beta area.
  */
 import { useState } from "react";
 import { MessageSquarePlus } from "lucide-react";
@@ -10,19 +10,19 @@ import { Button } from "@/components/ui/button";
 import { StructuredFeedbackDialog } from "./StructuredFeedbackDialog";
 import { useIsBetaCompany } from "@/hooks/useIsBetaCompany";
 
-interface BetaFeedbackButtonProps {
+interface StructuredFeedbackButtonProps {
   variant?: "default" | "link" | "ghost" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
   showOnlyForBeta?: boolean;
 }
 
-export function BetaFeedbackButton({ 
-  variant = "link",
+export function StructuredFeedbackButton({ 
+  variant = "ghost",
   size = "sm",
   className,
   showOnlyForBeta = true,
-}: BetaFeedbackButtonProps) {
+}: StructuredFeedbackButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { isBeta, isLoading } = useIsBetaCompany();
 
