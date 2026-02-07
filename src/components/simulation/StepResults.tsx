@@ -15,7 +15,8 @@ import {
   MessageCircle,
   AlertTriangle,
   ExternalLink,
-  ArrowRight
+  ArrowRight,
+  ChevronLeft
 } from "lucide-react";
 import { 
   SimulationProject, 
@@ -324,8 +325,17 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
         </div>
       )}
 
-      {/* Action principale - Un seul bouton PDF */}
-      <div className="flex justify-center pt-4">
+      {/* Actions principales */}
+      <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4">
+        <Button 
+          variant="outline"
+          size="lg"
+          onClick={() => onEditStep(3)}
+          className="gap-2"
+        >
+          <ChevronLeft className="h-5 w-5" />
+          Modifier les charges
+        </Button>
         <Button 
           size="lg"
           onClick={handleDownloadPdf}
@@ -381,8 +391,8 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
           <CardContent className="flex-1 py-8 px-6">
             <div className="flex flex-col h-full justify-between gap-5">
               <div className="space-y-3">
-                <Badge variant="secondary" className="bg-amber-500/20 text-amber-700 border-0">
-                  +2 000 téléchargements
+                <Badge variant="secondary" className="bg-primary/20 text-primary border-0">
+                  Ressource indispensable
                 </Badge>
                 <h3 className="text-xl font-semibold text-foreground">
                   Avant d'ouvrir : le guide du futur exploitant
