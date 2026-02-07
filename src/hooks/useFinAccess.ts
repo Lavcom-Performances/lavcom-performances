@@ -24,10 +24,43 @@ export function useFinAccess() {
     queryKey: ["fin-access", isPlatformSuperAdmin],
     queryFn: async (): Promise<FinAccessInfo> => {
       // Platform super_admin has unlimited access without payment
+      // But still needs a workspace to create projects
       if (isPlatformSuperAdmin) {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
+        // Check if user already has a workspace
+        let { data: workspace } = await supabase
+          .from("fin_workspaces")
+          .select("id")
+          .eq("owner_user_id", user.id)
+          .maybeSingle();
+
+        // If no workspace exists, create one for the platform admin
+        if (!workspace) {
+          const { data: newWorkspace, error: createError } = await supabase
+            .from("fin_workspaces")
+            .insert({
+              owner_user_id: user.id,
+              max_projects: 999,
+              max_scenarios_per_project: 999,
+              plan_code: "platform_unlimited",
+            })
+            .select("id")
+            .single();
+
+          if (createError) {
+            console.error("Failed to create workspace for platform admin:", createError);
+            throw createError;
+          }
+          workspace = newWorkspace;
+        }
+
         return {
           has_access: true,
           reason: "platform_super_admin",
+          workspace_id: workspace.id,
           max_projects: 999,
           max_scenarios: 999,
           current_projects: 0,
