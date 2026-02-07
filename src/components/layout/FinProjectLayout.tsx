@@ -1,4 +1,4 @@
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { Outlet, useLocation, Link, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
   FolderKanban, 
@@ -15,17 +15,20 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 const navItems = [
-  { path: "/projections", label: "Mes projets", icon: FolderKanban },
-  { path: "/projections/machines", label: "Machines & Services", icon: Cog },
-  { path: "/projections/hypotheses", label: "Hypothèses", icon: Settings2 },
-  { path: "/projections/previsionnel", label: "Prévisionnel", icon: TrendingUp },
-  { path: "/projections/scenarios", label: "Scénarios", icon: GitBranch },
-  { path: "/projections/exports", label: "Exports", icon: Download },
+  { path: "/projections", label: "Mes projets", icon: FolderKanban, preserveProject: false },
+  { path: "/projections/machines", label: "Machines & Services", icon: Cog, preserveProject: true },
+  { path: "/projections/hypotheses", label: "Hypothèses", icon: Settings2, preserveProject: true },
+  { path: "/projections/previsionnel", label: "Prévisionnel", icon: TrendingUp, preserveProject: true },
+  { path: "/projections/scenarios", label: "Scénarios", icon: GitBranch, preserveProject: true },
+  { path: "/projections/exports", label: "Exports", icon: Download, preserveProject: true },
 ];
 
 export function FinProjectLayout() {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { access } = useFinAccess();
+  
+  const projectId = searchParams.get("project");
   
   const isExpired = !access?.has_access && access?.reason === "expired";
   const accessEndsAt = access?.access_ends_at ? new Date(access.access_ends_at) : null;
@@ -69,10 +72,15 @@ export function FinProjectLayout() {
               const isActive = location.pathname === item.path || 
                 (item.path !== "/projections" && location.pathname.startsWith(item.path));
               
+              // Preserve project query param for pages that need it
+              const linkTo = item.preserveProject && projectId 
+                ? `${item.path}?project=${projectId}`
+                : item.path;
+              
               return (
                 <Link
                   key={item.path}
-                  to={item.path}
+                  to={linkTo}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
                     isActive 
