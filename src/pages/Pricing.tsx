@@ -75,9 +75,9 @@ export default function Pricing() {
             <img src={lavcomLogo} alt="Lavcom Analytics" className="h-10 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link to="/#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               {t('app:nav.features')}
-            </Link>
+            </a>
             <Link to="/simulateur" className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors">
               {t('app:nav.simulationOpening')}
             </Link>
