@@ -39,13 +39,17 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
   };
 
   const handleAddressSelect = (result: { address: string; city: string; postalCode: string; department: string }) => {
-    onUpdate({ 
+    console.log('Address selected:', result);
+    // Ensure all fields are properly updated
+    const updates: Partial<SimulationProject> = {
       address: result.address,
       city: result.city,
       postal_code: result.postalCode,
       department: result.department,
       location: `${result.address}, ${result.city} (${result.postalCode})`
-    });
+    };
+    console.log('Updating project with:', updates);
+    onUpdate(updates);
   };
 
   const handleSurfaceChange = (value: string) => {
