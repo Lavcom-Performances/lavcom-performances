@@ -224,3 +224,12 @@ verify_jwt = true
 
 [functions.submit-beta-feedback]
 verify_jwt = true
+
+[functions.ai-hypothesis-suggest]
+verify_jwt = true
+
+[functions.generate-financial-pdf]
+verify_jwt = false
+
+[functions.generate-fin-export]
+verify_jwt = true

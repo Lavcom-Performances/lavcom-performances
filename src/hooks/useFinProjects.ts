@@ -3,6 +3,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useFinAccess } from "./useFinAccess";
 
+export type ProjectMode = "side_income" | "main_project";
+
+export interface QuestionnaireData {
+  city: string;
+  country: string;
+  surface_size: "small" | "medium" | "large";
+  machine_count_range: "1-4" | "5-8" | "9-14" | "15+";
+  pricing_tier: "economic" | "standard" | "premium";
+  project_mode: ProjectMode;
+  has_loan: boolean;
+  contribution_amount: number;
+}
+
 export interface FinProject {
   id: string;
   workspace_id: string;
@@ -10,6 +23,11 @@ export interface FinProject {
   project_type: string;
   status: "DRAFT" | "ACTIVE" | "ARCHIVED";
   description: string | null;
+  project_mode: ProjectMode;
+  questionnaire_completed: boolean;
+  questionnaire_data: QuestionnaireData | null | unknown;
+  vat_rate: number;
+  vat_frequency: string;
   created_at: string;
   updated_at: string;
 }

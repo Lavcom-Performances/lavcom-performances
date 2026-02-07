@@ -1412,7 +1412,10 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          project_mode: string
           project_type: string
+          questionnaire_completed: boolean
+          questionnaire_data: Json | null
           status: Database["public"]["Enums"]["fin_project_status"]
           updated_at: string
           vat_frequency: string
@@ -1424,7 +1427,10 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          project_mode?: string
           project_type?: string
+          questionnaire_completed?: boolean
+          questionnaire_data?: Json | null
           status?: Database["public"]["Enums"]["fin_project_status"]
           updated_at?: string
           vat_frequency?: string
@@ -1436,7 +1442,10 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          project_mode?: string
           project_type?: string
+          questionnaire_completed?: boolean
+          questionnaire_data?: Json | null
           status?: Database["public"]["Enums"]["fin_project_status"]
           updated_at?: string
           vat_frequency?: string
