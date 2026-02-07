@@ -33,10 +33,10 @@ function useAddressSearch(query: string, minChars: number = 3) {
     setIsLoading(true);
 
     try {
-      // Search without type restriction to get more results
-      const response = await fetch(
-        `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchQuery)}&limit=10`
-      );
+      // Search all address types (streets, housenumbers, localities)
+      const url = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchQuery)}&limit=10`;
+      
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error("Erreur lors de la recherche");
@@ -44,16 +44,19 @@ function useAddressSearch(query: string, minChars: number = 3) {
 
       const data = await response.json();
       
-      const formattedResults: AddressResult[] = data.features.map((feature: any) => {
-        const props = feature.properties;
-        return {
-          label: props.label || '',
-          address: props.name || props.label || '',
-          city: props.city || '',
-          postalCode: props.postcode || '',
-          department: props.context?.split(',')[0]?.trim() || '',
-        };
-      });
+      // Filter to get relevant results and format them
+      const formattedResults: AddressResult[] = data.features
+        .filter((feature: any) => feature.properties && feature.properties.label)
+        .map((feature: any) => {
+          const props = feature.properties;
+          return {
+            label: props.label || '',
+            address: props.name || props.label || '',
+            city: props.city || '',
+            postalCode: props.postcode || '',
+            department: props.context?.split(',')[0]?.trim() || '',
+          };
+        });
 
       setResults(formattedResults);
     } catch {
