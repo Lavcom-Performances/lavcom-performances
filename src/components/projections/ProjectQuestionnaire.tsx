@@ -416,7 +416,8 @@ export function ProjectQuestionnaire({ projectId, onComplete }: ProjectQuestionn
 // Helper to generate line items based on questionnaire
 async function initializeLineItemsFromQuestionnaire(projectId: string, data: QuestionnaireData) {
   // Delete existing items first
-  await supabase.from("fin_line_items").delete().eq("project_id", projectId);
+  const { error: deleteError } = await supabase.from("fin_line_items").delete().eq("project_id", projectId);
+  if (deleteError) throw deleteError;
 
   // Calculate machine counts based on questionnaire
   const machineCount = getMachineCount(data.machine_count_range);
@@ -525,13 +526,15 @@ async function initializeLineItemsFromQuestionnaire(projectId: string, data: Que
     sort_order: sortOrder++,
   });
 
-  await supabase.from("fin_line_items").insert(items);
+  const { error: insertError } = await supabase.from("fin_line_items").insert(items);
+  if (insertError) throw insertError;
 }
 
 // Helper to generate hypotheses based on questionnaire
 async function initializeHypothesesFromQuestionnaire(projectId: string, data: QuestionnaireData) {
   // Delete existing hypotheses first
-  await supabase.from("fin_hypotheses").delete().eq("project_id", projectId);
+  const { error: deleteError } = await supabase.from("fin_hypotheses").delete().eq("project_id", projectId);
+  if (deleteError) throw deleteError;
 
   const machineCount = getMachineCount(data.machine_count_range);
   const investmentPerMachine = getInvestmentPerMachine(data.surface_size);
@@ -582,9 +585,10 @@ async function initializeHypothesesFromQuestionnaire(projectId: string, data: Qu
     });
   }
 
-  await supabase.from("fin_hypotheses").insert(
+  const { error: insertError } = await supabase.from("fin_hypotheses").insert(
     hypotheses.map(h => ({ ...h, project_id: projectId }))
   );
+  if (insertError) throw insertError;
 }
 
 function getMachineCount(range: string): number {
