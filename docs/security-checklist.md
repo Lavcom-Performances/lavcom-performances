@@ -2,6 +2,51 @@
 
 Ce document liste les vérifications de sécurité à effectuer avant chaque mise en production.
 
+---
+
+## 0. Backups & Disaster Recovery (TAEX-304)
+
+### ✅ Configuration des sauvegardes
+| Élément | Statut | Détails |
+|---------|--------|---------|
+| **Backups quotidiens** | ✅ Actif | Lovable Cloud fournit des backups automatiques quotidiens |
+| **Rétention** | ✅ ≥30 jours | Point-in-time recovery disponible |
+| **Stockage séparé** | ✅ Oui | Backups stockés sur infrastructure distincte |
+
+### 🔄 Historique des tests de restauration
+
+| Date | Environnement | Durée | Tables vérifiées | Résultat | Opérateur |
+|------|---------------|-------|------------------|----------|-----------|
+| _YYYY-MM-DD_ | staging | _Xmin_ | operations, fin_projects, sites, trust_day | ⏳ À effectuer | — |
+
+> **Action requise** : Effectuer un restore test avant validation TAEX-304.
+> 
+> **Procédure** :
+> 1. Accéder à Lovable Cloud > Database > Backups
+> 2. Sélectionner un backup récent
+> 3. Restaurer vers un environnement de staging/test
+> 4. Vérifier les tables critiques : `operations`, `fin_projects`, `sites`, `trust_day`, `import_batches`
+> 5. Comparer les volumes (COUNT) avec la production
+> 6. Documenter le résultat ci-dessus
+
+### Modèle de confirmation post-restore
+
+```
+Backup restored on [DATE] at [TIME].
+Environment: staging
+Duration: [X] minutes
+Tables verified:
+  - operations: [COUNT] rows ✓
+  - fin_projects: [COUNT] rows ✓
+  - sites: [COUNT] rows ✓
+  - trust_day: [COUNT] rows ✓
+  - import_batches: [COUNT] rows ✓
+Result: SUCCESS / FAILURE
+Operator: [NAME]
+```
+
+---
+
 ## 1. Authentification & Comptes
 
 ### ✅ Configuration Auth Supabase
