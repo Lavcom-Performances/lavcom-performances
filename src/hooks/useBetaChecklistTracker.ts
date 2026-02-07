@@ -35,7 +35,10 @@ export function useBetaChecklistTracker() {
       completeItem("confirm_details");
     }
 
-    // Beta rules page viewed - tracked separately in BetaRulesPage
+    // Beta rules page viewed
+    if (path === "/beta") {
+      completeItem("view_beta_rules");
+    }
   }, [isBeta, location.pathname, completeItem]);
 
   // Log beta_activation_completed when all items are done

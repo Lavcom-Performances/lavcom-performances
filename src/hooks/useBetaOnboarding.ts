@@ -157,6 +157,13 @@ export function useBetaOnboarding() {
       completed: state.completed_items["select_laundromat"] || false,
     },
     {
+      id: "view_beta_rules",
+      label: "Consultez les règles du programme bêta",
+      description: "Découvrez les conditions et avantages du programme",
+      link: "/beta",
+      completed: state.completed_items["view_beta_rules"] || false,
+    },
+    {
       id: "confirm_details",
       label: "Confirmez les détails de votre laverie",
       description: "Vérifiez les paramètres de votre laverie active",
