@@ -1250,6 +1250,8 @@ export type Database = {
         Row: {
           category: Database["public"]["Enums"]["fin_hypothesis_category"]
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           key: string
           label: string | null
@@ -1263,6 +1265,8 @@ export type Database = {
         Insert: {
           category: Database["public"]["Enums"]["fin_hypothesis_category"]
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           key: string
           label?: string | null
@@ -1276,6 +1280,8 @@ export type Database = {
         Update: {
           category?: Database["public"]["Enums"]["fin_hypothesis_category"]
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           key?: string
           label?: string | null
@@ -1338,6 +1344,8 @@ export type Database = {
           code: string | null
           created_at: string
           cycles_per_day_per_unit: number
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           is_active: boolean
           item_type: string
@@ -1357,6 +1365,8 @@ export type Database = {
           code?: string | null
           created_at?: string
           cycles_per_day_per_unit?: number
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           is_active?: boolean
           item_type: string
@@ -1376,6 +1386,8 @@ export type Database = {
           code?: string | null
           created_at?: string
           cycles_per_day_per_unit?: number
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           is_active?: boolean
           item_type?: string
@@ -1409,6 +1421,8 @@ export type Database = {
       fin_projects: {
         Row: {
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           id: string
           name: string
@@ -1424,6 +1438,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           id?: string
           name: string
@@ -1439,6 +1455,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           id?: string
           name?: string
@@ -1593,6 +1611,8 @@ export type Database = {
       import_batches: {
         Row: {
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           filename: string
           id: string
           ignored_rows: number
@@ -1603,6 +1623,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           filename: string
           id?: string
           ignored_rows?: number
@@ -1613,6 +1635,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           filename?: string
           id?: string
           ignored_rows?: number
@@ -2014,6 +2038,8 @@ export type Database = {
           change_eur: number | null
           created_at: string
           dedupe_key: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           import_batch_id: string | null
           import_hash: string | null
@@ -2041,6 +2067,8 @@ export type Database = {
           change_eur?: number | null
           created_at?: string
           dedupe_key?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           import_batch_id?: string | null
           import_hash?: string | null
@@ -2068,6 +2096,8 @@ export type Database = {
           change_eur?: number | null
           created_at?: string
           dedupe_key?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           import_batch_id?: string | null
           import_hash?: string | null
@@ -2145,6 +2175,8 @@ export type Database = {
           beta_price_cents: number | null
           beta_started_at: string | null
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           is_beta: boolean
           name: string
@@ -2157,6 +2189,8 @@ export type Database = {
           beta_price_cents?: number | null
           beta_started_at?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           is_beta?: boolean
           name: string
@@ -2169,6 +2203,8 @@ export type Database = {
           beta_price_cents?: number | null
           beta_started_at?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           is_beta?: boolean
           name?: string
@@ -2703,6 +2739,8 @@ export type Database = {
           closed_by: string | null
           country_code: string | null
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           department_code: string | null
           id: string
           is_default: boolean | null
@@ -2724,6 +2762,8 @@ export type Database = {
           closed_by?: string | null
           country_code?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           department_code?: string | null
           id?: string
           is_default?: boolean | null
@@ -2745,6 +2785,8 @@ export type Database = {
           closed_by?: string | null
           country_code?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           department_code?: string | null
           id?: string
           is_default?: boolean | null
@@ -3441,6 +3483,10 @@ export type Database = {
         Returns: boolean
       }
       owns_site: { Args: { _site_id: string }; Returns: boolean }
+      restore_fin_project: {
+        Args: { p_project_id: string }
+        Returns: undefined
+      }
       rpc_admin_churn_predictions: { Args: never; Returns: Json }
       rpc_admin_global_search: {
         Args: { p_limit?: number; p_query: string }
@@ -3751,6 +3797,14 @@ export type Database = {
       rpc_toggle_recommendations_suppression: {
         Args: { p_company_id: string; p_reason?: string; p_suppressed: boolean }
         Returns: Json
+      }
+      soft_delete_fin_project: {
+        Args: { p_project_id: string }
+        Returns: undefined
+      }
+      soft_delete_operation: {
+        Args: { operation_id: string }
+        Returns: undefined
       }
       trigger_compute_analytics_cron: { Args: never; Returns: undefined }
       user_belongs_to_org: {
