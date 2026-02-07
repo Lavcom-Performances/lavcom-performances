@@ -18,6 +18,8 @@ export default function SimulationChargesPage() {
 
   const handleNext = () => {
     navigate("/simulation/results");
+    // Scroll to top when navigating to results page
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   return (

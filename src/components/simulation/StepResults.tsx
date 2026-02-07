@@ -381,16 +381,16 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
           <CardContent className="flex-1 py-8 px-6">
             <div className="flex flex-col h-full justify-between gap-5">
               <div className="space-y-3">
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-0">
-                  Guide offert
+                <Badge variant="secondary" className="bg-amber-500/20 text-amber-700 border-0">
+                  +2 000 téléchargements
                 </Badge>
                 <h3 className="text-xl font-semibold text-foreground">
                   Avant d'ouvrir : le guide du futur exploitant
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Cette simulation vous donne un ordre de grandeur. Pour valider sérieusement votre projet, 
-                  téléchargez notre guide complet : étude de zone en 6 points, grilles d'audit, 
-                  budget CAPEX/OPEX, check-list "Prêt à ouvrir"…
+                  Ne lancez pas votre projet sans ce guide. Étude de zone en 6 points, 
+                  grilles d'audit local, budget CAPEX/OPEX détaillé, check-list "Prêt à ouvrir"… 
+                  Tout ce que les banques et installateurs attendent de vous.
                 </p>
               </div>
               
