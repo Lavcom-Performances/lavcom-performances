@@ -69,6 +69,7 @@ import { useOrganization } from "@/hooks/useOrganization";
 import { BetaWelcomeCard } from "@/components/beta/BetaWelcomeCard";
 import { BetaEndNoticeBanner } from "@/components/billing/BetaEndNoticeBanner";
 import { useBetaStatus } from "@/hooks/useBetaStatus";
+import { UxClarityQuestion } from "@/components/ux-feedback/UxClarityQuestion";
 // Animation variants for staggered cards
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -763,6 +764,9 @@ export default function Dashboard() {
         </TabsContent>
       </Tabs>
     </div>
+    
+    {/* UX Clarity Questionnaire */}
+    <UxClarityQuestion enabled={true} />
     </>
   );
 }

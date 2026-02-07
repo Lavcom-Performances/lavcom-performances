@@ -95,5 +95,22 @@ Avant de déclarer un test "DONE" :
 
 ---
 
+## Automated Test Coverage (Browser)
+
+The following can be tested via browser automation:
+- ✅ Guest user flows (Profile 1: Future project holder)
+- ✅ Public page navigation
+- ✅ Simulator form functionality
+- ✅ Guest checkout (Edge function + Stripe)
+- ✅ Pack/pricing display
+
+The following require **manual testing** with authenticated sessions:
+- ⚠️ Profile 2: Single-site operator (auth required)
+- ⚠️ Profile 3: Multi-site operator (multi-site access required)
+- ⚠️ Profile 4: Beta operator (beta company access required)
+- ⚠️ Profile 5: Platform Admin (admin role required)
+
+---
+
 *Dernière mise à jour : 2026-02-07*
-*Suite à : Bug checkout simulateur (guest checkout non testé)*
+*Suite à : TAEX-308 Post-Beta Commercial Rollout*
