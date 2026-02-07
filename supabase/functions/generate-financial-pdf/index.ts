@@ -7,34 +7,332 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Bank-grade PDF styling constants
-const BLUE_HEADER = [47, 117, 181]; // #2F75B5
-const LIGHT_GREY = [245, 245, 245];
+// =====================================================
+// THEME & CONSTANTS
+// =====================================================
+const BRAND_BLUE: [number, number, number] = [47, 117, 181];
+const LIGHT_ROW: [number, number, number] = [242, 242, 242];
+const GREY_TEXT: [number, number, number] = [100, 100, 100];
+
 const MONTH_NAMES = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+const MONTH_ABBREV = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jui", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("fr-FR", { 
-    style: "currency", 
-    currency: "EUR", 
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0 
-  }).format(value);
+const EXPLANATIONS = {
+  executiveSummary: "Cette synthèse présente les indicateurs clés du scénario sélectionné. Les montants TTC servent à la trésorerie, tandis que le compte de résultat est exprimé en HT.",
+  pnl: "Le compte de résultat est présenté en HT. Il mesure la performance économique (CA, charges, EBITDA) sur la période, indépendamment du calendrier des encaissements/décaissements.",
+  balance: "Le bilan présente la situation patrimoniale en fin d'exercice (actif et passif). Les disponibilités correspondent à la trésorerie cumulée après prise en compte des flux.",
+  treasury: "Le plan de trésorerie est exprimé en TTC et intègre la TVA mensuelle à payer. Il permet de vérifier la capacité du projet à financer son activité mois par mois.",
+  funding: "Le plan de financement compare les besoins initiaux (investissements, BFR, frais) aux ressources (apport, emprunt, aides). Les pourcentages sont affichés uniquement si un total est renseigné.",
+  bfr: "Le BFR (besoin en fonds de roulement) représente le décalage entre les besoins (stocks, créances) et les ressources (dettes). Un BFR négatif signifie un financement favorable par les dettes.",
+};
+
+// =====================================================
+// FORMATTING HELPERS
+// =====================================================
+
+/**
+ * Parse any value to a number, return null if invalid
+ */
+function safeNumber(n: unknown): number | null {
+  if (n === null || n === undefined) return null;
+  const parsed = typeof n === "number" ? n : Number(n);
+  return Number.isNaN(parsed) ? null : parsed;
 }
 
-function formatPercent(value: number): string {
-  return new Intl.NumberFormat("fr-FR", { 
-    style: "percent", 
+/**
+ * Normalize a number: remove -0, round to avoid floating point issues
+ */
+function normalizeNumber(value: number, precision = 2): number {
+  const rounded = Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
+  if (Math.abs(rounded) < Math.pow(10, -precision)) return 0;
+  return rounded;
+}
+
+/**
+ * Remove any slash artifacts from formatted strings
+ */
+function cleanSlashArtifacts(text: string): string {
+  return text
+    .replace(/\s*\/\s*/g, "\u202F")
+    .replace(/\u00A0\/\u00A0/g, "\u202F")
+    .replace(/\s\/\s/g, "\u202F");
+}
+
+/**
+ * Format euros from euros (not cents)
+ */
+function formatEUR(amount: number | null | undefined, decimals = 0): string {
+  const safe = safeNumber(amount);
+  if (safe === null) return "—";
+  
+  const normalized = normalizeNumber(safe, decimals);
+  const formatted = new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(normalized);
+  
+  return cleanSlashArtifacts(formatted);
+}
+
+/**
+ * Format euros with 2 decimals
+ */
+function formatEUR2(amount: number | null | undefined): string {
+  return formatEUR(amount, 2);
+}
+
+/**
+ * Format percentage from ratio (num/denom)
+ */
+function formatPct(num: number | null | undefined, denom: number | null | undefined): string {
+  const safeNum = safeNumber(num);
+  const safeDenom = safeNumber(denom);
+  
+  if (safeNum === null || safeDenom === null || safeDenom === 0) return "—";
+  
+  const ratio = normalizeNumber(safeNum / safeDenom, 4);
+  const formatted = new Intl.NumberFormat("fr-FR", {
+    style: "percent",
     minimumFractionDigits: 1,
-    maximumFractionDigits: 1 
-  }).format(value);
+    maximumFractionDigits: 1,
+  }).format(ratio);
+  
+  return cleanSlashArtifacts(formatted);
 }
 
+/**
+ * Format percentage from decimal value (0.25 = 25%)
+ */
+function formatPctValue(value: number | null | undefined): string {
+  const safe = safeNumber(value);
+  if (safe === null) return "—";
+  
+  const normalized = normalizeNumber(safe, 4);
+  const formatted = new Intl.NumberFormat("fr-FR", {
+    style: "percent",
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(normalized);
+  
+  return cleanSlashArtifacts(formatted);
+}
+
+/**
+ * Format date in French
+ */
 function formatDate(date: Date): string {
   const day = date.getDate();
   const month = MONTH_NAMES[date.getMonth()];
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 }
+
+// =====================================================
+// DATA SANITIZATION
+// =====================================================
+
+interface SanitizedBundle {
+  meta: {
+    project_name: string;
+    scenario_name: string;
+    horizon_years: number;
+    vat_rate: number;
+  };
+  summary: {
+    ca_ttc_year1: number;
+    ca_ht_year1: number;
+    ebitda_year1: number;
+    total_vat_year1: number;
+  };
+  line_items: Array<{
+    category: string;
+    label: string;
+    quantity: number;
+    price_ttc_cents: number;
+    cycles_per_day: number;
+    open_days: number;
+    utilization_rate: number;
+  }>;
+  hypotheses: Array<{ key: string; value: number }>;
+  pnl: {
+    year1: { revenue_ht: number; ebitda: number };
+    year2: { revenue_ht: number; ebitda: number };
+    year3: { revenue_ht: number; ebitda: number };
+  };
+  cash_monthly: Array<{
+    revenue_ttc: number;
+    revenue_ht: number;
+    vat_collected: number;
+  }>;
+  // Computed balance sheet data
+  balance: {
+    year1: { actif: BalanceActif; passif: BalancePassif };
+    year2: { actif: BalanceActif; passif: BalancePassif };
+    year3: { actif: BalanceActif; passif: BalancePassif };
+  };
+}
+
+interface BalanceActif {
+  immobilisations_net: number;
+  stocks: number;
+  creances_clients: number;
+  autres_creances: number;
+  disponibilites: number;
+  total: number;
+}
+
+interface BalancePassif {
+  capitaux_propres: number;
+  dettes_financieres: number;
+  dettes_fournisseurs: number;
+  dettes_fiscales_sociales: number;
+  autres_dettes: number;
+  total: number;
+}
+
+/**
+ * Sanitize and recompute bundle data before PDF rendering
+ * - Replace missing values with null
+ * - Normalize -0 to 0
+ * - Recompute balance sheet totals
+ */
+function sanitizePdfBundle(bundle: any, hypotheses: any[]): SanitizedBundle {
+  const getHypValue = (key: string): number => {
+    const h = hypotheses.find((h: any) => h.key === key);
+    return h ? Number(h.value) || 0 : 0;
+  };
+
+  const meta = bundle.meta || {};
+  const summary = bundle.summary || {};
+  const pnl = bundle.pnl || {};
+  const lineItems = bundle.line_items || [];
+  const cashMonthly = bundle.cash_monthly || [];
+
+  // Get hypothesis values
+  const investment = getHypValue("initial_investment");
+  const loanAmount = getHypValue("loan_amount");
+  const depreciationYears = getHypValue("depreciation_years") || 7;
+  const loanRate = getHypValue("loan_rate");
+  const fixedCosts = getHypValue("fixed_costs");
+
+  // Calculate derived values
+  const annualDepreciation = investment / depreciationYears;
+  const annualInterest = loanAmount * loanRate;
+
+  const year1 = pnl.year1 || {};
+  const year2 = pnl.year2 || {};
+  const year3 = pnl.year3 || {};
+
+  const y1Ebitda = safeNumber(year1.ebitda) || 0;
+  const y2Ebitda = safeNumber(year2.ebitda) || 0;
+  const y3Ebitda = safeNumber(year3.ebitda) || 0;
+
+  // Compute cumulative cash for disponibilités
+  const y1Cash = y1Ebitda - annualInterest;
+  const y2Cash = y1Cash + y2Ebitda - annualInterest * 0.9;
+  const y3Cash = y2Cash + y3Ebitda - annualInterest * 0.8;
+
+  // Compute balance sheet with proper totals
+  const computeBalance = (yearNum: number): { actif: BalanceActif; passif: BalancePassif } => {
+    const depreciationTotal = annualDepreciation * yearNum;
+    const immoNet = Math.max(0, investment - depreciationTotal);
+    
+    let disponibilites = 0;
+    let dettesFinancieres = loanAmount;
+    let capitauxPropres = investment - loanAmount;
+
+    if (yearNum === 1) {
+      disponibilites = y1Cash;
+      dettesFinancieres = loanAmount;
+      capitauxPropres = investment - loanAmount + y1Ebitda - annualDepreciation - annualInterest;
+    } else if (yearNum === 2) {
+      disponibilites = y2Cash;
+      dettesFinancieres = loanAmount * 0.85;
+      capitauxPropres = investment - loanAmount + y1Ebitda + y2Ebitda - annualDepreciation * 2 - annualInterest * 1.9;
+    } else {
+      disponibilites = y3Cash;
+      dettesFinancieres = loanAmount * 0.7;
+      capitauxPropres = investment - loanAmount + y1Ebitda + y2Ebitda + y3Ebitda - annualDepreciation * 3 - annualInterest * 2.7;
+    }
+
+    const stocks = 0;
+    const creancesClients = 0;
+    const autresCreances = 0;
+    const dettesFournisseurs = fixedCosts / 2;
+    const dettesFiscales = (summary.total_vat_year1 || 0) / 12;
+    const autresDettes = 0;
+
+    // RECOMPUTE TOTALS (never trust incoming totals)
+    const actif: BalanceActif = {
+      immobilisations_net: normalizeNumber(immoNet),
+      stocks: normalizeNumber(stocks),
+      creances_clients: normalizeNumber(creancesClients),
+      autres_creances: normalizeNumber(autresCreances),
+      disponibilites: normalizeNumber(disponibilites),
+      total: normalizeNumber(immoNet + stocks + creancesClients + autresCreances + disponibilites),
+    };
+
+    const passif: BalancePassif = {
+      capitaux_propres: normalizeNumber(capitauxPropres),
+      dettes_financieres: normalizeNumber(dettesFinancieres),
+      dettes_fournisseurs: normalizeNumber(dettesFournisseurs),
+      dettes_fiscales_sociales: normalizeNumber(dettesFiscales),
+      autres_dettes: normalizeNumber(autresDettes),
+      total: normalizeNumber(capitauxPropres + dettesFinancieres + dettesFournisseurs + dettesFiscales + autresDettes),
+    };
+
+    return { actif, passif };
+  };
+
+  return {
+    meta: {
+      project_name: meta.project_name || "Projet",
+      scenario_name: meta.scenario_name || "Baseline",
+      horizon_years: meta.horizon_years || 3,
+      vat_rate: meta.vat_rate || 0.20,
+    },
+    summary: {
+      ca_ttc_year1: normalizeNumber(safeNumber(summary.ca_ttc_year1) || 0),
+      ca_ht_year1: normalizeNumber(safeNumber(summary.ca_ht_year1) || 0),
+      ebitda_year1: normalizeNumber(safeNumber(summary.ebitda_year1) || 0),
+      total_vat_year1: normalizeNumber(safeNumber(summary.total_vat_year1) || 0),
+    },
+    line_items: lineItems.map((item: any) => ({
+      category: item.category || "—",
+      label: item.label || "—",
+      quantity: safeNumber(item.quantity) || 0,
+      price_ttc_cents: safeNumber(item.price_ttc_cents) || 0,
+      cycles_per_day: safeNumber(item.cycles_per_day) || 0,
+      open_days: safeNumber(item.open_days) || 0,
+      utilization_rate: safeNumber(item.utilization_rate) || 0,
+    })),
+    hypotheses: hypotheses.map((h: any) => ({
+      key: h.key,
+      value: safeNumber(h.value) || 0,
+    })),
+    pnl: {
+      year1: { revenue_ht: normalizeNumber(safeNumber(year1.revenue_ht) || 0), ebitda: normalizeNumber(y1Ebitda) },
+      year2: { revenue_ht: normalizeNumber(safeNumber(year2.revenue_ht) || 0), ebitda: normalizeNumber(y2Ebitda) },
+      year3: { revenue_ht: normalizeNumber(safeNumber(year3.revenue_ht) || 0), ebitda: normalizeNumber(y3Ebitda) },
+    },
+    cash_monthly: cashMonthly.map((m: any) => ({
+      revenue_ttc: normalizeNumber(safeNumber(m.revenue_ttc) || 0),
+      revenue_ht: normalizeNumber(safeNumber(m.revenue_ht) || 0),
+      vat_collected: normalizeNumber(safeNumber(m.vat_collected) || 0),
+    })),
+    balance: {
+      year1: computeBalance(1),
+      year2: computeBalance(2),
+      year3: computeBalance(3),
+    },
+  };
+}
+
+// =====================================================
+// MAIN HANDLER
+// =====================================================
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -67,7 +365,7 @@ Deno.serve(async (req) => {
 
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Call the RPC to get all PDF data
+    // Get PDF bundle data
     const { data: bundle, error: rpcError } = await supabaseAdmin.rpc("rpc_get_fin_pdf_bundle", {
       p_project_id: projectId,
       p_scenario_id: scenarioId || null,
@@ -81,7 +379,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Get owner for storage path
+    // Get project info
     const { data: project } = await supabaseAdmin
       .from("fin_projects")
       .select("*, fin_workspaces!inner(owner_user_id)")
@@ -96,19 +394,38 @@ Deno.serve(async (req) => {
     }
 
     const effectiveUserId = project.fin_workspaces.owner_user_id;
-    const vatRate = bundle.meta?.vat_rate || 0.20;
+
+    // Sanitize bundle data
+    const data = sanitizePdfBundle(bundle, bundle.hypotheses || []);
+
+    // Get hypothesis values for calculations
+    const getHypValue = (key: string): number => {
+      const h = data.hypotheses.find((h) => h.key === key);
+      return h?.value || 0;
+    };
+
+    const investment = getHypValue("initial_investment");
+    const loanAmount = getHypValue("loan_amount");
+    const loanRate = getHypValue("loan_rate");
+    const loanYears = getHypValue("loan_years") || 7;
+    const depreciationYears = getHypValue("depreciation_years") || 7;
+    const fixedCosts = getHypValue("fixed_costs");
+    const varRate = getHypValue("variable_cost_rate");
+
+    const annualDepreciation = investment / depreciationYears;
+    const annualInterest = loanAmount * loanRate;
 
     // =====================================================
-    // GENERATE BANK-GRADE PDF
+    // GENERATE PDF
     // =====================================================
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     let currentY = 20;
 
-    // Helper to add section header
+    // Helper: Add section header
     const addSectionHeader = (title: string, y: number): number => {
-      doc.setFillColor(...BLUE_HEADER);
+      doc.setFillColor(...BRAND_BLUE);
       doc.rect(14, y, pageWidth - 28, 8, "F");
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(11);
@@ -119,10 +436,22 @@ Deno.serve(async (req) => {
       return y + 12;
     };
 
+    // Helper: Add explanation paragraph
+    const addExplanation = (text: string, y: number): number => {
+      doc.setFontSize(9);
+      doc.setTextColor(...GREY_TEXT);
+      doc.setFont("helvetica", "italic");
+      const lines = doc.splitTextToSize(text, pageWidth - 32);
+      doc.text(lines, 16, y);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "normal");
+      return y + lines.length * 4 + 8;
+    };
+
     // =====================================================
     // PAGE 1: COVER / EXECUTIVE SUMMARY
     // =====================================================
-    doc.setFillColor(...BLUE_HEADER);
+    doc.setFillColor(...BRAND_BLUE);
     doc.rect(0, 0, pageWidth, 50, "F");
 
     doc.setTextColor(255, 255, 255);
@@ -131,28 +460,27 @@ Deno.serve(async (req) => {
     doc.text("PRÉVISIONNEL FINANCIER", pageWidth / 2, 25, { align: "center" });
 
     doc.setFontSize(16);
-    doc.text(bundle.meta?.project_name || "Projet", pageWidth / 2, 38, { align: "center" });
+    doc.text(data.meta.project_name, pageWidth / 2, 38, { align: "center" });
 
     doc.setTextColor(0, 0, 0);
     currentY = 65;
 
     doc.setFontSize(11);
-    doc.text(`Scénario : ${bundle.meta?.scenario_name || "Baseline"}`, 14, currentY);
+    doc.text(`Scénario : ${data.meta.scenario_name}`, 14, currentY);
     currentY += 6;
     doc.text(`Date : ${formatDate(new Date())}`, 14, currentY);
     currentY += 6;
-    doc.text(`Horizon : ${bundle.meta?.horizon_years || 3} ans`, 14, currentY);
+    doc.text(`Horizon : ${data.meta.horizon_years} ans`, 14, currentY);
     currentY += 15;
 
-    // KPI Summary Cards
+    // KPI Summary
     currentY = addSectionHeader("SYNTHÈSE EXÉCUTIVE", currentY);
 
-    const summary = bundle.summary || {};
     const kpis = [
-      ["CA TTC (Année 1)", formatCurrency(summary.ca_ttc_year1 || 0)],
-      ["CA HT (Année 1)", formatCurrency(summary.ca_ht_year1 || 0)],
-      ["EBITDA (Année 1)", formatCurrency(summary.ebitda_year1 || 0)],
-      ["TVA collectée (Année 1)", formatCurrency(summary.total_vat_year1 || 0)],
+      ["CA TTC (Année 1)", formatEUR(data.summary.ca_ttc_year1)],
+      ["CA HT (Année 1)", formatEUR(data.summary.ca_ht_year1)],
+      ["EBITDA (Année 1)", formatEUR(data.summary.ebitda_year1)],
+      ["TVA collectée (Année 1)", formatEUR(data.summary.total_vat_year1)],
     ];
 
     autoTable(doc, {
@@ -160,80 +488,63 @@ Deno.serve(async (req) => {
       head: [["Indicateur", "Valeur"]],
       body: kpis,
       theme: "grid",
-      headStyles: { fillColor: BLUE_HEADER, textColor: [255, 255, 255], fontStyle: "bold" },
-      styles: { fontSize: 10, halign: "left" },
-      columnStyles: { 1: { halign: "right" } },
+      headStyles: { fillColor: BRAND_BLUE, textColor: [255, 255, 255], fontStyle: "bold" },
+      styles: { fontSize: 10, halign: "left", cellPadding: { top: 4, bottom: 4, left: 6, right: 6 } },
+      columnStyles: { 
+        0: { cellWidth: (pageWidth - 28) * 0.6 },
+        1: { halign: "right", cellWidth: (pageWidth - 28) * 0.4 } 
+      },
     });
 
-    currentY = (doc as any).lastAutoTable?.finalY + 15 || currentY + 50;
+    currentY = (doc as any).lastAutoTable?.finalY + 8 || currentY + 50;
+    currentY = addExplanation(EXPLANATIONS.executiveSummary, currentY);
 
     // Line Items Summary
-    if (bundle.line_items && bundle.line_items.length > 0) {
+    if (data.line_items.length > 0) {
       currentY = addSectionHeader("PARC MACHINES & SERVICES", currentY);
 
-      const lineRows = bundle.line_items.map((item: any) => {
+      const lineRows = data.line_items.map((item) => {
         const monthlyRev = (item.price_ttc_cents / 100) * item.quantity * item.cycles_per_day * item.open_days * item.utilization_rate;
         return [
           item.category,
           item.label,
-          item.quantity.toString(),
-          formatCurrency(item.price_ttc_cents / 100),
-          formatPercent(item.utilization_rate),
-          formatCurrency(monthlyRev),
+          String(item.quantity),
+          formatEUR2(item.price_ttc_cents / 100),
+          formatPctValue(item.utilization_rate),
+          formatEUR(monthlyRev),
         ];
       });
 
+      const tableWidth = pageWidth - 28;
       autoTable(doc, {
         startY: currentY,
-        head: [["Catégorie", "Libellé", "Qté", "Prix TTC", "Utilisation", "CA Mensuel"]],
+        head: [["Catégorie", "Libellé", "Qté", "Prix TTC", "Util.", "CA Mensuel"]],
         body: lineRows,
         theme: "striped",
-        headStyles: { fillColor: BLUE_HEADER, textColor: [255, 255, 255], fontStyle: "bold" },
-        styles: { fontSize: 9 },
-        columnStyles: { 
-          2: { halign: "center" },
-          3: { halign: "right" },
-          4: { halign: "center" },
-          5: { halign: "right" },
+        headStyles: { fillColor: BRAND_BLUE, textColor: [255, 255, 255], fontStyle: "bold" },
+        styles: { fontSize: 9, cellPadding: { top: 3, bottom: 3, left: 4, right: 4 } },
+        columnStyles: {
+          0: { cellWidth: tableWidth * 0.14 },
+          1: { cellWidth: tableWidth * 0.30 },
+          2: { halign: "center", cellWidth: tableWidth * 0.08 },
+          3: { halign: "right", cellWidth: tableWidth * 0.14 },
+          4: { halign: "center", cellWidth: tableWidth * 0.12 },
+          5: { halign: "right", cellWidth: tableWidth * 0.16 },
         },
       });
     }
 
     // =====================================================
-    // PAGE 2: COMPTE DE RÉSULTAT (P&L)
+    // PAGE 2: COMPTE DE RÉSULTAT
     // =====================================================
     doc.addPage();
     currentY = 20;
 
     currentY = addSectionHeader("COMPTE DE RÉSULTAT PRÉVISIONNEL", currentY);
 
-    const pnl = bundle.pnl || {};
-    const year1 = pnl.year1 || {};
-    const year2 = pnl.year2 || {};
-    const year3 = pnl.year3 || {};
-
-    // Get hypotheses for cost breakdown
-    const hypotheses = bundle.hypotheses || [];
-    const getHypValue = (key: string) => {
-      const h = hypotheses.find((h: any) => h.key === key);
-      return h ? Number(h.value) : 0;
-    };
-
-    const fixedCosts = getHypValue("fixed_costs");
-    const varRate = getHypValue("variable_cost_rate");
-    const loanAmount = getHypValue("loan_amount");
-    const loanRate = getHypValue("loan_rate");
-    const loanYears = getHypValue("loan_years") || 7;
-    const depreciationYears = getHypValue("depreciation_years") || 7;
-    const investment = getHypValue("initial_investment");
-
-    // Calculate detailed P&L rows
-    const annualDepreciation = investment / depreciationYears;
-    const annualInterest = (loanAmount * loanRate);
-
-    const y1Rev = year1.revenue_ht || 0;
-    const y2Rev = year2.revenue_ht || 0;
-    const y3Rev = year3.revenue_ht || 0;
+    const y1Rev = data.pnl.year1.revenue_ht;
+    const y2Rev = data.pnl.year2.revenue_ht;
+    const y3Rev = data.pnl.year3.revenue_ht;
 
     const y1VarCost = y1Rev * varRate;
     const y2VarCost = y2Rev * varRate;
@@ -243,42 +554,58 @@ Deno.serve(async (req) => {
     const y2FixedCost = fixedCosts * 12;
     const y3FixedCost = fixedCosts * 12;
 
+    const y1Ebitda = data.pnl.year1.ebitda;
+    const y2Ebitda = data.pnl.year2.ebitda;
+    const y3Ebitda = data.pnl.year3.ebitda;
+
+    const y1ResExpl = y1Ebitda - annualDepreciation;
+    const y2ResExpl = y2Ebitda - annualDepreciation;
+    const y3ResExpl = y3Ebitda - annualDepreciation;
+
+    const y1ResNet = y1ResExpl - annualInterest;
+    const y2ResNet = y2ResExpl - annualInterest * 0.9;
+    const y3ResNet = y3ResExpl - annualInterest * 0.8;
+
     const pnlRows = [
-      ["Chiffre d'affaires HT", formatCurrency(y1Rev), formatCurrency(y2Rev), formatCurrency(y3Rev), "100%"],
+      ["Chiffre d'affaires HT", formatEUR(y1Rev), formatEUR(y2Rev), formatEUR(y3Rev), "100%"],
       ["", "", "", "", ""],
-      ["Charges variables", formatCurrency(-y1VarCost), formatCurrency(-y2VarCost), formatCurrency(-y3VarCost), formatPercent(varRate)],
-      ["Charges fixes", formatCurrency(-y1FixedCost), formatCurrency(-y2FixedCost), formatCurrency(-y3FixedCost), "-"],
+      ["Charges variables", formatEUR(-y1VarCost), formatEUR(-y2VarCost), formatEUR(-y3VarCost), formatPctValue(varRate)],
+      ["Charges fixes", formatEUR(-y1FixedCost), formatEUR(-y2FixedCost), formatEUR(-y3FixedCost), "—"],
       ["", "", "", "", ""],
-      ["EBITDA", formatCurrency(year1.ebitda || 0), formatCurrency(year2.ebitda || 0), formatCurrency(year3.ebitda || 0), formatPercent((year1.ebitda || 0) / (y1Rev || 1))],
+      ["EBITDA", formatEUR(y1Ebitda), formatEUR(y2Ebitda), formatEUR(y3Ebitda), formatPct(y1Ebitda, y1Rev)],
       ["", "", "", "", ""],
-      ["Amortissements", formatCurrency(-annualDepreciation), formatCurrency(-annualDepreciation), formatCurrency(-annualDepreciation), "-"],
-      ["Résultat d'exploitation", formatCurrency((year1.ebitda || 0) - annualDepreciation), formatCurrency((year2.ebitda || 0) - annualDepreciation), formatCurrency((year3.ebitda || 0) - annualDepreciation), "-"],
+      ["Amortissements", formatEUR(-annualDepreciation), formatEUR(-annualDepreciation), formatEUR(-annualDepreciation), "—"],
+      ["Résultat d'exploitation", formatEUR(y1ResExpl), formatEUR(y2ResExpl), formatEUR(y3ResExpl), "—"],
       ["", "", "", "", ""],
-      ["Charges financières", formatCurrency(-annualInterest), formatCurrency(-annualInterest * 0.9), formatCurrency(-annualInterest * 0.8), "-"],
-      ["Résultat net", formatCurrency((year1.ebitda || 0) - annualDepreciation - annualInterest), formatCurrency((year2.ebitda || 0) - annualDepreciation - annualInterest * 0.9), formatCurrency((year3.ebitda || 0) - annualDepreciation - annualInterest * 0.8), "-"],
+      ["Charges financières", formatEUR(-annualInterest), formatEUR(-annualInterest * 0.9), formatEUR(-annualInterest * 0.8), "—"],
+      ["Résultat net", formatEUR(y1ResNet), formatEUR(y2ResNet), formatEUR(y3ResNet), "—"],
     ];
 
+    const tableWidth = pageWidth - 28;
     autoTable(doc, {
       startY: currentY,
       head: [["Poste", "Exercice 1", "Exercice 2", "Exercice 3", "%"]],
       body: pnlRows,
       theme: "plain",
-      headStyles: { fillColor: BLUE_HEADER, textColor: [255, 255, 255], fontStyle: "bold" },
-      styles: { fontSize: 9 },
+      headStyles: { fillColor: BRAND_BLUE, textColor: [255, 255, 255], fontStyle: "bold" },
+      styles: { fontSize: 9, cellPadding: { top: 3, bottom: 3, left: 4, right: 4 } },
       columnStyles: {
-        0: { fontStyle: "bold" },
-        1: { halign: "right" },
-        2: { halign: "right" },
-        3: { halign: "right" },
-        4: { halign: "center" },
+        0: { fontStyle: "bold", cellWidth: tableWidth * 0.42 },
+        1: { halign: "right", cellWidth: tableWidth * 0.16 },
+        2: { halign: "right", cellWidth: tableWidth * 0.16 },
+        3: { halign: "right", cellWidth: tableWidth * 0.16 },
+        4: { halign: "center", cellWidth: tableWidth * 0.10 },
       },
-      didParseCell: (data: any) => {
-        if (data.row.raw && (data.row.raw[0] === "EBITDA" || data.row.raw[0] === "Résultat net")) {
-          data.cell.styles.fillColor = LIGHT_GREY;
-          data.cell.styles.fontStyle = "bold";
+      didParseCell: (cellData: any) => {
+        if (cellData.row.raw && (cellData.row.raw[0] === "EBITDA" || cellData.row.raw[0] === "Résultat net")) {
+          cellData.cell.styles.fillColor = LIGHT_ROW;
+          cellData.cell.styles.fontStyle = "bold";
         }
       },
     });
+
+    currentY = (doc as any).lastAutoTable?.finalY + 8 || currentY + 100;
+    currentY = addExplanation(EXPLANATIONS.pnl, currentY);
 
     // =====================================================
     // PAGE 3: BILAN PRÉVISIONNEL
@@ -288,19 +615,25 @@ Deno.serve(async (req) => {
 
     currentY = addSectionHeader("BILAN PRÉVISIONNEL", currentY);
 
-    // Simplified balance sheet
+    const b1 = data.balance.year1;
+    const b2 = data.balance.year2;
+    const b3 = data.balance.year3;
+
     const balanceRows = [
       ["ACTIF", "", "", ""],
-      ["Immobilisations (net)", formatCurrency(investment - annualDepreciation), formatCurrency(investment - annualDepreciation * 2), formatCurrency(investment - annualDepreciation * 3)],
-      ["Créances clients", formatCurrency(0), formatCurrency(0), formatCurrency(0)],
-      ["Disponibilités", formatCurrency((year1.ebitda || 0) - annualInterest), formatCurrency((year1.ebitda || 0) + (year2.ebitda || 0) - annualInterest * 1.9), formatCurrency((year1.ebitda || 0) + (year2.ebitda || 0) + (year3.ebitda || 0) - annualInterest * 2.7)],
-      ["TOTAL ACTIF", formatCurrency(investment), formatCurrency(investment), formatCurrency(investment)],
+      ["Immobilisations (net)", formatEUR(b1.actif.immobilisations_net), formatEUR(b2.actif.immobilisations_net), formatEUR(b3.actif.immobilisations_net)],
+      ["Stocks", formatEUR(b1.actif.stocks), formatEUR(b2.actif.stocks), formatEUR(b3.actif.stocks)],
+      ["Créances clients", formatEUR(b1.actif.creances_clients), formatEUR(b2.actif.creances_clients), formatEUR(b3.actif.creances_clients)],
+      ["Autres créances", formatEUR(b1.actif.autres_creances), formatEUR(b2.actif.autres_creances), formatEUR(b3.actif.autres_creances)],
+      ["Disponibilités", formatEUR(b1.actif.disponibilites), formatEUR(b2.actif.disponibilites), formatEUR(b3.actif.disponibilites)],
+      ["TOTAL ACTIF", formatEUR(b1.actif.total), formatEUR(b2.actif.total), formatEUR(b3.actif.total)],
       ["", "", "", ""],
       ["PASSIF", "", "", ""],
-      ["Capitaux propres", formatCurrency(investment - loanAmount), formatCurrency(investment - loanAmount + (year1.ebitda || 0) - annualDepreciation - annualInterest), formatCurrency(investment - loanAmount + (year1.ebitda || 0) + (year2.ebitda || 0) - annualDepreciation * 2 - annualInterest * 1.9)],
-      ["Dettes financières", formatCurrency(loanAmount), formatCurrency(loanAmount * 0.85), formatCurrency(loanAmount * 0.7)],
-      ["Dettes fiscales (TVA)", formatCurrency(summary.total_vat_year1 / 12 || 0), formatCurrency(summary.total_vat_year1 / 12 || 0), formatCurrency(summary.total_vat_year1 / 12 || 0)],
-      ["TOTAL PASSIF", formatCurrency(investment), formatCurrency(investment), formatCurrency(investment)],
+      ["Capitaux propres", formatEUR(b1.passif.capitaux_propres), formatEUR(b2.passif.capitaux_propres), formatEUR(b3.passif.capitaux_propres)],
+      ["Dettes financières", formatEUR(b1.passif.dettes_financieres), formatEUR(b2.passif.dettes_financieres), formatEUR(b3.passif.dettes_financieres)],
+      ["Dettes fournisseurs", formatEUR(b1.passif.dettes_fournisseurs), formatEUR(b2.passif.dettes_fournisseurs), formatEUR(b3.passif.dettes_fournisseurs)],
+      ["Dettes fiscales & sociales", formatEUR(b1.passif.dettes_fiscales_sociales), formatEUR(b2.passif.dettes_fiscales_sociales), formatEUR(b3.passif.dettes_fiscales_sociales)],
+      ["TOTAL PASSIF", formatEUR(b1.passif.total), formatEUR(b2.passif.total), formatEUR(b3.passif.total)],
     ];
 
     autoTable(doc, {
@@ -308,110 +641,111 @@ Deno.serve(async (req) => {
       head: [["Poste", "Année 1", "Année 2", "Année 3"]],
       body: balanceRows,
       theme: "plain",
-      headStyles: { fillColor: BLUE_HEADER, textColor: [255, 255, 255], fontStyle: "bold" },
-      styles: { fontSize: 9 },
+      headStyles: { fillColor: BRAND_BLUE, textColor: [255, 255, 255], fontStyle: "bold" },
+      styles: { fontSize: 9, cellPadding: { top: 3, bottom: 3, left: 4, right: 4 } },
       columnStyles: {
-        1: { halign: "right" },
-        2: { halign: "right" },
-        3: { halign: "right" },
+        0: { cellWidth: tableWidth * 0.40 },
+        1: { halign: "right", cellWidth: tableWidth * 0.20 },
+        2: { halign: "right", cellWidth: tableWidth * 0.20 },
+        3: { halign: "right", cellWidth: tableWidth * 0.20 },
       },
-      didParseCell: (data: any) => {
-        if (data.row.raw && (data.row.raw[0] === "ACTIF" || data.row.raw[0] === "PASSIF" || data.row.raw[0].startsWith("TOTAL"))) {
-          data.cell.styles.fillColor = LIGHT_GREY;
-          data.cell.styles.fontStyle = "bold";
+      didParseCell: (cellData: any) => {
+        if (cellData.row.raw && (cellData.row.raw[0] === "ACTIF" || cellData.row.raw[0] === "PASSIF" || cellData.row.raw[0].startsWith("TOTAL"))) {
+          cellData.cell.styles.fillColor = LIGHT_ROW;
+          cellData.cell.styles.fontStyle = "bold";
         }
       },
     });
 
+    currentY = (doc as any).lastAutoTable?.finalY + 8 || currentY + 100;
+    currentY = addExplanation(EXPLANATIONS.balance, currentY);
+
     // =====================================================
-    // PAGE 4: PLAN DE TRÉSORERIE MENSUEL (Année 1)
+    // PAGE 4: TRÉSORERIE MENSUELLE
     // =====================================================
     doc.addPage();
     currentY = 20;
 
     currentY = addSectionHeader("PLAN DE TRÉSORERIE MENSUEL - ANNÉE 1", currentY);
 
-    const monthlyData = bundle.cash_monthly || [];
-    const monthlyPayroll = fixedCosts * 0.4; // Estimate 40% of fixed costs is payroll
+    const monthlyPayroll = fixedCosts * 0.4;
     const monthlyOpex = fixedCosts * 0.6;
     const monthlyDebt = loanAmount / (loanYears * 12);
 
-    const cashRows: string[][] = [];
+    // First 6 months
+    const cashRows1: string[][] = [];
+    cashRows1.push(["Poste", ...MONTH_ABBREV.slice(0, 6)]);
+    cashRows1.push(["ENCAISSEMENTS", "", "", "", "", "", ""]);
+    cashRows1.push(["CA TTC", ...data.cash_monthly.slice(0, 6).map((m) => formatEUR(m.revenue_ttc))]);
+    cashRows1.push(["DÉCAISSEMENTS", "", "", "", "", "", ""]);
+    cashRows1.push(["Charges variables", ...data.cash_monthly.slice(0, 6).map((m) => formatEUR(-m.revenue_ht * varRate))]);
+    cashRows1.push(["Charges fixes", ...Array(6).fill(formatEUR(-monthlyOpex))]);
+    cashRows1.push(["Salaires", ...Array(6).fill(formatEUR(-monthlyPayroll))]);
+    cashRows1.push(["TVA à payer", ...data.cash_monthly.slice(0, 6).map((m) => formatEUR(-m.vat_collected))]);
+    cashRows1.push(["Remb. emprunt", ...Array(6).fill(formatEUR(-monthlyDebt))]);
 
-    // Header row
-    cashRows.push(["Poste", ...MONTH_NAMES.slice(0, 6).map(m => m.substring(0, 3))]);
-
-    // Encaissements section
-    cashRows.push(["ENCAISSEMENTS", "", "", "", "", "", ""]);
-    cashRows.push(["CA TTC", ...monthlyData.slice(0, 6).map((m: any) => formatCurrency(m.revenue_ttc || 0))]);
-
-    // Décaissements section  
-    cashRows.push(["DÉCAISSEMENTS", "", "", "", "", "", ""]);
-    cashRows.push(["Charges variables", ...monthlyData.slice(0, 6).map((m: any) => formatCurrency(-((m.revenue_ht || 0) * varRate)))]);
-    cashRows.push(["Charges fixes", ...Array(6).fill(formatCurrency(-monthlyOpex))]);
-    cashRows.push(["Salaires", ...Array(6).fill(formatCurrency(-monthlyPayroll))]);
-    cashRows.push(["TVA à payer", ...monthlyData.slice(0, 6).map((m: any) => formatCurrency(-(m.vat_collected || 0)))]);
-    cashRows.push(["Remboursement emprunt", ...Array(6).fill(formatCurrency(-monthlyDebt))]);
-
-    // Net row
     let cumulative = 0;
-    const netRow = ["TRÉSORERIE NETTE"];
+    const netRow1 = ["TRÉSORERIE NETTE"];
     for (let i = 0; i < 6; i++) {
-      const m = monthlyData[i] || {};
-      const inflow = m.revenue_ttc || 0;
-      const outflow = ((m.revenue_ht || 0) * varRate) + monthlyOpex + monthlyPayroll + (m.vat_collected || 0) + monthlyDebt;
+      const m = data.cash_monthly[i] || { revenue_ttc: 0, revenue_ht: 0, vat_collected: 0 };
+      const inflow = m.revenue_ttc;
+      const outflow = m.revenue_ht * varRate + monthlyOpex + monthlyPayroll + m.vat_collected + monthlyDebt;
       const net = inflow - outflow;
       cumulative += net;
-      netRow.push(formatCurrency(net));
+      netRow1.push(formatEUR(net));
     }
-    cashRows.push(netRow);
+    cashRows1.push(netRow1);
 
+    const treasuryColWidth = (pageWidth - 28) / 7;
     autoTable(doc, {
       startY: currentY,
-      body: cashRows,
+      body: cashRows1,
       theme: "grid",
       styles: { fontSize: 8, cellPadding: 2 },
       columnStyles: {
-        0: { fontStyle: "bold", cellWidth: 45 },
+        0: { fontStyle: "bold", cellWidth: treasuryColWidth * 1.5 },
+        1: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        2: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        3: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        4: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        5: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        6: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
       },
-      didParseCell: (data: any) => {
-        if (data.row.index === 0) {
-          data.cell.styles.fillColor = BLUE_HEADER;
-          data.cell.styles.textColor = [255, 255, 255];
-          data.cell.styles.fontStyle = "bold";
+      didParseCell: (cellData: any) => {
+        if (cellData.row.index === 0) {
+          cellData.cell.styles.fillColor = BRAND_BLUE;
+          cellData.cell.styles.textColor = [255, 255, 255];
+          cellData.cell.styles.fontStyle = "bold";
         }
-        if (data.row.raw && (data.row.raw[0] === "ENCAISSEMENTS" || data.row.raw[0] === "DÉCAISSEMENTS" || data.row.raw[0] === "TRÉSORERIE NETTE")) {
-          data.cell.styles.fillColor = LIGHT_GREY;
-          data.cell.styles.fontStyle = "bold";
-        }
-        if (data.column.index > 0) {
-          data.cell.styles.halign = "right";
+        if (cellData.row.raw && (cellData.row.raw[0] === "ENCAISSEMENTS" || cellData.row.raw[0] === "DÉCAISSEMENTS" || cellData.row.raw[0] === "TRÉSORERIE NETTE")) {
+          cellData.cell.styles.fillColor = LIGHT_ROW;
+          cellData.cell.styles.fontStyle = "bold";
         }
       },
     });
 
-    // Second half of year
     currentY = (doc as any).lastAutoTable?.finalY + 10 || currentY + 80;
 
+    // Second 6 months
     const cashRows2: string[][] = [];
-    cashRows2.push(["Poste", ...MONTH_NAMES.slice(6, 12).map(m => m.substring(0, 3))]);
+    cashRows2.push(["Poste", ...MONTH_ABBREV.slice(6, 12)]);
     cashRows2.push(["ENCAISSEMENTS", "", "", "", "", "", ""]);
-    cashRows2.push(["CA TTC", ...monthlyData.slice(6, 12).map((m: any) => formatCurrency(m.revenue_ttc || 0))]);
+    cashRows2.push(["CA TTC", ...data.cash_monthly.slice(6, 12).map((m) => formatEUR(m.revenue_ttc))]);
     cashRows2.push(["DÉCAISSEMENTS", "", "", "", "", "", ""]);
-    cashRows2.push(["Charges variables", ...monthlyData.slice(6, 12).map((m: any) => formatCurrency(-((m.revenue_ht || 0) * varRate)))]);
-    cashRows2.push(["Charges fixes", ...Array(6).fill(formatCurrency(-monthlyOpex))]);
-    cashRows2.push(["Salaires", ...Array(6).fill(formatCurrency(-monthlyPayroll))]);
-    cashRows2.push(["TVA à payer", ...monthlyData.slice(6, 12).map((m: any) => formatCurrency(-(m.vat_collected || 0)))]);
-    cashRows2.push(["Remboursement emprunt", ...Array(6).fill(formatCurrency(-monthlyDebt))]);
+    cashRows2.push(["Charges variables", ...data.cash_monthly.slice(6, 12).map((m) => formatEUR(-m.revenue_ht * varRate))]);
+    cashRows2.push(["Charges fixes", ...Array(6).fill(formatEUR(-monthlyOpex))]);
+    cashRows2.push(["Salaires", ...Array(6).fill(formatEUR(-monthlyPayroll))]);
+    cashRows2.push(["TVA à payer", ...data.cash_monthly.slice(6, 12).map((m) => formatEUR(-m.vat_collected))]);
+    cashRows2.push(["Remb. emprunt", ...Array(6).fill(formatEUR(-monthlyDebt))]);
 
     const netRow2 = ["TRÉSORERIE NETTE"];
     for (let i = 6; i < 12; i++) {
-      const m = monthlyData[i] || {};
-      const inflow = m.revenue_ttc || 0;
-      const outflow = ((m.revenue_ht || 0) * varRate) + monthlyOpex + monthlyPayroll + (m.vat_collected || 0) + monthlyDebt;
+      const m = data.cash_monthly[i] || { revenue_ttc: 0, revenue_ht: 0, vat_collected: 0 };
+      const inflow = m.revenue_ttc;
+      const outflow = m.revenue_ht * varRate + monthlyOpex + monthlyPayroll + m.vat_collected + monthlyDebt;
       const net = inflow - outflow;
       cumulative += net;
-      netRow2.push(formatCurrency(net));
+      netRow2.push(formatEUR(net));
     }
     cashRows2.push(netRow2);
 
@@ -421,23 +755,29 @@ Deno.serve(async (req) => {
       theme: "grid",
       styles: { fontSize: 8, cellPadding: 2 },
       columnStyles: {
-        0: { fontStyle: "bold", cellWidth: 45 },
+        0: { fontStyle: "bold", cellWidth: treasuryColWidth * 1.5 },
+        1: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        2: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        3: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        4: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        5: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
+        6: { halign: "right", cellWidth: treasuryColWidth * 0.92 },
       },
-      didParseCell: (data: any) => {
-        if (data.row.index === 0) {
-          data.cell.styles.fillColor = BLUE_HEADER;
-          data.cell.styles.textColor = [255, 255, 255];
-          data.cell.styles.fontStyle = "bold";
+      didParseCell: (cellData: any) => {
+        if (cellData.row.index === 0) {
+          cellData.cell.styles.fillColor = BRAND_BLUE;
+          cellData.cell.styles.textColor = [255, 255, 255];
+          cellData.cell.styles.fontStyle = "bold";
         }
-        if (data.row.raw && (data.row.raw[0] === "ENCAISSEMENTS" || data.row.raw[0] === "DÉCAISSEMENTS" || data.row.raw[0] === "TRÉSORERIE NETTE")) {
-          data.cell.styles.fillColor = LIGHT_GREY;
-          data.cell.styles.fontStyle = "bold";
-        }
-        if (data.column.index > 0) {
-          data.cell.styles.halign = "right";
+        if (cellData.row.raw && (cellData.row.raw[0] === "ENCAISSEMENTS" || cellData.row.raw[0] === "DÉCAISSEMENTS" || cellData.row.raw[0] === "TRÉSORERIE NETTE")) {
+          cellData.cell.styles.fillColor = LIGHT_ROW;
+          cellData.cell.styles.fontStyle = "bold";
         }
       },
     });
+
+    currentY = (doc as any).lastAutoTable?.finalY + 8 || currentY + 80;
+    currentY = addExplanation(EXPLANATIONS.treasury, currentY);
 
     // =====================================================
     // PAGE 5: PLAN DE FINANCEMENT & BFR
@@ -447,16 +787,20 @@ Deno.serve(async (req) => {
 
     currentY = addSectionHeader("PLAN DE FINANCEMENT - ANNÉE 1", currentY);
 
+    const bfrInitial = fixedCosts * 2;
+    const totalBesoins = investment + bfrInitial;
+    const apportPersonnel = investment - loanAmount;
+
     const fundingRows = [
       ["BESOINS", "", ""],
-      ["Investissements", formatCurrency(investment), formatPercent(investment / investment)],
-      ["BFR initial", formatCurrency(fixedCosts * 2), formatPercent((fixedCosts * 2) / investment)],
-      ["TOTAL BESOINS", formatCurrency(investment + fixedCosts * 2), "100%"],
+      ["Investissements", formatEUR(investment), formatPct(investment, totalBesoins)],
+      ["BFR initial", formatEUR(bfrInitial), formatPct(bfrInitial, totalBesoins)],
+      ["TOTAL BESOINS", formatEUR(totalBesoins), "100%"],
       ["", "", ""],
       ["RESSOURCES", "", ""],
-      ["Apport personnel", formatCurrency(investment - loanAmount), formatPercent((investment - loanAmount) / investment)],
-      ["Emprunt bancaire", formatCurrency(loanAmount), formatPercent(loanAmount / investment)],
-      ["TOTAL RESSOURCES", formatCurrency(investment), "100%"],
+      ["Apport personnel", formatEUR(apportPersonnel), formatPct(apportPersonnel, investment)],
+      ["Emprunt bancaire", formatEUR(loanAmount), formatPct(loanAmount, investment)],
+      ["TOTAL RESSOURCES", formatEUR(investment), "100%"],
     ];
 
     autoTable(doc, {
@@ -464,36 +808,47 @@ Deno.serve(async (req) => {
       head: [["Poste", "Montant", "%"]],
       body: fundingRows,
       theme: "plain",
-      headStyles: { fillColor: BLUE_HEADER, textColor: [255, 255, 255], fontStyle: "bold" },
-      styles: { fontSize: 10 },
+      headStyles: { fillColor: BRAND_BLUE, textColor: [255, 255, 255], fontStyle: "bold" },
+      styles: { fontSize: 10, cellPadding: { top: 4, bottom: 4, left: 6, right: 6 } },
       columnStyles: {
-        1: { halign: "right" },
-        2: { halign: "center" },
+        0: { cellWidth: tableWidth * 0.50 },
+        1: { halign: "right", cellWidth: tableWidth * 0.30 },
+        2: { halign: "center", cellWidth: tableWidth * 0.20 },
       },
-      didParseCell: (data: any) => {
-        if (data.row.raw && (data.row.raw[0] === "BESOINS" || data.row.raw[0] === "RESSOURCES" || data.row.raw[0].startsWith("TOTAL"))) {
-          data.cell.styles.fillColor = LIGHT_GREY;
-          data.cell.styles.fontStyle = "bold";
+      didParseCell: (cellData: any) => {
+        if (cellData.row.raw && (cellData.row.raw[0] === "BESOINS" || cellData.row.raw[0] === "RESSOURCES" || cellData.row.raw[0].startsWith("TOTAL"))) {
+          cellData.cell.styles.fillColor = LIGHT_ROW;
+          cellData.cell.styles.fontStyle = "bold";
         }
       },
     });
 
-    currentY = (doc as any).lastAutoTable?.finalY + 15 || currentY + 80;
+    currentY = (doc as any).lastAutoTable?.finalY + 8 || currentY + 80;
+    currentY = addExplanation(EXPLANATIONS.funding, currentY);
 
+    currentY += 5;
     currentY = addSectionHeader("BESOIN EN FONDS DE ROULEMENT (BFR)", currentY);
+
+    const stockProduits = 500;
+    const creancesClients = 0;
+    const totalBfrBesoins = stockProduits + creancesClients;
+    const dettesFournisseurs = fixedCosts / 2;
+    const dettesFiscales = data.summary.total_vat_year1 / 12;
+    const totalBfrRessources = dettesFournisseurs + dettesFiscales;
+    const bfrNet = totalBfrBesoins - totalBfrRessources;
 
     const bfrRows = [
       ["BESOINS", ""],
-      ["Stock de produits", formatCurrency(500)],
-      ["Créances clients", formatCurrency(0)],
-      ["TOTAL BESOINS", formatCurrency(500)],
+      ["Stock de produits", formatEUR(stockProduits)],
+      ["Créances clients", formatEUR(creancesClients)],
+      ["TOTAL BESOINS", formatEUR(totalBfrBesoins)],
       ["", ""],
       ["RESSOURCES", ""],
-      ["Dettes fournisseurs", formatCurrency(fixedCosts / 2)],
-      ["Dettes fiscales", formatCurrency(summary.total_vat_year1 / 12 || 0)],
-      ["TOTAL RESSOURCES", formatCurrency(fixedCosts / 2 + (summary.total_vat_year1 / 12 || 0))],
+      ["Dettes fournisseurs", formatEUR(dettesFournisseurs)],
+      ["Dettes fiscales", formatEUR(dettesFiscales)],
+      ["TOTAL RESSOURCES", formatEUR(totalBfrRessources)],
       ["", ""],
-      ["BFR NET", formatCurrency(500 - fixedCosts / 2 - (summary.total_vat_year1 / 12 || 0))],
+      ["BFR NET", formatEUR(bfrNet)],
     ];
 
     autoTable(doc, {
@@ -501,21 +856,25 @@ Deno.serve(async (req) => {
       head: [["Poste", "Montant"]],
       body: bfrRows,
       theme: "plain",
-      headStyles: { fillColor: BLUE_HEADER, textColor: [255, 255, 255], fontStyle: "bold" },
-      styles: { fontSize: 10 },
+      headStyles: { fillColor: BRAND_BLUE, textColor: [255, 255, 255], fontStyle: "bold" },
+      styles: { fontSize: 10, cellPadding: { top: 4, bottom: 4, left: 6, right: 6 } },
       columnStyles: {
-        1: { halign: "right" },
+        0: { cellWidth: tableWidth * 0.60 },
+        1: { halign: "right", cellWidth: tableWidth * 0.40 },
       },
-      didParseCell: (data: any) => {
-        if (data.row.raw && (data.row.raw[0] === "BESOINS" || data.row.raw[0] === "RESSOURCES" || data.row.raw[0].startsWith("TOTAL") || data.row.raw[0] === "BFR NET")) {
-          data.cell.styles.fillColor = LIGHT_GREY;
-          data.cell.styles.fontStyle = "bold";
+      didParseCell: (cellData: any) => {
+        if (cellData.row.raw && (cellData.row.raw[0] === "BESOINS" || cellData.row.raw[0] === "RESSOURCES" || cellData.row.raw[0].startsWith("TOTAL") || cellData.row.raw[0] === "BFR NET")) {
+          cellData.cell.styles.fillColor = LIGHT_ROW;
+          cellData.cell.styles.fontStyle = "bold";
         }
       },
     });
 
+    currentY = (doc as any).lastAutoTable?.finalY + 8 || currentY + 80;
+    addExplanation(EXPLANATIONS.bfr, currentY);
+
     // =====================================================
-    // FOOTER on all pages
+    // FOOTER
     // =====================================================
     const totalPages = doc.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
@@ -531,7 +890,7 @@ Deno.serve(async (req) => {
     const pdfOutput = doc.output("arraybuffer");
     const pdfBlob = new Uint8Array(pdfOutput);
 
-    const fileName = `previsionnel-banque-${bundle.meta?.project_name?.toLowerCase().replace(/\s+/g, "-") || "projet"}-${new Date().toISOString().split("T")[0]}.pdf`;
+    const fileName = `previsionnel-banque-${data.meta.project_name.toLowerCase().replace(/\s+/g, "-")}-${new Date().toISOString().split("T")[0]}.pdf`;
     const filePath = `${effectiveUserId}/${fileName}`;
 
     const { error: uploadError } = await supabaseAdmin.storage
@@ -549,7 +908,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create fin_exports record
+    // Record export
     await supabaseAdmin.from("fin_exports").insert({
       project_id: projectId,
       format: "pdf",
@@ -560,12 +919,12 @@ Deno.serve(async (req) => {
       metadata: { type: "bank_grade", scenario_id: scenarioId },
     });
 
-    // Log to system_events
+    // Log event
     await supabaseAdmin.from("system_events").insert({
       source: "fin_exports",
       severity: "info",
       code: "EXPORT_BANK_PDF",
-      message: `Bank-grade PDF generated for project ${bundle.meta?.project_name}`,
+      message: `Bank-grade PDF generated for project ${data.meta.project_name}`,
       meta: {
         project_id: projectId,
         scenario_id: scenarioId,
