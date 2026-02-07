@@ -70,6 +70,8 @@ import RulesEnginePage from "./pages/platform/RulesEnginePage";
 import DataTrustScorePage from "./pages/platform/DataTrustScorePage";
 import AdminExportsPage from "./pages/admin/AdminExportsPage";
 import BetaActivationPage from "./pages/admin/beta/BetaActivationPage";
+import BetaFeedbackPage from "./pages/admin/beta/BetaFeedbackPage";
+import BetaConversionPage from "./pages/admin/beta/BetaConversionPage";
 import ExportsPage from "./pages/app/ExportsPage";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
@@ -222,6 +224,8 @@ const App = () => (
             <Route path="/admin/beta/billing-check" element={<BetaBillingCheck />} />
             <Route path="/admin/beta/ops" element={<BetaOpsPage />} />
             <Route path="/admin/beta/activation" element={<BetaActivationPage />} />
+            <Route path="/admin/beta/feedback" element={<BetaFeedbackPage />} />
+            <Route path="/admin/beta/conversion" element={<BetaConversionPage />} />
             {/* Knowledge System routes */}
             <Route path="/admin/knowledge" element={<KnowledgeBasePage />} />
             <Route path="/admin/knowledge/sources" element={<KnowledgeSourcesPage />} />

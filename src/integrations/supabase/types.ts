@@ -527,6 +527,53 @@ export type Database = {
           },
         ]
       }
+      beta_feedback: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          message: string | null
+          page_context: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sentiment: string
+          topic: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          page_context?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sentiment: string
+          topic: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          page_context?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sentiment?: string
+          topic?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beta_feedback_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       churn_alert_settings: {
         Row: {
           alert_cooldown_hours: number
