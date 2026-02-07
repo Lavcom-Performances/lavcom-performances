@@ -87,12 +87,21 @@ export function AddressAutocomplete({
   const { t } = useTranslation(['app']);
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
+  // Track if user just selected to avoid re-searching
   const [justSelected, setJustSelected] = useState(false);
-  const { results, isLoading } = useAddressSearch(justSelected ? "" : inputValue, 3);
+  // Only search when user is actively typing, not when value comes from props
+  const [isUserTyping, setIsUserTyping] = useState(false);
+  const { results, isLoading } = useAddressSearch(
+    (justSelected || !isUserTyping) ? "" : inputValue, 
+    3
+  );
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Sync input value with external prop changes (e.g., from localStorage)
   useEffect(() => {
     setInputValue(value);
+    // Don't trigger search when value comes from props
+    setIsUserTyping(false);
   }, [value]);
 
   useEffect(() => {
@@ -109,6 +118,7 @@ export function AddressAutocomplete({
   const handleSelect = (result: AddressResult) => {
     setInputValue(result.address);
     setJustSelected(true);
+    setIsUserTyping(false);
     onSelect(result);
     setIsOpen(false);
   };
@@ -117,12 +127,15 @@ export function AddressAutocomplete({
     const newValue = e.target.value;
     setInputValue(newValue);
     setJustSelected(false);
+    setIsUserTyping(true);
     setIsOpen(true);
   };
 
   const handleFocus = () => {
     setJustSelected(false);
+    // Allow searching when user focuses on the field
     if (inputValue.length >= 3) {
+      setIsUserTyping(true);
       setIsOpen(true);
     }
   };
@@ -159,9 +172,9 @@ export function AddressAutocomplete({
         </div>
       )}
 
-      {isOpen && inputValue.length >= 3 && !isLoading && results.length === 0 && !justSelected && (
+      {isOpen && inputValue.length >= 3 && !isLoading && results.length === 0 && isUserTyping && !justSelected && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg p-3 text-sm text-muted-foreground">
-          {t('app:newLaundry.noAddressFound', 'Aucune adresse trouvée')}
+          {t('app:newLaundry.noAddressFound', 'Aucune adresse trouvée. Essayez avec le nom de la ville.')}
         </div>
       )}
     </div>
