@@ -330,7 +330,7 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
         <Button 
           variant="outline"
           size="lg"
-          onClick={() => onEditStep(3)}
+          onClick={() => onEditStep(2)}
           className="gap-2"
         >
           <ChevronLeft className="h-5 w-5" />
