@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFinAccess } from "@/hooks/useFinAccess";
 import { useFinProjects, useCreateFinProject, useDeleteFinProject } from "@/hooks/useFinProjects";
-import { useInitializeHypotheses } from "@/hooks/useFinHypotheses";
+
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -39,7 +39,7 @@ export default function ProjectionsListPage() {
   const { data: projects, isLoading: projectsLoading } = useFinProjects();
   const createProject = useCreateFinProject();
   const deleteProject = useDeleteFinProject();
-  const initHypotheses = useInitializeHypotheses();
+  
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
@@ -54,9 +54,8 @@ export default function ProjectionsListPage() {
       project_type: newProjectType,
     });
     
-    // Initialize default hypotheses
+    // Navigate to hypotheses page - the questionnaire will initialize the data
     if (result?.id) {
-      await initHypotheses.mutateAsync(result.id);
       setIsCreateOpen(false);
       setNewProjectName("");
       setNewProjectType("creation");
