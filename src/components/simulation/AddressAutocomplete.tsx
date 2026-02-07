@@ -1,36 +1,89 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { MapPin, Loader2 } from "lucide-react";
-import { useCitySearch, CitySearchResult } from "@/hooks/useCitySearch";
 import { useTranslation } from "react-i18next";
 
-interface CityAutocompleteProps {
+interface AddressResult {
+  label: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  department: string;
+}
+
+interface AddressAutocompleteProps {
   value: string;
-  onSelect: (result: CitySearchResult) => void;
+  onSelect: (result: AddressResult) => void;
   placeholder?: string;
   className?: string;
-  country?: string;
   hasError?: boolean;
 }
 
-export function CityAutocomplete({ 
+function useAddressSearch(query: string, minChars: number = 3) {
+  const [results, setResults] = useState<AddressResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const searchAddresses = useCallback(async (searchQuery: string) => {
+    if (searchQuery.length < minChars) {
+      setResults([]);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(
+        `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchQuery)}&limit=10&type=housenumber`
+      );
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la recherche");
+      }
+
+      const data = await response.json();
+      
+      const formattedResults: AddressResult[] = data.features.map((feature: any) => ({
+        label: feature.properties.label,
+        address: feature.properties.name,
+        city: feature.properties.city,
+        postalCode: feature.properties.postcode,
+        department: feature.properties.context?.split(',')[0]?.trim() || '',
+      }));
+
+      setResults(formattedResults);
+    } catch {
+      setResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [minChars]);
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      searchAddresses(query);
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [query, searchAddresses]);
+
+  return { results, isLoading };
+}
+
+export function AddressAutocomplete({ 
   value, 
   onSelect, 
-  placeholder = "Rechercher une ville...",
+  placeholder = "Rechercher une adresse...",
   className,
-  country = "FR",
   hasError = false
-}: CityAutocompleteProps) {
+}: AddressAutocompleteProps) {
   const { t } = useTranslation(['app']);
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
-  // Only skip search when user just selected a result, not when there's an initial value
   const [justSelected, setJustSelected] = useState(false);
-  const { results, isLoading } = useCitySearch(justSelected ? "" : inputValue, 2, country);
+  const { results, isLoading } = useAddressSearch(justSelected ? "" : inputValue, 3);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Sync with external value changes (e.g., reset)
   useEffect(() => {
     setInputValue(value);
   }, [value]);
@@ -46,8 +99,8 @@ export function CityAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelect = (result: CitySearchResult) => {
-    setInputValue(result.city);
+  const handleSelect = (result: AddressResult) => {
+    setInputValue(result.address);
     setJustSelected(true);
     onSelect(result);
     setIsOpen(false);
@@ -61,9 +114,8 @@ export function CityAutocomplete({
   };
 
   const handleFocus = () => {
-    // Reset justSelected flag when user focuses to allow new search
     setJustSelected(false);
-    if (inputValue.length >= 2) {
+    if (inputValue.length >= 3) {
       setIsOpen(true);
     }
   };
@@ -88,7 +140,7 @@ export function CityAutocomplete({
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-auto">
           {results.map((result, index) => (
             <button
-              key={`${result.postalCode}-${index}`}
+              key={`${result.postalCode}-${result.address}-${index}`}
               type="button"
               onClick={() => handleSelect(result)}
               className="w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-2"
@@ -100,9 +152,9 @@ export function CityAutocomplete({
         </div>
       )}
 
-      {isOpen && inputValue.length >= 2 && !isLoading && results.length === 0 && !justSelected && (
+      {isOpen && inputValue.length >= 3 && !isLoading && results.length === 0 && !justSelected && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg p-3 text-sm text-muted-foreground">
-          {t('app:newLaundry.noCityFound', 'Aucune ville trouvée')}
+          {t('app:newLaundry.noAddressFound', 'Aucune adresse trouvée')}
         </div>
       )}
     </div>
