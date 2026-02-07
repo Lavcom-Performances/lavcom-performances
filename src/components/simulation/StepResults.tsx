@@ -138,7 +138,7 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
               variant="outline" 
               size="sm" 
               className="w-full mt-4"
-              onClick={() => onEditStep(1)}
+              onClick={() => onEditStep(0)}
             >
               Modifier les infos
             </Button>
@@ -179,7 +179,7 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
               variant="outline" 
               size="sm" 
               className="w-full mt-4"
-              onClick={() => onEditStep(2)}
+              onClick={() => onEditStep(1)}
             >
               Modifier les machines
             </Button>
@@ -236,7 +236,7 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
               variant="outline" 
               size="sm" 
               className="w-full mt-4"
-              onClick={() => onEditStep(3)}
+              onClick={() => onEditStep(2)}
             >
               Modifier les charges
             </Button>
