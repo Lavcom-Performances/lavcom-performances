@@ -29,6 +29,7 @@ import {
   Activity,
   MessageSquare,
   ClipboardList,
+  BarChart4,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -105,6 +106,7 @@ export function AdminSidebar({
   // System navigation
   const systemNavigation = [
     { name: t('app:platformAdmin.nav.systemStatus'), href: "/admin/system-status", icon: AlertTriangle },
+    { name: t('app:platformAdmin.nav.commercialReadiness', 'Commercial Health'), href: "/admin/commercial", icon: BarChart4 },
     { name: t('app:platformAdmin.nav.betaHealth', 'Beta Health'), href: "/admin/beta/health", icon: HeartPulse },
     { name: t('app:platformAdmin.nav.betaActivation', 'Beta Activation'), href: "/admin/beta/activation", icon: Sparkles },
     { name: t('app:platformAdmin.nav.betaFeedback', 'Beta Feedback'), href: "/admin/beta/feedback", icon: MessageSquare },

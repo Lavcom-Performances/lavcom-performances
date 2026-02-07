@@ -67,6 +67,8 @@ import { RecentActivityWidget } from "@/components/dashboard/RecentActivityWidge
 import { OrgActivityFeed } from "@/components/dashboard/OrgActivityFeed";
 import { useOrganization } from "@/hooks/useOrganization";
 import { BetaWelcomeCard } from "@/components/beta/BetaWelcomeCard";
+import { BetaEndNoticeBanner } from "@/components/billing/BetaEndNoticeBanner";
+import { useBetaStatus } from "@/hooks/useBetaStatus";
 // Animation variants for staggered cards
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -168,6 +170,8 @@ export default function Dashboard() {
   const tutorial = useTutorial();
   const { hasData: hasImportedData, isLoading: dataLoading } = useHasData();
   const { organization, isCompanyAdmin } = useOrganization();
+  const { betaStatus } = useBetaStatus(organization?.id || null);
+  const activeLaundromatCount = sites.filter(s => s.status === "active").length;
   // Handle analytics recalculation
   const handleRecalculateAnalytics = async () => {
     if (!selectedSite?.id || !user) return;
@@ -331,6 +335,15 @@ export default function Dashboard() {
       <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Beta Welcome Card - shows only for beta companies */}
       <BetaWelcomeCard />
+      
+      {/* Beta End Notice - 7-day advance warning */}
+      {betaStatus?.is_beta && betaStatus.beta_ends_at && betaStatus.standard_price_cents && (
+        <BetaEndNoticeBanner
+          betaEndsAt={betaStatus.beta_ends_at}
+          standardPriceCents={betaStatus.standard_price_cents}
+          activeLaundromatCount={activeLaundromatCount}
+        />
+      )}
       
       {/* Header */}
       <div className="flex flex-col gap-4">
