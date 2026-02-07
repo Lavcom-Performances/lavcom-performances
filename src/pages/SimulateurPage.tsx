@@ -23,6 +23,7 @@ import { Footer } from "@/components/layout/Footer";
 import { SIMULATOR_PLANS } from "@/config/pricingConfig";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { cn } from "@/lib/utils";
+import { UxClarityQuestion } from "@/components/ux-feedback/UxClarityQuestion";
 
 // ===== CONSTANTES DE CALCUL =====
 const HOURS_OPEN_DEFAULT = 14;
@@ -721,6 +722,9 @@ export default function SimulateurPage() {
         
         <Footer />
       </div>
+      
+      {/* UX Clarity Questionnaire */}
+      <UxClarityQuestion enabled={true} />
     </>
   );
 }

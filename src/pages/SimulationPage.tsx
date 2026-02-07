@@ -15,6 +15,7 @@ import {
   calculateSimulationResults 
 } from "@/types/simulation";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { UxClarityQuestion } from "@/components/ux-feedback/UxClarityQuestion";
 
 const steps = [
   { id: 0, name: "Local", description: "Contraintes & configuration" },
@@ -163,6 +164,9 @@ export default function SimulationPage() {
         )}
       </div>
     </div>
+    
+    {/* UX Clarity Questionnaire */}
+    <UxClarityQuestion enabled={true} />
     </>
   );
 }

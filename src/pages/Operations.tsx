@@ -48,6 +48,7 @@ import { useSites } from "@/hooks/useSites";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { useCurrentUserPermissions } from "@/hooks/useCurrentUserPermissions";
 import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
+import { UxClarityQuestion } from "@/components/ux-feedback/UxClarityQuestion";
 import { DataQualityBlock } from "@/components/dashboard/DataQualityBlock";
 import { DateRangeGuardrail } from "@/components/ui/DateRangeGuardrail";
 import { usePlatformRole } from "@/hooks/usePlatformRole";
@@ -1155,6 +1156,9 @@ export default function Operations() {
         )}
       </div>
     </div>
+    
+    {/* UX Clarity Questionnaire */}
+    <UxClarityQuestion enabled={true} />
     </>
   );
 }
