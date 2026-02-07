@@ -181,7 +181,7 @@ export function ExpertSection({ variant = "landing", className = "" }: ExpertSec
             return (
               <Card 
                 key={expert.id}
-                className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer border-2 hover:border-primary/30"
+                className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer border-2 hover:border-primary/30 flex flex-col"
                 onClick={() => handleExpertClick(expert)}
               >
                 <CardHeader className="pb-3">
@@ -193,7 +193,7 @@ export function ExpertSection({ variant = "landing", className = "" }: ExpertSec
                     {expert.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="pt-0 flex-1 flex flex-col">
                   <ul className="space-y-2 mb-4">
                     {expert.benefits.slice(0, 3).map((benefit, idx) => (
                       <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -202,7 +202,7 @@ export function ExpertSection({ variant = "landing", className = "" }: ExpertSec
                       </li>
                     ))}
                   </ul>
-                  <Button variant="ghost" size="sm" className="w-full group-hover:bg-primary/10">
+                  <Button size="sm" className="w-full mt-auto">
                     Être mis en relation
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
