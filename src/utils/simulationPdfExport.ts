@@ -2,22 +2,26 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { SimulationProject, SimulationResults } from '@/types/simulation';
 
+// Formatage sans espace insécable pour éviter les problèmes d'encodage PDF
 const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('fr-FR', {
+  const formatted = new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(Math.round(value));
+  // Remplacer les espaces insécables par des espaces normaux pour PDF
+  return formatted.replace(/\u00A0/g, ' ').replace(/\u202F/g, ' ');
 };
 
 const formatCurrencyDecimals = (value: number): string => {
-  return new Intl.NumberFormat('fr-FR', {
+  const formatted = new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(value);
+  return formatted.replace(/\u00A0/g, ' ').replace(/\u202F/g, ' ');
 };
 
 const formatPercent = (value: number): string => {
@@ -87,13 +91,13 @@ export function generateSimulationReport(
     headStyles: { 
       fillColor: primaryColor, 
       textColor: [255, 255, 255],
-      fontSize: 10,
+      fontSize: 9,
       fontStyle: 'bold',
-      cellPadding: 5
+      cellPadding: 3
     },
     bodyStyles: {
-      fontSize: 10,
-      cellPadding: 5,
+      fontSize: 9,
+      cellPadding: 3,
       lineColor: [226, 232, 240],
       lineWidth: 0.5
     },
@@ -141,14 +145,14 @@ export function generateSimulationReport(
     headStyles: { 
       fillColor: primaryColor, 
       textColor: [255, 255, 255],
-      fontSize: 9,
+      fontSize: 8,
       fontStyle: 'bold',
-      cellPadding: 4,
+      cellPadding: 2,
       halign: 'center'
     },
     bodyStyles: {
-      fontSize: 9,
-      cellPadding: 4,
+      fontSize: 8,
+      cellPadding: 2,
       halign: 'center',
       lineColor: [226, 232, 240],
       lineWidth: 0.5
@@ -191,14 +195,14 @@ export function generateSimulationReport(
     headStyles: { 
       fillColor: primaryColor, 
       textColor: [255, 255, 255],
-      fontSize: 9,
+      fontSize: 8,
       fontStyle: 'bold',
-      cellPadding: 4,
+      cellPadding: 2,
       halign: 'center'
     },
     bodyStyles: {
-      fontSize: 9,
-      cellPadding: 4,
+      fontSize: 8,
+      cellPadding: 2,
       halign: 'center',
       lineColor: [226, 232, 240],
       lineWidth: 0.5
@@ -237,13 +241,13 @@ export function generateSimulationReport(
     headStyles: { 
       fillColor: primaryColor, 
       textColor: [255, 255, 255],
-      fontSize: 10,
+      fontSize: 9,
       fontStyle: 'bold',
-      cellPadding: 5
+      cellPadding: 3
     },
     bodyStyles: {
-      fontSize: 10,
-      cellPadding: 5,
+      fontSize: 9,
+      cellPadding: 3,
       lineColor: [226, 232, 240],
       lineWidth: 0.5
     },
@@ -275,13 +279,13 @@ export function generateSimulationReport(
     headStyles: { 
       fillColor: primaryColor, 
       textColor: [255, 255, 255],
-      fontSize: 10,
+      fontSize: 9,
       fontStyle: 'bold',
-      cellPadding: 5
+      cellPadding: 3
     },
     bodyStyles: {
-      fontSize: 10,
-      cellPadding: 5,
+      fontSize: 9,
+      cellPadding: 3,
       lineColor: [226, 232, 240],
       lineWidth: 0.5
     },
@@ -331,14 +335,14 @@ export function generateSimulationReport(
     headStyles: { 
       fillColor: primaryColor, 
       textColor: [255, 255, 255],
-      fontSize: 10,
+      fontSize: 9,
       fontStyle: 'bold',
-      cellPadding: 6,
+      cellPadding: 4,
       halign: 'center'
     },
     bodyStyles: {
-      fontSize: 10,
-      cellPadding: 6,
+      fontSize: 9,
+      cellPadding: 4,
       lineColor: [226, 232, 240],
       lineWidth: 0.5
     },
@@ -365,21 +369,21 @@ export function generateSimulationReport(
     body: [
       ['Seuil de rentabilité (CA mensuel)', results.break_even_revenue_monthly ? formatCurrency(results.break_even_revenue_monthly) : 'N/A'],
       ['Seuil de rentabilité (CA annuel)', results.break_even_revenue_monthly ? formatCurrency(results.break_even_revenue_monthly * 12) : 'N/A'],
-      ['Cycles nécessaires / mois', formatNumber(results.break_even_cycles_month, 0)],
-      ['Cycles nécessaires / jour', formatNumber(results.break_even_cycles_day, 1)],
+      ['Cycles nécessaires par mois', formatNumber(results.break_even_cycles_month, 0)],
+      ['Cycles nécessaires par jour', formatNumber(results.break_even_cycles_day, 1)],
       ['Recette moyenne par cycle', formatCurrencyDecimals(results.avg_revenue_per_cycle)],
     ],
     theme: 'grid',
     headStyles: { 
       fillColor: primaryColor, 
       textColor: [255, 255, 255],
-      fontSize: 10,
+      fontSize: 9,
       fontStyle: 'bold',
-      cellPadding: 6
+      cellPadding: 4
     },
     bodyStyles: {
-      fontSize: 10,
-      cellPadding: 6,
+      fontSize: 9,
+      cellPadding: 4,
       lineColor: [226, 232, 240],
       lineWidth: 0.5
     },
@@ -445,14 +449,14 @@ export function generateSimulationReport(
     headStyles: { 
       fillColor: primaryColor, 
       textColor: [255, 255, 255],
-      fontSize: 10,
+      fontSize: 9,
       fontStyle: 'bold',
-      cellPadding: 6,
+      cellPadding: 4,
       halign: 'center'
     },
     bodyStyles: {
-      fontSize: 10,
-      cellPadding: 6,
+      fontSize: 9,
+      cellPadding: 4,
       lineColor: [226, 232, 240],
       lineWidth: 0.5
     },
@@ -465,42 +469,55 @@ export function generateSimulationReport(
     margin: { left: margin, right: margin },
   });
 
-  yPos = (doc as any).lastAutoTable.finalY + 20;
+  yPos = (doc as any).lastAutoTable.finalY + 15;
 
-  // Conclusion
+  // Conclusion - Style léger avec bordure latérale (comme sur la page web)
   const conclusionColor = isProfitable ? successColor : dangerColor;
-  doc.setFillColor(...conclusionColor);
-  doc.roundedRect(margin, yPos, contentWidth, 40, 4, 4, 'F');
+  const conclusionBg = isProfitable ? [240, 253, 244] : [254, 242, 242]; // bg-green-50 / bg-red-50
   
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(14);
+  // Rectangle de fond léger
+  doc.setFillColor(...(conclusionBg as [number, number, number]));
+  doc.roundedRect(margin, yPos, contentWidth, 32, 3, 3, 'F');
+  
+  // Bordure gauche colorée
+  doc.setFillColor(...conclusionColor);
+  doc.rect(margin, yPos, 4, 32, 'F');
+  
+  // Icône et titre
+  doc.setTextColor(...conclusionColor);
+  doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   
+  const icon = isProfitable ? '↗' : '↘';
+  const title = isProfitable 
+    ? 'Projet au-dessus du seuil de rentabilité' 
+    : 'Projet en dessous du seuil de rentabilité';
+  
+  doc.text(`${icon}  ${title}`, margin + 10, yPos + 10);
+  
+  // Description
+  doc.setTextColor(80, 80, 80);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  
   if (isProfitable) {
-    doc.text('✓ Projet au-dessus du seuil de rentabilité', pageWidth / 2, yPos + 14, { align: 'center' });
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
     doc.text(
-      `Avec ces hypothèses, votre projet génère un bénéfice estimé de ${formatCurrency(results.estimated_profit_month)}/mois,`,
-      pageWidth / 2, yPos + 26, { align: 'center' }
-    );
-    doc.text(
-      `soit ${formatCurrency(results.estimated_profit_month * 12)}/an.`,
-      pageWidth / 2, yPos + 35, { align: 'center' }
+      `Avec ces hypothèses, votre projet génère un bénéfice estimé de ${formatCurrency(results.estimated_profit_month)}/mois, soit ${formatCurrency(results.estimated_profit_month * 12)}/an.`,
+      margin + 10, yPos + 19
     );
   } else {
-    doc.text('⚠ Projet en dessous du seuil de rentabilité', pageWidth / 2, yPos + 14, { align: 'center' });
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
     doc.text(
-      'Ajustez vos paramètres (loyer, prix, machines, fréquentation...)',
-      pageWidth / 2, yPos + 26, { align: 'center' }
-    );
-    doc.text(
-      'pour améliorer la rentabilité de votre projet.',
-      pageWidth / 2, yPos + 35, { align: 'center' }
+      'Ajustez vos paramètres (loyer, prix, machines, fréquentation...) pour améliorer la rentabilité de votre projet.',
+      margin + 10, yPos + 19
     );
   }
+  
+  // Cycles nécessaires
+  doc.setFontSize(8);
+  doc.text(
+    `Il vous faut environ ${formatNumber(results.break_even_cycles_day, 1)} cycles/jour en moyenne pour couvrir vos charges.`,
+    margin + 10, yPos + 27
+  );
 
   // Pied de page
   doc.setTextColor(120, 120, 120);

@@ -49,6 +49,8 @@ export default function SimulationPage() {
   const handleNext = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
+      // Scroll to top when navigating to next step
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   };
 
