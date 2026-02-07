@@ -3434,6 +3434,50 @@ export type Database = {
         }
         Relationships: []
       }
+      ux_feedback: {
+        Row: {
+          clarity_score: string
+          company_id: string | null
+          created_at: string
+          id: string
+          issue_type: string | null
+          message: string | null
+          page_path: string
+          user_id: string | null
+          user_role: string | null
+        }
+        Insert: {
+          clarity_score: string
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          issue_type?: string | null
+          message?: string | null
+          page_path: string
+          user_id?: string | null
+          user_role?: string | null
+        }
+        Update: {
+          clarity_score?: string
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          issue_type?: string | null
+          message?: string | null
+          page_path?: string
+          user_id?: string | null
+          user_role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ux_feedback_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       v_data_quality_operations: {
