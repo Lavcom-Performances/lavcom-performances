@@ -202,7 +202,7 @@ export function ExpertSection({ variant = "landing", className = "" }: ExpertSec
                       </li>
                     ))}
                   </ul>
-                  <Button size="sm" className="w-full mt-auto">
+                  <Button size="sm" className="w-full mt-auto bg-[hsl(72,80%,90%)] hover:bg-[hsl(72,80%,85%)] text-[hsl(72,80%,30%)]">
                     Être mis en relation
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
