@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { usePlatformRole } from './usePlatformRole';
 
 interface Subscription {
   id: string;
@@ -23,6 +24,7 @@ interface Subscription {
 
 export function useSubscription() {
   const { user, isAuthenticated } = useAuth();
+  const { isPlatformSuperAdmin, isLoading: roleLoading } = usePlatformRole();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -94,19 +96,23 @@ export function useSubscription() {
     return subscription?.trial_used === true;
   };
 
+  // Platform super_admin has unlimited access without payment
+  const hasPlatformBypass = isPlatformSuperAdmin;
+
   return {
     subscription,
-    loading,
-    daysRemaining: calculateDaysRemaining(),
-    isTrialActive: isTrialActive(),
-    isSubscriptionActive: isSubscriptionActive(),
-    isExpired: subscription?.plan_type === 'trial' && calculateDaysRemaining() <= 0,
-    planType: subscription?.plan_type ?? null,
-    trialStatus: getTrialStatus(),
+    loading: loading || roleLoading,
+    daysRemaining: hasPlatformBypass ? 999 : calculateDaysRemaining(),
+    isTrialActive: hasPlatformBypass ? true : isTrialActive(),
+    isSubscriptionActive: hasPlatformBypass ? true : isSubscriptionActive(),
+    isExpired: hasPlatformBypass ? false : (subscription?.plan_type === 'trial' && calculateDaysRemaining() <= 0),
+    planType: hasPlatformBypass ? 'platform_admin' : (subscription?.plan_type ?? null),
+    trialStatus: hasPlatformBypass ? 'active' : getTrialStatus(),
     lastInvoiceUrl: subscription?.last_invoice_url ?? null,
     stripeSubscriptionId: subscription?.stripe_subscription_id ?? null,
     stripeCustomerId: subscription?.stripe_customer_id ?? null,
     hasUsedTrial: hasUsedTrial(),
     refetch: () => user && fetchSubscription(user.id),
+    isPlatformBypass: hasPlatformBypass,
   };
 }
