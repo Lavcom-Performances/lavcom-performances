@@ -5,7 +5,7 @@ import { checkFeatureOrBlock } from "../_shared/feature-flags.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 // Mapping pack ID -> Stripe price ID + config
@@ -49,43 +49,43 @@ serve(async (req) => {
     }
     logStep("Pack found", { priceId: pack.priceId, accessDays: pack.accessDays });
 
-    // Authenticate user
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
-
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
-    logStep("User authenticated", { userId: user.id, email: user.email });
-
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
-    // Check if customer exists, create if not
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId: string;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      logStep("Existing customer found", { customerId });
-    } else {
-      const newCustomer = await stripe.customers.create({
-        email: user.email,
-        metadata: { user_id: user.id },
-      });
-      customerId = newCustomer.id;
-      logStep("New customer created", { customerId });
+    // Try to authenticate user (optional - supports guest checkout)
+    const authHeader = req.headers.get("Authorization");
+    let user: { id: string; email: string } | null = null;
+    let customerId: string | undefined;
+
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data } = await supabaseClient.auth.getUser(token);
+      if (data.user?.email) {
+        user = { id: data.user.id, email: data.user.email };
+        logStep("User authenticated", { userId: user.id, email: user.email });
+
+        // Check if customer exists for authenticated user
+        const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+        if (customers.data.length > 0) {
+          customerId = customers.data[0].id;
+          logStep("Existing customer found", { customerId });
+        }
+      }
     }
 
-    // Use app.lavcom.fr as fixed domain for production
-    const successUrl = `https://app.lavcom.fr/billing/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `https://app.lavcom.fr/billing/cancel`;
+    if (!user) {
+      logStep("Guest checkout - no authenticated user");
+    }
+
+    // Determine URLs based on origin
+    const origin = req.headers.get("origin") || "https://app.lavcom.fr";
+    const successUrl = `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${origin}/billing/cancel`;
 
     // Create checkout session (one-time payment)
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [
         {
@@ -97,13 +97,23 @@ serve(async (req) => {
       success_url: successUrl,
       cancel_url: cancelUrl,
       metadata: {
-        user_id: user.id,
+        user_id: user?.id || 'guest',
         pack_id: packId,
       },
       saved_payment_method_options: {
         payment_method_save: 'disabled',
       },
-    });
+    };
+
+    // If we have a customer ID, use it; otherwise let Stripe collect email
+    if (customerId) {
+      sessionParams.customer = customerId;
+    } else {
+      // For guests, Stripe will collect email during checkout
+      sessionParams.customer_creation = 'always';
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
     logStep("Checkout session created", { sessionId: session.id, url: session.url });
 
     return new Response(JSON.stringify({ url: session.url }), {
