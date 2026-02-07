@@ -118,6 +118,7 @@ import GoalsSettingsPage from "./pages/settings/GoalsSettingsPage";
 import DemoPage from "./pages/DemoPage";
 import AuditLogsPage from "./pages/AuditLogsPage";
 import BetaRulesPage from "./pages/BetaRulesPage";
+import DataHistoryPage from "./pages/app/DataHistoryPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -267,6 +268,7 @@ const App = () => (
             <Route path="/aide" element={<HelpPage />} />
             <Route path="/beta" element={<BetaRulesPage />} />
             <Route path="/audit-logs" element={<AuditLogsPage />} />
+            <Route path="/data-history" element={<DataHistoryPage />} />
             <Route path="/operations" element={<Operations />} />
             <Route path="/import-export" element={<ImportExport />} />
             <Route path="/exports" element={<ExportsPage />} />

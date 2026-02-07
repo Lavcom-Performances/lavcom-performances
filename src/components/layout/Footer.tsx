@@ -4,6 +4,7 @@ import { Mail, Linkedin, Instagram, Facebook } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { BetaFeedbackButton } from "@/components/feedback/BetaFeedbackButton";
 import { useIsBetaCompany } from "@/hooks/useIsBetaCompany";
+import { DataSecurityBadge } from "@/components/trust/DataSecurityBadge";
 
 export function Footer() {
   const { t } = useTranslation('common');
@@ -119,7 +120,12 @@ export function Footer() {
         </div>
 
         {/* Footer discret - style minimaliste */}
-        <div className="border-t border-border pt-6">
+        <div className="border-t border-border pt-6 space-y-4">
+          {/* TAEX-304: Trust statement in footer */}
+          <div className="flex justify-center">
+            <DataSecurityBadge variant="footer" />
+          </div>
+          
           <div className="flex items-center justify-center gap-4 flex-wrap">
             {isBeta && (
               <BetaFeedbackButton 

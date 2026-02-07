@@ -31,6 +31,8 @@ import DocumentsContent from "@/components/settings/DocumentsContent";
 import AuditLogSettingsContent from "@/components/settings/AuditLogSettingsContent";
 import { AIUsageWidget } from "@/components/settings/AIUsageWidget";
 
+import { History } from "lucide-react";
+
 const TABS = [
   { id: "profile", label: "Profil", icon: User },
   { id: "security", label: "Sécurité", icon: Shield },
@@ -42,6 +44,7 @@ const TABS = [
   { id: "audit", label: "Journaux", icon: ScrollText },
   { id: "documents", label: "Documents", icon: FileText },
   { id: "ai", label: "IA", icon: Bot },
+  { id: "history", label: "Historique", icon: History },
 ] as const;
 
 type TabId = typeof TABS[number]["id"];
@@ -152,6 +155,17 @@ export default function SettingsPage() {
           <TabsContent value="ai" className="mt-0">
             <div className="max-w-md">
               <AIUsageWidget />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="history" className="mt-0">
+            <div className="space-y-4">
+              <p className="text-muted-foreground">
+                Consultez l'historique complet de vos données, imports et exports.
+              </p>
+              <Button onClick={() => navigate('/data-history')}>
+                Voir l'historique complet
+              </Button>
             </div>
           </TabsContent>
         </Tabs>
