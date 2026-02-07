@@ -104,6 +104,7 @@ export function AdminSidebar({
   const systemNavigation = [
     { name: t('app:platformAdmin.nav.systemStatus'), href: "/admin/system-status", icon: AlertTriangle },
     { name: t('app:platformAdmin.nav.betaHealth', 'Beta Health'), href: "/admin/beta/health", icon: HeartPulse },
+    { name: t('app:platformAdmin.nav.betaActivation', 'Beta Activation'), href: "/admin/beta/activation", icon: Sparkles },
     { name: t('app:platformAdmin.nav.betaBillingCheck', 'Billing Check'), href: "/admin/beta/billing-check", icon: CreditCard },
     { name: t('app:platformAdmin.nav.betaOps', 'Beta Ops'), href: "/admin/beta/ops", icon: Activity },
     { name: t('app:platformAdmin.nav.aiUsage', 'AI Usage'), href: "/admin/ai-usage", icon: Bot },

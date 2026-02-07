@@ -69,6 +69,7 @@ import FaqBuilderPage from "./pages/platform/FaqBuilderPage";
 import RulesEnginePage from "./pages/platform/RulesEnginePage";
 import DataTrustScorePage from "./pages/platform/DataTrustScorePage";
 import AdminExportsPage from "./pages/admin/AdminExportsPage";
+import BetaActivationPage from "./pages/admin/beta/BetaActivationPage";
 import ExportsPage from "./pages/app/ExportsPage";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
@@ -220,6 +221,7 @@ const App = () => (
             <Route path="/admin/beta/health" element={<PlatformBetaHealth />} />
             <Route path="/admin/beta/billing-check" element={<BetaBillingCheck />} />
             <Route path="/admin/beta/ops" element={<BetaOpsPage />} />
+            <Route path="/admin/beta/activation" element={<BetaActivationPage />} />
             {/* Knowledge System routes */}
             <Route path="/admin/knowledge" element={<KnowledgeBasePage />} />
             <Route path="/admin/knowledge/sources" element={<KnowledgeSourcesPage />} />
