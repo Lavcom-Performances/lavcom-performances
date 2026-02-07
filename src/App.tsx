@@ -72,6 +72,7 @@ import AdminExportsPage from "./pages/admin/AdminExportsPage";
 import BetaActivationPage from "./pages/admin/beta/BetaActivationPage";
 import BetaFeedbackPage from "./pages/admin/beta/BetaFeedbackPage";
 import BetaConversionPage from "./pages/admin/beta/BetaConversionPage";
+import UxFeedbackPage from "./pages/admin/beta/UxFeedbackPage";
 import ExportsPage from "./pages/app/ExportsPage";
 import NotFound from "./pages/NotFound";
 import MentionsLegales from "./pages/MentionsLegales";
@@ -226,6 +227,7 @@ const App = () => (
             <Route path="/admin/beta/activation" element={<BetaActivationPage />} />
             <Route path="/admin/beta/feedback" element={<BetaFeedbackPage />} />
             <Route path="/admin/beta/conversion" element={<BetaConversionPage />} />
+            <Route path="/admin/beta/ux-feedback" element={<UxFeedbackPage />} />
             {/* Knowledge System routes */}
             <Route path="/admin/knowledge" element={<KnowledgeBasePage />} />
             <Route path="/admin/knowledge/sources" element={<KnowledgeSourcesPage />} />

@@ -28,6 +28,7 @@ import {
   HeartPulse,
   Activity,
   MessageSquare,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -108,6 +109,7 @@ export function AdminSidebar({
     { name: t('app:platformAdmin.nav.betaActivation', 'Beta Activation'), href: "/admin/beta/activation", icon: Sparkles },
     { name: t('app:platformAdmin.nav.betaFeedback', 'Beta Feedback'), href: "/admin/beta/feedback", icon: MessageSquare },
     { name: t('app:platformAdmin.nav.betaConversion', 'Beta Conversion'), href: "/admin/beta/conversion", icon: TrendingUp },
+    { name: t('app:platformAdmin.nav.uxFeedback', 'UX Feedback'), href: "/admin/beta/ux-feedback", icon: ClipboardList },
     { name: t('app:platformAdmin.nav.betaBillingCheck', 'Billing Check'), href: "/admin/beta/billing-check", icon: CreditCard },
     { name: t('app:platformAdmin.nav.betaOps', 'Beta Ops'), href: "/admin/beta/ops", icon: Activity },
     { name: t('app:platformAdmin.nav.aiUsage', 'AI Usage'), href: "/admin/ai-usage", icon: Bot },
