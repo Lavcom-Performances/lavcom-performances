@@ -3,9 +3,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, MapPin, Maximize, Clock, Map, Globe, AlertCircle } from "lucide-react";
+import { Building2, MapPin, Maximize, Clock, Map, Globe, AlertCircle, Home } from "lucide-react";
 import { SimulationProject } from "@/types/simulation";
 import { CityAutocomplete } from "./CityAutocomplete";
+import { AddressAutocomplete } from "./AddressAutocomplete";
 import { formatUserInput } from "@/lib/textUtils";
 import { 
   SURFACE_OPTIONS, 
@@ -34,6 +35,16 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
       postal_code: result.postalCode,
       department: result.department,
       location: `${result.city} (${result.postalCode})`
+    });
+  };
+
+  const handleAddressSelect = (result: { address: string; city: string; postalCode: string; department: string }) => {
+    onUpdate({ 
+      address: result.address,
+      city: result.city,
+      postal_code: result.postalCode,
+      department: result.department,
+      location: `${result.address}, ${result.city} (${result.postalCode})`
     });
   };
 
@@ -137,6 +148,24 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
               </SelectContent>
             </Select>
           </div>
+
+          {/* Adresse avec autocomplétion (France uniquement) */}
+          {(project.country === "FR" || !project.country) && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                Adresse du local
+              </Label>
+              <AddressAutocomplete
+                value={project.address || ""}
+                onSelect={handleAddressSelect}
+                placeholder="Rechercher une adresse..."
+              />
+              <p className="text-xs text-muted-foreground">
+                Renseigner l'adresse remplit automatiquement la ville et le code postal
+              </p>
+            </div>
+          )}
 
           {/* Localisation avec autocomplétion */}
           <div className="grid gap-6 md:grid-cols-2">

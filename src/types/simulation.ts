@@ -80,6 +80,7 @@ export interface SimulationProject {
   name: string;
   location: string;
   country?: string;
+  address?: string;
   city?: string;
   postal_code?: string;
   department?: string;
