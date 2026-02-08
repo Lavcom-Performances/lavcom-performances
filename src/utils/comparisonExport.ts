@@ -3,6 +3,7 @@ import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { sanitizeForCsv, buildCsvLine, logExport } from "@/lib/exports";
+import { formatNumberFr } from "@/lib/finance";
 
 interface ComparisonSiteData {
   name: string;
@@ -30,18 +31,17 @@ const COLORS = {
   white: [255, 255, 255] as [number, number, number],
 };
 
-const formatCurrency = (value: number): string => {
+// Bank-grade formatting for jsPDF (no Unicode issues)
+const formatCurrencyPdf = (value: number): string => {
   if (isNaN(value)) return 'N/A';
-  return new Intl.NumberFormat('fr-FR', { 
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0 
-  }).format(Math.round(value)) + ' €';
+  return formatNumberFr(Math.round(value), 0) + ' €';
 };
 
 const formatTrendText = (trend: number | null): string => {
   if (trend === null || isNaN(trend)) return 'N/A';
   const sign = trend > 0 ? '+' : '';
-  return `${sign}${trend.toFixed(1)}%`;
+  // Use comma for decimals (French style)
+  return `${sign}${trend.toFixed(1).replace('.', ',')} %`;
 };
 
 export function exportComparisonPDF(data: ComparisonExportData): void {
@@ -78,9 +78,9 @@ export function exportComparisonPDF(data: ComparisonExportData): void {
     `#${index + 1}`,
     site.name,
     site.city || '-',
-    formatCurrency(site.revenue),
-    site.hasCosts && site.profit !== null ? formatCurrency(site.profit) : 'N/A',
-    site.occupation > 0 ? site.occupation.toFixed(1) : 'N/A',
+    formatCurrencyPdf(site.revenue),
+    site.hasCosts && site.profit !== null ? formatCurrencyPdf(site.profit) : 'N/A',
+    site.occupation > 0 ? site.occupation.toFixed(1).replace('.', ',') : 'N/A',
     formatTrendText(site.trend),
   ]);
   
@@ -260,7 +260,7 @@ export function exportProfitabilityComparisonPDF(data: ProfitabilityComparisonDa
   doc.setFontSize(13);
   doc.setTextColor(...PROFITABILITY_COLORS.darkGray);
   doc.setFont("helvetica", "bold");
-  doc.text(formatCurrency(totalRevenue), margin + kpiWidth * 0.5, kpiY + 6, { align: "center" });
+  doc.text(formatCurrencyPdf(totalRevenue), margin + kpiWidth * 0.5, kpiY + 6, { align: "center" });
   
   // KPI 2: Total Costs
   doc.setFontSize(9);
@@ -270,7 +270,7 @@ export function exportProfitabilityComparisonPDF(data: ProfitabilityComparisonDa
   doc.setFontSize(13);
   doc.setTextColor(...PROFITABILITY_COLORS.teal);
   doc.setFont("helvetica", "bold");
-  doc.text(formatCurrency(totalCosts), margin + kpiWidth * 1.5, kpiY + 6, { align: "center" });
+  doc.text(formatCurrencyPdf(totalCosts), margin + kpiWidth * 1.5, kpiY + 6, { align: "center" });
   
   // KPI 3: Total Profit
   doc.setFontSize(9);
@@ -281,7 +281,7 @@ export function exportProfitabilityComparisonPDF(data: ProfitabilityComparisonDa
   const profitColor = totalProfit >= 0 ? PROFITABILITY_COLORS.green : PROFITABILITY_COLORS.red;
   doc.setTextColor(profitColor[0], profitColor[1], profitColor[2]);
   doc.setFont("helvetica", "bold");
-  doc.text(formatCurrency(totalProfit), margin + kpiWidth * 2.5, kpiY + 6, { align: "center" });
+  doc.text(formatCurrencyPdf(totalProfit), margin + kpiWidth * 2.5, kpiY + 6, { align: "center" });
   
   // KPI 4: Avg Margin
   doc.setFontSize(9);
@@ -292,7 +292,7 @@ export function exportProfitabilityComparisonPDF(data: ProfitabilityComparisonDa
   const marginColor = avgMargin >= 15 ? PROFITABILITY_COLORS.green : avgMargin >= 0 ? PROFITABILITY_COLORS.yellow : PROFITABILITY_COLORS.red;
   doc.setTextColor(marginColor[0], marginColor[1], marginColor[2]);
   doc.setFont("helvetica", "bold");
-  doc.text(`${avgMargin.toFixed(1)}%`, margin + kpiWidth * 3.5, kpiY + 6, { align: "center" });
+  doc.text(`${avgMargin.toFixed(1).replace('.', ',')} %`, margin + kpiWidth * 3.5, kpiY + 6, { align: "center" });
   
   yPos += 38;
   
@@ -309,10 +309,10 @@ export function exportProfitabilityComparisonPDF(data: ProfitabilityComparisonDa
   const tableData = data.sites.map((site, idx) => [
     idx === 0 ? `🏆 ${site.siteName}` : site.siteName,
     site.city || "-",
-    formatCurrency(site.revenue),
-    formatCurrency(site.costs),
-    formatCurrency(site.profit),
-    `${site.margin.toFixed(1)}%`
+    formatCurrencyPdf(site.revenue),
+    formatCurrencyPdf(site.costs),
+    formatCurrencyPdf(site.profit),
+    `${site.margin.toFixed(1).replace('.', ',')} %`
   ]);
   
   autoTable(doc, {
