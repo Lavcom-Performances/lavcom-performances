@@ -69,18 +69,27 @@ export function useFinProject(projectId: string | undefined) {
 export function useCreateFinProject() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { access } = useFinAccess();
+  const { access, refetch: refetchAccess } = useFinAccess();
 
   return useMutation({
     mutationFn: async (data: { name: string; project_type: string; description?: string }) => {
-      if (!access?.workspace_id) {
-        throw new Error("Aucun espace de travail disponible");
+      // If no workspace, try to refetch access (might trigger workspace auto-creation for super admin)
+      let workspaceId = access?.workspace_id;
+      
+      if (!workspaceId) {
+        // Force refetch to potentially create workspace for super admin
+        const refreshedAccess = await refetchAccess();
+        workspaceId = refreshedAccess.data?.workspace_id;
+      }
+      
+      if (!workspaceId) {
+        throw new Error("Aucun espace de travail disponible. Veuillez rafraîchir la page.");
       }
       
       const { data: project, error } = await supabase
         .from("fin_projects")
         .insert({
-          workspace_id: access.workspace_id,
+          workspace_id: workspaceId,
           name: data.name,
           project_type: data.project_type,
           description: data.description || null,
