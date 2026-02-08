@@ -10,11 +10,18 @@ export * from './pdfTheme';
 export { 
   formatEUR, 
   formatEUR2, 
+  formatEURFromEuros,
   formatPct, 
   formatPctValue, 
   formatNumber,
+  formatNumberFr,
   formatYears,
   formatMonths,
   validateBalanceSheet,
-  safeNumber 
+  safeNumber,
+  normalizeNumber,
+  PDF_COLUMN_STYLES,
+  PDF_HEADER_STYLE,
+  PDF_BODY_STYLE,
+  PDF_ALTERNATE_ROW_STYLE,
 } from './pdfFormat';

@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { ReportVariant, ReportSectionConfig, getReportConfigForVariant } from "@/types/report";
+import { formatNumberFr, PDF_HEADER_STYLE, PDF_BODY_STYLE, PDF_ALTERNATE_ROW_STYLE } from "@/lib/finance";
 
 interface MonthlyReportData {
   laundromat: string;
@@ -38,6 +39,11 @@ interface MonthlyReportData {
     ventesTotal: number;
   }>;
 }
+
+// Bank-grade currency formatting - jsPDF safe (no Unicode issues)
+const formatCurrencyPdf = (value: number, decimals = 2): string => {
+  return formatNumberFr(value, decimals) + " €";
+};
 
 // Lavcom brand colors
 const COLORS = {
@@ -100,12 +106,12 @@ export function generateMonthlyReport(
   doc.text("CA TOTAL TTC", margin + 5, kpiStartY + 8);
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text(`${data.summary.caTotal.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`, margin + 5, kpiStartY + 16);
+  doc.text(formatCurrencyPdf(data.summary.caTotal), margin + 5, kpiStartY + 16);
   
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
-  doc.text(`CA ESP: ${data.summary.caEsp.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`, margin + 5, kpiStartY + 24);
-  doc.text(`CA CB: ${data.summary.caCb.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`, margin + 5, kpiStartY + 30);
+  doc.text(`CA ESP: ${formatCurrencyPdf(data.summary.caEsp)}`, margin + 5, kpiStartY + 24);
+  doc.text(`CA CB: ${formatCurrencyPdf(data.summary.caCb)}`, margin + 5, kpiStartY + 30);
 
   // Right KPI box - Ventes
   doc.setFillColor(...COLORS.lightGray);
@@ -131,11 +137,11 @@ export function generateMonthlyReport(
     head: [["Machine", "ESP", "CB", "Total", "CA Prévi", "%"]],
     body: data.machines.map(m => [
       m.name,
-      `${m.caEsp.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
-      `${m.caCb.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
-      `${m.caTotal.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
-      `${m.caPrevisionnel.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
-      `${m.progression}%`,
+      formatCurrencyPdf(m.caEsp),
+      formatCurrencyPdf(m.caCb),
+      formatCurrencyPdf(m.caTotal),
+      formatCurrencyPdf(m.caPrevisionnel),
+      `${m.progression} %`,
     ]),
     theme: "grid",
     headStyles: {
@@ -147,6 +153,14 @@ export function generateMonthlyReport(
     bodyStyles: {
       fontSize: 8,
       textColor: COLORS.darkGray,
+    },
+    columnStyles: {
+      0: { halign: 'left', cellWidth: 50 },
+      1: { halign: 'right', cellWidth: 25 },
+      2: { halign: 'right', cellWidth: 25 },
+      3: { halign: 'right', cellWidth: 28 },
+      4: { halign: 'right', cellWidth: 28 },
+      5: { halign: 'right', cellWidth: 20 },
     },
     alternateRowStyles: {
       fillColor: [245, 245, 245],
@@ -199,7 +213,7 @@ export function generateMonthlyReport(
   doc.text("PANIER MOYEN", margin + 5, bottomY + 7);
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text(`${data.summary.panierMoyen.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`, margin + 5, bottomY + 15);
+  doc.text(formatCurrencyPdf(data.summary.panierMoyen), margin + 5, bottomY + 15);
 
   doc.setFillColor(...COLORS.yellow);
   doc.roundedRect(margin + boxWidth + 10, bottomY, boxWidth, 20, 2, 2, "F");
@@ -218,7 +232,7 @@ export function generateMonthlyReport(
   doc.text("MOYENNE/JOUR", margin + (boxWidth + 10) * 2 + 5, bottomY + 7);
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text(`${data.summary.moyenneJour.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`, margin + (boxWidth + 10) * 2 + 5, bottomY + 15);
+  doc.text(formatCurrencyPdf(data.summary.moyenneJour), margin + (boxWidth + 10) * 2 + 5, bottomY + 15);
 
   // Page 2 - Daily details (only for full report)
   if (config.dailyTable) {
@@ -238,9 +252,9 @@ export function generateMonthlyReport(
       head: [["Date", "CA ESP", "CA CB", "Total", "Ventes ESP", "Ventes CB", "Total"]],
       body: data.dailyData.map(d => [
         d.date,
-        `${d.caEsp.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
-        `${d.caCb.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
-        `${d.caTotal.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
+        formatCurrencyPdf(d.caEsp),
+        formatCurrencyPdf(d.caCb),
+        formatCurrencyPdf(d.caTotal),
         d.ventesEsp.toString(),
         d.ventesCb.toString(),
         d.ventesTotal.toString(),
@@ -255,6 +269,15 @@ export function generateMonthlyReport(
       bodyStyles: {
         fontSize: 7,
         textColor: COLORS.darkGray,
+      },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 25 },
+        1: { halign: 'right', cellWidth: 25 },
+        2: { halign: 'right', cellWidth: 25 },
+        3: { halign: 'right', cellWidth: 28 },
+        4: { halign: 'right', cellWidth: 22 },
+        5: { halign: 'right', cellWidth: 22 },
+        6: { halign: 'right', cellWidth: 22 },
       },
       alternateRowStyles: {
         fillColor: [250, 250, 250],

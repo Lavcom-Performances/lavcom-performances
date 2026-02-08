@@ -2,12 +2,19 @@
  * PDF Formatting Helpers
  * Bank-grade number, currency, and percentage formatting for financial PDFs
  * 
- * Key rules:
- * - Never insert slashes as separators
+ * CRITICAL RULES:
+ * - Never insert slashes as separators (jsPDF cannot render Unicode NNBSP)
+ * - Use REGULAR SPACE for thousands separator (not narrow no-break space)
+ * - Use COMMA for decimals (French style)
  * - Normalize -0 to 0
- * - Use French locale with proper thousand separators (narrow no-break space)
  * - Return "—" for null/undefined values
+ * - Right-align numeric columns in tables
+ * - Use "ans" for years, "%" for rates, "€" for currency (NEVER mix units)
  */
+
+// =====================================================
+// CORE PARSING & NORMALIZATION
+// =====================================================
 
 /**
  * Parse any value to a number, return null if invalid
@@ -23,7 +30,7 @@ export function safeNumber(n: unknown): number | null {
  * @param value - The number to normalize
  * @param precision - Decimal precision (default 2)
  */
-function normalizeNumber(value: number, precision = 2): number {
+export function normalizeNumber(value: number, precision = 2): number {
   // Round to precision to avoid floating point issues
   const rounded = Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
   // Normalize -0 to 0
@@ -31,20 +38,44 @@ function normalizeNumber(value: number, precision = 2): number {
   return rounded;
 }
 
-/**
- * Remove any slash artifacts from formatted strings (defensive cleanup)
- * Targets patterns like "140 /302 €" or "140/ 302 €"
- */
-function cleanSlashArtifacts(text: string): string {
-  // Replace various slash patterns with narrow no-break space
-  return text
-    .replace(/\s*\/\s*/g, '\u202F') // Replace slash surrounded by spaces with NNBSP
-    .replace(/\u00A0\/\u00A0/g, '\u202F') // Replace NBSP/NBSP patterns
-    .replace(/\s\/\s/g, '\u202F'); // Standard space slash space
-}
+// =====================================================
+// CORE FRENCH NUMBER FORMATTING (jsPDF-safe)
+// =====================================================
 
 /**
- * Format a number as EUR currency (whole euros, no decimals)
+ * Format a number with French-style separators
+ * CRITICAL: Uses REGULAR SPACE for thousands (not Unicode NNBSP which shows as "/" in jsPDF)
+ * 
+ * @param value - The number to format
+ * @param decimals - Number of decimal places (default 0)
+ * @returns Formatted string like "59 000" or "1 234,56"
+ */
+export function formatNumberFr(value: number, decimals = 0): string {
+  const isNegative = value < 0;
+  const absValue = Math.abs(value);
+  
+  // Split into integer and decimal parts
+  const fixed = absValue.toFixed(decimals);
+  const [intPart, decPart] = fixed.split(".");
+  
+  // Add thousand separators with REGULAR SPACE (ASCII 32)
+  const withSeparators = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  
+  // Reassemble with comma for decimals (French style)
+  let result = withSeparators;
+  if (decimals > 0 && decPart) {
+    result += "," + decPart;
+  }
+  
+  return isNegative ? "-" + result : result;
+}
+
+// =====================================================
+// CURRENCY FORMATTING
+// =====================================================
+
+/**
+ * Format a number as EUR currency (default: whole euros, no decimals)
  * @param amountCents - Amount in cents (or euros if fromCents=false)
  * @param options - Formatting options
  * @returns Formatted string like "140 302 €" or "—" if null
@@ -61,14 +92,7 @@ export function formatEUR(
   const euros = fromCents ? safe / 100 : safe;
   const normalized = normalizeNumber(euros, decimals);
   
-  const formatted = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }).format(normalized);
-  
-  return cleanSlashArtifacts(formatted);
+  return formatNumberFr(normalized, decimals) + " €";
 }
 
 /**
@@ -93,11 +117,15 @@ export function formatEURFromEuros(
   return formatEUR(amount, { fromCents: false, decimals });
 }
 
+// =====================================================
+// PERCENTAGE FORMATTING
+// =====================================================
+
 /**
- * Format a percentage from a ratio
+ * Format a percentage from a ratio (num/denom)
  * @param num - Numerator
  * @param denom - Denominator
- * @returns Formatted percentage or "—" if denominator is 0/null
+ * @returns Formatted percentage like "25,0 %" or "—" if denominator is 0/null
  */
 export function formatPct(
   num: number | null | undefined,
@@ -111,35 +139,31 @@ export function formatPct(
   }
   
   const ratio = normalizeNumber(safeNum / safeDenom, 4);
+  const percent = ratio * 100;
   
-  const formatted = new Intl.NumberFormat('fr-FR', {
-    style: 'percent',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(ratio);
-  
-  return cleanSlashArtifacts(formatted);
+  // Format with French comma for decimals
+  return percent.toFixed(1).replace(".", ",") + " %";
 }
 
 /**
  * Format a percentage from a decimal value (0.25 = 25%)
  * @param value - Decimal value (0-1)
- * @returns Formatted percentage or "—" if null
+ * @returns Formatted percentage like "25,0 %" or "—" if null
  */
 export function formatPctValue(value: number | null | undefined): string {
   const safe = safeNumber(value);
   if (safe === null) return '—';
   
   const normalized = normalizeNumber(safe, 4);
+  const percent = normalized * 100;
   
-  const formatted = new Intl.NumberFormat('fr-FR', {
-    style: 'percent',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(normalized);
-  
-  return cleanSlashArtifacts(formatted);
+  // Format with French comma for decimals
+  return percent.toFixed(1).replace(".", ",") + " %";
 }
+
+// =====================================================
+// PLAIN NUMBER FORMATTING
+// =====================================================
 
 /**
  * Format a plain number with French locale (thousand separators)
@@ -152,14 +176,12 @@ export function formatNumber(
   if (safe === null) return '—';
   
   const normalized = normalizeNumber(safe, decimals);
-  
-  const formatted = new Intl.NumberFormat('fr-FR', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }).format(normalized);
-  
-  return cleanSlashArtifacts(formatted);
+  return formatNumberFr(normalized, decimals);
 }
+
+// =====================================================
+// DURATION FORMATTING
+// =====================================================
 
 /**
  * Format a duration in years (e.g., "7 ans")
@@ -188,6 +210,10 @@ export function formatMonths(value: number | null | undefined): string {
   return `${normalized} mois`;
 }
 
+// =====================================================
+// VALIDATION HELPERS
+// =====================================================
+
 /**
  * Validate balance sheet consistency
  * Returns true if assets and liabilities are balanced (within 1€ tolerance)
@@ -206,3 +232,46 @@ export function validateBalanceSheet(
     difference,
   };
 }
+
+// =====================================================
+// PDF TABLE STYLING PRESETS
+// =====================================================
+
+/**
+ * Standard column styles for financial PDF tables
+ * - Numeric columns right-aligned
+ * - Fixed widths for consistency
+ */
+export const PDF_COLUMN_STYLES = {
+  label: { halign: 'left' as const, cellWidth: 60 },
+  currency: { halign: 'right' as const, cellWidth: 30 },
+  currencyWide: { halign: 'right' as const, cellWidth: 40 },
+  percent: { halign: 'right' as const, cellWidth: 25 },
+  number: { halign: 'right' as const, cellWidth: 25 },
+  year: { halign: 'center' as const, cellWidth: 25 },
+};
+
+/**
+ * Standard header styling for financial PDF tables
+ */
+export const PDF_HEADER_STYLE = {
+  fillColor: [47, 117, 181] as [number, number, number], // Brand blue
+  textColor: [255, 255, 255] as [number, number, number],
+  fontStyle: 'bold' as const,
+  fontSize: 9,
+};
+
+/**
+ * Standard body styling for financial PDF tables
+ */
+export const PDF_BODY_STYLE = {
+  fontSize: 9,
+  textColor: [0, 0, 0] as [number, number, number],
+};
+
+/**
+ * Alternate row styling for financial PDF tables
+ */
+export const PDF_ALTERNATE_ROW_STYLE = {
+  fillColor: [242, 242, 242] as [number, number, number],
+};
