@@ -34,8 +34,10 @@ export function ProtectedRoute({
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated, loading: authLoading, signOut, isEmailVerified } = useAuth();
-  const { isSubscriptionActive, isExpired, loading: subLoading } = useSubscription();
+  // Get platform role FIRST - this is the source of truth for bypass
   const { isPlatformSuperAdmin, isLoading: roleLoading } = usePlatformRole();
+  // useSubscription also uses isPlatformBypass internally
+  const { isSubscriptionActive, isExpired, loading: subLoading, isPlatformBypass } = useSubscription();
 
   useEffect(() => {
     // Guard 1: Not authenticated -> redirect to login
@@ -62,7 +64,8 @@ export function ProtectedRoute({
   }
 
   // Platform super_admin bypasses ALL restrictions (email verification, subscription)
-  if (isPlatformSuperAdmin) {
+  // Check BOTH sources to ensure bypass works correctly
+  if (isPlatformSuperAdmin || isPlatformBypass) {
     return <>{children}</>;
   }
 

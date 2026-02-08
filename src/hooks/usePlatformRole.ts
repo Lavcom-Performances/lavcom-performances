@@ -33,6 +33,17 @@ export function usePlatformRole(): PlatformRoleState {
         supabase.rpc('is_platform_billing', { uid: user.id }),
       ]);
 
+      // Log for debugging if any RPC returned an error
+      if (superAdminResult.error) {
+        console.error('RPC is_platform_super_admin error:', superAdminResult.error);
+      }
+      if (adminResult.error) {
+        console.error('RPC is_platform_admin error:', adminResult.error);
+      }
+      if (billingResult.error) {
+        console.error('RPC is_platform_billing error:', billingResult.error);
+      }
+
       if (superAdminResult.data === true) {
         setRole('super_admin');
       } else if (adminResult.data === true) {
