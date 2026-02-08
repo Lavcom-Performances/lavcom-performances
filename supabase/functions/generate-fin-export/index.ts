@@ -28,15 +28,26 @@ function normalizeNumber(value: number, precision = 2): number {
 }
 
 /**
- * Remove slash artifacts from formatted strings
- * CRITICAL: This prevents "59 /000 €" artifacts
+ * Format a number with French-style thousands separator (regular space)
+ * CRITICAL: jsPDF cannot render Unicode NNBSP (\u202F) - it shows as "/"
+ * Solution: Use custom formatting with regular spaces only
  */
-function cleanSlashArtifacts(text: string): string {
-  return text
-    .replace(/\s*\/\s*/g, "\u202F")
-    .replace(/\u00A0\/\u00A0/g, "\u202F")
-    .replace(/\s\/\s/g, "\u202F")
-    .replace(/\//g, ""); // Remove any remaining slashes in numbers
+function formatNumberFr(value: number, decimals = 0): string {
+  const isNegative = value < 0;
+  const absValue = Math.abs(value);
+  
+  const fixed = absValue.toFixed(decimals);
+  const [intPart, decPart] = fixed.split(".");
+  
+  // Add thousand separators (regular space)
+  const withSeparators = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  
+  let result = withSeparators;
+  if (decimals > 0 && decPart) {
+    result += "," + decPart;
+  }
+  
+  return isNegative ? "-" + result : result;
 }
 
 /**
@@ -47,13 +58,7 @@ function formatCurrency(value: number): string {
   if (safe === null) return "—";
   
   const normalized = normalizeNumber(safe, 0);
-  const formatted = new Intl.NumberFormat("fr-FR", { 
-    style: "currency", 
-    currency: "EUR", 
-    maximumFractionDigits: 0 
-  }).format(normalized);
-  
-  return cleanSlashArtifacts(formatted);
+  return formatNumberFr(normalized, 0) + " €";
 }
 
 function formatDate(date: Date): string {

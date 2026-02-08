@@ -27,8 +27,9 @@ const EXPLANATIONS = {
 };
 
 // =====================================================
-// FORMATTING HELPERS (Bank-Grade)
-// Never insert slashes, normalize -0, use French locale
+// FORMATTING HELPERS (Bank-Grade for jsPDF)
+// CRITICAL: jsPDF cannot render Unicode NNBSP (\u202F) properly - it shows as "/"
+// Solution: Use custom formatting with regular spaces only
 // =====================================================
 
 /**
@@ -50,20 +51,32 @@ function normalizeNumber(value: number, precision = 2): number {
 }
 
 /**
- * Remove any slash artifacts from formatted strings
- * CRITICAL: This prevents "59 /000 €" artifacts
+ * Format a number with French-style thousands separator (regular space)
+ * This avoids jsPDF issues with Unicode characters like NNBSP
  */
-function cleanSlashArtifacts(text: string): string {
-  return text
-    .replace(/\s*\/\s*/g, "\u202F") // slash with spaces -> narrow no-break space
-    .replace(/\u00A0\/\u00A0/g, "\u202F")
-    .replace(/\s\/\s/g, "\u202F")
-    .replace(/\//g, ""); // Remove any remaining slashes in numbers
+function formatNumberFr(value: number, decimals = 0): string {
+  const isNegative = value < 0;
+  const absValue = Math.abs(value);
+  
+  // Split into integer and decimal parts
+  const fixed = absValue.toFixed(decimals);
+  const [intPart, decPart] = fixed.split(".");
+  
+  // Add thousand separators (regular space)
+  const withSeparators = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  
+  // Reassemble with comma for decimals (French style)
+  let result = withSeparators;
+  if (decimals > 0 && decPart) {
+    result += "," + decPart;
+  }
+  
+  return isNegative ? "-" + result : result;
 }
 
 /**
  * Format euros from euros (not cents)
- * Uses Intl.NumberFormat with fr-FR locale for proper thousand separators
+ * Uses custom formatting to avoid jsPDF Unicode issues
  */
 function formatEUR(amount: number | null | undefined, decimals = 0): string {
   const safe = safeNumber(amount);
@@ -71,16 +84,8 @@ function formatEUR(amount: number | null | undefined, decimals = 0): string {
   
   const normalized = normalizeNumber(safe, decimals);
   
-  // Use Intl.NumberFormat for proper formatting
-  const formatted = new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  }).format(normalized);
-  
-  // Defensive cleanup - remove any slash artifacts
-  return cleanSlashArtifacts(formatted);
+  // Use custom French formatting with regular space separator
+  return formatNumberFr(normalized, decimals) + " €";
 }
 
 /**
@@ -106,6 +111,7 @@ function formatYears(value: number | null | undefined): string {
 
 /**
  * Format percentage from ratio (num/denom)
+ * Uses custom formatting to avoid jsPDF Unicode issues
  */
 function formatPct(num: number | null | undefined, denom: number | null | undefined): string {
   const safeNum = safeNumber(num);
@@ -114,30 +120,25 @@ function formatPct(num: number | null | undefined, denom: number | null | undefi
   if (safeNum === null || safeDenom === null || safeDenom === 0) return "—";
   
   const ratio = normalizeNumber(safeNum / safeDenom, 4);
-  const formatted = new Intl.NumberFormat("fr-FR", {
-    style: "percent",
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(ratio);
+  const percent = ratio * 100;
   
-  return cleanSlashArtifacts(formatted);
+  // Format with French comma for decimals
+  return percent.toFixed(1).replace(".", ",") + " %";
 }
 
 /**
  * Format percentage from decimal value (0.25 = 25%)
+ * Uses custom formatting to avoid jsPDF Unicode issues
  */
 function formatPctValue(value: number | null | undefined): string {
   const safe = safeNumber(value);
   if (safe === null) return "—";
   
   const normalized = normalizeNumber(safe, 4);
-  const formatted = new Intl.NumberFormat("fr-FR", {
-    style: "percent",
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(normalized);
+  const percent = normalized * 100;
   
-  return cleanSlashArtifacts(formatted);
+  // Format with French comma for decimals
+  return percent.toFixed(1).replace(".", ",") + " %";
 }
 
 /**
