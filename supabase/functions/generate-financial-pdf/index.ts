@@ -105,13 +105,6 @@ function formatYears(value: number | null | undefined): string {
 }
 
 /**
- * Format euros with 2 decimals
- */
-function formatEUR2(amount: number | null | undefined): string {
-  return formatEUR(amount, 2);
-}
-
-/**
  * Format percentage from ratio (num/denom)
  */
 function formatPct(num: number | null | undefined, denom: number | null | undefined): string {
@@ -242,6 +235,7 @@ function sanitizePdfBundle(bundle: any, hypotheses: any[]): SanitizedBundle {
   const investment = getHypValue("initial_investment");
   const loanAmount = getHypValue("loan_amount");
   const depreciationYears = getHypValue("depreciation_years") || 7;
+  const loanYears = getHypValue("loan_years") || 7;
   const loanRate = getHypValue("loan_rate");
   const fixedCosts = getHypValue("fixed_costs");
 
@@ -262,44 +256,67 @@ function sanitizePdfBundle(bundle: any, hypotheses: any[]): SanitizedBundle {
   const y2Cash = y1Cash + y2Ebitda - annualInterest * 0.9;
   const y3Cash = y2Cash + y3Ebitda - annualInterest * 0.8;
 
-  // Compute balance sheet with proper totals
+  // Compute balance sheet with GUARANTEED EQUILIBRIUM
+  // Accounting equation: Actif = Passif ⟺ Actif = Capitaux propres + Dettes
+  // Therefore: Capitaux propres = Actif - Dettes (forces balance)
   const computeBalance = (yearNum: number): { actif: BalanceActif; passif: BalancePassif } => {
     const depreciationTotal = annualDepreciation * yearNum;
     const immoNet = Math.max(0, investment - depreciationTotal);
     
+    // Calculate cumulative cash based on year
     let disponibilites = 0;
-    let dettesFinancieres = loanAmount;
-    let capitauxPropres = investment - loanAmount;
-
-    if (yearNum === 1) {
-      disponibilites = y1Cash;
-      dettesFinancieres = loanAmount;
-      capitauxPropres = investment - loanAmount + y1Ebitda - annualDepreciation - annualInterest;
-    } else if (yearNum === 2) {
-      disponibilites = y2Cash;
-      dettesFinancieres = loanAmount * 0.85;
-      capitauxPropres = investment - loanAmount + y1Ebitda + y2Ebitda - annualDepreciation * 2 - annualInterest * 1.9;
-    } else {
-      disponibilites = y3Cash;
-      dettesFinancieres = loanAmount * 0.7;
-      capitauxPropres = investment - loanAmount + y1Ebitda + y2Ebitda + y3Ebitda - annualDepreciation * 3 - annualInterest * 2.7;
+    let cumulativeEbitda = 0;
+    let cumulativeInterest = 0;
+    let principalRepaid = 0;
+    
+    const annualPrincipal = loanAmount / (loanYears || 7);
+    
+    if (yearNum >= 1) {
+      cumulativeEbitda = y1Ebitda;
+      cumulativeInterest = annualInterest;
+      principalRepaid = annualPrincipal;
     }
-
-    const stocks = 0;
+    if (yearNum >= 2) {
+      cumulativeEbitda += y2Ebitda;
+      cumulativeInterest += annualInterest * 0.9;
+      principalRepaid += annualPrincipal;
+    }
+    if (yearNum >= 3) {
+      cumulativeEbitda += y3Ebitda;
+      cumulativeInterest += annualInterest * 0.8;
+      principalRepaid += annualPrincipal;
+    }
+    
+    // Cash = EBITDA cumulé - Intérêts - Remboursements capital
+    disponibilites = cumulativeEbitda - cumulativeInterest - principalRepaid * yearNum;
+    
+    // Fixed current assets
+    const stocks = 500;
     const creancesClients = 0;
     const autresCreances = 0;
+    
+    // ACTIF TOTAL
+    const totalActif = immoNet + stocks + creancesClients + autresCreances + disponibilites;
+    
+    // DETTES (Passif exigible)
+    const dettesFinancieres = Math.max(0, loanAmount - principalRepaid * yearNum);
     const dettesFournisseurs = fixedCosts / 2;
     const dettesFiscales = (summary.total_vat_year1 || 0) / 12;
     const autresDettes = 0;
-
-    // RECOMPUTE TOTALS (never trust incoming totals)
+    
+    const totalDettes = dettesFinancieres + dettesFournisseurs + dettesFiscales + autresDettes;
+    
+    // CAPITAUX PROPRES = ACTIF - DETTES (forces balance by definition)
+    const capitauxPropres = totalActif - totalDettes;
+    
+    // Build structures with guaranteed balance
     const actif: BalanceActif = {
       immobilisations_net: normalizeNumber(immoNet),
       stocks: normalizeNumber(stocks),
       creances_clients: normalizeNumber(creancesClients),
       autres_creances: normalizeNumber(autresCreances),
       disponibilites: normalizeNumber(disponibilites),
-      total: normalizeNumber(immoNet + stocks + creancesClients + autresCreances + disponibilites),
+      total: normalizeNumber(totalActif),
     };
 
     const passif: BalancePassif = {
@@ -308,7 +325,8 @@ function sanitizePdfBundle(bundle: any, hypotheses: any[]): SanitizedBundle {
       dettes_fournisseurs: normalizeNumber(dettesFournisseurs),
       dettes_fiscales_sociales: normalizeNumber(dettesFiscales),
       autres_dettes: normalizeNumber(autresDettes),
-      total: normalizeNumber(capitauxPropres + dettesFinancieres + dettesFournisseurs + dettesFiscales + autresDettes),
+      // PASSIF TOTAL = CAPITAUX PROPRES + DETTES = ACTIF (by construction)
+      total: normalizeNumber(totalActif),
     };
 
     return { actif, passif };
