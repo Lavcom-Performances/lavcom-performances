@@ -160,3 +160,49 @@ export function formatNumber(
   
   return cleanSlashArtifacts(formatted);
 }
+
+/**
+ * Format a duration in years (e.g., "7 ans")
+ * IMPORTANT: Never return "€" for duration values
+ */
+export function formatYears(value: number | null | undefined): string {
+  const safe = safeNumber(value);
+  if (safe === null) return '—';
+  
+  const normalized = Math.round(safe);
+  if (normalized === 0) return '—';
+  
+  return normalized === 1 ? '1 an' : `${normalized} ans`;
+}
+
+/**
+ * Format a duration in months (e.g., "12 mois")
+ */
+export function formatMonths(value: number | null | undefined): string {
+  const safe = safeNumber(value);
+  if (safe === null) return '—';
+  
+  const normalized = Math.round(safe);
+  if (normalized === 0) return '—';
+  
+  return `${normalized} mois`;
+}
+
+/**
+ * Validate balance sheet consistency
+ * Returns true if assets and liabilities are balanced (within 1€ tolerance)
+ */
+export function validateBalanceSheet(
+  totalAssets: number | null | undefined,
+  totalLiabilities: number | null | undefined
+): { isValid: boolean; difference: number } {
+  const safeAssets = safeNumber(totalAssets) || 0;
+  const safeLiabilities = safeNumber(totalLiabilities) || 0;
+  
+  const difference = Math.abs(safeAssets - safeLiabilities);
+  
+  return {
+    isValid: difference <= 1,
+    difference,
+  };
+}

@@ -1,13 +1,15 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { TrendingUp, TrendingDown, Calculator, RefreshCw } from "lucide-react";
+import { TrendingUp, TrendingDown, Calculator, RefreshCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useFinProject } from "@/hooks/useFinProjects";
 import { useFinForecasts, useComputeForecast, useAnnualSummary } from "@/hooks/useFinForecast";
+import { useFinLineItems } from "@/hooks/useFinLineItems";
 import { useFinAccess } from "@/hooks/useFinAccess";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +41,7 @@ function KPICard({ title, value, trend, className }: {
 
 export default function PrevisionnelPage() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const projectId = searchParams.get("project");
   const [horizonYears, setHorizonYears] = useState("3");
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
@@ -46,10 +49,14 @@ export default function PrevisionnelPage() {
   const { access } = useFinAccess();
   const { data: project } = useFinProject(projectId || undefined);
   const { data: forecasts, isLoading, refetch } = useFinForecasts(projectId || undefined);
+  const { data: lineItems } = useFinLineItems(projectId || undefined);
   const computeForecast = useComputeForecast();
   
   const annualSummary = useAnnualSummary(forecasts);
   const isReadOnly = access?.read_only || project?.status === "ARCHIVED";
+  
+  // Check if line items exist (needed for forecast computation)
+  const hasLineItems = lineItems && lineItems.filter(i => i.is_active).length > 0;
 
   if (!projectId) {
     return (
@@ -119,15 +126,41 @@ export default function PrevisionnelPage() {
         </div>
       </div>
 
+      {/* Alert if no line items configured */}
+      {!hasLineItems && (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Configuration requise</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>
+              Ajoutez au moins une machine ou un service avec son prix et taux d'utilisation 
+              pour calculer le prévisionnel.
+            </span>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate(`/projections/machines?project=${projectId}`)}
+            >
+              Configurer les machines
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {forecasts?.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Calculator className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-medium mb-2">Aucun prévisionnel</h3>
             <p className="text-muted-foreground text-center mb-4">
-              Définissez vos hypothèses puis calculez le prévisionnel
+              {hasLineItems 
+                ? "Cliquez sur Calculer pour générer vos projections financières"
+                : "Configurez d'abord vos machines et services puis calculez le prévisionnel"}
             </p>
-            <Button onClick={handleRecalculate} disabled={computeForecast.isPending}>
+            <Button 
+              onClick={handleRecalculate} 
+              disabled={computeForecast.isPending || !hasLineItems}
+            >
               <Calculator className="h-4 w-4 mr-2" />
               Calculer maintenant
             </Button>

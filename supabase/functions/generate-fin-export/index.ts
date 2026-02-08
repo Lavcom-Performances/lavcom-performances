@@ -9,8 +9,51 @@ const corsHeaders = {
 
 const MONTH_NAMES = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
+/**
+ * Safe number parsing - return null if invalid
+ */
+function safeNumber(n: unknown): number | null {
+  if (n === null || n === undefined) return null;
+  const parsed = typeof n === "number" ? n : Number(n);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+/**
+ * Normalize number: remove -0, round to precision
+ */
+function normalizeNumber(value: number, precision = 2): number {
+  const rounded = Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
+  if (Math.abs(rounded) < Math.pow(10, -precision)) return 0;
+  return rounded;
+}
+
+/**
+ * Remove slash artifacts from formatted strings
+ * CRITICAL: This prevents "59 /000 €" artifacts
+ */
+function cleanSlashArtifacts(text: string): string {
+  return text
+    .replace(/\s*\/\s*/g, "\u202F")
+    .replace(/\u00A0\/\u00A0/g, "\u202F")
+    .replace(/\s\/\s/g, "\u202F")
+    .replace(/\//g, ""); // Remove any remaining slashes in numbers
+}
+
+/**
+ * Format currency with bank-grade formatting (no slashes!)
+ */
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+  const safe = safeNumber(value);
+  if (safe === null) return "—";
+  
+  const normalized = normalizeNumber(safe, 0);
+  const formatted = new Intl.NumberFormat("fr-FR", { 
+    style: "currency", 
+    currency: "EUR", 
+    maximumFractionDigits: 0 
+  }).format(normalized);
+  
+  return cleanSlashArtifacts(formatted);
 }
 
 function formatDate(date: Date): string {

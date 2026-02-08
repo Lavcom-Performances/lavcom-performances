@@ -77,12 +77,25 @@ export function useComputeForecast() {
       queryClient.invalidateQueries({ queryKey: ["fin-forecasts", variables.projectId] });
       toast({ title: "Prévisionnel calculé", description: "Les projections ont été mises à jour." });
     },
-    onError: (error) => {
-      toast({ 
-        title: "Erreur de calcul", 
-        description: error.message,
-        variant: "destructive" 
-      });
+    onError: (error: Error) => {
+      // Check for specific error codes
+      const message = error.message || "";
+      
+      if (message.includes("MISSING_LINE_ITEMS")) {
+        // Extract the user-friendly message
+        const cleanMessage = message.replace("MISSING_LINE_ITEMS:", "").trim();
+        toast({ 
+          title: "Configuration requise", 
+          description: cleanMessage || "Ajoutez au moins une ligne machine/service avec un prix et un taux d'utilisation.",
+          variant: "default",
+        });
+      } else {
+        toast({ 
+          title: "Erreur de calcul", 
+          description: message,
+          variant: "destructive" 
+        });
+      }
     },
   });
 }

@@ -27,7 +27,8 @@ const EXPLANATIONS = {
 };
 
 // =====================================================
-// FORMATTING HELPERS
+// FORMATTING HELPERS (Bank-Grade)
+// Never insert slashes, normalize -0, use French locale
 // =====================================================
 
 /**
@@ -50,22 +51,27 @@ function normalizeNumber(value: number, precision = 2): number {
 
 /**
  * Remove any slash artifacts from formatted strings
+ * CRITICAL: This prevents "59 /000 €" artifacts
  */
 function cleanSlashArtifacts(text: string): string {
   return text
-    .replace(/\s*\/\s*/g, "\u202F")
+    .replace(/\s*\/\s*/g, "\u202F") // slash with spaces -> narrow no-break space
     .replace(/\u00A0\/\u00A0/g, "\u202F")
-    .replace(/\s\/\s/g, "\u202F");
+    .replace(/\s\/\s/g, "\u202F")
+    .replace(/\//g, ""); // Remove any remaining slashes in numbers
 }
 
 /**
  * Format euros from euros (not cents)
+ * Uses Intl.NumberFormat with fr-FR locale for proper thousand separators
  */
 function formatEUR(amount: number | null | undefined, decimals = 0): string {
   const safe = safeNumber(amount);
   if (safe === null) return "—";
   
   const normalized = normalizeNumber(safe, decimals);
+  
+  // Use Intl.NumberFormat for proper formatting
   const formatted = new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
@@ -73,7 +79,29 @@ function formatEUR(amount: number | null | undefined, decimals = 0): string {
     maximumFractionDigits: decimals,
   }).format(normalized);
   
+  // Defensive cleanup - remove any slash artifacts
   return cleanSlashArtifacts(formatted);
+}
+
+/**
+ * Format euros with 2 decimals
+ */
+function formatEUR2(amount: number | null | undefined): string {
+  return formatEUR(amount, 2);
+}
+
+/**
+ * Format duration in years (e.g., "7 ans")
+ * IMPORTANT: Never return "€" for duration values!
+ */
+function formatYears(value: number | null | undefined): string {
+  const safe = safeNumber(value);
+  if (safe === null) return "—";
+  
+  const normalized = Math.round(safe);
+  if (normalized === 0) return "—";
+  
+  return normalized === 1 ? "1 an" : `${normalized} ans`;
 }
 
 /**
@@ -619,6 +647,24 @@ Deno.serve(async (req) => {
     const b2 = data.balance.year2;
     const b3 = data.balance.year3;
 
+    // BALANCE SHEET VALIDATION - Bank requirement
+    const validateBalance = (year: number, actifTotal: number, passifTotal: number) => {
+      const diff = Math.abs(actifTotal - passifTotal);
+      if (diff > 1) {
+        console.warn(`Balance sheet year ${year}: Actif=${actifTotal}, Passif=${passifTotal}, Diff=${diff}`);
+      }
+      return diff <= 1;
+    };
+
+    // Validate all years
+    const y1Valid = validateBalance(1, b1.actif.total, b1.passif.total);
+    const y2Valid = validateBalance(2, b2.actif.total, b2.passif.total);
+    const y3Valid = validateBalance(3, b3.actif.total, b3.passif.total);
+    
+    if (!y1Valid || !y2Valid || !y3Valid) {
+      console.error("Balance sheet validation failed - totals do not match");
+    }
+
     const balanceRows = [
       ["ACTIF", "", "", ""],
       ["Immobilisations (net)", formatEUR(b1.actif.immobilisations_net), formatEUR(b2.actif.immobilisations_net), formatEUR(b3.actif.immobilisations_net)],
@@ -638,7 +684,7 @@ Deno.serve(async (req) => {
 
     autoTable(doc, {
       startY: currentY,
-      head: [["Poste", "Année 1", "Année 2", "Année 3"]],
+      head: [["Poste", "Exercice 1", "Exercice 2", "Exercice 3"]],
       body: balanceRows,
       theme: "plain",
       headStyles: { fillColor: BRAND_BLUE, textColor: [255, 255, 255], fontStyle: "bold" },

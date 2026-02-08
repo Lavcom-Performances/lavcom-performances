@@ -24,8 +24,8 @@ export const DEFAULT_HYPOTHESES: { category: HypothesisCategory; key: string; va
   { category: "INVESTMENT", key: "initial_investment", value: 80000, label: "Investissement initial", unit: "€", meta: {} },
   { category: "INVESTMENT", key: "depreciation_years", value: 7, label: "Durée d'amortissement", unit: "ans", meta: {} },
   
-  // Revenus
-  { category: "REVENUE", key: "monthly_revenue", value: 5000, label: "CA mensuel estimé", unit: "€/mois", meta: {} },
+  // Revenus - NOTE: monthly_revenue is now computed from line items, not a hypothesis!
+  // The following are optional modifiers only
   { category: "REVENUE", key: "annual_growth_rate", value: 0.05, label: "Croissance annuelle", unit: "%", meta: { isPercentage: true } },
   
   // Charges
