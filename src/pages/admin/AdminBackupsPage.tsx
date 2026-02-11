@@ -43,11 +43,11 @@ function formatBytes(bytes: number): string {
 function StatusBadge({ status }: { status: string }) {
   switch (status) {
     case "running":
-      return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30"><Loader2 className="h-3 w-3 mr-1 animate-spin" />En cours</Badge>;
+      return <Badge variant="secondary"><Loader2 className="h-3 w-3 mr-1 animate-spin" />En cours</Badge>;
     case "completed":
-      return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30"><CheckCircle2 className="h-3 w-3 mr-1" />Terminé</Badge>;
+      return <Badge variant="default"><CheckCircle2 className="h-3 w-3 mr-1" />Terminé</Badge>;
     case "failed":
-      return <Badge className="bg-red-500/20 text-red-400 border-red-500/30"><XCircle className="h-3 w-3 mr-1" />Échoué</Badge>;
+      return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Échoué</Badge>;
     default:
       return <Badge variant="outline">{status}</Badge>;
   }
