@@ -489,6 +489,77 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_files: {
+        Row: {
+          backup_job_id: string
+          created_at: string | null
+          file_path: string
+          file_size: number
+          file_type: string
+          id: string
+        }
+        Insert: {
+          backup_job_id: string
+          created_at?: string | null
+          file_path: string
+          file_size: number
+          file_type: string
+          id?: string
+        }
+        Update: {
+          backup_job_id?: string
+          created_at?: string | null
+          file_path?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_files_backup_job_id_fkey"
+            columns: ["backup_job_id"]
+            isOneToOne: false
+            referencedRelation: "backup_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      backup_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          started_at: string
+          status: string
+          total_size: number | null
+          trigger_type: string
+          triggered_by: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          started_at?: string
+          status: string
+          total_size?: number | null
+          trigger_type: string
+          triggered_by: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+          total_size?: number | null
+          trigger_type?: string
+          triggered_by?: string
+        }
+        Relationships: []
+      }
       beta_company_overrides: {
         Row: {
           company_id: string
