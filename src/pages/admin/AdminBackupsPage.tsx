@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Database, Download, HardDrive, Loader2, Play, ShieldAlert, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Database, Download, HardDrive, Loader2, Play, ShieldAlert, Clock, CheckCircle2, XCircle, Copy } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -270,9 +270,22 @@ export default function AdminBackupsPage() {
                           </div>
                         )}
                         {job.status === "failed" && job.error_message && (
-                          <span className="text-xs text-destructive truncate max-w-[200px] block" title={job.error_message}>
-                            {job.error_message}
-                          </span>
+                          <div className="flex items-center gap-1 max-w-[300px]">
+                            <span className="text-xs text-destructive truncate" title={job.error_message}>
+                              {job.error_message}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 shrink-0"
+                              onClick={() => {
+                                navigator.clipboard.writeText(job.error_message!);
+                                toast.success("Message copié");
+                              }}
+                            >
+                              <Copy className="h-3 w-3 text-muted-foreground" />
+                            </Button>
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>
