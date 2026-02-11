@@ -30,6 +30,7 @@ import {
   MessageSquare,
   ClipboardList,
   BarChart4,
+  HardDrive,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -92,6 +93,7 @@ export function AdminSidebar({
     { name: t('app:platformAdmin.nav.archives', 'Archives'), href: "/admin/archives", icon: Archive },
     { name: t('app:platformAdmin.nav.complianceReports', 'Compliance Reports'), href: "/admin/compliance-reports", icon: ClipboardCheck },
     { name: t('app:platformAdmin.nav.loginHistory'), href: "/admin/login-history", icon: History },
+    { name: t('app:platformAdmin.nav.backups', 'Backups'), href: "/admin/backups", icon: HardDrive },
   ];
 
   // Billing/sales navigation - only for users with billing access
