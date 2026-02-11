@@ -1,0 +1,176 @@
+name: Full Platform Backup
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: 'Backup job ID from database'
+        required: false
+        type: string
+      trigger_type:
+        description: 'manual or cron'
+        required: false
+        default: 'manual'
+        type: string
+  schedule:
+    - cron: '0 3 * * 0'  # Every Sunday at 03:00 UTC
+
+env:
+  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  BACKUP_CALLBACK_SECRET: ${{ secrets.BACKUP_CALLBACK_SECRET }}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Generate timestamp
+        id: timestamp
+        run: |
+          TS=$(date -u +"%Y%m%d_%H%M%S")
+          YEAR=$(date -u +"%Y")
+          MONTH=$(date -u +"%m")
+          DAY=$(date -u +"%d")
+          echo "ts=$TS" >> $GITHUB_OUTPUT
+          echo "year=$YEAR" >> $GITHUB_OUTPUT
+          echo "month=$MONTH" >> $GITHUB_OUTPUT
+          echo "day=$DAY" >> $GITHUB_OUTPUT
+          echo "folder=backups/$YEAR/$MONTH/$DAY/backup_$TS" >> $GITHUB_OUTPUT
+
+      - name: Create or get job ID
+        id: job
+        run: |
+          if [ -n "${{ github.event.inputs.job_id }}" ]; then
+            echo "id=${{ github.event.inputs.job_id }}" >> $GITHUB_OUTPUT
+          else
+            # For scheduled runs, create the job via callback
+            JOB_ID=$(curl -s -X POST \
+              "https://${SUPABASE_PROJECT_REF}.supabase.co/rest/v1/backup_jobs" \
+              -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+              -H "Content-Type: application/json" \
+              -H "Prefer: return=representation" \
+              -d "{\"trigger_type\": \"cron\", \"status\": \"running\", \"triggered_by\": \"00000000-0000-0000-0000-000000000000\"}" \
+              | jq -r '.[0].id')
+            echo "id=$JOB_ID" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run pg_dump
+        id: pgdump
+        run: |
+          FOLDER="${{ steps.timestamp.outputs.folder }}"
+          mkdir -p /tmp/backup
+          
+          echo "Running pg_dump..."
+          pg_dump "$SUPABASE_DB_URL" \
+            --no-owner \
+            --no-privileges \
+            --clean \
+            --if-exists \
+            -F p \
+            -f /tmp/backup/database_full.sql
+          
+          DB_SIZE=$(stat -c%s /tmp/backup/database_full.sql)
+          echo "db_size=$DB_SIZE" >> $GITHUB_OUTPUT
+          echo "Database dump size: $DB_SIZE bytes"
+
+      - name: Upload database dump to Storage
+        id: upload_db
+        run: |
+          FOLDER="${{ steps.timestamp.outputs.folder }}"
+          DB_PATH="${FOLDER}/database_full.sql"
+          
+          echo "Uploading database dump..."
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            "https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/backups/${DB_PATH}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Content-Type: application/sql" \
+            --data-binary @/tmp/backup/database_full.sql)
+          
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Upload failed with HTTP $HTTP_CODE"
+            exit 1
+          fi
+          
+          echo "db_path=$DB_PATH" >> $GITHUB_OUTPUT
+          echo "Database dump uploaded successfully"
+
+      - name: Generate metadata
+        run: |
+          FOLDER="${{ steps.timestamp.outputs.folder }}"
+          cat > /tmp/backup/metadata.json << EOF
+          {
+            "backup_timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "job_id": "${{ steps.job.outputs.id }}",
+            "trigger_type": "${{ github.event.inputs.trigger_type || 'cron' }}",
+            "database_size": ${{ steps.pgdump.outputs.db_size }},
+            "github_run_id": "${{ github.run_id }}",
+            "github_sha": "${{ github.sha }}"
+          }
+          EOF
+
+      - name: Upload metadata
+        run: |
+          FOLDER="${{ steps.timestamp.outputs.folder }}"
+          
+          curl -s -X POST \
+            "https://${SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/backups/${FOLDER}/metadata.json" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/backup/metadata.json
+
+      - name: Compute total size
+        id: total
+        run: |
+          DB_SIZE=${{ steps.pgdump.outputs.db_size }}
+          echo "total_size=$DB_SIZE" >> $GITHUB_OUTPUT
+
+      - name: Callback - Success
+        if: success()
+        run: |
+          curl -s -X POST \
+            "https://${SUPABASE_PROJECT_REF}.supabase.co/functions/v1/backup-callback" \
+            -H "Content-Type: application/json" \
+            -H "X-Backup-Secret: ${BACKUP_CALLBACK_SECRET}" \
+            -d "{
+              \"job_id\": \"${{ steps.job.outputs.id }}\",
+              \"status\": \"completed\",
+              \"total_size\": ${{ steps.total.outputs.total_size }},
+              \"files\": [
+                {
+                  \"type\": \"database\",
+                  \"path\": \"${{ steps.upload_db.outputs.db_path }}\",
+                  \"size\": ${{ steps.pgdump.outputs.db_size }}
+                }
+              ]
+            }"
+
+      - name: Callback - Failure
+        if: failure()
+        run: |
+          curl -s -X POST \
+            "https://${SUPABASE_PROJECT_REF}.supabase.co/functions/v1/backup-callback" \
+            -H "Content-Type: application/json" \
+            -H "X-Backup-Secret: ${BACKUP_CALLBACK_SECRET}" \
+            -d "{
+              \"job_id\": \"${{ steps.job.outputs.id }}\",
+              \"status\": \"failed\",
+              \"error_message\": \"GitHub Actions workflow failed - see run ${{ github.run_id }}\"
+            }"
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf /tmp/backup

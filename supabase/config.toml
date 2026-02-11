@@ -233,3 +233,9 @@ verify_jwt = false
 
 [functions.generate-fin-export]
 verify_jwt = true
+
+[functions.backup-system]
+verify_jwt = false
+
+[functions.backup-callback]
+verify_jwt = false
