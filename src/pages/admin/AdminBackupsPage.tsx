@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Database, Download, HardDrive, Loader2, Play, ShieldAlert, Clock, CheckCircle2, XCircle, Copy } from "lucide-react";
+import { Database, Download, HardDrive, Loader2, Play, ShieldAlert, Clock, CheckCircle2, XCircle, Copy, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -241,7 +241,23 @@ export default function AdminBackupsPage() {
                           {job.trigger_type === "cron" ? "Automatique" : "Manuel"}
                         </Badge>
                       </TableCell>
-                      <TableCell><StatusBadge status={job.status} /></TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1.5">
+                          <StatusBadge status={job.status} />
+                          {job.status === "failed" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 shrink-0"
+                              disabled={triggerBackup.isPending}
+                              onClick={() => triggerBackup.mutate()}
+                              title="Réessayer"
+                            >
+                              <RotateCcw className="h-3 w-3 text-muted-foreground" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell className="text-sm">{formatBytes(job.total_size)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {duration !== null ? `${duration}s` : "—"}
