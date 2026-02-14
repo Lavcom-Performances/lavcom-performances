@@ -2015,6 +2015,63 @@ export type Database = {
         }
         Relationships: []
       }
+      kpi_objectives: {
+        Row: {
+          category: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          machine_label: string | null
+          objective_amount_cents: number
+          period_month: string
+          scope: string
+          site_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          machine_label?: string | null
+          objective_amount_cents: number
+          period_month: string
+          scope: string
+          site_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          machine_label?: string | null
+          objective_amount_cents?: number
+          period_month?: string
+          scope?: string
+          site_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kpi_objectives_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kpi_objectives_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       login_logs: {
         Row: {
           browser: string | null
