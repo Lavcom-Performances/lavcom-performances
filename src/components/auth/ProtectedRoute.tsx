@@ -47,7 +47,7 @@ export function ProtectedRoute({
   }, [authLoading, isAuthenticated, navigate]);
 
   // Show loading while checking auth and role
-  if (authLoading || subLoading || roleLoading) {
+  if (authLoading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -65,8 +65,21 @@ export function ProtectedRoute({
 
   // Platform super_admin bypasses ALL restrictions (email verification, subscription)
   // Check BOTH sources to ensure bypass works correctly
+  // IMPORTANT: Check this BEFORE subscription loading to prevent paywall flash
   if (isPlatformSuperAdmin || isPlatformBypass) {
     return <>{children}</>;
+  }
+
+  // Wait for subscription data only for non-platform-admins
+  if (subLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Chargement...</p>
+        </div>
+      </div>
+    );
   }
 
   // Email not verified - show verification required screen
