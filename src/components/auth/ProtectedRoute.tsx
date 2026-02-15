@@ -66,7 +66,9 @@ export function ProtectedRoute({
   // Platform super_admin bypasses ALL restrictions (email verification, subscription)
   // Check BOTH sources to ensure bypass works correctly
   // IMPORTANT: Check this BEFORE subscription loading to prevent paywall flash
-  if (isPlatformSuperAdmin || isPlatformBypass) {
+  const isBypass = isPlatformSuperAdmin || isPlatformBypass;
+  
+  if (isBypass) {
     return <>{children}</>;
   }
 
