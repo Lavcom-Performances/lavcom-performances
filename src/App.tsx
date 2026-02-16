@@ -8,6 +8,7 @@ import { SimulationLayout } from "@/components/layout/SimulationLayout";
 import { FinProjectLayout } from "@/components/layout/FinProjectLayout";
 import { AdminLayout } from "@/components/platformAdmin/AdminLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ViewModeProvider } from "@/hooks/useViewMode";
 import { DateRangeProvider } from "@/hooks/useDateRange";
 import { RouteTracker } from "@/components/analytics/RouteTracker";
@@ -257,11 +258,13 @@ const App = () => (
           
           {/* Protected app routes with sidebar layout */}
           <Route element={
-            <ProtectedRoute>
-              <DateRangeProvider>
-                <AppLayout />
-              </DateRangeProvider>
-            </ProtectedRoute>
+            <ErrorBoundary>
+              <ProtectedRoute>
+                <DateRangeProvider>
+                  <AppLayout />
+                </DateRangeProvider>
+              </ProtectedRoute>
+            </ErrorBoundary>
           }>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/getting-started" element={<GettingStarted />} />
