@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 interface CityAutocompleteProps {
   value: string;
   onSelect: (result: CitySearchResult) => void;
+  onChange?: (value: string) => void;
   placeholder?: string;
   className?: string;
   country?: string;
@@ -17,6 +18,7 @@ interface CityAutocompleteProps {
 export function CityAutocomplete({ 
   value, 
   onSelect, 
+  onChange,
   placeholder = "Rechercher une ville...",
   className,
   country = "FR",
@@ -58,6 +60,7 @@ export function CityAutocomplete({
     setInputValue(newValue);
     setJustSelected(false);
     setIsOpen(true);
+    onChange?.(newValue);
   };
 
   const handleFocus = () => {
