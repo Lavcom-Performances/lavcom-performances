@@ -2422,6 +2422,27 @@ export type Database = {
         }
         Relationships: []
       }
+      paywall_bypass_allowlist: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       permission_audit_logs: {
         Row: {
           action: string
@@ -3867,6 +3888,7 @@ export type Database = {
         Returns: string
       }
       rpc_has_fin_access: { Args: never; Returns: Json }
+      rpc_has_paywall_bypass: { Args: never; Returns: boolean }
       rpc_increment_ai_usage: {
         Args: {
           p_actor_id: string

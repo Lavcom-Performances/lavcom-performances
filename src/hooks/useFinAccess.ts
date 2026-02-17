@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlatformRole } from "./usePlatformRole";
+import { usePaywallBypass } from "./usePaywallBypass";
 
 export interface FinAccessInfo {
   has_access: boolean;
@@ -19,11 +20,12 @@ export interface FinAccessInfo {
 
 export function useFinAccess() {
   const { isPlatformSuperAdmin, isLoading: roleLoading } = usePlatformRole();
+  const { isBypass: isPaywallBypass, isLoading: bypassLoading } = usePaywallBypass();
 
   const query = useQuery({
-    queryKey: ["fin-access", isPlatformSuperAdmin],
+    queryKey: ["fin-access", isPlatformSuperAdmin, isPaywallBypass],
     queryFn: async (): Promise<FinAccessInfo> => {
-      // Platform super_admin has unlimited access without payment
+      // Platform super_admin OR paywall bypass has unlimited access
       // But still needs a workspace to create projects
       if (isPlatformSuperAdmin) {
         // Get current user
@@ -76,12 +78,12 @@ export function useFinAccess() {
       return data as unknown as FinAccessInfo;
     },
     staleTime: 60 * 1000, // Cache for 1 minute
-    enabled: !roleLoading, // Wait for role check to complete
+    enabled: !roleLoading && !bypassLoading,
   });
 
   return {
     access: query.data,
-    isLoading: query.isLoading || roleLoading,
+    isLoading: query.isLoading || roleLoading || bypassLoading,
     error: query.error,
     refetch: query.refetch,
   };
