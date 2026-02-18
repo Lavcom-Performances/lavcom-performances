@@ -278,6 +278,12 @@ export default function SimulateurPage() {
     }));
   };
 
+  // Prix par défaut pour chaque taille (utilisés quand count passe à 0 et revient > 0)
+  const DEFAULT_PRICES: CustomPrices = {
+    washers: { small: 3.5, medium: 5, large: 7.5 },
+    dryers: { small: 2, medium: 3, large: 4.5 },
+  };
+
   const updateCustomPrice = (
     type: 'washers' | 'dryers',
     size: MachineSize,
@@ -293,6 +299,19 @@ export default function SimulateurPage() {
         },
       },
     }));
+  };
+
+  // Quand le count revient > 0, restaurer le prix par défaut s'il est à 0
+  const updateMachineCountSafe = (
+    type: 'washers' | 'dryers',
+    size: MachineSize,
+    value: number
+  ) => {
+    updateMachineCount(type, size, value);
+    // Si on passe de 0 à > 0, et que le prix est 0, restaurer le prix par défaut
+    if (value > 0 && simulation.customPrices[type][size] === 0) {
+      updateCustomPrice(type, size, DEFAULT_PRICES[type][size]);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -461,17 +480,17 @@ export default function SimulateurPage() {
                         </h4>
                         <NumberStepper
                           value={simulation.machines.washers.small}
-                          onChange={(v) => updateMachineCount('washers', 'small', v)}
+                          onChange={(v) => updateMachineCountSafe('washers', 'small', v)}
                           label={`${t('app:simulateur.machineFleet.small')} (${t('app:simulateur.machineFleet.smallKg')})`}
                         />
                         <NumberStepper
                           value={simulation.machines.washers.medium}
-                          onChange={(v) => updateMachineCount('washers', 'medium', v)}
+                          onChange={(v) => updateMachineCountSafe('washers', 'medium', v)}
                           label={`${t('app:simulateur.machineFleet.medium')} (${t('app:simulateur.machineFleet.mediumKg')})`}
                         />
                         <NumberStepper
                           value={simulation.machines.washers.large}
-                          onChange={(v) => updateMachineCount('washers', 'large', v)}
+                          onChange={(v) => updateMachineCountSafe('washers', 'large', v)}
                           label={`${t('app:simulateur.machineFleet.large')} (${t('app:simulateur.machineFleet.largeKg')})`}
                         />
                       </div>
@@ -483,17 +502,17 @@ export default function SimulateurPage() {
                         </h4>
                         <NumberStepper
                           value={simulation.machines.dryers.small}
-                          onChange={(v) => updateMachineCount('dryers', 'small', v)}
+                          onChange={(v) => updateMachineCountSafe('dryers', 'small', v)}
                           label={`${t('app:simulateur.machineFleet.small')} (${t('app:simulateur.machineFleet.dryerSmallKg')})`}
                         />
                         <NumberStepper
                           value={simulation.machines.dryers.medium}
-                          onChange={(v) => updateMachineCount('dryers', 'medium', v)}
+                          onChange={(v) => updateMachineCountSafe('dryers', 'medium', v)}
                           label={`${t('app:simulateur.machineFleet.medium')} (${t('app:simulateur.machineFleet.dryerMediumKg')})`}
                         />
                         <NumberStepper
                           value={simulation.machines.dryers.large}
-                          onChange={(v) => updateMachineCount('dryers', 'large', v)}
+                          onChange={(v) => updateMachineCountSafe('dryers', 'large', v)}
                           label={`${t('app:simulateur.machineFleet.large')} (${t('app:simulateur.machineFleet.dryerLargeKg')})`}
                         />
                       </div>
@@ -562,7 +581,7 @@ export default function SimulateurPage() {
                         <h4 className="font-medium text-sm flex items-center gap-2">
                           🧺 {t('app:simulateur.pricing.washPrices')}
                         </h4>
-                        {(['small', 'medium', 'large'] as MachineSize[]).map(size => (
+                        {(['small', 'medium', 'large'] as MachineSize[]).filter(size => simulation.machines.washers[size] > 0).map(size => (
                           <div key={size} className="flex items-center justify-between gap-2">
                             <span className="text-sm text-muted-foreground">
                               {t(`app:simulateur.machineFleet.${size}`)}
@@ -570,17 +589,20 @@ export default function SimulateurPage() {
                             <div className="flex items-center gap-1">
                               <Input
                                 type="number"
-                                min={0}
+                                min={0.5}
                                 max={20}
                                 step={0.5}
                                 value={simulation.customPrices.washers[size]}
-                                onChange={(e) => updateCustomPrice('washers', size, Number(e.target.value))}
+                                onChange={(e) => updateCustomPrice('washers', size, Math.max(0.5, Number(e.target.value)))}
                                 className="h-8 w-20 text-sm text-right"
                               />
                               <span className="text-xs text-muted-foreground">€</span>
                             </div>
                           </div>
                         ))}
+                        {(['small', 'medium', 'large'] as MachineSize[]).every(size => simulation.machines.washers[size] === 0) && (
+                          <p className="text-xs text-muted-foreground italic">{t('app:simulateur.pricing.noMachines', 'Aucune machine sélectionnée')}</p>
+                        )}
                       </div>
                       
                       {/* Dryer prices */}
@@ -588,7 +610,7 @@ export default function SimulateurPage() {
                         <h4 className="font-medium text-sm flex items-center gap-2">
                           🔥 {t('app:simulateur.pricing.dryPrices')}
                         </h4>
-                        {(['small', 'medium', 'large'] as MachineSize[]).map(size => (
+                        {(['small', 'medium', 'large'] as MachineSize[]).filter(size => simulation.machines.dryers[size] > 0).map(size => (
                           <div key={size} className="flex items-center justify-between gap-2">
                             <span className="text-sm text-muted-foreground">
                               {t(`app:simulateur.machineFleet.${size}`)}
@@ -596,17 +618,20 @@ export default function SimulateurPage() {
                             <div className="flex items-center gap-1">
                               <Input
                                 type="number"
-                                min={0}
+                                min={0.5}
                                 max={15}
                                 step={0.5}
                                 value={simulation.customPrices.dryers[size]}
-                                onChange={(e) => updateCustomPrice('dryers', size, Number(e.target.value))}
+                                onChange={(e) => updateCustomPrice('dryers', size, Math.max(0.5, Number(e.target.value)))}
                                 className="h-8 w-20 text-sm text-right"
                               />
                               <span className="text-xs text-muted-foreground">€</span>
                             </div>
                           </div>
                         ))}
+                        {(['small', 'medium', 'large'] as MachineSize[]).every(size => simulation.machines.dryers[size] === 0) && (
+                          <p className="text-xs text-muted-foreground italic">{t('app:simulateur.pricing.noMachines', 'Aucune machine sélectionnée')}</p>
+                        )}
                       </div>
                     </div>
                   </CardContent>
