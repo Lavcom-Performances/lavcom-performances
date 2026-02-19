@@ -40,6 +40,19 @@ export function DateRangePicker({
   
   // Calendar display month - track independently for navigation
   const [calendarMonth, setCalendarMonth] = useState<Date>(dateRange?.from || today);
+
+  // Auto-default to last available data period when dateBounds loads
+  useEffect(() => {
+    if (!dateBounds?.max_date) return;
+    if (dateRange?.from || dateRange?.to) return;
+    const lastDataDate = new Date(dateBounds.max_date);
+    const defaultRange = {
+      from: startOfMonth(lastDataDate),
+      to: endOfMonth(lastDataDate),
+    };
+    setSelectedPreset("lastMonth");
+    onDateChange(defaultRange);
+  }, [dateBounds]);
   
   // Quick presets - dynamically include "Toutes les données" only if data exists
   const presets: { key: PresetKey; label: string; getRange: () => DateRange }[] = useMemo(() => {
