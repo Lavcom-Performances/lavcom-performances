@@ -4,8 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 export async function fetchDashboardKpis(siteId: string, startDate: string, endDate: string) {
   const { data, error } = await supabase.rpc("rpc_dashboard_kpis", {
     p_site_id: siteId,
-    p_start_date: startDate,
-    p_end_date: endDate,
+    p_start_date: startDate || null,
+    p_end_date: endDate || null,
   });
   if (error) throw error;
   return data?.[0];
@@ -23,8 +23,8 @@ export async function fetchMonthlyRevenue(siteId: string, year: number) {
 export async function fetchMonthlyRevenueRange(siteId: string, startDate: string, endDate: string) {
   const { data, error } = await supabase.rpc("rpc_monthly_revenue_range" as any, {
     p_site_id: siteId,
-    p_start_date: startDate,
-    p_end_date: endDate,
+    p_start_date: startDate || null,
+    p_end_date: endDate || null,
   });
   if (error) throw error;
   return data ?? [];
@@ -33,8 +33,8 @@ export async function fetchMonthlyRevenueRange(siteId: string, startDate: string
 export async function fetchRecommendations(siteId: string, startDate: string, endDate: string) {
   const { data, error } = await supabase.rpc("rpc_recommendations_v1", {
     p_site_id: siteId,
-    p_start_date: startDate,
-    p_end_date: endDate,
+    p_start_date: startDate || null,
+    p_end_date: endDate || null,
   });
   if (error) throw error;
   return data ?? [];
