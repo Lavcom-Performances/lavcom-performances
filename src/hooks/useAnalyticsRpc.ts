@@ -5,7 +5,7 @@ export function useDashboardKpis(siteId: string, startDate: string, endDate: str
   return useQuery({
     queryKey: ["dashboardKpis", siteId, startDate, endDate],
     queryFn: () => fetchDashboardKpis(siteId, startDate, endDate),
-    enabled: !!siteId,
+    enabled: !!siteId && !!startDate && !!endDate,
   });
 }
 
@@ -29,7 +29,7 @@ export function useRecommendations(siteId: string, startDate: string, endDate: s
   return useQuery({
     queryKey: ["recs", siteId, startDate, endDate],
     queryFn: () => fetchRecommendations(siteId, startDate, endDate),
-    enabled: !!siteId,
+    enabled: !!siteId && !!startDate && !!endDate,
   });
 }
 
