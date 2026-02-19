@@ -44,8 +44,16 @@ export function DateRangePicker({
   // Auto-default to last available data period when dateBounds loads
   useEffect(() => {
     if (!dateBounds?.max_date) return;
-    if (dateRange?.from || dateRange?.to) return;
     const lastDataDate = new Date(dateBounds.max_date);
+    const lastDataMonth = startOfMonth(lastDataDate);
+    const currentDefault = startOfMonth(new Date());
+    // Only override if the current dateRange matches today's month (the fallback default)
+    // meaning the user hasn't made a real selection yet
+    const isStillOnDefault =
+      !dateRange?.from ||
+      (dateRange.from.getFullYear() === currentDefault.getFullYear() &&
+        dateRange.from.getMonth() === currentDefault.getMonth());
+    if (!isStillOnDefault) return;
     const defaultRange = {
       from: startOfMonth(lastDataDate),
       to: endOfMonth(lastDataDate),
