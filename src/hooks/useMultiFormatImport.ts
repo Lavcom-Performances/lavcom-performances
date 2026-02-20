@@ -134,16 +134,18 @@ export function useMultiFormatImport() {
             }
           }
           
-          // Compute dedupe key
+          // Use pre-computed dedupe_key from parseUnified when available
           let dedupeKey: string;
-          if (isWiLine && row.transaction_no) {
-            // WiLine: use site_id + provider + transaction_no
+          if (row.dedupe_key) {
+            dedupeKey = row.dedupe_key;
+          } else if (isWiLine && row.transaction_no) {
+            // Fallback: WiLine dedupe key
             dedupeKey = buildWiLineDedupeKey({
               siteId,
               transactionNo: row.transaction_no,
             });
           } else {
-            // Standard: use existing dedupe key pattern
+            // Fallback: standard dedupe key
             dedupeKey = buildDedupeKeyHashed({
               siteId,
               operationDate: dateStr,
