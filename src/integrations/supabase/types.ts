@@ -2935,6 +2935,7 @@ export type Database = {
           closed_by: string | null
           country_code: string | null
           created_at: string
+          csv_type: string | null
           deleted_at: string | null
           deleted_by: string | null
           department_code: string | null
@@ -2958,6 +2959,7 @@ export type Database = {
           closed_by?: string | null
           country_code?: string | null
           created_at?: string
+          csv_type?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           department_code?: string | null
@@ -2981,6 +2983,7 @@ export type Database = {
           closed_by?: string | null
           country_code?: string | null
           created_at?: string
+          csv_type?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           department_code?: string | null
