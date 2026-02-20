@@ -2015,6 +2015,63 @@ export type Database = {
         }
         Relationships: []
       }
+      kpi_objectives: {
+        Row: {
+          category: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          machine_label: string | null
+          objective_amount_cents: number
+          period_month: string
+          scope: string
+          site_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          machine_label?: string | null
+          objective_amount_cents: number
+          period_month: string
+          scope: string
+          site_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          machine_label?: string | null
+          objective_amount_cents?: number
+          period_month?: string
+          scope?: string
+          site_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kpi_objectives_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kpi_objectives_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       login_logs: {
         Row: {
           browser: string | null
@@ -2153,6 +2210,7 @@ export type Database = {
       operations: {
         Row: {
           amount: number
+          categorie: string | null
           change_eur: number | null
           created_at: string
           dedupe_key: string | null
@@ -2182,6 +2240,7 @@ export type Database = {
         }
         Insert: {
           amount: number
+          categorie?: string | null
           change_eur?: number | null
           created_at?: string
           dedupe_key?: string | null
@@ -2211,6 +2270,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          categorie?: string | null
           change_eur?: number | null
           created_at?: string
           dedupe_key?: string | null
@@ -2362,6 +2422,27 @@ export type Database = {
           route_path?: string
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      paywall_bypass_allowlist: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          reason?: string | null
         }
         Relationships: []
       }
@@ -2857,6 +2938,7 @@ export type Database = {
           closed_by: string | null
           country_code: string | null
           created_at: string
+          csv_type: string | null
           deleted_at: string | null
           deleted_by: string | null
           department_code: string | null
@@ -2880,6 +2962,7 @@ export type Database = {
           closed_by?: string | null
           country_code?: string | null
           created_at?: string
+          csv_type?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           department_code?: string | null
@@ -2903,6 +2986,7 @@ export type Database = {
           closed_by?: string | null
           country_code?: string | null
           created_at?: string
+          csv_type?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           department_code?: string | null
@@ -3601,6 +3685,10 @@ export type Database = {
       }
       count_recovery_codes: { Args: { p_user_id: string }; Returns: number }
       derive_department_code: { Args: { postal_code: string }; Returns: string }
+      fn_classify_operation_category: {
+        Args: { p_machine: string; p_program: string }
+        Returns: string
+      }
       get_last_login_country: { Args: { p_user_id: string }; Returns: string }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       grant_platform_role: {
@@ -3810,6 +3898,7 @@ export type Database = {
         Returns: string
       }
       rpc_has_fin_access: { Args: never; Returns: Json }
+      rpc_has_paywall_bypass: { Args: never; Returns: boolean }
       rpc_increment_ai_usage: {
         Args: {
           p_actor_id: string
