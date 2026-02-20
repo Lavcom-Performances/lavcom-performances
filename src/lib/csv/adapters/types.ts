@@ -76,9 +76,6 @@ export interface CanonicalTransaction {
   
   // Selection state for UI
   selected: boolean;
-
-  // Deduplication (computed client-side)
-  dedupe_key?: string;
 }
 
 /**

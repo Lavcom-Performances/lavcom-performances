@@ -23,7 +23,7 @@ import { MultiCsvLinesPreview } from "./multi-csv/MultiCsvLinesPreview";
 import { MultiCsvSummaryCard } from "./multi-csv/MultiCsvSummaryCard";
 import { ImportResult } from "./csv-import/types";
 import { MultiCsvParsedRow, MultiCsvFile, MAX_FILES_PER_IMPORT, calculateMultiCsvSummary } from "@/lib/csv/multiCsvTypes";
-import { parseUnifiedCsvFile } from "@/lib/csv/parseUnified";
+import { parseMultiCsvFile } from "@/lib/csv/parseMultiCsv";
 import { centsToEuros } from "@/lib/csv/parseAmount";
 
 type ImportStep = "upload" | "preview" | "result";
@@ -147,7 +147,7 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
 
       try {
         const text = await file.text();
-        const parsedRows = parseUnifiedCsvFile(file.name, text);
+        const parsedRows = parseMultiCsvFile(file.name, text);
 
         if (parsedRows.length === 0) {
           newFiles.push({

@@ -22,6 +22,7 @@ import {
   Play,
 } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
+import { DashboardKPIGrid } from "@/components/dashboard/DashboardKPIGrid";
 import { toast } from "sonner";
 import { DateRangePicker } from "@/components/dashboard/DateRangePicker";
 import { MonthlyRevenueChart } from "@/components/dashboard/MonthlyRevenueChart";
@@ -61,6 +62,7 @@ import { InteractiveTutorial } from "@/components/onboarding/InteractiveTutorial
 import { DataFreshnessIndicator } from "@/components/dashboard/DataFreshnessIndicator";
 import { DataQualityBlock } from "@/components/dashboard/DataQualityBlock";
 import { AnonymousBenchmarksBlock } from "@/components/dashboard/AnonymousBenchmarksBlock";
+import { BusinessActionsSection } from "@/components/dashboard/BusinessActionsSection";
 import { RecentActivityWidget } from "@/components/dashboard/RecentActivityWidget";
 import { OrgActivityFeed } from "@/components/dashboard/OrgActivityFeed";
 import { useOrganization } from "@/hooks/useOrganization";
@@ -68,17 +70,6 @@ import { BetaWelcomeCard } from "@/components/beta/BetaWelcomeCard";
 import { BetaEndNoticeBanner } from "@/components/billing/BetaEndNoticeBanner";
 import { useBetaStatus } from "@/hooks/useBetaStatus";
 import { UxClarityQuestion } from "@/components/ux-feedback/UxClarityQuestion";
-
-// TAEX-311: Operator Dashboard components
-import { OperatorHealthKPIs } from "@/components/dashboard/operator/OperatorHealthKPIs";
-import { OperatorTopActions } from "@/components/dashboard/operator/OperatorTopActions";
-import { OperatorMachinesTable } from "@/components/dashboard/operator/OperatorMachinesTable";
-import { OperatorTrendsAndRecords } from "@/components/dashboard/operator/OperatorTrendsAndRecords";
-import { ObjectivesSummaryCard } from "@/components/dashboard/operator/ObjectivesSummaryCard";
-import { DtsBanner } from "@/components/dashboard/operator/DtsBanner";
-import { useDtsStatus, useRecords } from "@/hooks/useOperatorDashboard";
-import { useKpiObjectives } from "@/hooks/useKpiObjectives";
-
 // Animation variants for staggered cards
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -136,6 +127,7 @@ export default function Dashboard() {
       if (foundSite) {
         return { selectedSite: foundSite, siteWasInvalid: false };
       }
+      // Site not found - fallback to default
       return { selectedSite: getDefaultSite(), siteWasInvalid: true };
     }
     return { selectedSite: getDefaultSite(), siteWasInvalid: false };
@@ -181,14 +173,6 @@ export default function Dashboard() {
   const { organization, isCompanyAdmin } = useOrganization();
   const { betaStatus } = useBetaStatus(organization?.id || null);
   const activeLaundromatCount = sites.filter(s => s.status === "active").length;
-
-  // TAEX-311: Operator dashboard hooks
-  const { data: dtsStatus } = useDtsStatus(selectedSite?.id);
-  const { data: records } = useRecords(selectedSite?.id);
-  const { globalObjective, categoryObjectives } = useKpiObjectives();
-
-  const dts = dtsStatus ?? { score: 100, excluded_revenue_cents: 0, top_flags: [], actions_enabled: true };
-
   // Handle analytics recalculation
   const handleRecalculateAnalytics = async () => {
     if (!selectedSite?.id || !user) return;
@@ -210,6 +194,7 @@ export default function Dashboard() {
         count: data?.operations_processed || 0 
       }));
       
+      // Refetch dashboard data
       await refetch();
     } catch (err: any) {
       console.error("Error recalculating analytics:", err);
@@ -286,7 +271,7 @@ export default function Dashboard() {
 
   // Get tab from URL for default tab
   const urlTab = searchParams.get('tab');
-  const defaultTab = urlTab === 'comparatifs' ? 'comparatifs' : 'pilotage';
+  const defaultTab = urlTab === 'comparatifs' ? 'comparatifs' : 'analyses';
 
   // Export PDF handler
   const handleExportPdf = async (options: { selectedCharts: string[]; selectedTables: string[]; orientation: "portrait" | "landscape" }) => {
@@ -429,7 +414,7 @@ export default function Dashboard() {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => navigate("/settings/objectives")}
+              onClick={() => setGoalsDialogOpen(true)}
               className="gap-2"
             >
               <Settings className="h-4 w-4" />
@@ -437,14 +422,10 @@ export default function Dashboard() {
             </Button>
           </div>
         </div>
-        <div className="flex items-center gap-4 flex-wrap">
-          <DateRangePicker 
-            dateRange={dateRange}
-            onDateChange={setDateRange}
-          />
-          {/* DTS Badge inline with date picker */}
-          <DtsBanner dts={dts} />
-        </div>
+        <DateRangePicker 
+          dateRange={dateRange}
+          onDateChange={setDateRange}
+        />
       </div>
 
       {/* Data Quality Block */}
@@ -465,40 +446,109 @@ export default function Dashboard() {
         onConfirm={handleExportPdf}
       />
 
-      <Tabs defaultValue={defaultTab === 'comparatifs' ? 'comparison' : 'pilotage'} className="space-y-6">
+      <Tabs defaultValue={defaultTab === 'comparatifs' ? 'comparison' : 'overview'} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
-          <TabsTrigger value="pilotage">{t('app:dashboard.tabs.pilotage', { defaultValue: 'Pilotage' })}</TabsTrigger>
+          <TabsTrigger value="overview">{t('app:dashboard.tabs.overview')}</TabsTrigger>
           <TabsTrigger value="financial">{t('app:dashboard.tabs.financial')}</TabsTrigger>
           <TabsTrigger value="operations">{t('app:dashboard.tabs.operations')}</TabsTrigger>
           <TabsTrigger value="comparison">{t('app:dashboard.tabs.comparison')}</TabsTrigger>
         </TabsList>
 
-        {/* ============================================ */}
-        {/* TAEX-311: PILOTAGE (New Operator Dashboard) */}
-        {/* ============================================ */}
-        <TabsContent value="pilotage" className="space-y-8">
-          {/* A) Health KPI Cards (4) with comparisons */}
-          <OperatorHealthKPIs stats={stats} globalObjective={globalObjective} />
+        {/* Vue d'ensemble */}
+        <TabsContent value="overview" className="space-y-6">
+          {/* KPI Cards principales - Using RPC function - PRIORITÉ #1 */}
+          <DashboardKPIGrid dateRange={dateRange?.from && dateRange?.to ? { from: dateRange.from, to: dateRange.to } : undefined} />
 
-          {/* B) Top 3 Actions */}
-          <OperatorTopActions stats={stats} dts={dts} globalObjective={globalObjective} />
+          {/* 4 Graphiques principaux - Grille 2x2 */}
+          <motion.div 
+            data-tutorial="charts" 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
+          >
+            {/* 1. CA mensuel - Tendance principale */}
+            <MonthlyRevenueChart startDate={dateRange?.from} endDate={dateRange?.to} />
+            
+            {/* 2. Répartition des paiements - CB/ESP/FI */}
+            <PaymentPieChart data={stats.paymentData} />
+            
+            {/* 3. CA quotidien - Activité récente */}
+            <DailyRevenueChart data={stats.dailyData} />
+            
+            {/* 4. Performance par jour de semaine */}
+            <WeekdayPerformanceChart data={stats.weekdayData} />
+          </motion.div>
 
-          {/* C) Machines Table */}
-          <OperatorMachinesTable stats={stats} categoryObjectives={categoryObjectives} />
+          {/* Business Actions - Après les graphiques */}
+          <BusinessActionsSection stats={stats} isLoading={isLoading} />
 
-          {/* D) Trends + Records */}
-          <OperatorTrendsAndRecords 
-            records={records ?? []} 
-            startDate={dateRange?.from} 
-            endDate={dateRange?.to} 
-          />
+          {/* Expert: Nouveaux KPIs Rentabilité */}
+          {isExpert && stats.totalRevenue > 0 && (
+            <ProfitabilityKPIs
+              lostRevenue={0}
+              avgRotation={stats.totalTransactions > 0 ? stats.totalTransactions / 30 : 0}
+              peakSaturation={0}
+              peakSlot="—"
+            />
+          )}
 
-          {/* E) Objectives Summary */}
-          <ObjectivesSummaryCard 
-            globalObjective={globalObjective} 
-            categoryObjectives={categoryObjectives}
-            currentRevenue={stats.totalRevenue}
-          />
+          {/* Expert: Objectifs et comparaisons rapides */}
+          {isExpert && (
+            <motion.div 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div variants={itemVariants}>
+                <MiniProgressCard 
+                  title="Objectif mensuel" 
+                  current={stats.totalRevenue} 
+                  target={goals.monthly_revenue_goal} 
+                />
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <MiniProgressCard 
+                  title="Cycles réalisés" 
+                  current={stats.totalTransactions} 
+                  target={goals.monthly_transactions_goal} 
+                  unit="cycles"
+                />
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <ComparisonCard 
+                  title="CA Période" 
+                  current={formatCurrency(stats.totalRevenue)} 
+                  previous={formatCurrency(previousRevenue)}
+                  currentLabel="Actuel"
+                  previousLabel="Précédent"
+                  percentageChange={stats.revenueTrend}
+                />
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <ComparisonCard 
+                  title="Transactions" 
+                  current={stats.totalTransactions.toString()} 
+                  previous={Math.round(previousTransactions).toString()}
+                  currentLabel="Actuel"
+                  previousLabel="Précédent"
+                  percentageChange={stats.transactionsTrend}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* Expert: Heatmap */}
+          {isExpert && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
+            >
+              <SalesHeatmap data={stats.heatmapData} />
+            </motion.div>
+          )}
 
           {/* Setup Progress - En bas, discret */}
           {!setupProgress.isComplete && !setupProgress.isLoading && (

@@ -134,18 +134,16 @@ export function useMultiFormatImport() {
             }
           }
           
-          // Use pre-computed dedupe_key from parseUnified when available
+          // Compute dedupe key
           let dedupeKey: string;
-          if (row.dedupe_key) {
-            dedupeKey = row.dedupe_key;
-          } else if (isWiLine && row.transaction_no) {
-            // Fallback: WiLine dedupe key
+          if (isWiLine && row.transaction_no) {
+            // WiLine: use site_id + provider + transaction_no
             dedupeKey = buildWiLineDedupeKey({
               siteId,
               transactionNo: row.transaction_no,
             });
           } else {
-            // Fallback: standard dedupe key
+            // Standard: use existing dedupe key pattern
             dedupeKey = buildDedupeKeyHashed({
               siteId,
               operationDate: dateStr,
@@ -283,22 +281,10 @@ export function useMultiFormatImport() {
           resultMessages.push(...errors);
         }
 
-        // Trigger analytics refresh and DTS scoring
+        // Trigger analytics refresh
         if (insertedCount > 0) {
           refreshWithNotification(siteId, insertedCount).catch((err) => {
             console.warn("Analytics refresh failed:", err);
-          });
-          
-          // TAEX-301: Trigger DTS scoring in background
-          supabase.rpc('compute_dts_for_import', {
-            p_company_id: siteId,
-            p_import_id: batch.id
-          }).then((result) => {
-            if (result.error) {
-              console.warn("DTS computation failed:", result.error);
-            } else {
-              console.log("DTS computed for multi-format import:", result.data);
-            }
           });
         }
 

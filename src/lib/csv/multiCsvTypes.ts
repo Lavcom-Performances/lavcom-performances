@@ -63,9 +63,6 @@ export interface MultiCsvParsedRow {
   prix_fi_cents?: number;
   metadata_raw?: Record<string, unknown>;
   is_mixed_payment?: boolean;
-
-  // Deduplication key (MD5 hash, computed client-side)
-  dedupe_key?: string;
 }
 
 /**

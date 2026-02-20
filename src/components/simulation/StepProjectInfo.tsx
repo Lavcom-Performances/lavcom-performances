@@ -181,7 +181,6 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
               <CityAutocomplete
                 value={project.city || ""}
                 onSelect={handleCitySelect}
-                onChange={(val) => onUpdate({ city: val })}
                 placeholder="Rechercher une ville..."
                 country={project.country || "FR"}
                 hasError={showErrors && !!errors.city}

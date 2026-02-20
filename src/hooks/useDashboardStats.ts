@@ -144,26 +144,18 @@ export function useDashboardStats(dateRange?: DateRange, siteId?: string) {
       }
 
       // Fallback to operations if no analytics data
-      // Use site_id filter + RLS (no user_id filter - matches useOperations behavior)
-      if (!siteId) {
-        setOperations([]);
-        setAnalyticsDaily([]);
-        setAnalyticsKpis([]);
-        setIsLoading(false);
-        return;
-      }
-
       let query = supabase
         .from("operations")
         .select("*")
-        .eq("site_id", siteId)
+        .eq("user_id", user.id)
         .order("operation_date", { ascending: false });
+
+      if (siteId) {
+        query = query.eq("site_id", siteId);
+      }
 
       const oneYearAgo = startOfMonth(subMonths(new Date(), 11));
       query = query.gte("operation_date", format(oneYearAgo, "yyyy-MM-dd"));
-
-      // Avoid the default 1000-row limit that silently truncates data
-      query = query.limit(10000);
 
       const { data, error: fetchError } = await query;
 

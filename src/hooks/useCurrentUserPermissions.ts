@@ -83,7 +83,7 @@ const DEFAULT_PERMISSIONS_BY_ROLE: Record<string, CurrentUserPermissions> = {
     can_view_sites: true,
     can_edit_sites: false,
     can_delete_sites: false,
-    can_import_data: true,
+    can_import_data: false,
     can_export_data: false,
     can_delete_data: false,
     can_view_reports: true,
@@ -97,7 +97,7 @@ const DEFAULT_PERMISSIONS_BY_ROLE: Record<string, CurrentUserPermissions> = {
     can_view_sites: true,
     can_edit_sites: false,
     can_delete_sites: false,
-    can_import_data: true,
+    can_import_data: false,
     can_export_data: false,
     can_delete_data: false,
     can_view_reports: true,
@@ -198,7 +198,6 @@ export function useCurrentUserPermissions() {
         ...DEFAULT_PERMISSIONS_BY_ROLE.guest,
         can_view_sites: true,
         can_view_reports: true,
-        can_import_data: true,
       };
     }
 

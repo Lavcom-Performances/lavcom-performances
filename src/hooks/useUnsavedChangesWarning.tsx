@@ -1,5 +1,5 @@
-import { useEffect, useCallback, useState, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useCallback } from 'react';
+import { useBlocker } from 'react-router-dom';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,21 +18,18 @@ interface UseUnsavedChangesWarningOptions {
 
 /**
  * Hook to warn users when they try to navigate away from a page with unsaved changes.
- * Uses browser beforeunload for tab close/refresh. Does NOT use useBlocker (requires data router).
+ * Handles both browser navigation (back/forward, tab close) and React Router navigation.
  */
 export function useUnsavedChangesWarning({
   isDirty,
   message = "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?",
 }: UseUnsavedChangesWarningOptions) {
-  const [isBlocked, setIsBlocked] = useState(false);
-  const pendingNavigationRef = useRef<string | null>(null);
-  const navigate = useNavigate();
-
   // Handle browser beforeunload event (tab close, refresh, external navigation)
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {
         e.preventDefault();
+        // Modern browsers require returnValue to be set
         e.returnValue = message;
         return message;
       }
@@ -42,22 +39,26 @@ export function useUnsavedChangesWarning({
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty, message]);
 
+  // Handle React Router navigation
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDirty && currentLocation.pathname !== nextLocation.pathname
+  );
+
   const confirmNavigation = useCallback(() => {
-    const target = pendingNavigationRef.current;
-    pendingNavigationRef.current = null;
-    setIsBlocked(false);
-    if (target) {
-      navigate(target);
+    if (blocker.state === 'blocked') {
+      blocker.proceed();
     }
-  }, [navigate]);
+  }, [blocker]);
 
   const cancelNavigation = useCallback(() => {
-    pendingNavigationRef.current = null;
-    setIsBlocked(false);
-  }, []);
+    if (blocker.state === 'blocked') {
+      blocker.reset();
+    }
+  }, [blocker]);
 
   return {
-    isBlocked,
+    isBlocked: blocker.state === 'blocked',
     confirmNavigation,
     cancelNavigation,
   };

@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
 import { usePlatformRole } from '@/hooks/usePlatformRole';
-import { usePaywallBypass } from '@/hooks/usePaywallBypass';
 import { TrialExpiredPaywall } from '@/components/trial/TrialExpiredPaywall';
 import { EmailVerificationRequired } from '@/components/auth/EmailVerificationRequired';
 import { Loader2 } from 'lucide-react';
@@ -37,7 +36,6 @@ export function ProtectedRoute({
   const { user, isAuthenticated, loading: authLoading, signOut, isEmailVerified } = useAuth();
   // Get platform role FIRST - this is the source of truth for bypass
   const { isPlatformSuperAdmin, isLoading: roleLoading } = usePlatformRole();
-  const { isBypass: isPaywallBypass, isLoading: bypassLoading } = usePaywallBypass();
   // useSubscription also uses isPlatformBypass internally
   const { isSubscriptionActive, isExpired, loading: subLoading, isPlatformBypass } = useSubscription();
 
@@ -49,7 +47,7 @@ export function ProtectedRoute({
   }, [authLoading, isAuthenticated, navigate]);
 
   // Show loading while checking auth and role
-  if (authLoading || roleLoading || bypassLoading) {
+  if (authLoading || subLoading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -67,23 +65,8 @@ export function ProtectedRoute({
 
   // Platform super_admin bypasses ALL restrictions (email verification, subscription)
   // Check BOTH sources to ensure bypass works correctly
-  // IMPORTANT: Check this BEFORE subscription loading to prevent paywall flash
-  const isBypass = isPlatformSuperAdmin || isPlatformBypass || isPaywallBypass;
-  
-  if (isBypass) {
+  if (isPlatformSuperAdmin || isPlatformBypass) {
     return <>{children}</>;
-  }
-
-  // Wait for subscription data only for non-platform-admins
-  if (subLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Chargement...</p>
-        </div>
-      </div>
-    );
   }
 
   // Email not verified - show verification required screen
