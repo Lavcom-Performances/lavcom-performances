@@ -2210,6 +2210,7 @@ export type Database = {
       operations: {
         Row: {
           amount: number
+          categorie: string | null
           change_eur: number | null
           created_at: string
           dedupe_key: string | null
@@ -2239,6 +2240,7 @@ export type Database = {
         }
         Insert: {
           amount: number
+          categorie?: string | null
           change_eur?: number | null
           created_at?: string
           dedupe_key?: string | null
@@ -2268,6 +2270,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          categorie?: string | null
           change_eur?: number | null
           created_at?: string
           dedupe_key?: string | null
@@ -3682,6 +3685,10 @@ export type Database = {
       }
       count_recovery_codes: { Args: { p_user_id: string }; Returns: number }
       derive_department_code: { Args: { postal_code: string }; Returns: string }
+      fn_classify_operation_category: {
+        Args: { p_machine: string; p_program: string }
+        Returns: string
+      }
       get_last_login_country: { Args: { p_user_id: string }; Returns: string }
       get_user_org_id: { Args: { _user_id: string }; Returns: string }
       grant_platform_role: {
