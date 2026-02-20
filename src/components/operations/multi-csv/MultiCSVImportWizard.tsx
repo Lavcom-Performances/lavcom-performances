@@ -14,7 +14,7 @@ import { MultiCSVUploadStep } from "./MultiCSVUploadStep";
 import { MultiCSVAssociationStep } from "./MultiCSVAssociationStep";
 import { MultiCSVReviewStep } from "./MultiCSVReviewStep";
 import { MultiCSVImportStep } from "./MultiCSVImportStep";
-import { parseMultiCsvFile } from "@/lib/csv/parseMultiCsv";
+import { parseUnifiedCsvFile } from "@/lib/csv/parseUnified";
 import { MultiCsvParsedRow, MAX_FILES_PER_IMPORT } from "@/lib/csv/multiCsvTypes";
 import { parseCSVToColumns, autoDetectMapping, parseRows, calculateSummary } from "../csv-import/csvParser";
 import { useOperationsImport } from "@/hooks/useOperationsImport";
@@ -148,7 +148,7 @@ export function MultiCSVImportWizard({
           const text = await fileItem.file.text();
           
           // Use new multi-CSV parser
-          const multiCsvRows = parseMultiCsvFile(fileItem.file.name, text);
+          const multiCsvRows = parseUnifiedCsvFile(fileItem.file.name, text);
           
           if (multiCsvRows.length === 0) {
             setFiles((prev) =>
