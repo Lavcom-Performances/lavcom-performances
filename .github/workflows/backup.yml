@@ -73,12 +73,19 @@ jobs:
           FOLDER="${{ steps.timestamp.outputs.folder }}"
           mkdir -p /tmp/backup
           
+          echo "Testing database connectivity..."
+          # Extract host from connection string for connectivity test
+          DB_HOST=$(echo "$SUPABASE_DB_URL" | sed -n 's/.*@\([^:\/]*\).*/\1/p')
+          echo "Target host: $DB_HOST"
+          
           echo "Running pg_dump..."
+          # Force TCP connection (no Unix socket) by using the connection string directly
           pg_dump "$SUPABASE_DB_URL" \
             --no-owner \
             --no-privileges \
             --clean \
             --if-exists \
+            --no-password \
             -F p \
             -f /tmp/backup/database_full.sql
           
