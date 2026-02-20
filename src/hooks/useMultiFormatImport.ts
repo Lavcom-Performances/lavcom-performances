@@ -283,10 +283,22 @@ export function useMultiFormatImport() {
           resultMessages.push(...errors);
         }
 
-        // Trigger analytics refresh
+        // Trigger analytics refresh and DTS scoring
         if (insertedCount > 0) {
           refreshWithNotification(siteId, insertedCount).catch((err) => {
             console.warn("Analytics refresh failed:", err);
+          });
+          
+          // TAEX-301: Trigger DTS scoring in background
+          supabase.rpc('compute_dts_for_import', {
+            p_company_id: siteId,
+            p_import_id: batch.id
+          }).then((result) => {
+            if (result.error) {
+              console.warn("DTS computation failed:", result.error);
+            } else {
+              console.log("DTS computed for multi-format import:", result.data);
+            }
           });
         }
 
