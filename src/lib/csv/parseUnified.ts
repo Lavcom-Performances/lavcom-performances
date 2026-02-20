@@ -13,6 +13,8 @@ import { adapterRegistry, parseHeadersFromContent } from './adapters/index';
 import { CanonicalTransaction, SiteProviderConfig, CsvProvider } from './adapters/types';
 import { MultiCsvParsedRow, CsvFormatType } from './multiCsvTypes';
 import { parseMultiCsvFile as legacyParse } from './parseMultiCsv';
+import { buildDedupeKeyHashed, buildWiLineDedupeKey } from './buildDedupeKey';
+import { round2 } from './businessRules';
 
 /**
  * Map CsvProvider to CsvFormatType for backward compat
@@ -80,6 +82,36 @@ function canonicalToMultiCsvRow(
 }
 
 /**
+ * Compute dedupe_key for a canonical transaction
+ * Mirrors the logic in useMultiFormatImport.ts but at parse time
+ */
+function computeDedupeKey(tx: CanonicalTransaction, siteId: string): string {
+  const isWiLine = tx.provider === 'wiline';
+
+  if (isWiLine && tx.raw_source_id) {
+    return buildWiLineDedupeKey({
+      siteId,
+      transactionNo: tx.raw_source_id,
+    });
+  }
+
+  const amountEur = round2(tx.price_cents / 100);
+  const priceCb = tx.price_cb_cents > 0 ? round2(tx.price_cb_cents / 100) : null;
+  const priceEsp = tx.price_esp_cents > 0 ? round2(tx.price_esp_cents / 100) : null;
+
+  return buildDedupeKeyHashed({
+    siteId,
+    operationDate: tx.date_local ?? '',
+    operationTime: tx.time_local ?? null,
+    paymentMode: tx.payment_mode ?? null,
+    type: tx.category ?? null,
+    priceCb,
+    priceEsp,
+    amount: amountEur,
+  });
+}
+
+/**
  * Unified CSV parser — single entry point
  * 
  * @param filename  - Source file name
@@ -104,12 +136,13 @@ export function parseUnifiedCsvFile(
 
   const provider = adapter.provider;
   const detectedFormat = providerToFormatType(provider);
+  const siteId = siteConfig?.site_id ?? 'unknown';
 
   console.log(`[parseUnified] Adapter matched: ${adapter.displayName} (confidence from headers)`);
 
   // 3. Build site config for adapter
   const config: SiteProviderConfig = {
-    site_id: siteConfig?.site_id ?? 'unknown',
+    site_id: siteId,
     provider,
     site_name: siteConfig?.site_name,
     timezone: siteConfig?.timezone ?? 'Europe/Paris',
@@ -118,8 +151,17 @@ export function parseUnifiedCsvFile(
   // 4. Parse through canonical adapter
   const canonicalRows = adapter.parse(filename, content, config);
 
-  // 5. Map canonical → MultiCsvParsedRow for backward compat
-  return canonicalRows.map(tx => canonicalToMultiCsvRow(tx, detectedFormat));
+  // 5. Compute dedupe_key on each canonical row
+  for (const tx of canonicalRows) {
+    tx.dedupe_key = computeDedupeKey(tx, siteId);
+  }
+
+  // 6. Map canonical → MultiCsvParsedRow for backward compat
+  return canonicalRows.map(tx => {
+    const row = canonicalToMultiCsvRow(tx, detectedFormat);
+    row.dedupe_key = tx.dedupe_key;
+    return row;
+  });
 }
 
 /**
