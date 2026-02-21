@@ -150,6 +150,14 @@ export default function AdminBackupsPage() {
     },
     onSuccess: () => {
       toast.success("Backup annulé");
+      // Optimistically update the cache so UI reacts immediately
+      queryClient.setQueryData<BackupJob[]>(["backup-jobs"], (old) =>
+        old?.map((j) =>
+          j.status === "running"
+            ? { ...j, status: "cancelled", error_message: "Annulé manuellement par l'administrateur", completed_at: new Date().toISOString() }
+            : j
+        )
+      );
       queryClient.invalidateQueries({ queryKey: ["backup-jobs"] });
     },
     onError: (error) => {
