@@ -718,45 +718,33 @@ export default function SimulateurPage() {
                   </p>
                 </CardContent>
               </Card>
-            </div>
-          </div>
 
-          {/* Guide "Aller plus loin" */}
-          <div className="mt-12 md:mt-16">
-            <Card className="p-6 md:p-10 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30">
-              <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
-                <div className="text-center md:text-left">
+              {/* Guide "Aller plus loin" */}
+              <Card className="p-5 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30">
+                <div className="flex gap-4 items-center">
                   <img 
                     src={ebookAvantOuvrir} 
-                    alt="Guide Avant d'ouvrir - Le guide du futur exploitant de laverie" 
-                    className="w-full max-w-[280px] mx-auto md:mx-0 rounded-lg shadow-lg"
+                    alt="Guide Avant d'ouvrir" 
+                    className="w-20 h-auto rounded-md shadow-md shrink-0 hidden sm:block"
                   />
-                </div>
-                <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">
-                    {t("landing:guide.title")}
-                  </h2>
-                  <h3 className="text-base md:text-lg font-semibold text-lavcom-orange mb-3">
-                    {t("landing:guide.subtitle")}
-                  </h3>
-                  <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
-                    {t("landing:guide.description")}
-                  </p>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-bold text-foreground mb-1">
+                      {t("landing:guide.title")}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+                      {t("landing:guide.description")}
+                    </p>
                     <a href="https://lavcom.fr/nos-ebooks-2/" target="_blank" rel="noopener noreferrer">
-                      <Button className="bg-lavcom-orange hover:bg-lavcom-orange-dark text-white w-full sm:w-auto">
-                        <BookOpen className="mr-2 h-4 w-4" />
+                      <Button size="sm" className="bg-lavcom-orange hover:bg-lavcom-orange-dark text-white">
+                        <BookOpen className="mr-1.5 h-3.5 w-3.5" />
                         {t("landing:guide.cta")}
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                        <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                       </Button>
                     </a>
-                    <span className="text-xs text-muted-foreground">
-                      {t("landing:guide.ctaNote")}
-                    </span>
                   </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </div>
           </div>
         </main>
         
