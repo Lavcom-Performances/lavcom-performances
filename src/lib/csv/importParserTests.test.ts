@@ -126,6 +126,13 @@ describe('WiLine Parser Tests', () => {
     expect(centsTest).toBeDefined();
     expect(centsTest?.ok).toBe(true);
   });
+
+  it('should have machine = description only (no selection prefix) via parseUnified', () => {
+    const results = runWiLineTests();
+    const machineTest = results.tests.find(t => t.test_key === 'T15_machine_no_prefix');
+    expect(machineTest).toBeDefined();
+    expect(machineTest?.ok).toBe(true);
+  });
 });
 
 describe('Combined Import Parser Tests', () => {
