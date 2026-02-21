@@ -29,11 +29,14 @@ import { generateSimulationReport } from "@/utils/simulationPdfExport";
 import { toast } from "@/hooks/use-toast";
 import ebookCover from "@/assets/ebook-avant-ouvrir.jpg";
 import { trackEbookClick, trackPdfDownload } from "@/lib/analytics";
+import { IciIndicators } from "@/components/simulation/IciIndicators";
+import { QualifData } from "@/components/SimulatorQualification";
 
 interface StepResultsProps {
   project: SimulationProject;
   results: SimulationResults;
   onEditStep: (step: number) => void;
+  qualifData?: QualifData | null;
 }
 
 const formatCurrency = (value: number): string => {
@@ -45,7 +48,7 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-export function StepResults({ project, results, onEditStep }: StepResultsProps) {
+export function StepResults({ project, results, onEditStep, qualifData }: StepResultsProps) {
   const isProfitable = results.estimated_profit_month >= 0;
   
   const washersCount = project.machines.filter(m => m.type === 'washer').reduce((sum, m) => sum + m.count, 0);
@@ -275,6 +278,9 @@ export function StepResults({ project, results, onEditStep }: StepResultsProps) 
           </div>
         </CardContent>
       </Card>
+
+      {/* Indicateurs ICI */}
+      <IciIndicators qualifData={qualifData} results={results} project={project} />
 
       {/* Avertissements */}
       {(showCapacityWarning || showDoorWarning || showTechnicalWarning) && (
