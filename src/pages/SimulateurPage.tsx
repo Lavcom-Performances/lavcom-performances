@@ -721,17 +721,17 @@ export default function SimulateurPage() {
 
               {/* Guide "Aller plus loin" */}
               <Card className="p-5 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30">
-                <div className="flex gap-4 items-center">
+                <div className="flex gap-5 items-start">
                   <img 
                     src={ebookAvantOuvrir} 
                     alt="Guide Avant d'ouvrir" 
-                    className="w-20 h-auto rounded-md shadow-md shrink-0 hidden sm:block"
+                    className="w-[30%] h-auto rounded-md shadow-md shrink-0 hidden sm:block"
                   />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold text-foreground mb-1">
+                  <div className="flex-1 min-w-0 py-2">
+                    <h3 className="text-sm font-bold text-foreground mb-2">
                       {t("landing:guide.title")}
                     </h3>
-                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+                    <p className="text-xs text-muted-foreground mb-4 line-clamp-3">
                       {t("landing:guide.description")}
                     </p>
                     <a href="https://lavcom.fr/nos-ebooks-2/" target="_blank" rel="noopener noreferrer">
