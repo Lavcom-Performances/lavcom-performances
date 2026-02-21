@@ -154,6 +154,7 @@ export default function SimulationPage() {
               project={project} 
               results={results}
               onEditStep={goToStep}
+              qualifData={qualifData}
             />
           )}
         </div>
