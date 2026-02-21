@@ -149,9 +149,9 @@ function buildEmailHtml(p: SummaryPayload, siteUrl: string): string {
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 
         <!-- Header -->
-        <tr><td style="background:#2C2C2C;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
-          <p style="margin:0 0 8px 0;font-size:13px;letter-spacing:3px;color:#E8A020;text-transform:uppercase;font-weight:600;">LAVCOM</p>
-          <h1 style="margin:0;font-size:22px;color:#FFFFFF;font-weight:700;line-height:1.3;">${seg.title}</h1>
+        <tr><td style="background:#F5F3EE;border-radius:12px 12px 0 0;padding:28px 40px 24px;text-align:center;border-bottom:2px solid #E8A020;">
+          <img src="https://betvwipgtcrhmludzgxw.supabase.co/storage/v1/object/public/email-assets/lavcom-performances-header.png" alt="Lavcom Performances" style="height:36px;width:auto;margin-bottom:20px;" />
+          <h1 style="margin:0;font-size:22px;color:#2C2C2C;font-weight:700;line-height:1.3;">${seg.title}</h1>
         </td></tr>
 
         <!-- Badge segment -->
