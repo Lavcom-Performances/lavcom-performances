@@ -9,6 +9,7 @@ import { StepMachines } from "@/components/simulation/StepMachines";
 import { StepCosts } from "@/components/simulation/StepCosts";
 import { StepResults } from "@/components/simulation/StepResults";
 import { SimulatorPaywall } from "@/components/simulation/SimulatorPaywall";
+import SimulatorQualification, { type QualifData } from "@/components/SimulatorQualification";
 import { 
   SimulationProject, 
   defaultSimulationProject, 
@@ -29,6 +30,8 @@ export default function SimulationPage() {
   // Pour le MVP, on gère l'accès via un état local
   // En production, cela viendrait de l'authentification/base de données
   const [hasSimulatorAccess] = useState(true); // Mettre à false pour tester le paywall
+  const [qualifDone, setQualifDone] = useState(false);
+  const [qualifData, setQualifData] = useState<QualifData | null>(null);
   
   const [currentStep, setCurrentStep] = useState(0); // Commence à l'étape 0
   const [project, setProject] = useState<SimulationProject>(defaultSimulationProject);
@@ -69,6 +72,18 @@ export default function SimulationPage() {
   // Afficher le paywall si l'utilisateur n'a pas accès
   if (!hasSimulatorAccess) {
     return <SimulatorPaywall onSubscribe={handleSubscribe} />;
+  }
+
+  // Afficher la qualification pré-simulateur
+  if (!qualifDone) {
+    return (
+      <SimulatorQualification
+        onComplete={(data) => {
+          setQualifData(data);
+          setQualifDone(true);
+        }}
+      />
+    );
   }
 
   return (
