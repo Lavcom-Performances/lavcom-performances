@@ -77,36 +77,51 @@ export function SegmentedRedirect({ lead, onBack }: Props) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center justify-center py-12 px-4">
-        <div className="w-full max-w-lg text-center space-y-6">
+      <div className="flex-1 flex flex-col items-center justify-center py-8 sm:py-12 px-4">
+        <div className="w-full max-w-xl space-y-8">
 
-          {/* Icon */}
-          <div className="w-16 h-16 bg-lavcom-orange-light rounded-2xl flex items-center justify-center mx-auto">
-            <Icon size={32} className="text-lavcom-orange" />
+          {/* ─── Hero section ─────────────────────────────── */}
+          <div className="text-center space-y-4">
+            {/* Icon */}
+            <div className="w-14 h-14 bg-lavcom-orange-light rounded-2xl flex items-center justify-center mx-auto">
+              <Icon size={28} className="text-lavcom-orange" />
+            </div>
+
+            {/* Badge segment */}
+            <span className="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-lavcom-orange-light text-lavcom-orange-dark">
+              {config.badge}
+            </span>
+
+            {/* Title */}
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground leading-snug">
+              {config.title}
+            </h2>
+
+            {/* Message */}
+            <p className="text-muted-foreground text-base leading-relaxed max-w-md mx-auto">
+              {config.message}
+            </p>
+
+            {/* Email confirmation */}
+            <p className="text-xs text-muted-foreground pt-1">
+              Une synthèse a été préparée pour <strong className="text-foreground">{lead.email}</strong>
+            </p>
           </div>
 
-          {/* Badge segment */}
-          <span className="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-lavcom-orange-light text-lavcom-orange-dark">
-            {config.badge}
-          </span>
+          {/* ─── Recommendation block ─────────────────────── */}
+          <Card className="p-0 overflow-hidden border-lavcom-orange/25">
+            <div className="border-l-4 border-lavcom-orange px-5 sm:px-6 py-5 bg-gradient-to-r from-lavcom-orange/5 to-transparent">
+              <p className="text-xs font-bold text-lavcom-orange uppercase tracking-widest mb-2">
+                Recommandation
+              </p>
+              <p className="text-sm text-foreground leading-relaxed">
+                {config.message}
+              </p>
+            </div>
+          </Card>
 
-          {/* Title */}
-          <h2 className="text-2xl font-bold text-foreground leading-snug">
-            {config.title}
-          </h2>
-
-          {/* Message */}
-          <p className="text-muted-foreground text-base leading-relaxed max-w-md mx-auto">
-            {config.message}
-          </p>
-
-          {/* Email confirmation */}
-          <p className="text-xs text-muted-foreground">
-            Une synthèse a été préparée pour <strong>{lead.email}</strong>
-          </p>
-
-          {/* Guide card — same style as landing page */}
-          <Card className="p-5 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30 text-left">
+          {/* ─── Guide card ───────────────────────────────── */}
+          <Card className="p-5 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30">
             <div className="flex gap-5 items-start">
               <img 
                 src={ebookAvantOuvrir} 
@@ -131,21 +146,23 @@ export function SegmentedRedirect({ lead, onBack }: Props) {
             </div>
           </Card>
 
-          {/* Main CTA */}
-          <button
-            onClick={handleCta}
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-semibold text-base
-              transition-all shadow-lg bg-lavcom-orange hover:bg-lavcom-orange-dark shadow-lavcom-orange/30"
-          >
-            {config.cta}
-            <ArrowRight size={18} />
-          </button>
+          {/* ─── Main CTA ─────────────────────────────────── */}
+          <div className="text-center pt-2">
+            <button
+              onClick={handleCta}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-semibold text-base
+                transition-all shadow-lg bg-lavcom-orange hover:bg-lavcom-orange-dark shadow-lavcom-orange/30 w-full sm:w-auto justify-center"
+            >
+              {config.cta}
+              <ArrowRight size={18} />
+            </button>
+          </div>
 
-          {/* Back */}
-          <div>
+          {/* ─── Back ─────────────────────────────────────── */}
+          <div className="text-center">
             <button
               onClick={onBack}
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mt-2"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <ChevronLeft size={14} />
               Revenir à mes résultats
