@@ -16,8 +16,10 @@ import {
   Warehouse,
   Users,
   Minus,
-  Plus
+  Plus,
+  BookOpen
 } from "lucide-react";
+import ebookAvantOuvrir from "@/assets/ebook-avant-ouvrir.jpg";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import { Footer } from "@/components/layout/Footer";
 import { SIMULATOR_PLANS } from "@/config/pricingConfig";
@@ -717,6 +719,44 @@ export default function SimulateurPage() {
                 </CardContent>
               </Card>
             </div>
+          </div>
+
+          {/* Guide "Aller plus loin" */}
+          <div className="mt-12 md:mt-16">
+            <Card className="p-6 md:p-10 bg-gradient-to-br from-lavcom-orange/10 to-lavcom-orange/5 border-lavcom-orange/30">
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
+                <div className="text-center md:text-left">
+                  <img 
+                    src={ebookAvantOuvrir} 
+                    alt="Guide Avant d'ouvrir - Le guide du futur exploitant de laverie" 
+                    className="w-full max-w-[280px] mx-auto md:mx-0 rounded-lg shadow-lg"
+                  />
+                </div>
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">
+                    {t("landing:guide.title")}
+                  </h2>
+                  <h3 className="text-base md:text-lg font-semibold text-lavcom-orange mb-3">
+                    {t("landing:guide.subtitle")}
+                  </h3>
+                  <p className="text-muted-foreground text-sm md:text-base mb-4 md:mb-6">
+                    {t("landing:guide.description")}
+                  </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <a href="https://lavcom.fr/nos-ebooks-2/" target="_blank" rel="noopener noreferrer">
+                      <Button className="bg-lavcom-orange hover:bg-lavcom-orange-dark text-white w-full sm:w-auto">
+                        <BookOpen className="mr-2 h-4 w-4" />
+                        {t("landing:guide.cta")}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </a>
+                    <span className="text-xs text-muted-foreground">
+                      {t("landing:guide.ctaNote")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
         </main>
         
