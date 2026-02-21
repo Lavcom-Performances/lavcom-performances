@@ -32,9 +32,9 @@ const HOURS_OPEN_DEFAULT = 14;
 
 // Taux d'occupation par affluence
 const AFFLUENCE_RATES = {
-  low: 0.25,
-  normal: 0.40,
-  high: 0.55,
+  low: 0.15,
+  normal: 0.20,
+  high: 0.25,
 } as const;
 
 // Durées de cycle (heures)
