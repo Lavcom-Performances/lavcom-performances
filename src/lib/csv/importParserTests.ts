@@ -10,6 +10,7 @@
  */
 
 import { parseMultiCsvFile } from './parseMultiCsv';
+import { parseUnifiedCsvFile } from './parseUnified';
 import { MultiCsvParsedRow } from './multiCsvTypes';
 import { WiLineParsedRow } from './parseWiLine';
 
@@ -329,6 +330,18 @@ export function runWiLineTests(): ImportTestSuite {
     actual: rowsWithTxNo.length,
   });
   
+  // T15: WiLine machine field = description only (no selection prefix)
+  // Uses parseUnifiedCsvFile which applies fixWiLineMachineField
+  const unifiedRows = parseUnifiedCsvFile('wiline_sample.csv', wilineSampleCsv) as WiLineParsedRow[];
+  const sechoirRow = unifiedRows.find(r => r.machine?.includes('échoir'));
+  tests.push({
+    test_key: 'T15_machine_no_prefix',
+    ok: sechoirRow !== undefined && !sechoirRow.machine?.includes(' - '),
+    details: `machine = "${sechoirRow?.machine}"`,
+    expected: 'no " - " prefix (description only)',
+    actual: sechoirRow?.machine,
+  });
+
   const endTime = performance.now();
   const passed = tests.filter(t => t.ok).length;
   
