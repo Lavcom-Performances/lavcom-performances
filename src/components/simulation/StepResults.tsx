@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +30,7 @@ import {
 import { generateSimulationReport } from "@/utils/simulationPdfExport";
 import { toast } from "@/hooks/use-toast";
 import ebookCover from "@/assets/ebook-avant-ouvrir.jpg";
-import { trackEbookClick, trackPdfDownload } from "@/lib/analytics";
+import { trackEbookClick, trackPdfDownload, trackResultsViewed, trackEmailModalOpened } from "@/lib/analytics";
 import { IciIndicators } from "@/components/simulation/IciIndicators";
 import { QualifData } from "@/components/SimulatorQualification";
 import { EmailCaptureModal, LeadData } from "@/components/simulation/EmailCaptureModal";
@@ -56,6 +56,13 @@ export function StepResults({ project, results, onEditStep, qualifData }: StepRe
   const isProfitable = results.estimated_profit_month >= 0;
   const [showEmailCapture, setShowEmailCapture] = useState(false);
   const [leadData, setLeadData] = useState<LeadData | null>(null);
+
+  useEffect(() => {
+    trackResultsViewed({
+      monthly_revenue: results.project_turnover_month,
+      is_profitable: isProfitable,
+    });
+  }, []);
   
   const washersCount = project.machines.filter(m => m.type === 'washer').reduce((sum, m) => sum + m.count, 0);
   const dryersCount = project.machines.filter(m => m.type === 'dryer').reduce((sum, m) => sum + m.count, 0);
@@ -370,7 +377,10 @@ export function StepResults({ project, results, onEditStep, qualifData }: StepRe
         {qualifData && (
           <Button
             size="lg"
-            onClick={() => setShowEmailCapture(true)}
+            onClick={() => {
+              trackEmailModalOpened('A');
+              setShowEmailCapture(true);
+            }}
             className="gap-2 px-8 bg-[#E8A020] hover:bg-[#D4920E] text-white"
           >
             <Mail className="h-5 w-5" />
