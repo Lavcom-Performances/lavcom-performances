@@ -39,6 +39,9 @@ verify_jwt = false
 [functions.create-simulator-lead]
 verify_jwt = false
 
+[functions.send-simulator-summary]
+verify_jwt = false
+
 [functions.create-simulator-checkout]
 verify_jwt = true
 
