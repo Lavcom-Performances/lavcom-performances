@@ -10,6 +10,17 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
 };
 
+interface MachineSnapshot {
+  type: string;
+  quantity: number;
+  price: number;
+}
+
+interface PricingSnapshot {
+  machines?: MachineSnapshot[];
+  [key: string]: unknown;
+}
+
 interface SummaryPayload {
   email: string;
   segmentation_type: "segment_a" | "segment_b" | "segment_c" | "segment_d";
@@ -20,6 +31,7 @@ interface SummaryPayload {
   machine_range: string;
   estimated_monthly_revenue: number;
   estimated_annual_revenue: number;
+  pricing_snapshot?: PricingSnapshot | null;
 }
 
 // ─── Label helpers ─────────────────────────────────────────────────────────
@@ -65,9 +77,9 @@ function iciColor(score: number): string {
 }
 
 function iciLabel(score: number): string {
-  if (score >= 75) return "Faible";
-  if (score >= 55) return "Modéré";
-  return "Élevé";
+  if (score >= 75) return "Bonne cohérence";
+  if (score >= 55) return "Cohérence modérée";
+  return "Écart à combler";
 }
 
 function formatRevenue(n: number): string {
@@ -81,60 +93,152 @@ interface SegmentConfig {
   badge: string;
   badgeColor: string;
   intro: string;
-  cta_label: string;
-  cta_url: string;
-  recommendation: string;
 }
 
-function getSegmentConfig(segment: SummaryPayload["segmentation_type"], siteUrl: string): SegmentConfig {
+function getSegmentConfig(segment: SummaryPayload["segmentation_type"]): SegmentConfig {
   const configs: Record<SummaryPayload["segmentation_type"], SegmentConfig> = {
     segment_a: {
       title: "Votre projet démarre — construisons des bases solides",
       badge: "Porteur de projet",
       badgeColor: "#6366f1",
       intro: "Votre simulation montre un projet en phase de réflexion. C'est le bon moment pour vous armer des bons outils avant de vous engager.",
-      recommendation: "Nous avons préparé un guide gratuit qui répond aux questions que se posent tous les porteurs de projet à votre stade : financement, emplacement, rentabilité réelle.",
-      cta_label: "Télécharger le guide gratuit →",
-      cta_url: "https://lavcom.fr/nos-ebooks-2/",
     },
     segment_b: {
       title: "Votre projet est structuré — passez à la vitesse supérieure",
       badge: "Projet structuré",
       badgeColor: "#0891b2",
       intro: "Votre simulation révèle un projet avancé avec une cohérence financière solide. Vous avez les ingrédients pour aller plus loin.",
-      recommendation: "Le simulateur professionnel Lavcom vous permet d'affiner vos projections, de modéliser différents scénarios et de préparer un dossier bancaire solide.",
-      cta_label: "Accéder au simulateur pro →",
-      cta_url: `${siteUrl}/simulateur`,
     },
     segment_c: {
       title: "Pilotez vos performances en temps réel",
       badge: "Exploitant",
       badgeColor: "#059669",
       intro: "En tant qu'exploitant existant, votre priorité est d'optimiser ce que vous avez déjà — et d'identifier les leviers de croissance sur votre parc.",
-      recommendation: "La plateforme SaaS Lavcom vous donne une vue en temps réel de vos performances, de vos coûts et de votre rentabilité par machine.",
-      cta_label: "Accéder à la plateforme →",
-      cta_url: `${siteUrl}/connexion-exploitant`,
     },
     segment_d: {
       title: "Pilotage avancé pour votre parc multi-sites",
       badge: "Multi-sites",
       badgeColor: "#7c3aed",
       intro: "Avec un parc de cette envergure, la donnée devient votre principal levier de rentabilité. Chaque point d'optimisation se multiplie par le nombre de machines.",
-      recommendation: "La solution pilotage avancé Lavcom est conçue pour les opérateurs multi-sites : consolidation, alertes, benchmarking et reporting automatisé.",
-      cta_label: "Accéder au pilotage avancé →",
-      cta_url: `${siteUrl}/connexion-exploitant`,
     },
   };
   return configs[segment];
 }
 
+// ─── CTA helpers ───────────────────────────────────────────────────────────
+
+interface CtaConfig {
+  label: string;
+  url: string;
+}
+
+function getCtaConfig(p: SummaryPayload, siteUrl: string): CtaConfig {
+  // Segment C/D → plateforme exploitant
+  if (p.segmentation_type === "segment_c" || p.segmentation_type === "segment_d") {
+    return { label: "Accéder à la plateforme", url: `${siteUrl}/connexion-exploitant` };
+  }
+  const ici = Math.round(p.ici_score);
+  if (ici >= 75) {
+    return { label: "Voir le Pack Projet", url: `${siteUrl}/subscribe-simulator` };
+  }
+  if (ici >= 55) {
+    return { label: "Voir le Pack Essentiel", url: `${siteUrl}/subscribe-simulator` };
+  }
+  return { label: "Télécharger le guide gratuit", url: "https://lavcom.fr/nos-ebooks-2/" };
+}
+
+// ─── Bridge message helper ─────────────────────────────────────────────────
+
+function getBridgeMessage(p: SummaryPayload): string {
+  if (p.segmentation_type === "segment_c" || p.segmentation_type === "segment_d") {
+    return "En tant qu'exploitant, votre prochaine étape est le pilotage de vos performances réelles — pas une simulation.";
+  }
+  const ici = Math.round(p.ici_score);
+  if (ici >= 75) {
+    return "Votre projet est cohérent. L'étape suivante : intégrer vos charges réelles et générer le document de présentation que votre banquier attend.";
+  }
+  if (ici >= 55) {
+    return "Ces chiffres sont votre plafond théorique. Le simulateur pro intègre vos charges réelles pour calculer ce que vous gardez vraiment.";
+  }
+  return "Avant d'aller plus loin, renforcez les bases de votre projet. Notre guide vous aide à préparer votre financement et votre dossier.";
+}
+
+// ─── Projection 3 ans HTML ─────────────────────────────────────────────────
+
+function buildProjectionHtml(monthlyRevenue: number): string {
+  const y1 = monthlyRevenue * 12;
+  const y2 = monthlyRevenue * 12 * 1.10;
+  const y3 = monthlyRevenue * 12 * 1.20;
+
+  return `
+        <tr><td style="background:#FFFFFF;padding:0 40px 24px;">
+          <p style="margin:0 0 12px;font-size:13px;font-weight:600;color:#2C2C2C;text-transform:uppercase;letter-spacing:1px;">Projection revenus bruts — 3 ans</p>
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E8E4DC;border-radius:8px;border-collapse:separate;">
+            <tr style="background:#FAF8F5;">
+              <td style="padding:10px 16px;font-size:12px;color:#888;font-weight:600;border-bottom:1px solid #E8E4DC;">Année</td>
+              <td style="padding:10px 16px;font-size:12px;color:#888;font-weight:600;text-align:right;border-bottom:1px solid #E8E4DC;">CA annuel</td>
+              <td style="padding:10px 16px;font-size:12px;color:#888;font-weight:600;text-align:right;border-bottom:1px solid #E8E4DC;">Hypothèse</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;font-size:13px;color:#2C2C2C;font-weight:600;border-bottom:1px solid #E8E4DC;">Année 1</td>
+              <td style="padding:10px 16px;font-size:13px;color:#2C2C2C;font-weight:700;text-align:right;border-bottom:1px solid #E8E4DC;">${formatRevenue(y1)}</td>
+              <td style="padding:10px 16px;font-size:12px;color:#888;text-align:right;border-bottom:1px solid #E8E4DC;">Base</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;font-size:13px;color:#2C2C2C;font-weight:600;border-bottom:1px solid #E8E4DC;">Année 2</td>
+              <td style="padding:10px 16px;font-size:13px;color:#2C2C2C;font-weight:700;text-align:right;border-bottom:1px solid #E8E4DC;">${formatRevenue(y2)}</td>
+              <td style="padding:10px 16px;font-size:12px;color:#888;text-align:right;border-bottom:1px solid #E8E4DC;">+10%</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 16px;font-size:13px;color:#2C2C2C;font-weight:600;">Année 3</td>
+              <td style="padding:10px 16px;font-size:13px;color:#2C2C2C;font-weight:700;text-align:right;">${formatRevenue(y3)}</td>
+              <td style="padding:10px 16px;font-size:12px;color:#888;text-align:right;">+20%</td>
+            </tr>
+          </table>
+          <p style="margin:8px 0 0;font-size:11px;color:#999;line-height:1.5;">Hypothèses de progression indicatives. Revenus bruts hors charges.</p>
+        </td></tr>`;
+}
+
+// ─── Machine detail HTML ───────────────────────────────────────────────────
+
+function buildMachineDetailHtml(machines: MachineSnapshot[]): string {
+  if (!machines || machines.length === 0) return "";
+
+  const rows = machines.map(m => `
+            <tr>
+              <td style="padding:10px 16px;font-size:13px;color:#2C2C2C;border-bottom:1px solid #E8E4DC;">${m.type}</td>
+              <td style="padding:10px 16px;font-size:13px;color:#2C2C2C;font-weight:600;text-align:center;border-bottom:1px solid #E8E4DC;">${m.quantity}</td>
+              <td style="padding:10px 16px;font-size:13px;color:#2C2C2C;font-weight:600;text-align:right;border-bottom:1px solid #E8E4DC;">${formatRevenue(m.price)}</td>
+            </tr>`).join("");
+
+  return `
+        <tr><td style="background:#FFFFFF;padding:0 40px 24px;">
+          <p style="margin:0 0 12px;font-size:13px;font-weight:600;color:#2C2C2C;text-transform:uppercase;letter-spacing:1px;">Détail de votre configuration</p>
+          <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E8E4DC;border-radius:8px;border-collapse:separate;">
+            <tr style="background:#FAF8F5;">
+              <td style="padding:10px 16px;font-size:12px;color:#888;font-weight:600;border-bottom:1px solid #E8E4DC;">Type</td>
+              <td style="padding:10px 16px;font-size:12px;color:#888;font-weight:600;text-align:center;border-bottom:1px solid #E8E4DC;">Quantité</td>
+              <td style="padding:10px 16px;font-size:12px;color:#888;font-weight:600;text-align:right;border-bottom:1px solid #E8E4DC;">Tarif/cycle</td>
+            </tr>
+            ${rows}
+          </table>
+        </td></tr>`;
+}
+
 // ─── HTML template ─────────────────────────────────────────────────────────
 
 function buildEmailHtml(p: SummaryPayload, siteUrl: string): string {
-  const seg = getSegmentConfig(p.segmentation_type, siteUrl);
+  const seg = getSegmentConfig(p.segmentation_type);
+  const cta = getCtaConfig(p, siteUrl);
+  const bridge = getBridgeMessage(p);
   const ici = Math.round(p.ici_score);
   const color = iciColor(ici);
-  const risk = iciLabel(ici);
+  const coherence = iciLabel(ici);
+
+  const projectionBlock = buildProjectionHtml(p.estimated_monthly_revenue);
+
+  const machines = p.pricing_snapshot?.machines;
+  const machineBlock = machines && machines.length > 0 ? buildMachineDetailHtml(machines) : "";
 
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -174,13 +278,19 @@ function buildEmailHtml(p: SummaryPayload, siteUrl: string): string {
               </td>
               <td width="4%"></td>
               <td width="26%" style="text-align:center;padding:16px 8px;background:#FAF8F5;border-radius:8px;">
-                <p style="margin:0 0 4px;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;">Risque ICI</p>
-                <p style="margin:0;font-size:20px;font-weight:700;color:${color};">${risk}</p>
+                <p style="margin:0 0 4px;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;">Cohérence du projet</p>
+                <p style="margin:0;font-size:20px;font-weight:700;color:${color};">${coherence}</p>
                 <p style="margin:2px 0 0;font-size:11px;color:${color};">${ici}/100</p>
               </td>
             </tr>
           </table>
         </td></tr>
+
+        <!-- Projection 3 ans -->
+        ${projectionBlock}
+
+        <!-- Détail machines (conditionnel) -->
+        ${machineBlock}
 
         <!-- Profil -->
         <tr><td style="background:#FFFFFF;padding:0 40px 24px;">
@@ -201,17 +311,24 @@ function buildEmailHtml(p: SummaryPayload, siteUrl: string): string {
         </td></tr>
 
         <!-- Recommandation -->
-        <tr><td style="background:#FFFFFF;padding:0 40px 32px;">
+        <tr><td style="background:#FFFFFF;padding:0 40px 24px;">
           <div style="background:#FAF8F5;border-left:3px solid #E8A020;border-radius:0 8px 8px 0;padding:16px 20px;">
             <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#E8A020;text-transform:uppercase;letter-spacing:1px;">Recommandation</p>
             <p style="margin:0;font-size:14px;color:#2C2C2C;line-height:1.6;">${seg.intro}</p>
-            <p style="margin:12px 0 0;font-size:14px;color:#2C2C2C;line-height:1.6;">${seg.recommendation}</p>
+          </div>
+        </td></tr>
+
+        <!-- Message pont contextuel -->
+        <tr><td style="background:#FFFFFF;padding:0 40px 24px;">
+          <div style="background:#FAF8F5;border-left:3px solid #E8A020;border-radius:0 8px 8px 0;padding:16px 20px;">
+            <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#E8A020;text-transform:uppercase;letter-spacing:1px;">Prochaine étape</p>
+            <p style="margin:0;font-size:14px;color:#2C2C2C;line-height:1.6;">${bridge}</p>
           </div>
         </td></tr>
 
         <!-- CTA -->
         <tr><td style="background:#FFFFFF;padding:0 40px 40px;text-align:center;">
-          <a href="${seg.cta_url}" style="display:inline-block;background:#E8A020;color:#FFFFFF;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:1px;padding:14px 32px;border-radius:8px;text-transform:uppercase;">${seg.cta_label}</a>
+          <a href="${cta.url}" style="display:inline-block;background:#E8A020;color:#FFFFFF;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:1px;padding:14px 32px;border-radius:8px;text-transform:uppercase;">${cta.label}</a>
         </td></tr>
 
         <!-- Disclaimer -->
@@ -269,7 +386,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `Lavcom Simulator <${FROM_EMAIL}>`,
+        from: `Lavcom Performances <${FROM_EMAIL}>`,
         to: [payload.email],
         subject: "Votre synthèse de simulation Lavcom",
         html,
