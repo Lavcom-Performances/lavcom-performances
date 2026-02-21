@@ -104,7 +104,7 @@ function getSegmentConfig(segment: SummaryPayload["segmentation_type"], siteUrl:
       intro: "Votre simulation révèle un projet avancé avec une cohérence financière solide. Vous avez les ingrédients pour aller plus loin.",
       recommendation: "Le simulateur professionnel Lavcom vous permet d'affiner vos projections, de modéliser différents scénarios et de préparer un dossier bancaire solide.",
       cta_label: "Accéder au simulateur pro →",
-      cta_url: `${siteUrl}/subscribe-simulator`,
+      cta_url: `${siteUrl}/simulateur`,
     },
     segment_c: {
       title: "Pilotez vos performances en temps réel",
