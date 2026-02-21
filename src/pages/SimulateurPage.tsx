@@ -26,6 +26,9 @@ import { SIMULATOR_PLANS } from "@/config/pricingConfig";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { cn } from "@/lib/utils";
 import { UxClarityQuestion } from "@/components/ux-feedback/UxClarityQuestion";
+import SimulatorQualification, { type QualifData } from "@/components/SimulatorQualification";
+import { FreeEmailCaptureModal, type FreeLeadData } from "@/components/free-simulator/FreeEmailCaptureModal";
+import { SegmentedRedirect } from "@/components/simulation/SegmentedRedirect";
 
 // ===== CONSTANTES DE CALCUL =====
 const HOURS_OPEN_DEFAULT = 14;
@@ -208,6 +211,14 @@ export default function SimulateurPage() {
   const navigate = useNavigate();
   const [showResults, setShowResults] = useState(false);
   const resultsRef = React.useRef<HTMLDivElement>(null);
+
+  // ─── Qualification gate (Phase 8 — free simulator) ─────────────────────────
+  const [qualifDone, setQualifDone] = useState(false);
+  const [qualifData, setQualifData] = useState<QualifData | null>(null);
+
+  // ─── Email capture after results ───────────────────────────────────────────
+  const [showEmailCapture, setShowEmailCapture] = useState(false);
+  const [leadData, setLeadData] = useState<FreeLeadData | null>(null);
   
   // Track if user has manually selected a template (to avoid overriding their choice)
   const userHasManuallySelectedTemplate = useRef(false);
@@ -300,6 +311,8 @@ export default function SimulateurPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowResults(true);
+    // Show email capture modal after results
+    setShowEmailCapture(true);
     // Auto-scroll to results after a short delay to ensure render
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -321,6 +334,30 @@ export default function SimulateurPage() {
     normal: Users,
     high: Users,
   };
+
+  // ─── Qualification gate ────────────────────────────────────────────────────
+  if (!qualifDone) {
+    return (
+      <SimulatorQualification
+        onComplete={(data) => {
+          setQualifData(data);
+          setQualifDone(true);
+        }}
+      />
+    );
+  }
+
+  // ─── Post-capture redirect ────────────────────────────────────────────────
+  if (leadData) {
+    // Adapt FreeLeadData → LeadData shape for SegmentedRedirect
+    const adaptedLead = { ...leadData } as any;
+    return (
+      <SegmentedRedirect
+        lead={adaptedLead}
+        onBack={() => setLeadData(null)}
+      />
+    );
+  }
 
   return (
     <>
@@ -750,6 +787,19 @@ export default function SimulateurPage() {
         
         <Footer />
       </div>
+      
+      {/* Email capture modal — Phase 8 free simulator */}
+      {showEmailCapture && qualifData && (
+        <FreeEmailCaptureModal
+          qualifData={qualifData}
+          freeResults={{ monthlyRevenue: results.monthlyRevenue }}
+          onComplete={(lead) => {
+            setShowEmailCapture(false);
+            setLeadData(lead);
+          }}
+          onClose={() => setShowEmailCapture(false)}
+        />
+      )}
       
       {/* UX Clarity Questionnaire */}
       <UxClarityQuestion enabled={true} />

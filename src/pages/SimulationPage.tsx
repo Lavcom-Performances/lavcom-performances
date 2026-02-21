@@ -29,11 +29,13 @@ const steps = [
 export default function SimulationPage() {
   // Pour le MVP, on gère l'accès via un état local
   // En production, cela viendrait de l'authentification/base de données
-  const [hasSimulatorAccess] = useState(true); // Mettre à false pour tester le paywall
-  const [qualifDone, setQualifDone] = useState(false);
-  const [qualifData, setQualifData] = useState<QualifData | null>(null);
+  const [hasSimulatorAccess] = useState(true);
+  // Qualification is now on the FREE simulator (/simulateur), not here.
+  // SaaS stepper starts directly without qualification gate.
+  const [qualifDone] = useState(true);
+  const [qualifData] = useState<QualifData | null>(null);
   
-  const [currentStep, setCurrentStep] = useState(0); // Commence à l'étape 0
+  const [currentStep, setCurrentStep] = useState(0);
   const [project, setProject] = useState<SimulationProject>(defaultSimulationProject);
 
   // Calcul des résultats à chaque modification
@@ -74,17 +76,8 @@ export default function SimulationPage() {
     return <SimulatorPaywall onSubscribe={handleSubscribe} />;
   }
 
-  // Afficher la qualification pré-simulateur
-  if (!qualifDone) {
-    return (
-      <SimulatorQualification
-        onComplete={(data) => {
-          setQualifData(data);
-          setQualifDone(true);
-        }}
-      />
-    );
-  }
+  // Qualification is now handled on the free simulator (/simulateur).
+  // This block is kept as a no-op guard for backward compatibility.
 
   return (
     <>
