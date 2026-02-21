@@ -102,12 +102,41 @@ export default function AdminBackupsPage() {
 
   const hasRunning = jobs?.some((j) => j.status === "running");
 
-  // Poll every 3 minutes for running jobs to detect stale/failed ones
+  // On every fetch, check if any "running" job is stale (>30 min old) and mark it as failed
+  useEffect(() => {
+    if (!jobs) return;
+    const staleThresholdMs = 30 * 60 * 1000; // 30 minutes
+    const now = Date.now();
+    const staleJobs = jobs.filter(
+      (j) => j.status === "running" && now - new Date(j.started_at).getTime() > staleThresholdMs
+    );
+
+    if (staleJobs.length > 0) {
+      const markStale = async () => {
+        for (const job of staleJobs) {
+          await supabase
+            .from("backup_jobs")
+            .update({
+              status: "failed",
+              error_message: "Aucune réponse du workflow après 30 minutes — marqué comme échoué automatiquement.",
+              completed_at: new Date().toISOString(),
+            })
+            .eq("id", job.id)
+            .eq("status", "running");
+        }
+        // Refresh the list after marking stale jobs
+        queryClient.invalidateQueries({ queryKey: ["backup-jobs"] });
+      };
+      markStale();
+    }
+  }, [jobs, queryClient]);
+
+  // Poll every 30 seconds (instead of 3 min) for running jobs to detect failures faster
   useEffect(() => {
     if (hasRunning) {
       pollingRef.current = setInterval(() => {
         queryClient.invalidateQueries({ queryKey: ["backup-jobs"] });
-      }, 180_000); // 3 minutes
+      }, 30_000); // 30 seconds
     }
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
@@ -319,7 +348,7 @@ export default function AdminBackupsPage() {
             <div>
               <p className="text-sm font-medium">Backup en cours d'exécution</p>
               <p className="text-xs text-muted-foreground">
-                Vérification automatique toutes les 3 minutes. Le statut se mettra à jour automatiquement.
+                Vérification automatique toutes les 30 secondes. Les jobs sans réponse après 30 minutes seront marqués comme échoués.
               </p>
             </div>
           </CardContent>
