@@ -288,6 +288,14 @@ export default function SimulateurPage() {
           [size]: value,
         },
       },
+      // Reset price to 0 when machine count reaches 0
+      customPrices: {
+        ...prev.customPrices,
+        [type]: {
+          ...prev.customPrices[type],
+          [size]: value === 0 ? 0 : (prev.customPrices[type][size] === 0 ? (type === 'washers' ? { small: 3.5, medium: 5, large: 7.5 } : { small: 2, medium: 3, large: 4.5 })[size] : prev.customPrices[type][size]),
+        },
+      },
     }));
   };
 
@@ -614,7 +622,8 @@ export default function SimulateurPage() {
                                 step={0.5}
                                 value={simulation.customPrices.washers[size]}
                                 onChange={(e) => updateCustomPrice('washers', size, Number(e.target.value))}
-                                className="h-8 w-20 text-sm text-right"
+                                disabled={simulation.machines.washers[size] === 0}
+                                className="h-8 w-20 text-sm text-right disabled:opacity-50"
                               />
                               <span className="text-xs text-muted-foreground">€</span>
                             </div>
@@ -640,7 +649,8 @@ export default function SimulateurPage() {
                                 step={0.5}
                                 value={simulation.customPrices.dryers[size]}
                                 onChange={(e) => updateCustomPrice('dryers', size, Number(e.target.value))}
-                                className="h-8 w-20 text-sm text-right"
+                                disabled={simulation.machines.dryers[size] === 0}
+                                className="h-8 w-20 text-sm text-right disabled:opacity-50"
                               />
                               <span className="text-xs text-muted-foreground">€</span>
                             </div>
