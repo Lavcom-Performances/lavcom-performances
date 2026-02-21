@@ -2,7 +2,8 @@
 // Composant : SimulatorQualification.tsx
 // Écran de qualification pré-simulateur (3 questions)
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { trackQualificationStart, trackQualificationStep, trackQualificationComplete } from "@/lib/analytics";
 import { ArrowRight, CheckCircle2, Lightbulb, Search, FileText, Store } from "lucide-react";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 
@@ -64,11 +65,14 @@ export default function SimulatorQualification({ onComplete }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   const [animating, setAnimating] = useState(false);
 
+  useEffect(() => { trackQualificationStart(); }, []);
+
   const currentStep = STEPS[step];
   const isLastStep = step === STEPS.length - 1;
 
   const handleSelect = (value: string) => {
     setSelected(value);
+    trackQualificationStep(step, value);
   };
 
   const handleNext = () => {
@@ -79,8 +83,10 @@ export default function SimulatorQualification({ onComplete }: Props) {
 
     if (isLastStep) {
       setAnimating(true);
+      const finalData = updatedAnswers as QualifData;
+      trackQualificationComplete({ stage: finalData.stage, capital_range: finalData.capital_range, machine_range: finalData.machine_range });
       setTimeout(() => {
-        onComplete(updatedAnswers as QualifData);
+        onComplete(finalData);
       }, 400);
       return;
     }

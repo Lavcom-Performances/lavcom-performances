@@ -2,6 +2,7 @@ import { ArrowRight, BookOpen, BarChart2, Rocket, Network, ChevronLeft } from "l
 import { SegmentType, LeadData } from "@/components/simulation/EmailCaptureModal";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { trackSegmentCTAClicked } from "@/lib/analytics";
 import lavcomLogo from "@/assets/lavcom-performances-header.png";
 import ebookAvantOuvrir from "@/assets/ebook-avant-ouvrir.jpg";
 
@@ -58,6 +59,10 @@ export function SegmentedRedirect({ lead, onBack }: Props) {
   const Icon = config.icon;
 
   const handleCta = () => {
+    trackSegmentCTAClicked({
+      segmentation_type: lead.segmentation_type,
+      destination: config.ctaHref,
+    });
     window.open(config.ctaHref, config.ctaHref.startsWith("http") ? "_blank" : "_self");
   };
 

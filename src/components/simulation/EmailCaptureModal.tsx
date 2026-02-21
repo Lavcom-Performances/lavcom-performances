@@ -5,6 +5,7 @@ import { QualifData } from "@/components/SimulatorQualification";
 import { SimulationResults, SimulationProject } from "@/types/simulation";
 import { supabase } from "@/integrations/supabase/client";
 import { useABVariant, type ABVariant } from "@/hooks/useABVariant";
+import { trackEmailSubmitted } from "@/lib/analytics";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -161,6 +162,12 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
       new Promise((r) => setTimeout(r, 1200)),
       persistLead(lead, project),
     ]);
+
+    trackEmailSubmitted({
+      segmentation_type: lead.segmentation_type,
+      ab_variant: lead.ab_variant,
+      ici_score: lead.ici_score,
+    });
 
     setLoading(false);
     setIsSuccess(true);

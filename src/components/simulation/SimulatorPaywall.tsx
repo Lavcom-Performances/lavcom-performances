@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Sparkles, Video, Calculator, Lock, FolderOpen, Layers } from "lucide-react";
 import { SIMULATOR_PACKS, SimulatorPack } from "@/config/pricingConfig";
+import { trackPackCTAClicked } from "@/lib/analytics";
 
 interface SimulatorPaywallProps {
   onSubscribe?: (packId: string) => void;
@@ -15,6 +16,7 @@ export function SimulatorPaywall({ onSubscribe }: SimulatorPaywallProps) {
   const navigate = useNavigate();
 
   const handleSubscribe = (packId: string) => {
+    trackPackCTAClicked(packId, "simulator_paywall");
     if (onSubscribe) {
       onSubscribe(packId);
     } else {

@@ -10,6 +10,7 @@ import { ArrowRight, X, Mail, CheckCircle2, Loader2, CheckCircle } from "lucide-
 import { QualifData } from "@/components/SimulatorQualification";
 import { supabase } from "@/integrations/supabase/client";
 import { useABVariant, type ABVariant } from "@/hooks/useABVariant";
+import { trackEmailSubmitted } from "@/lib/analytics";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -150,6 +151,12 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
       new Promise((r) => setTimeout(r, 1200)),
       persistLead(lead),
     ]);
+
+    trackEmailSubmitted({
+      segmentation_type: lead.segmentation_type,
+      ab_variant: lead.ab_variant,
+      ici_score: lead.ici_score,
+    });
 
     setLoading(false);
     setIsSuccess(true);

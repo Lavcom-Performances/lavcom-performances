@@ -15,6 +15,7 @@ import {
   defaultSimulationProject, 
   calculateSimulationResults 
 } from "@/types/simulation";
+import { trackSimulationStep } from "@/lib/analytics";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { UxClarityQuestion } from "@/components/ux-feedback/UxClarityQuestion";
 
@@ -51,9 +52,13 @@ export default function SimulationPage() {
     }
   };
 
+  const STEP_NAMES = ["Local", "Mon projet", "Machines", "Charges", "Résultats"];
+
   const handleNext = () => {
     if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      trackSimulationStep(nextStep, STEP_NAMES[nextStep]);
       // Scroll to top when navigating to next step
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
