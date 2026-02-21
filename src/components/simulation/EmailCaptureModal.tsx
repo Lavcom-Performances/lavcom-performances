@@ -1,0 +1,203 @@
+import { useState } from "react";
+import { ArrowRight, X, Mail, CheckCircle2, Loader2 } from "lucide-react";
+import { QualifData } from "@/components/SimulatorQualification";
+import { SimulationResults, SimulationProject } from "@/types/simulation";
+
+// ─── Types ─────────────────────────────────────────────────────────────────────
+
+export type SegmentType = "segment_a" | "segment_b" | "segment_c" | "segment_d";
+
+export interface LeadData {
+  email: string;
+  segmentation_type: SegmentType;
+  ici_score: number;
+  gap_score: number;
+  stage: string;
+  capital_range: string;
+  machine_range: string;
+  estimated_monthly_revenue: number;
+  estimated_annual_revenue: number;
+}
+
+interface Props {
+  qualifData: QualifData;
+  results: SimulationResults;
+  project: SimulationProject;
+  onComplete: (lead: LeadData) => void;
+  onClose: () => void;
+}
+
+// ─── Helpers segmentation & ICI ───────────────────────────────────────────────
+
+function computeIciAndGap(qualifData: QualifData, project: SimulationProject) {
+  const capitalMap: Record<string, number> = { lt20k: 20, "20_50k": 45, "50_100k": 70, gt100k: 90 };
+  const ambitionMap: Record<string, number> = { "1_4": 25, "5_8": 50, "9_14": 75, "15plus": 95 };
+  const stageMap: Record<string, number> = { exploring: 0.9, location: 1.0, financing: 1.05, operator: 1.1 };
+
+  const zone = (project as any).zone || (project as any).density_zone || "normal";
+  const densityScore = zone?.toLowerCase().includes("fort") ? 80 : zone?.toLowerCase().includes("faib") ? 40 : 65;
+
+  const C = capitalMap[qualifData.capital_range] ?? 45;
+  const A = ambitionMap[qualifData.machine_range] ?? 50;
+  const S = stageMap[qualifData.stage] ?? 1.0;
+  const gap = A - C;
+  const penalty = gap <= 0 ? 0 : Math.min(40, gap * 0.6);
+  const bonus = (densityScore - 50) * 0.1;
+  const ici = Math.max(0, Math.min(100, (100 - penalty) * S + bonus));
+
+  return { ici: Math.round(ici), gap };
+}
+
+function computeSegment(qualifData: QualifData, ici: number): SegmentType {
+  if (qualifData.machine_range === "15plus") return "segment_d";
+  if (qualifData.stage === "operator") return "segment_c";
+  if (
+    (qualifData.stage === "financing" || qualifData.stage === "location") &&
+    (qualifData.capital_range === "50_100k" || qualifData.capital_range === "gt100k") &&
+    ici >= 60
+  ) return "segment_b";
+  return "segment_a";
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function EmailCaptureModal({ qualifData, results, project, onComplete, onClose }: Props) {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+  const handleSubmit = () => {
+    if (!isValidEmail(email)) {
+      setError("Merci de saisir une adresse email valide.");
+      return;
+    }
+    setError("");
+    setLoading(true);
+
+    const { ici, gap } = computeIciAndGap(qualifData, project);
+    const segmentation_type = computeSegment(qualifData, ici);
+
+    const lead: LeadData = {
+      email,
+      segmentation_type,
+      ici_score: ici,
+      gap_score: gap,
+      stage: qualifData.stage,
+      capital_range: qualifData.capital_range,
+      machine_range: qualifData.machine_range,
+      estimated_monthly_revenue: results.project_turnover_month,
+      estimated_annual_revenue: results.project_turnover_month * 12,
+    };
+
+    // Simule un court délai avant redirection (UX breathing room)
+    setTimeout(() => {
+      setLoading(false);
+      onComplete(lead);
+    }, 1200);
+  };
+
+  return (
+    // Overlay
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+
+        {/* Fermer */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <X size={20} />
+        </button>
+
+        {/* Header coloré */}
+        <div className="bg-gradient-to-br from-[#E8A020] to-[#D4920E] px-8 pt-8 pb-6 text-white">
+          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
+            <Mail size={24} className="text-white" />
+          </div>
+          <h2 className="text-xl font-bold leading-snug">
+            Recevez votre synthèse personnalisée
+          </h2>
+          <p className="text-white/80 text-sm mt-1">
+            Plan d'action recommandé selon votre profil
+          </p>
+        </div>
+
+        {/* Body */}
+        <div className="px-8 py-6 space-y-5">
+
+          {/* Récap discret */}
+          <div className="flex flex-wrap gap-2">
+            {[
+              qualifData.stage === "exploring" ? "🔍 En exploration" :
+              qualifData.stage === "location" ? "📍 Cherche un local" :
+              qualifData.stage === "financing" ? "📋 En financement" : "🏪 Exploitant",
+              qualifData.capital_range === "lt20k" ? "< 20k €" :
+              qualifData.capital_range === "20_50k" ? "20–50k €" :
+              qualifData.capital_range === "50_100k" ? "50–100k €" : "> 100k €",
+              qualifData.machine_range === "1_4" ? "1–4 machines" :
+              qualifData.machine_range === "5_8" ? "5–8 machines" :
+              qualifData.machine_range === "9_14" ? "9–14 machines" : "15+ machines",
+            ].map((tag) => (
+              <span key={tag} className="text-xs bg-[#FAF8F5] border border-[#E8E4DC] text-[#6B6B6B] rounded-full px-3 py-1">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Input email */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-[#2C2C2C]">
+              Votre adresse email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(""); }}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              placeholder="vous@email.com"
+              className={`w-full px-4 py-3 rounded-xl border-2 text-sm outline-none transition-all
+                ${error
+                  ? "border-red-400 bg-red-50"
+                  : "border-[#E8E4DC] focus:border-[#E8A020] bg-[#FAF8F5]"
+                }`}
+            />
+            {error && (
+              <p className="text-xs text-red-500">{error}</p>
+            )}
+          </div>
+
+          {/* CTA */}
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl
+              bg-[#E8A020] hover:bg-[#D4920E] text-white font-semibold text-sm
+              transition-all shadow-lg shadow-[#E8A020]/30 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Préparation de votre synthèse…
+              </>
+            ) : (
+              <>
+                Recevoir ma synthèse
+                <ArrowRight size={16} />
+              </>
+            )}
+          </button>
+
+          {/* Réassurance */}
+          <div className="flex items-center gap-3 pt-1">
+            <CheckCircle2 size={14} className="text-green-500 shrink-0" />
+            <p className="text-xs text-[#9E9E9E]">
+              Pas de spam. Vos données restent confidentielles.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

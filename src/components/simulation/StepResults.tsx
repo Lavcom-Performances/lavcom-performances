@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +17,8 @@ import {
   AlertTriangle,
   ExternalLink,
   ArrowRight,
-  ChevronLeft
+  ChevronLeft,
+  Mail
 } from "lucide-react";
 import { 
   SimulationProject, 
@@ -31,6 +33,8 @@ import ebookCover from "@/assets/ebook-avant-ouvrir.jpg";
 import { trackEbookClick, trackPdfDownload } from "@/lib/analytics";
 import { IciIndicators } from "@/components/simulation/IciIndicators";
 import { QualifData } from "@/components/SimulatorQualification";
+import { EmailCaptureModal, LeadData } from "@/components/simulation/EmailCaptureModal";
+import { SegmentedRedirect } from "@/components/simulation/SegmentedRedirect";
 
 interface StepResultsProps {
   project: SimulationProject;
@@ -50,6 +54,8 @@ const formatCurrency = (value: number): string => {
 
 export function StepResults({ project, results, onEditStep, qualifData }: StepResultsProps) {
   const isProfitable = results.estimated_profit_month >= 0;
+  const [showEmailCapture, setShowEmailCapture] = useState(false);
+  const [leadData, setLeadData] = useState<LeadData | null>(null);
   
   const washersCount = project.machines.filter(m => m.type === 'washer').reduce((sum, m) => sum + m.count, 0);
   const dryersCount = project.machines.filter(m => m.type === 'dryer').reduce((sum, m) => sum + m.count, 0);
@@ -84,6 +90,16 @@ export function StepResults({ project, results, onEditStep, qualifData }: StepRe
       });
     }
   };
+
+  // Phase 4 — Si lead capturé, afficher la redirection segmentée
+  if (leadData) {
+    return (
+      <SegmentedRedirect
+        lead={leadData}
+        onBack={() => setLeadData(null)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -346,10 +362,21 @@ export function StepResults({ project, results, onEditStep, qualifData }: StepRe
           size="lg"
           onClick={handleDownloadPdf}
           className="gap-2 px-8"
+          variant="outline"
         >
           <FileDown className="h-5 w-5" />
-          Télécharger le rapport PDF complet
+          Télécharger le PDF
         </Button>
+        {qualifData && (
+          <Button
+            size="lg"
+            onClick={() => setShowEmailCapture(true)}
+            className="gap-2 px-8 bg-[#E8A020] hover:bg-[#D4920E] text-white"
+          >
+            <Mail className="h-5 w-5" />
+            Recevoir ma synthèse
+          </Button>
+        )}
       </div>
 
       {/* CTA Premium */}
@@ -430,6 +457,19 @@ export function StepResults({ project, results, onEditStep, qualifData }: StepRe
           </CardContent>
         </div>
       </Card>
+      {/* Modal capture email — Phase 3 */}
+      {showEmailCapture && qualifData && (
+        <EmailCaptureModal
+          qualifData={qualifData}
+          results={results}
+          project={project}
+          onComplete={(lead) => {
+            setShowEmailCapture(false);
+            setLeadData(lead);
+          }}
+          onClose={() => setShowEmailCapture(false)}
+        />
+      )}
     </div>
   );
 }
