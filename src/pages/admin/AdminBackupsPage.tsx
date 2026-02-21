@@ -105,7 +105,7 @@ export default function AdminBackupsPage() {
   // On every fetch, check if any "running" job is stale (>30 min old) and mark it as failed
   useEffect(() => {
     if (!jobs) return;
-    const staleThresholdMs = 30 * 60 * 1000; // 30 minutes
+    const staleThresholdMs = 10 * 60 * 1000; // 10 minutes
     const now = Date.now();
     const staleJobs = jobs.filter(
       (j) => j.status === "running" && now - new Date(j.started_at).getTime() > staleThresholdMs
@@ -118,7 +118,7 @@ export default function AdminBackupsPage() {
             .from("backup_jobs")
             .update({
               status: "failed",
-              error_message: "Aucune réponse du workflow après 30 minutes — marqué comme échoué automatiquement.",
+              error_message: "Aucune réponse du workflow après 10 minutes — marqué comme échoué automatiquement.",
               completed_at: new Date().toISOString(),
             })
             .eq("id", job.id)
@@ -305,7 +305,7 @@ export default function AdminBackupsPage() {
           )}
           <Button
             onClick={() => triggerBackup.mutate()}
-            disabled={triggerBackup.isPending || hasRunning}
+            disabled={triggerBackup.isPending}
             className="gap-2"
           >
             {triggerBackup.isPending ? (
@@ -313,7 +313,7 @@ export default function AdminBackupsPage() {
             ) : (
               <Play className="h-4 w-4" />
             )}
-            {hasRunning ? "Backup en cours..." : "Lancer un backup"}
+            Lancer un backup
           </Button>
         </div>
       </div>
@@ -348,7 +348,7 @@ export default function AdminBackupsPage() {
             <div>
               <p className="text-sm font-medium">Backup en cours d'exécution</p>
               <p className="text-xs text-muted-foreground">
-                Vérification automatique toutes les 30 secondes. Les jobs sans réponse après 30 minutes seront marqués comme échoués.
+                Vérification automatique toutes les 30 secondes. Les jobs sans réponse après 10 minutes seront marqués comme échoués.
               </p>
             </div>
           </CardContent>
@@ -411,7 +411,7 @@ export default function AdminBackupsPage() {
                               variant="ghost"
                               size="sm"
                               className="h-6 w-6 p-0 shrink-0"
-                              disabled={triggerBackup.isPending || hasRunning}
+                              disabled={triggerBackup.isPending}
                               onClick={() => triggerBackup.mutate()}
                               title="Réessayer (nouvelle connexion)"
                             >
