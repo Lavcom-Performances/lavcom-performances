@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, X, Mail, CheckCircle2, Loader2, CheckCircle } from "lucide-react";
 import { QualifData } from "@/components/SimulatorQualification";
 import { SimulationResults, SimulationProject } from "@/types/simulation";
@@ -82,24 +83,40 @@ async function persistLead(lead: LeadData, project: SimulationProject): Promise<
   };
 
   try {
-    // Try Edge Function first
     const response = await supabase.functions.invoke("create-simulator-lead", {
       body: payload,
     });
-
-    if (response.error) {
-      throw new Error("Edge function failed");
-    }
+    if (response.error) throw new Error("Edge function failed");
   } catch (edgeFnError) {
-    // Fallback: direct insert
     console.warn("Edge function unavailable, falling back to direct insert:", edgeFnError);
     try {
       await supabase.from("simulator_leads").insert(payload as any);
     } catch (directInsertError) {
-      // Fail silently — never block user flow
       console.error("Direct insert also failed:", directInsertError);
     }
   }
+}
+
+// ─── Capital range display ────────────────────────────────────────────────────
+
+function capitalLabel(range: string): string {
+  const map: Record<string, string> = {
+    lt20k: "< 20k €",
+    "20_50k": "20–50k €",
+    "50_100k": "50–100k €",
+    gt100k: "> 100k €",
+  };
+  return map[range] || range;
+}
+
+function machineLabel(range: string): string {
+  const map: Record<string, string> = {
+    "1_4": "1–4 machines",
+    "5_8": "5–8 machines",
+    "9_14": "9–14 machines",
+    "15plus": "15+ machines",
+  };
+  return map[range] || range;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -109,6 +126,7 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { t } = useTranslation(['app']);
 
   // A/B variant — stable for the session
   const { variant, ctaLabel } = useABVariant("cta_button");
@@ -117,7 +135,7 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
 
   const handleSubmit = async () => {
     if (!isValidEmail(email)) {
-      setError("Merci de saisir une adresse email valide.");
+      setError(t('app:emailCapture.invalidEmail'));
       return;
     }
     setError("");
@@ -139,7 +157,6 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
       ab_variant: variant,
     };
 
-    // UX delay + persist in parallel (non-blocking)
     await Promise.all([
       new Promise((r) => setTimeout(r, 1200)),
       persistLead(lead, project),
@@ -148,96 +165,91 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
     setLoading(false);
     setIsSuccess(true);
 
-    // Short success flash before redirecting
     setTimeout(() => {
       onComplete(lead);
     }, 600);
   };
 
+  const stageKey = qualifData.stage as "exploring" | "location" | "financing" | "operator";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+      <div className="relative w-full max-w-md bg-card rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
 
         {/* Success state */}
         {isSuccess ? (
           <div className="flex flex-col items-center text-center gap-4 py-12 px-8">
-            <CheckCircle size={48} className="text-[#E8A020]" />
-            <p className="font-semibold text-lg text-[#2C2C2C]">
-              Votre synthèse est prête !
+            <CheckCircle size={48} className="text-accent" />
+            <p className="font-semibold text-lg text-foreground">
+              {t('app:emailCapture.ready')}
             </p>
           </div>
         ) : loading ? (
           <div className="flex flex-col items-center text-center gap-4 py-12 px-8">
-            <Loader2 size={40} className="animate-spin text-[#E8A020]" />
-            <p className="text-sm text-[#666]">
-              Préparation de votre synthèse personnalisée…
+            <Loader2 size={40} className="animate-spin text-accent" />
+            <p className="text-sm text-muted-foreground">
+              {t('app:emailCapture.preparing')}
             </p>
           </div>
         ) : (
           <>
-            {/* Fermer */}
+            {/* Close */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors z-10"
             >
               <X size={20} />
             </button>
 
-            {/* Header coloré */}
-            <div className="bg-gradient-to-br from-[#E8A020] to-[#D4920E] px-8 pt-8 pb-6 text-white">
+            {/* Header */}
+            <div className="bg-gradient-to-br from-accent to-accent/80 px-6 sm:px-8 pt-6 sm:pt-8 pb-5 sm:pb-6 text-accent-foreground">
               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
-                <Mail size={24} className="text-white" />
+                <Mail size={24} />
               </div>
-              <h2 className="text-xl font-bold leading-snug">
-                Recevez votre synthèse personnalisée
+              <h2 className="text-lg sm:text-xl font-bold leading-snug">
+                {t('app:emailCapture.title')}
               </h2>
-              <p className="text-white/80 text-sm mt-1">
-                Plan d'action recommandé selon votre profil
+              <p className="text-accent-foreground/80 text-sm mt-1">
+                {t('app:emailCapture.subtitle')}
               </p>
             </div>
 
             {/* Body */}
-            <div className="px-8 py-6 space-y-5">
+            <div className="px-6 sm:px-8 py-5 sm:py-6 space-y-5">
 
-              {/* Récap discret */}
+              {/* Recap tags */}
               <div className="flex flex-wrap gap-2">
                 {[
-                  qualifData.stage === "exploring" ? "🔍 En exploration" :
-                  qualifData.stage === "location" ? "📍 Cherche un local" :
-                  qualifData.stage === "financing" ? "📋 En financement" : "🏪 Exploitant",
-                  qualifData.capital_range === "lt20k" ? "< 20k €" :
-                  qualifData.capital_range === "20_50k" ? "20–50k €" :
-                  qualifData.capital_range === "50_100k" ? "50–100k €" : "> 100k €",
-                  qualifData.machine_range === "1_4" ? "1–4 machines" :
-                  qualifData.machine_range === "5_8" ? "5–8 machines" :
-                  qualifData.machine_range === "9_14" ? "9–14 machines" : "15+ machines",
+                  t(`app:emailCapture.stages.${stageKey}`),
+                  capitalLabel(qualifData.capital_range),
+                  machineLabel(qualifData.machine_range),
                 ].map((tag) => (
-                  <span key={tag} className="text-xs bg-[#FAF8F5] border border-[#E8E4DC] text-[#6B6B6B] rounded-full px-3 py-1">
+                  <span key={tag} className="text-xs bg-muted border border-border text-muted-foreground rounded-full px-3 py-1">
                     {tag}
                   </span>
                 ))}
               </div>
 
-              {/* Input email */}
+              {/* Email input */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-[#2C2C2C]">
-                  Votre adresse email
+                <label className="text-sm font-semibold text-foreground">
+                  {t('app:emailCapture.emailLabel')}
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setError(""); }}
                   onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                  placeholder="vous@email.com"
-                  className={`w-full px-4 py-3 rounded-xl border-2 text-sm outline-none transition-all
+                  placeholder={t('app:emailCapture.emailPlaceholder')}
+                  className={`w-full px-4 py-3 rounded-xl border-2 text-sm outline-none transition-all bg-muted
                     ${error
-                      ? "border-red-400 bg-red-50"
-                      : "border-[#E8E4DC] focus:border-[#E8A020] bg-[#FAF8F5]"
+                      ? "border-destructive bg-destructive/5"
+                      : "border-border focus:border-accent"
                     }`}
                   autoFocus
                 />
                 {error && (
-                  <p className="text-xs text-red-500">{error}</p>
+                  <p className="text-xs text-destructive">{error}</p>
                 )}
               </div>
 
@@ -246,18 +258,18 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
                 onClick={handleSubmit}
                 disabled={loading}
                 className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl
-                  bg-[#E8A020] hover:bg-[#D4920E] text-white font-semibold text-sm
-                  transition-all shadow-lg shadow-[#E8A020]/30 disabled:opacity-70 disabled:cursor-not-allowed"
+                  bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-sm
+                  transition-all shadow-lg shadow-accent/30 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {ctaLabel}
                 <ArrowRight size={16} />
               </button>
 
-              {/* Réassurance */}
+              {/* Reassurance */}
               <div className="flex items-center gap-3 pt-1">
                 <CheckCircle2 size={14} className="text-green-500 shrink-0" />
-                <p className="text-xs text-[#9E9E9E]">
-                  Pas de spam. Vos données restent confidentielles.
+                <p className="text-xs text-muted-foreground">
+                  {t('app:emailCapture.reassurance')}
                 </p>
               </div>
             </div>
