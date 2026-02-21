@@ -2304,7 +2304,60 @@
       "UNKNOWN_MACHINE": "Machine inconnue",
       "POSSIBLE_DUPLICATE": "Doublon probable",
       "PRICE_OUTLIER": "Prix atypique",
-      "LOW_METADATA": "Métadonnées manquantes"
+    "LOW_METADATA": "Métadonnées manquantes"
+    }
+  },
+  "abTest": {
+    "title": "A/B Test — CTA Simulateur",
+    "subtitle": "Test du bouton CTA dans EmailCaptureModal · {{count}} leads sur {{range}}j",
+    "variantA": "Variante A (contrôle)",
+    "variantB": "Variante B (challenger)",
+    "ctaA": "RECEVOIR MA SYNTHÈSE",
+    "ctaB": "VOIR MES RECOMMANDATIONS",
+    "insufficientData": "Données insuffisantes",
+    "insufficientDataDesc": "Minimum 50 leads par variante pour significativité. A: {{nA}}/50 · B: {{nB}}/50",
+    "leads": "Leads",
+    "avgIci": "ICI moyen",
+    "avgRevenue": "CA mensuel moy.",
+    "confidence": "Confiance statistique",
+    "reliableResult": "Résultat fiable",
+    "clearTrend": "Tendance claire",
+    "continueTest": "Continuer le test",
+    "waitingData": "En attente de données",
+    "recommendation": "Recommandation",
+    "recommendB": "La variante B performe mieux. Mettre à jour le CTA avec 'VOIR MES RECOMMANDATIONS' et désactiver l'A/B test.",
+    "recommendA": "La variante A performe mieux. Conserver le CTA actuel 'RECEVOIR MA SYNTHÈSE' et désactiver l'A/B test.",
+    "collectMore": "Continuer à collecter des données. Revenir lorsque la confiance atteint 95%+.",
+    "recentLeads": "Derniers leads avec variante",
+    "loading": "Chargement...",
+    "noLeads": "Aucun lead",
+    "date": "Date",
+    "email": "Email",
+    "segment": "Segment",
+    "ici": "ICI",
+    "revMonth": "CA/mois",
+    "variant": "Variante",
+    "decisionThreshold": "Seuil de décision",
+    "continue": "Continuer",
+    "trend": "Tendance",
+    "reliable": "Fiable",
+    "certainty": "Certitude",
+    "vsA": "B {{sign}}{{pct}}% vs A"
+  },
+  "emailCapture": {
+    "title": "Recevez votre synthèse personnalisée",
+    "subtitle": "Plan d'action recommandé selon votre profil",
+    "emailLabel": "Votre adresse email",
+    "emailPlaceholder": "vous@email.com",
+    "invalidEmail": "Merci de saisir une adresse email valide.",
+    "preparing": "Préparation de votre synthèse personnalisée…",
+    "ready": "Votre synthèse est prête !",
+    "reassurance": "Pas de spam. Vos données restent confidentielles.",
+    "stages": {
+      "exploring": "🔍 En exploration",
+      "location": "📍 Cherche un local",
+      "financing": "📋 En financement",
+      "operator": "🏪 Exploitant"
     }
   }
 }

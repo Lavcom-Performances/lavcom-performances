@@ -2191,5 +2191,58 @@
       "select": "Select",
       "close": "Close"
     }
+  },
+  "abTest": {
+    "title": "A/B Test — Simulator CTA",
+    "subtitle": "CTA button test in EmailCaptureModal · {{count}} leads over {{range}}d",
+    "variantA": "Variant A (control)",
+    "variantB": "Variant B (challenger)",
+    "ctaA": "GET MY REPORT",
+    "ctaB": "SEE MY RECOMMENDATIONS",
+    "insufficientData": "Insufficient data",
+    "insufficientDataDesc": "Minimum 50 leads per variant for significance. A: {{nA}}/50 · B: {{nB}}/50",
+    "leads": "Leads",
+    "avgIci": "Avg ICI",
+    "avgRevenue": "Avg monthly rev.",
+    "confidence": "Statistical confidence",
+    "reliableResult": "Reliable result",
+    "clearTrend": "Clear trend",
+    "continueTest": "Continue testing",
+    "waitingData": "Waiting for data",
+    "recommendation": "Recommendation",
+    "recommendB": "Variant B performs better. Update the CTA to 'SEE MY RECOMMENDATIONS' and disable the A/B test.",
+    "recommendA": "Variant A performs better. Keep the current CTA 'GET MY REPORT' and disable the A/B test.",
+    "collectMore": "Continue collecting data. Check back when confidence reaches 95%+.",
+    "recentLeads": "Recent leads with variant",
+    "loading": "Loading...",
+    "noLeads": "No leads",
+    "date": "Date",
+    "email": "Email",
+    "segment": "Segment",
+    "ici": "ICI",
+    "revMonth": "Rev/month",
+    "variant": "Variant",
+    "decisionThreshold": "Decision threshold",
+    "continue": "Continue",
+    "trend": "Trend",
+    "reliable": "Reliable",
+    "certainty": "Certainty",
+    "vsA": "B {{sign}}{{pct}}% vs A"
+  },
+  "emailCapture": {
+    "title": "Get your personalized report",
+    "subtitle": "Recommended action plan based on your profile",
+    "emailLabel": "Your email address",
+    "emailPlaceholder": "you@email.com",
+    "invalidEmail": "Please enter a valid email address.",
+    "preparing": "Preparing your personalized report…",
+    "ready": "Your report is ready!",
+    "reassurance": "No spam. Your data stays confidential.",
+    "stages": {
+      "exploring": "🔍 Exploring",
+      "location": "📍 Looking for a location",
+      "financing": "📋 Securing financing",
+      "operator": "🏪 Operator"
+    }
   }
 }
