@@ -2803,6 +2803,7 @@ export type Database = {
       }
       simulator_leads: {
         Row: {
+          ab_variant: string | null
           capital_range: string | null
           created_at: string
           email: string
@@ -2818,6 +2819,7 @@ export type Database = {
           zone_selected: string | null
         }
         Insert: {
+          ab_variant?: string | null
           capital_range?: string | null
           created_at?: string
           email: string
@@ -2833,6 +2835,7 @@ export type Database = {
           zone_selected?: string | null
         }
         Update: {
+          ab_variant?: string | null
           capital_range?: string | null
           created_at?: string
           email?: string

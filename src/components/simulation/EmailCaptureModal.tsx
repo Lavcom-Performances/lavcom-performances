@@ -3,6 +3,7 @@ import { ArrowRight, X, Mail, CheckCircle2, Loader2, CheckCircle } from "lucide-
 import { QualifData } from "@/components/SimulatorQualification";
 import { SimulationResults, SimulationProject } from "@/types/simulation";
 import { supabase } from "@/integrations/supabase/client";
+import { useABVariant, type ABVariant } from "@/hooks/useABVariant";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -18,6 +19,7 @@ export interface LeadData {
   machine_range: string;
   estimated_monthly_revenue: number;
   estimated_annual_revenue: number;
+  ab_variant: ABVariant;
 }
 
 interface Props {
@@ -76,6 +78,7 @@ async function persistLead(lead: LeadData, project: SimulationProject): Promise<
     ici_score: lead.ici_score,
     gap_score: lead.gap_score,
     segmentation_type: lead.segmentation_type,
+    ab_variant: lead.ab_variant,
   };
 
   try {
@@ -107,6 +110,9 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // A/B variant — stable for the session
+  const { variant, ctaLabel } = useABVariant("cta_button");
+
   const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
   const handleSubmit = async () => {
@@ -130,6 +136,7 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
       machine_range: qualifData.machine_range,
       estimated_monthly_revenue: results.project_turnover_month,
       estimated_annual_revenue: results.project_turnover_month * 12,
+      ab_variant: variant,
     };
 
     // UX delay + persist in parallel (non-blocking)
@@ -242,7 +249,7 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
                   bg-[#E8A020] hover:bg-[#D4920E] text-white font-semibold text-sm
                   transition-all shadow-lg shadow-[#E8A020]/30 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Recevoir ma synthèse
+                {ctaLabel}
                 <ArrowRight size={16} />
               </button>
 

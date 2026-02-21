@@ -69,6 +69,7 @@ import FaqBuilderPage from "./pages/platform/FaqBuilderPage";
 import RulesEnginePage from "./pages/platform/RulesEnginePage";
 import DataTrustScorePage from "./pages/platform/DataTrustScorePage";
 import AdminExportsPage from "./pages/admin/AdminExportsPage";
+import PlatformABTestPage from "./pages/platform/PlatformABTestPage";
 import BetaActivationPage from "./pages/admin/beta/BetaActivationPage";
 import BetaFeedbackPage from "./pages/admin/beta/BetaFeedbackPage";
 import BetaConversionPage from "./pages/admin/beta/BetaConversionPage";
@@ -238,6 +239,7 @@ const App = () => (
             <Route path="/admin/knowledge/faq" element={<FaqBuilderPage />} />
             <Route path="/admin/knowledge/rules" element={<RulesEnginePage />} />
             <Route path="/admin/knowledge/dts" element={<DataTrustScorePage />} />
+            <Route path="/admin/ab-test" element={<PlatformABTestPage />} />
           </Route>
           
           {/* Platform Admin billing routes (require billing access) */}

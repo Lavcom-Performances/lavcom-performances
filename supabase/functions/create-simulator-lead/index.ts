@@ -22,6 +22,7 @@ interface LeadPayload {
   ici_score: number;
   gap_score: number;
   segmentation_type: "segment_a" | "segment_b" | "segment_c" | "segment_d";
+  ab_variant?: "A" | "B";
 }
 
 function isValidEmail(email: string): boolean {
@@ -117,6 +118,7 @@ serve(async (req) => {
       ici_score: payload.ici_score,
       gap_score: payload.gap_score,
       segmentation_type: payload.segmentation_type,
+      ab_variant: payload.ab_variant ?? "A",
     });
 
     if (error) {
