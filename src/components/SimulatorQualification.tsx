@@ -93,9 +93,9 @@ export default function SimulatorQualification({ onComplete }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] flex flex-col">
+    <div className="min-h-screen bg-[#FAF8F5] flex flex-col overflow-x-hidden">
       {/* Header */}
-      <div className="bg-white border-b border-[#E8E4DC] px-6 py-4">
+      <div className="bg-white border-b border-[#E8E4DC] px-4 sm:px-6 py-3 sm:py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div>
             <span className="text-[#2C2C2C] font-bold text-sm tracking-widest uppercase">
@@ -121,7 +121,7 @@ export default function SimulatorQualification({ onComplete }: Props) {
 
       {/* Content */}
       <div
-        className={`flex-1 flex flex-col items-center justify-center px-4 py-10 transition-opacity duration-300 ${
+        className={`flex-1 flex flex-col items-center justify-center px-3 sm:px-4 py-8 sm:py-10 transition-opacity duration-300 ${
           animating ? "opacity-0" : "opacity-100"
         }`}
       >
@@ -150,7 +150,7 @@ export default function SimulatorQualification({ onComplete }: Props) {
           {/* Intro text (step 0 only) */}
           {step === 0 && (
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-[#2C2C2C] mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-[#2C2C2C] mb-2">
                 Avant de commencer
               </h1>
               <p className="text-[#6B6B6B] text-base">
@@ -160,12 +160,12 @@ export default function SimulatorQualification({ onComplete }: Props) {
           )}
 
           {/* Question */}
-          <h2 className="text-xl font-bold text-[#2C2C2C] mb-6">
+          <h2 className="text-lg sm:text-xl font-bold text-[#2C2C2C] mb-4 sm:mb-6">
             {currentStep.question}
           </h2>
 
           {/* Options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-6 sm:mb-8">
             {currentStep.options.map((opt) => {
               const isActive = selected === opt.value;
               return (

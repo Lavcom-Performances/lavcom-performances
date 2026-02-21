@@ -84,7 +84,7 @@ function SimulationStepper() {
                 onClick={() => handleStepClick(step, stepIdx)}
                 disabled={!canNavigate}
                 className={cn(
-                  "relative flex h-10 w-10 items-center justify-center rounded-full transition-all",
+                  "relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full transition-all",
                   isCompleted && "bg-primary hover:bg-primary/90 cursor-pointer",
                   isCurrent && "border-2 border-primary bg-background",
                   isFuture && "border-2 border-muted bg-background cursor-not-allowed",
@@ -191,13 +191,13 @@ export function SimulationLayout() {
       </header>
 
       {/* Stepper */}
-      <div className="border-b bg-muted/30 py-6 px-4">
+      <div className="border-b bg-muted/30 py-4 sm:py-6 px-2 sm:px-4 overflow-x-auto">
         <SimulationStepper />
       </div>
 
       {/* Content */}
       <main className="flex-1">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
           <Outlet />
         </div>
       </main>

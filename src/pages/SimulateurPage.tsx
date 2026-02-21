@@ -173,8 +173,8 @@ function NumberStepper({
   label: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-sm text-muted-foreground min-w-0 flex-1">{label}</span>
+    <div className="flex items-center justify-between gap-1 sm:gap-2">
+      <span className="text-xs sm:text-sm text-muted-foreground min-w-0 flex-1 truncate">{label}</span>
       <div className="flex items-center gap-1">
         <Button
           type="button"
@@ -330,12 +330,12 @@ export default function SimulateurPage() {
         url="/simulateur"
         keywords="simulateur laverie, rentabilité laverie automatique, business plan laverie, ouverture laverie, estimation revenus laverie"
       />
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-amber-500/5">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-amber-500/5 overflow-x-hidden">
         {/* Header */}
         <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
             <Link to="/" className="flex items-center gap-3">
-              <img src={lavcomLogo} alt="Lavcom Analytics" className="h-10 w-auto" />
+              <img src={lavcomLogo} alt="Lavcom Analytics" className="h-8 sm:h-10 w-auto" />
             </Link>
             <nav className="hidden md:flex items-center gap-6">
               <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -353,14 +353,14 @@ export default function SimulateurPage() {
           </div>
         </header>
 
-        <main className="container mx-auto px-4 py-8 md:py-12">
+        <main className="container mx-auto px-3 sm:px-4 py-6 md:py-12">
           {/* Hero */}
-          <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
+          <div className="text-center max-w-3xl mx-auto mb-6 md:mb-12 px-1">
             <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold text-white mb-3 md:mb-4" style={{ backgroundColor: '#A5C800' }}>
               <Calculator className="h-3 w-3 md:h-4 md:w-4" />
               {t('app:simulateur.free')}
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-3 md:mb-4 leading-tight">
+            <h1 className="font-display text-xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-3 md:mb-4 leading-tight">
               {t('app:simulateur.title')}
             </h1>
             <p className="text-muted-foreground text-sm md:text-lg px-2">
@@ -384,7 +384,7 @@ export default function SimulateurPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="surface" className="text-xs md:text-sm">{t('app:simulateur.form.surface')}</Label>
                         <Input
@@ -423,7 +423,7 @@ export default function SimulateurPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Template selector */}
-                    <div className="grid grid-cols-3 gap-2 md:gap-3">
+                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3">
                       {(['small', 'standard', 'large'] as TemplateType[]).map((template) => {
                         const Icon = templateIcons[template];
                         const isSelected = simulation.template === template;
@@ -433,14 +433,14 @@ export default function SimulateurPage() {
                             type="button"
                             onClick={() => handleTemplateChange(template)}
                             className={cn(
-                              "p-3 md:p-4 rounded-lg border-2 transition-all text-left",
+                              "p-2 sm:p-3 md:p-4 rounded-lg border-2 transition-all text-left",
                               isSelected 
                                 ? "border-amber-500 bg-amber-500/10" 
                                 : "border-border hover:border-amber-500/50"
                             )}
                           >
                             <Icon className={cn(
-                              "h-5 w-5 md:h-6 md:w-6 mb-2",
+                              "h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mb-1 sm:mb-2",
                               isSelected ? "text-amber-600" : "text-muted-foreground"
                             )} />
                             <div className="font-medium text-xs md:text-sm">
@@ -512,7 +512,7 @@ export default function SimulateurPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-3 gap-2 md:gap-3">
+                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3">
                       {(['low', 'normal', 'high'] as AffluenceType[]).map((affluence) => {
                         const isSelected = simulation.affluence === affluence;
                         const occupancy = Math.round(AFFLUENCE_RATES[affluence] * 100);
@@ -522,14 +522,14 @@ export default function SimulateurPage() {
                             type="button"
                             onClick={() => setSimulation(prev => ({ ...prev, affluence }))}
                             className={cn(
-                              "p-3 md:p-4 rounded-lg border-2 transition-all text-center",
+                              "p-2 sm:p-3 md:p-4 rounded-lg border-2 transition-all text-center",
                               isSelected 
                                 ? "border-amber-500 bg-amber-500/10" 
                                 : "border-border hover:border-amber-500/50"
                             )}
                           >
                             <Users className={cn(
-                              "h-5 w-5 md:h-6 md:w-6 mx-auto mb-2",
+                              "h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mx-auto mb-1 sm:mb-2",
                               isSelected ? "text-amber-600" : "text-muted-foreground",
                               affluence === 'high' && "fill-current"
                             )} />
@@ -642,11 +642,11 @@ export default function SimulateurPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* CA Journalier */}
-                    <div className="p-4 rounded-lg bg-background border">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-muted-foreground text-sm">{t('app:simulateur.results.dailyRevenue')}</span>
-                        <span className="text-xl font-bold text-foreground">
-                          {Math.round(results.dailyRevenue).toLocaleString("fr-FR")} {t('app:simulateur.results.perDay')}
+                    <div className="p-3 sm:p-4 rounded-lg bg-background border">
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-1">
+                         <span className="text-muted-foreground text-xs sm:text-sm">{t('app:simulateur.results.dailyRevenue')}</span>
+                         <span className="text-lg sm:text-xl font-bold text-foreground">
+                           {Math.round(results.dailyRevenue).toLocaleString("fr-FR")} {t('app:simulateur.results.perDay')}
                         </span>
                       </div>
                       <div className="text-xs text-muted-foreground">
@@ -658,11 +658,11 @@ export default function SimulateurPage() {
                     </div>
 
                     {/* CA Mensuel */}
-                    <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-green-700 dark:text-green-400 font-medium">{t('app:simulateur.results.monthlyRevenue')}</span>
-                        <span className="text-2xl font-bold text-green-700 dark:text-green-400">
-                          {Math.round(results.monthlyRevenue).toLocaleString("fr-FR")} {t('app:simulateur.results.perMonth')}
+                     <div className="p-3 sm:p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-1">
+                         <span className="text-green-700 dark:text-green-400 font-medium text-sm">{t('app:simulateur.results.monthlyRevenue')}</span>
+                         <span className="text-xl sm:text-2xl font-bold text-green-700 dark:text-green-400">
+                           {Math.round(results.monthlyRevenue).toLocaleString("fr-FR")} {t('app:simulateur.results.perMonth')}
                         </span>
                       </div>
                       <div className="text-xs text-muted-foreground">
