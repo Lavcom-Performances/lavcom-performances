@@ -3,7 +3,8 @@
 // Écran de qualification pré-simulateur (3 questions)
 
 import { useState } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Lightbulb, Search, FileText, Store } from "lucide-react";
+import lavcomLogo from "@/assets/lavcom-performances-header.png";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -25,10 +26,10 @@ const STEPS = [
     question: "Où en êtes-vous dans votre projet ?",
     label: "Votre situation",
     options: [
-      { label: "Je réfléchis à un projet", sub: "Phase d'exploration", value: "exploring", emoji: "💡" },
-      { label: "Je cherche un local", sub: "Phase de recherche", value: "location", emoji: "🔍" },
-      { label: "Je suis en cours de financement", sub: "Phase de montage", value: "financing", emoji: "📋" },
-      { label: "J'exploite déjà une laverie", sub: "Exploitant actif", value: "operator", emoji: "🏪" },
+      { label: "Je réfléchis à un projet", sub: "Phase d'exploration", value: "exploring", icon: Lightbulb },
+      { label: "Je cherche un local", sub: "Phase de recherche", value: "location", icon: Search },
+      { label: "Je suis en cours de financement", sub: "Phase de montage", value: "financing", icon: FileText },
+      { label: "J'exploite déjà une laverie", sub: "Exploitant actif", value: "operator", icon: Store },
     ],
   },
   {
@@ -36,10 +37,10 @@ const STEPS = [
     question: "Quel apport personnel prévoyez-vous ?",
     label: "Votre apport",
     options: [
-      { label: "Moins de 20 000 €", sub: "Projet en amorçage", value: "lt20k", emoji: "🌱" },
-      { label: "20 000 – 50 000 €", sub: "Budget intermédiaire", value: "20_50k", emoji: "📈" },
-      { label: "50 000 – 100 000 €", sub: "Budget structuré", value: "50_100k", emoji: "💼" },
-      { label: "Plus de 100 000 €", sub: "Investissement significatif", value: "gt100k", emoji: "🏦" },
+      { label: "Moins de 20 000 €", sub: "Projet en amorçage", value: "lt20k", icon: Lightbulb },
+      { label: "20 000 – 50 000 €", sub: "Budget intermédiaire", value: "20_50k", icon: FileText },
+      { label: "50 000 – 100 000 €", sub: "Budget structuré", value: "50_100k", icon: Store },
+      { label: "Plus de 100 000 €", sub: "Investissement significatif", value: "gt100k", icon: Search },
     ],
   },
   {
@@ -47,10 +48,10 @@ const STEPS = [
     question: "Combien de machines envisagez-vous ?",
     label: "Votre projet",
     options: [
-      { label: "1 à 4 machines", sub: "Petite laverie", value: "1_4", emoji: "🔵" },
-      { label: "5 à 8 machines", sub: "Laverie standard", value: "5_8", emoji: "🟢" },
-      { label: "9 à 14 machines", sub: "Grande laverie", value: "9_14", emoji: "🟠" },
-      { label: "15 machines et plus", sub: "Réseau / multi-sites", value: "15plus", emoji: "🔶" },
+      { label: "1 à 4 machines", sub: "Petite laverie", value: "1_4", icon: Store },
+      { label: "5 à 8 machines", sub: "Laverie standard", value: "5_8", icon: Store },
+      { label: "9 à 14 machines", sub: "Grande laverie", value: "9_14", icon: Store },
+      { label: "15 machines et plus", sub: "Réseau / multi-sites", value: "15plus", icon: Store },
     ],
   },
 ];
@@ -93,28 +94,27 @@ export default function SimulatorQualification({ onComplete }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] flex flex-col overflow-x-hidden">
-      {/* Header */}
-      <div className="bg-white border-b border-[#E8E4DC] px-4 sm:px-6 py-3 sm:py-4">
+    <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
+      {/* Header with Lavcom logo */}
+      <div className="bg-card border-b border-border px-4 sm:px-6 py-3 sm:py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div>
-            <span className="text-[#2C2C2C] font-bold text-sm tracking-widest uppercase">
-              LAV<span className="text-[#E8A020]">COM</span>
-            </span>
-            <span className="text-[#2C2C2C] font-bold text-sm tracking-widest uppercase ml-1">
-              PERFORMANCES
-            </span>
-          </div>
-          <span className="text-xs text-[#9E9E9E] font-medium">
+          <a href="/" className="flex items-center">
+            <img 
+              src={lavcomLogo} 
+              alt="Lavcom Performances" 
+              className="h-7 sm:h-8 w-auto"
+            />
+          </a>
+          <span className="text-xs text-muted-foreground font-medium">
             {step + 1} / {STEPS.length}
           </span>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div className="h-1 bg-[#E8E4DC]">
+      <div className="h-1 bg-border">
         <div
-          className="h-full bg-[#E8A020] transition-all duration-500 ease-out"
+          className="h-full bg-lavcom-orange transition-all duration-500 ease-out"
           style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
         />
       </div>
@@ -133,16 +133,16 @@ export default function SimulatorQualification({ onComplete }: Props) {
                 key={i}
                 className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold transition-all duration-300 ${
                   i < step
-                    ? "bg-[#E8A020] text-white"
+                    ? "bg-lavcom-orange text-white"
                     : i === step
-                    ? "bg-[#2C2C2C] text-white"
-                    : "bg-[#E8E4DC] text-[#9E9E9E]"
+                    ? "bg-foreground text-background"
+                    : "bg-border text-muted-foreground"
                 }`}
               >
                 {i < step ? <CheckCircle2 size={14} /> : i + 1}
               </div>
             ))}
-            <div className="ml-2 text-xs text-[#9E9E9E] font-medium">
+            <div className="ml-2 text-xs text-muted-foreground font-medium">
               {currentStep.label}
             </div>
           </div>
@@ -150,17 +150,17 @@ export default function SimulatorQualification({ onComplete }: Props) {
           {/* Intro text (step 0 only) */}
           {step === 0 && (
             <div className="mb-8">
-              <h1 className="text-xl sm:text-2xl font-bold text-[#2C2C2C] mb-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
                 Avant de commencer
               </h1>
-              <p className="text-[#6B6B6B] text-base">
+              <p className="text-muted-foreground text-base">
                 3 questions rapides pour personnaliser votre estimation de rentabilité.
               </p>
             </div>
           )}
 
           {/* Question */}
-          <h2 className="text-lg sm:text-xl font-bold text-[#2C2C2C] mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-bold text-foreground mb-4 sm:mb-6">
             {currentStep.question}
           </h2>
 
@@ -168,6 +168,7 @@ export default function SimulatorQualification({ onComplete }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-6 sm:mb-8">
             {currentStep.options.map((opt) => {
               const isActive = selected === opt.value;
+              const Icon = opt.icon;
               return (
                 <button
                   key={opt.value}
@@ -176,21 +177,25 @@ export default function SimulatorQualification({ onComplete }: Props) {
                     group relative text-left p-4 rounded-2xl border-2 transition-all duration-200
                     ${
                       isActive
-                        ? "border-[#E8A020] bg-[#FFF8EC] shadow-md"
-                        : "border-[#E8E4DC] bg-white hover:border-[#E8A020]/50 hover:bg-[#FFFCF7]"
+                        ? "border-lavcom-orange bg-lavcom-orange-light shadow-md"
+                        : "border-border bg-card hover:border-lavcom-orange/50 hover:bg-lavcom-orange-light/50"
                     }
                   `}
                 >
                   <div className="flex items-start gap-3">
-                    <span className="text-2xl leading-none mt-0.5">{opt.emoji}</span>
+                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                      isActive ? "bg-lavcom-orange/20" : "bg-muted"
+                    }`}>
+                      <Icon size={18} className={isActive ? "text-lavcom-orange" : "text-muted-foreground"} />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm leading-snug text-[#2C2C2C]">
+                      <div className="font-semibold text-sm leading-snug text-foreground">
                         {opt.label}
                       </div>
-                      <div className="text-xs text-[#9E9E9E] mt-0.5">{opt.sub}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{opt.sub}</div>
                     </div>
                     {isActive && (
-                      <div className="w-5 h-5 rounded-full bg-[#E8A020] flex items-center justify-center flex-shrink-0">
+                      <div className="w-5 h-5 rounded-full bg-lavcom-orange flex items-center justify-center flex-shrink-0">
                         <div className="w-2 h-2 rounded-full bg-white" />
                       </div>
                     )}
@@ -209,8 +214,8 @@ export default function SimulatorQualification({ onComplete }: Props) {
               font-semibold text-base transition-all duration-200
               ${
                 selected
-                  ? "bg-[#E8A020] text-white hover:bg-[#D4920E] shadow-lg shadow-[#E8A020]/30 cursor-pointer"
-                  : "bg-[#E8E4DC] text-[#B0A898] cursor-not-allowed"
+                  ? "bg-lavcom-orange text-white hover:bg-lavcom-orange-dark shadow-lg shadow-lavcom-orange/30 cursor-pointer"
+                  : "bg-border text-muted-foreground cursor-not-allowed"
               }
             `}
           >
@@ -219,7 +224,7 @@ export default function SimulatorQualification({ onComplete }: Props) {
           </button>
 
           {/* Trust signal */}
-          <p className="text-center text-xs text-[#B0A898] mt-4">
+          <p className="text-center text-xs text-muted-foreground mt-4">
             ✓ Estimation gratuite &nbsp;·&nbsp; ✓ Sans engagement &nbsp;·&nbsp; ✓ En moins de 2 minutes
           </p>
         </div>
