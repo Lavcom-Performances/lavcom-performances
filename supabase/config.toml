@@ -36,6 +36,9 @@ verify_jwt = false
 [functions.csp-report]
 verify_jwt = false
 
+[functions.create-simulator-lead]
+verify_jwt = false
+
 [functions.create-simulator-checkout]
 verify_jwt = true
 

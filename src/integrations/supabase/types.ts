@@ -2801,6 +2801,54 @@ export type Database = {
         }
         Relationships: []
       }
+      simulator_leads: {
+        Row: {
+          capital_range: string | null
+          created_at: string
+          email: string
+          estimated_annual_revenue: number | null
+          estimated_monthly_revenue: number | null
+          gap_score: number | null
+          ici_score: number | null
+          id: string
+          machine_range: string | null
+          pricing_snapshot: Json | null
+          segmentation_type: string | null
+          stage: string | null
+          zone_selected: string | null
+        }
+        Insert: {
+          capital_range?: string | null
+          created_at?: string
+          email: string
+          estimated_annual_revenue?: number | null
+          estimated_monthly_revenue?: number | null
+          gap_score?: number | null
+          ici_score?: number | null
+          id?: string
+          machine_range?: string | null
+          pricing_snapshot?: Json | null
+          segmentation_type?: string | null
+          stage?: string | null
+          zone_selected?: string | null
+        }
+        Update: {
+          capital_range?: string | null
+          created_at?: string
+          email?: string
+          estimated_annual_revenue?: number | null
+          estimated_monthly_revenue?: number | null
+          gap_score?: number | null
+          ici_score?: number | null
+          id?: string
+          machine_range?: string | null
+          pricing_snapshot?: Json | null
+          segmentation_type?: string | null
+          stage?: string | null
+          zone_selected?: string | null
+        }
+        Relationships: []
+      }
       site_access: {
         Row: {
           can_delete: boolean
