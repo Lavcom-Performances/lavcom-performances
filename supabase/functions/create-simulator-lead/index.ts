@@ -48,6 +48,7 @@ async function triggerEmailSummary(payload: LeadPayload, supabaseUrl: string, an
         machine_range: payload.machine_range,
         estimated_monthly_revenue: payload.estimated_monthly_revenue,
         estimated_annual_revenue: payload.estimated_annual_revenue,
+        pricing_snapshot: payload.pricing_snapshot ?? null,
       }),
     });
 
