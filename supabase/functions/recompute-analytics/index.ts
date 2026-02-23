@@ -187,30 +187,48 @@ Deno.serve(async (req) => {
 
     console.log(`[recompute-analytics] Starting for site ${site.name} (${site_id}), range: ${date_from} to ${date_to}`);
 
-    // Fetch operations for the site within date range
-    const { data: operations, error: fetchError } = await supabase
-      .from("operations")
-      .select("id, site_id, user_id, operation_date, operation_time, amount, payment_mode, machine")
-      .eq("site_id", site_id)
-      .gte("operation_date", date_from)
-      .lte("operation_date", date_to);
+    // Fetch ALL operations for the site within date range (paginated to avoid 1000-row limit)
+    const allOperations: any[] = [];
+    const PAGE_SIZE = 1000;
+    let offset = 0;
+    let hasMore = true;
 
-    if (fetchError) {
-      console.error("[recompute-analytics] Error fetching operations:", fetchError);
-      await logEvent(supabase, 'error', 'RECOMPUTE_FETCH_FAIL', 'Failed to fetch operations', {
-        site_id,
-        site_name: site.name,
-        date_from,
-        date_to,
-        error: fetchError.message,
-        actor_id: actorId,
-        actor_email: actorEmail,
-      });
-      return new Response(
-        JSON.stringify({ error: fetchError.message }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    while (hasMore) {
+      const { data, error: fetchError } = await supabase
+        .from("operations")
+        .select("id, site_id, user_id, operation_date, operation_time, amount, payment_mode, machine")
+        .eq("site_id", site_id)
+        .gte("operation_date", date_from)
+        .lte("operation_date", date_to)
+        .range(offset, offset + PAGE_SIZE - 1);
+
+      if (fetchError) {
+        console.error("[recompute-analytics] Error fetching operations:", fetchError);
+        await logEvent(supabase, 'error', 'RECOMPUTE_FETCH_FAIL', 'Failed to fetch operations', {
+          site_id,
+          site_name: site.name,
+          date_from,
+          date_to,
+          error: fetchError.message,
+          actor_id: actorId,
+          actor_email: actorEmail,
+        });
+        return new Response(
+          JSON.stringify({ error: fetchError.message }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (data && data.length > 0) {
+        allOperations.push(...data);
+        offset += PAGE_SIZE;
+        hasMore = data.length === PAGE_SIZE;
+      } else {
+        hasMore = false;
+      }
     }
+
+    const operations = allOperations;
 
     const operationCount = operations?.length || 0;
     console.log(`[recompute-analytics] Found ${operationCount} operations to process`);

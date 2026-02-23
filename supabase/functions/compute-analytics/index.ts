@@ -47,29 +47,47 @@ Deno.serve(async (req) => {
 
     console.log(`[compute-analytics] Starting for site ${site_id}, range: ${start_date} - ${end_date}`);
 
-    // Fetch operations for the site
-    let query = supabase
-      .from("operations")
-      .select("id, site_id, user_id, operation_date, operation_time, amount, payment_mode, machine")
-      .eq("site_id", site_id)
-      .eq("user_id", user_id);
+    // Fetch ALL operations for the site using pagination to avoid 1000-row limit
+    const allOperations: OperationRow[] = [];
+    const PAGE_SIZE = 1000;
+    let offset = 0;
+    let hasMore = true;
 
-    if (start_date) {
-      query = query.gte("operation_date", start_date);
-    }
-    if (end_date) {
-      query = query.lte("operation_date", end_date);
+    while (hasMore) {
+      let query = supabase
+        .from("operations")
+        .select("id, site_id, user_id, operation_date, operation_time, amount, payment_mode, machine")
+        .eq("site_id", site_id)
+        .eq("user_id", user_id)
+        .range(offset, offset + PAGE_SIZE - 1);
+
+      if (start_date) {
+        query = query.gte("operation_date", start_date);
+      }
+      if (end_date) {
+        query = query.lte("operation_date", end_date);
+      }
+
+      const { data, error: fetchError } = await query;
+
+      if (fetchError) {
+        console.error("[compute-analytics] Error fetching operations:", fetchError);
+        return new Response(
+          JSON.stringify({ error: fetchError.message }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (data && data.length > 0) {
+        allOperations.push(...(data as OperationRow[]));
+        offset += PAGE_SIZE;
+        hasMore = data.length === PAGE_SIZE;
+      } else {
+        hasMore = false;
+      }
     }
 
-    const { data: operations, error: fetchError } = await query;
-
-    if (fetchError) {
-      console.error("[compute-analytics] Error fetching operations:", fetchError);
-      return new Response(
-        JSON.stringify({ error: fetchError.message }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const operations = allOperations;
 
     if (!operations || operations.length === 0) {
       console.log("[compute-analytics] No operations found");

@@ -4011,6 +4011,21 @@ export type Database = {
           revenue_total: number
         }[]
       }
+      rpc_operations_period_kpis: {
+        Args: {
+          p_end_date?: string
+          p_payment_mode?: string
+          p_search?: string
+          p_site_id: string
+          p_start_date?: string
+        }
+        Returns: {
+          ca_cb: number
+          ca_esp: number
+          op_count: number
+          total_ca: number
+        }[]
+      }
       rpc_platform_admin_beta_companies: {
         Args: { p_limit?: number; p_offset?: number }
         Returns: Json

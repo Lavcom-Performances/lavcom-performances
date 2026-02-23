@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { DateRange } from "react-day-picker";
 import { subDays, format, parseISO, getDay } from "date-fns";
@@ -53,6 +53,7 @@ import { DataQualityBlock } from "@/components/dashboard/DataQualityBlock";
 import { DateRangeGuardrail } from "@/components/ui/DateRangeGuardrail";
 import { usePlatformRole } from "@/hooks/usePlatformRole";
 import { isCountedInRevenue, isRechargement, isCBPayment, isESPPayment, filterRevenueOperations } from "@/lib/operationFilters";
+import { supabase } from "@/integrations/supabase/client";
 
 const paymentModeBadge = (mode: string | null) => {
   if (!mode) return <span className="text-muted-foreground">—</span>;
@@ -212,6 +213,37 @@ export default function Operations() {
     paymentMode: paymentFilter,
     siteId: selectedSite?.id,
   }, paginationState);
+
+  // Server-side aggregation for period KPIs (avoids paginated data issues)
+  const [periodKpis, setPeriodKpis] = useState({ total: 0, cb: 0, esp: 0, count: 0 });
+  
+  const fetchPeriodKpis = useCallback(async () => {
+    if (!selectedSite?.id) return;
+    try {
+      const { data, error } = await supabase.rpc("rpc_operations_period_kpis" as any, {
+        p_site_id: selectedSite.id,
+        p_start_date: dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : null,
+        p_end_date: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : null,
+        p_payment_mode: paymentFilter !== "all" ? paymentFilter : null,
+        p_search: searchQuery || null,
+      });
+      if (!error && data && data.length > 0) {
+        const row = data[0] as any;
+        setPeriodKpis({
+          total: Number(row.total_ca) || 0,
+          cb: Number(row.ca_cb) || 0,
+          esp: Number(row.ca_esp) || 0,
+          count: Number(row.op_count) || 0,
+        });
+      }
+    } catch (err) {
+      console.error("[Operations] Failed to fetch period KPIs:", err);
+    }
+  }, [selectedSite?.id, dateRange?.from?.toISOString(), dateRange?.to?.toISOString(), paymentFilter, searchQuery]);
+
+  useEffect(() => {
+    fetchPeriodKpis();
+  }, [fetchPeriodKpis]);
 
   // Get unique machines from current page operations
   const uniqueMachines = useMemo(() => {
@@ -876,25 +908,19 @@ export default function Operations() {
         siteId={selectedSite?.id}
         hourlyData={hourlyData}
         machineCounts={machineCounts}
-        periodKpis={{
-          total: filterRevenueOperations(operations).reduce((sum, op) => sum + Number(op.amount), 0),
-          cb: filterRevenueOperations(operations).filter(isCBPayment).reduce((sum, op) => sum + Number(op.amount), 0),
-          esp: filterRevenueOperations(operations).filter(isESPPayment).reduce((sum, op) => sum + Number(op.amount), 0),
-          count: filterRevenueOperations(operations).length,
-        }}
+        periodKpis={periodKpis}
         alerts={(() => {
           const alerts: Array<{ type: "warning" | "info"; message: string }> = [];
-          const salesOps = filterRevenueOperations(operations);
-          if (salesOps.length > 0 && salesOps.reduce((s, op) => s + Number(op.amount), 0) === 0) {
+          if (periodKpis.count > 0 && periodKpis.total === 0) {
             alerts.push({ type: "warning", message: "CA à 0 € malgré des opérations existantes" });
           }
-          if (operations.length === 0 && dateRange) {
+          if (totalCount === 0 && dateRange) {
             alerts.push({ type: "warning", message: "Aucune donnée sur cette période" });
           }
-          if (salesOps.length > 0) {
-            const espRatio = salesOps.filter(isESPPayment).length / salesOps.length;
+          if (periodKpis.count > 0 && periodKpis.esp > 0) {
+            const espRatio = periodKpis.esp / (periodKpis.total || 1);
             if (espRatio > 0.8) {
-              alerts.push({ type: "info", message: `${(espRatio * 100).toFixed(0)}% des paiements en espèces` });
+              alerts.push({ type: "info", message: `${(espRatio * 100).toFixed(0)}% du CA en espèces` });
             }
           }
           return alerts;
