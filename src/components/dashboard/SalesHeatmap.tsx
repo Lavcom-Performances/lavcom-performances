@@ -4,7 +4,7 @@ interface SalesHeatmapProps {
   data: Array<{
     day: string;
     hour: number;
-    cycles: number;
+    cycles: number; // Now represents revenue (€) for better representation
   }>;
 }
 
@@ -67,8 +67,8 @@ export function SalesHeatmap({ data }: SalesHeatmapProps) {
   return (
     <div data-pdf-chart="sales-heatmap" className="dashboard-card overflow-x-auto">
       <div className="dashboard-card-header">
-        <h3 className="dashboard-card-title">Heatmap des cycles</h3>
-        <span className="text-xs text-muted-foreground">heure × jour</span>
+        <h3 className="dashboard-card-title">Heatmap du CA</h3>
+        <span className="text-xs text-muted-foreground">heure × jour (€)</span>
       </div>
       
       <div className="overflow-x-auto -mx-1">
@@ -103,7 +103,7 @@ export function SalesHeatmap({ data }: SalesHeatmapProps) {
                       key={`${hour}-${day}`}
                       className="p-2"
                       style={{ backgroundColor: bgColor }}
-                      title={`${day} ${hour}h: ${value} cycles`}
+                      title={`${day} ${hour}h: ${value.toFixed(0)} €`}
                     />
                   );
                 })}

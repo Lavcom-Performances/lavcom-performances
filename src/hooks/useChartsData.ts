@@ -313,7 +313,7 @@ export function useHeatmapData(filters?: Omit<ChartFilters, 'dateRange'>) {
 
       const { data, error } = await supabase
         .from("operations")
-        .select("operation_date, operation_time, payment_mode, machine_name, machine, type")
+        .select("operation_date, operation_time, payment_mode, machine_name, machine, type, amount")
         .eq("site_id", currentSiteId)
         .gte("operation_date", formattedRange.from)
         .lte("operation_date", formattedRange.to)
@@ -341,7 +341,8 @@ export function useHeatmapData(filters?: Omit<ChartFilters, 'dateRange'>) {
         const hour = parseInt(op.operation_time!.split(":")[0], 10);
         if (hour >= 7 && hour <= 21) {
           const key = `${dayOfWeek}-${hour}`;
-          slots.set(key, (slots.get(key) || 0) + 1);
+          const amount = Number(op.amount) || 0;
+          slots.set(key, (slots.get(key) || 0) + amount);
         }
       });
 

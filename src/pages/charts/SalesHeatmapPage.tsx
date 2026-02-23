@@ -42,10 +42,10 @@ export default function SalesHeatmapPage() {
       <div className="flex flex-col gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground">
-            Heatmap des ventes
+            Heatmap du CA
           </h1>
           <p className="text-muted-foreground">
-            Volume de cycles par jour et heure
+            Chiffre d'affaires par jour et heure
           </p>
         </div>
         <ChartPageFilters
