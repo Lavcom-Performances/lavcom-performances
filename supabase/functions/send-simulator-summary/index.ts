@@ -98,7 +98,7 @@ interface SegmentConfig {
 function getSegmentConfig(segment: SummaryPayload["segmentation_type"]): SegmentConfig {
   const configs: Record<SummaryPayload["segmentation_type"], SegmentConfig> = {
     segment_a: {
-      title: "Votre projet démarre — construisons des bases solides",
+      title: "Votre projet démarre —<br/>construisons des bases solides",
       badge: "Porteur de projet",
       badgeColor: "#6366f1",
       intro: "Votre simulation montre un projet en phase de réflexion. C'est le bon moment pour vous armer des bons outils avant de vous engager.",
