@@ -67,5 +67,12 @@
     "simulatorPacks": "Simulator pakketten",
     "allRightsReserved": "Alle rechten voorbehouden."
   },
-  "close": "Sluiten"
+  "close": "Sluiten",
+  "accessApp": "Ga naar mijn dashboard",
+  "freeTrialOneLine": "14 dagen gratis, zonder verplichtingen, geen creditcard nodig",
+  "draftRestored": "Concept hersteld",
+  "clearDraft": "Wissen",
+  "contact": "Contact",
+  "euroPerMonth": "€/maand",
+  "euroPerYear": "€/jaar"
 }

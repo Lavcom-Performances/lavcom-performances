@@ -47,5 +47,9 @@
     "checkoutFailed": "Fehler beim Erstellen der Zahlung",
     "noSessionUrl": "Zahlungslink konnte nicht abgerufen werden",
     "unexpected": "Ein unerwarteter Fehler ist aufgetreten"
+  },
+  "auth": {
+    "leakedPassword": "Dieses Passwort wurde bei einem Datenleck offengelegt. Bitte wählen Sie ein anderes Passwort.",
+    "weakPassword": "Dieses Passwort ist zu schwach. Verwenden Sie mindestens 8 Zeichen mit Groß- und Kleinbuchstaben, Zahlen und Symbolen."
   }
 }

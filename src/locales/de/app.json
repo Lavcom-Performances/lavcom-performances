@@ -1342,6 +1342,11 @@
     }
   },
   "csvImport": {
+    "importRules": {
+      "fast": "Import in wenigen Sekunden. Ihre Daten erscheinen in der Tabelle unten.",
+      "duplicates": "Duplikate werden automatisch ignoriert (keine doppelten Daten werden importiert).",
+      "amounts": "Beträge werden in Euro angezeigt."
+    },
     "success": "Import abgeschlossen",
     "partial": "Import teilweise abgeschlossen",
     "failed": "Import fehlgeschlagen",
