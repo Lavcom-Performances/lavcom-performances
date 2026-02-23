@@ -896,6 +896,11 @@
     }
   },
   "csvImport": {
+    "importRules": {
+      "fast": "Import en quelques secondes. Vos données apparaissent dans le tableau ci-dessous.",
+      "duplicates": "Les doublons sont automatiquement ignorés (aucune donnée dupliquée n'est importée).",
+      "amounts": "Les montants sont affichés en euros."
+    },
     "fileSizeError": "Fichier trop volumineux (max 10 Mo).",
     "fileTypeError": "Seuls les fichiers CSV sont acceptés.",
     "maxLinesError": "Trop de lignes (max 200 000).",

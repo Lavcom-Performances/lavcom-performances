@@ -1342,6 +1342,11 @@
     }
   },
   "csvImport": {
+    "importRules": {
+      "fast": "Import in enkele seconden. Uw gegevens verschijnen in de tabel hieronder.",
+      "duplicates": "Duplicaten worden automatisch genegeerd (geen dubbele gegevens worden geïmporteerd).",
+      "amounts": "Bedragen worden weergegeven in euro."
+    },
     "success": "Import voltooid",
     "partial": "Import gedeeltelijk voltooid",
     "failed": "Import mislukt",

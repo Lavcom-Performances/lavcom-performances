@@ -67,5 +67,12 @@
     "simulatorPacks": "Pacchetti simulatore",
     "allRightsReserved": "Tutti i diritti riservati."
   },
-  "close": "Chiudi"
+  "close": "Chiudi",
+  "accessApp": "Vai alla mia dashboard",
+  "freeTrialOneLine": "14 giorni gratis, senza impegno, nessuna carta richiesta",
+  "draftRestored": "Bozza ripristinata",
+  "clearDraft": "Cancella",
+  "contact": "Contatto",
+  "euroPerMonth": "€/mese",
+  "euroPerYear": "€/anno"
 }

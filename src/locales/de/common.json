@@ -67,5 +67,12 @@
     "simulatorPacks": "Simulator-Pakete",
     "allRightsReserved": "Alle Rechte vorbehalten."
   },
-  "close": "Schließen"
+  "close": "Schließen",
+  "accessApp": "Zum Dashboard",
+  "freeTrialOneLine": "14 Tage kostenlos, ohne Bindung, keine Kreditkarte nötig",
+  "draftRestored": "Entwurf wiederhergestellt",
+  "clearDraft": "Löschen",
+  "contact": "Kontakt",
+  "euroPerMonth": "€/Monat",
+  "euroPerYear": "€/Jahr"
 }

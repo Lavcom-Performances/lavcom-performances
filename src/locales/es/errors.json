@@ -47,5 +47,9 @@
     "checkoutFailed": "Error al crear el pago",
     "noSessionUrl": "No se pudo obtener el enlace de pago",
     "unexpected": "Ocurrió un error inesperado"
+  },
+  "auth": {
+    "leakedPassword": "Esta contraseña ha sido expuesta en una filtración de datos. Por favor, elija otra contraseña.",
+    "weakPassword": "Esta contraseña es demasiado débil. Use al menos 8 caracteres con mayúsculas, minúsculas, números y símbolos."
   }
 }
