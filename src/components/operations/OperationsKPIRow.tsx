@@ -1,12 +1,25 @@
-import { BarChart3, Cpu } from "lucide-react";
-import { useOperationsCalendarKpis } from "@/hooks/useOperationsCalendarKpis";
+import { BarChart3, Cpu, TrendingUp, TrendingDown, CreditCard, Banknote, ShoppingCart, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
+
+interface PeriodKpis {
+  total: number;
+  cb: number;
+  esp: number;
+  count: number;
+}
+
+interface Alert {
+  type: "warning" | "info";
+  message: string;
+}
 
 interface OperationsKPIRowProps {
   siteId: string | undefined;
   hourlyData: Array<{ hour: string; cb: number; esp: number }>;
   machineCounts: Array<{ name: string; count: number }>;
+  periodKpis: PeriodKpis;
+  alerts?: Alert[];
   className?: string;
 }
 
@@ -17,100 +30,9 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-function LoadingPulse({ className }: { className?: string }) {
-  return (
-    <div className={cn(
-      "animate-pulse bg-muted/60 rounded",
-      className
-    )} />
-  );
-}
-
-interface CARowProps {
-  label: string;
-  total: number;
-  cb: number;
-  esp: number;
-  variant: "day" | "month" | "year";
-  isLoading?: boolean;
-}
-
-function CARow({ label, total, cb, esp, variant, isLoading }: CARowProps) {
-  const variantStyles = {
-    day: {
-      badge: "bg-lavcom-green text-white",
-      totalBg: "bg-lavcom-green/10",
-    },
-    month: {
-      badge: "bg-lavcom-green text-white",
-      totalBg: "bg-lavcom-green/15",
-    },
-    year: {
-      badge: "bg-muted-foreground/80 text-white",
-      totalBg: "bg-muted/50",
-    },
-  };
-
-  const styles = variantStyles[variant];
-  const isHighlighted = variant === "month";
-
-  return (
-    <div className={cn(
-      "flex items-center gap-3 py-2 transition-colors",
-      isHighlighted && "bg-lavcom-green/5 -mx-4 px-4 border-y border-lavcom-green/10"
-    )}>
-      {/* Label badge */}
-      <div className={cn(
-        "text-[10px] font-bold uppercase px-1.5 py-0.5 rounded tracking-wide shrink-0 w-12 text-center",
-        styles.badge
-      )}>
-        {label}
-      </div>
-      
-      {/* Total */}
-      <div className={cn(
-        "px-3 py-1.5 rounded-md min-w-[85px]",
-        styles.totalBg
-      )}>
-        {isLoading ? (
-          <LoadingPulse className="h-5 w-14" />
-        ) : (
-          <span className={cn(
-            "font-bold text-foreground block",
-            isHighlighted ? "text-lg" : "text-base"
-          )}>
-            {formatCurrency(total)} €
-          </span>
-        )}
-        <div className="text-[9px] text-muted-foreground uppercase tracking-wide">CA Total</div>
-      </div>
-      
-      {/* CB */}
-      <div className="text-center min-w-[60px]">
-        {isLoading ? (
-          <LoadingPulse className="h-4 w-12 mx-auto" />
-        ) : (
-          <span className="font-semibold text-foreground text-sm block">{formatCurrency(cb)} €</span>
-        )}
-        <div className="text-[9px] text-muted-foreground uppercase">CA CB</div>
-      </div>
-      
-      {/* ESP */}
-      <div className="text-center min-w-[60px]">
-        {isLoading ? (
-          <LoadingPulse className="h-4 w-12 mx-auto" />
-        ) : (
-          <span className="font-semibold text-foreground text-sm block">{formatCurrency(esp)} €</span>
-        )}
-        <div className="text-[9px] text-muted-foreground uppercase">CA ESP</div>
-      </div>
-    </div>
-  );
-}
-
-export function OperationsKPIRow({ siteId, hourlyData, machineCounts, className }: OperationsKPIRowProps) {
-  const { data, isLoading } = useOperationsCalendarKpis(siteId);
+export function OperationsKPIRow({ siteId, hourlyData, machineCounts, periodKpis, alerts = [], className }: OperationsKPIRowProps) {
   const totalMachines = machineCounts.length;
+  const avgBasket = periodKpis.count > 0 ? periodKpis.total / periodKpis.count : 0;
 
   // Calculate max for chart scaling
   const maxHourlyValue = Math.max(...hourlyData.map(d => d.cb + d.esp), 1);
@@ -120,34 +42,60 @@ export function OperationsKPIRow({ siteId, hourlyData, machineCounts, className 
       "grid grid-cols-1 lg:grid-cols-[1fr_1.2fr_0.8fr] gap-4",
       className
     )}>
-      {/* Bloc 1: CA Calendaire */}
-      <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-        <div className="space-y-1">
-          <CARow 
-            label="Jour" 
-            total={data?.day.revenue_total ?? 0} 
-            cb={data?.day.revenue_cb ?? 0} 
-            esp={data?.day.revenue_esp ?? 0}
-            variant="day"
-            isLoading={isLoading}
-          />
-          <CARow 
-            label="Mois" 
-            total={data?.month.revenue_total ?? 0} 
-            cb={data?.month.revenue_cb ?? 0} 
-            esp={data?.month.revenue_esp ?? 0}
-            variant="month"
-            isLoading={isLoading}
-          />
-          <CARow 
-            label="Année" 
-            total={data?.year.revenue_total ?? 0} 
-            cb={data?.year.revenue_cb ?? 0} 
-            esp={data?.year.revenue_esp ?? 0}
-            variant="year"
-            isLoading={isLoading}
-          />
+      {/* Bloc 1: KPIs résumé période + alertes */}
+      <div className="bg-card border border-border rounded-xl p-4 shadow-sm space-y-3">
+        <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+          Résumé période
         </div>
+
+        {/* Total CA */}
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-lavcom-green/15 flex items-center justify-center shrink-0">
+            <TrendingUp className="h-4 w-4 text-lavcom-green" />
+          </div>
+          <div>
+            <span className="text-xl font-bold text-foreground">{formatCurrency(periodKpis.total)} €</span>
+            <div className="text-[9px] text-muted-foreground uppercase">CA Total</div>
+          </div>
+        </div>
+
+        {/* CB / ESP / Panier moyen */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="text-center px-2 py-1.5 rounded-md bg-blue-500/10">
+            <CreditCard className="h-3 w-3 text-blue-500 mx-auto mb-0.5" />
+            <span className="text-sm font-semibold text-foreground block">{formatCurrency(periodKpis.cb)} €</span>
+            <div className="text-[9px] text-muted-foreground">CB</div>
+          </div>
+          <div className="text-center px-2 py-1.5 rounded-md bg-emerald-500/10">
+            <Banknote className="h-3 w-3 text-emerald-500 mx-auto mb-0.5" />
+            <span className="text-sm font-semibold text-foreground block">{formatCurrency(periodKpis.esp)} €</span>
+            <div className="text-[9px] text-muted-foreground">ESP</div>
+          </div>
+          <div className="text-center px-2 py-1.5 rounded-md bg-amber-500/10">
+            <ShoppingCart className="h-3 w-3 text-amber-500 mx-auto mb-0.5" />
+            <span className="text-sm font-semibold text-foreground block">{avgBasket.toFixed(1)} €</span>
+            <div className="text-[9px] text-muted-foreground">Panier</div>
+          </div>
+        </div>
+
+        {/* Alerts */}
+        {alerts.length > 0 && (
+          <div className="space-y-1 pt-1 border-t border-border/50">
+            {alerts.map((alert, i) => (
+              <div key={i} className={cn(
+                "flex items-start gap-1.5 text-[11px] rounded px-2 py-1",
+                alert.type === "warning" 
+                  ? "text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20" 
+                  : "text-blue-700 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20"
+              )}>
+                {alert.type === "warning" 
+                  ? <AlertTriangle className="h-3 w-3 mt-0.5 shrink-0" /> 
+                  : <CheckCircle2 className="h-3 w-3 mt-0.5 shrink-0" />}
+                <span>{alert.message}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Bloc 2: Graphique CA par heure */}

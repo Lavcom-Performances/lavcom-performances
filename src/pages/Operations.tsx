@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { DateRange } from "react-day-picker";
-import { subDays, format, startOfDay, startOfMonth, startOfYear, parseISO, getDay } from "date-fns";
+import { subDays, format, parseISO, getDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
@@ -288,42 +288,6 @@ export default function Operations() {
     return filtered;
   }, [rawOperations, machineFilter, dayFilter, sortColumn, sortDirection, showNonRevenue]);
 
-  // Calculate KPIs - exclude rechargements from revenue calculations
-  const kpis = useMemo(() => {
-    const today = startOfDay(new Date());
-    const monthStart = startOfMonth(new Date());
-    const yearStart = startOfYear(new Date());
-
-    // Only count operations that are real sales (exclude rechargements)
-    const salesOps = filterRevenueOperations(operations);
-
-    const calcKPI = (ops: typeof salesOps) => ({
-      total: ops.reduce((sum, op) => sum + Number(op.amount), 0),
-      cb: ops.filter(isCBPayment).reduce((sum, op) => sum + Number(op.amount), 0),
-      esp: ops.filter(isESPPayment).reduce((sum, op) => sum + Number(op.amount), 0),
-    });
-
-    const todayOps = salesOps.filter(op => {
-      const opDate = startOfDay(parseISO(op.operation_date));
-      return opDate.getTime() === today.getTime();
-    });
-    
-    const monthOps = salesOps.filter(op => {
-      const opDate = parseISO(op.operation_date);
-      return opDate >= monthStart;
-    });
-    
-    const yearOps = salesOps.filter(op => {
-      const opDate = parseISO(op.operation_date);
-      return opDate >= yearStart;
-    });
-
-    return {
-      day: calcKPI(todayOps),
-      month: calcKPI(monthOps),
-      year: calcKPI(yearOps),
-    };
-  }, [operations]);
 
   // Calculate hourly data for chart - exclude rechargements
   // Use FULL 0-23h range based on actual data (laveries automatiques peuvent avoir des opérations 24h/24)
@@ -626,9 +590,7 @@ export default function Operations() {
   };
 
   const handleImportComplete = (count: number) => {
-    // Refresh operations and calendar KPIs after import
     refetch();
-    queryClient.invalidateQueries({ queryKey: ["operationsCalendarKpis", selectedSite?.id] });
     setTimeout(() => {
       setIsImportDialogOpen(false);
     }, 2000);
@@ -909,11 +871,34 @@ export default function Operations() {
         </div>
       </FiltersCard>
 
-      {/* KPI Row - CA calendaire + Graph + Machines sur une ligne */}
+      {/* KPI Row - Résumé période + Graph + Machines sur une ligne */}
       <OperationsKPIRow 
         siteId={selectedSite?.id}
         hourlyData={hourlyData}
         machineCounts={machineCounts}
+        periodKpis={{
+          total: filterRevenueOperations(operations).reduce((sum, op) => sum + Number(op.amount), 0),
+          cb: filterRevenueOperations(operations).filter(isCBPayment).reduce((sum, op) => sum + Number(op.amount), 0),
+          esp: filterRevenueOperations(operations).filter(isESPPayment).reduce((sum, op) => sum + Number(op.amount), 0),
+          count: filterRevenueOperations(operations).length,
+        }}
+        alerts={(() => {
+          const alerts: Array<{ type: "warning" | "info"; message: string }> = [];
+          const salesOps = filterRevenueOperations(operations);
+          if (salesOps.length > 0 && salesOps.reduce((s, op) => s + Number(op.amount), 0) === 0) {
+            alerts.push({ type: "warning", message: "CA à 0 € malgré des opérations existantes" });
+          }
+          if (operations.length === 0 && dateRange) {
+            alerts.push({ type: "warning", message: "Aucune donnée sur cette période" });
+          }
+          if (salesOps.length > 0) {
+            const espRatio = salesOps.filter(isESPPayment).length / salesOps.length;
+            if (espRatio > 0.8) {
+              alerts.push({ type: "info", message: `${(espRatio * 100).toFixed(0)}% des paiements en espèces` });
+            }
+          }
+          return alerts;
+        })()}
       />
 
       {/* Year Comparison Section - only in expert mode */}
