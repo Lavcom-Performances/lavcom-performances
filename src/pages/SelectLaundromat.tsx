@@ -58,6 +58,11 @@ export default function SelectLaundromat() {
 
   const handleSelectLaundromat = (siteId: string) => {
     localStorage.setItem("selectedSiteId", siteId);
+    // Dispatch storage event so useCurrentSite picks up the change within the same tab
+    window.dispatchEvent(new StorageEvent("storage", {
+      key: "selectedSiteId",
+      newValue: siteId,
+    }));
     navigate("/dashboard");
   };
 

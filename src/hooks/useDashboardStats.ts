@@ -290,7 +290,7 @@ function computeStatsFromAnalytics(
     const dayName = daysOrder[(dayIndex + 6) % 7]; // Convert to Mon-Sun
     if (d.hourly_breakdown) {
       d.hourly_breakdown.forEach(h => {
-        hourlyAgg[dayName][h.hour] = (hourlyAgg[dayName][h.hour] || 0) + h.transactions;
+        hourlyAgg[dayName][h.hour] = (hourlyAgg[dayName][h.hour] || 0) + h.revenue;
       });
     }
   });
@@ -481,14 +481,15 @@ function computeStatsFromOperations(operations: any[], dateRange?: DateRange): D
     for (let hour = 7; hour <= 21; hour++) {
       const dayIndex = daysOrder.indexOf(day);
       const realDayIndex = (dayIndex + 1) % 7;
-      const count = filteredOps.filter(op => {
+      const dayOps = filteredOps.filter(op => {
         const opDate = parseISO(op.operation_date);
         if (getDay(opDate) !== realDayIndex) return false;
         if (!op.operation_time) return false;
         const opHour = parseInt(op.operation_time.split(":")[0], 10);
         return opHour === hour;
-      }).length;
-      heatmapData.push({ day, hour, cycles: count });
+      });
+      const revenue = dayOps.reduce((sum, op) => sum + (Number(op.amount) || 0), 0);
+      heatmapData.push({ day, hour, cycles: revenue });
     }
   });
 

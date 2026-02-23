@@ -62,10 +62,10 @@ export function DataFreshnessIndicator() {
 
       if (batchError) throw batchError;
 
-      // Get total count
+      // Get total count using head: true to avoid 1000-row limit
       const { count } = await supabase
         .from("operations")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("site_id", currentSiteId);
 
       return {

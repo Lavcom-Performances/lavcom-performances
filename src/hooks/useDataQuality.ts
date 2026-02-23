@@ -50,16 +50,14 @@ export function useDataQuality(options: UseDataQualityOptions = {}) {
         return getEmptyResult();
       }
 
-      const dateFrom = dateRange?.from?.toISOString().split('T')[0];
-      const dateTo = dateRange?.to?.toISOString().split('T')[0];
+      const dateFrom = dateRange?.from?.toISOString().split('T')[0] || null;
+      const dateTo = dateRange?.to?.toISOString().split('T')[0] || null;
 
       // Parallel queries for efficiency
       const [
         lastImportResult,
         lastOperationResult,
         periodStatsResult,
-        hourRangeResult,
-        distinctDaysResult,
       ] = await Promise.all([
         // Last import
         supabase
@@ -79,15 +77,23 @@ export function useDataQuality(options: UseDataQualityOptions = {}) {
           .limit(1)
           .maybeSingle(),
         
-        // Period stats (count + revenue) - filtered by date range if provided
-        getPeriodStats(currentSiteId, dateFrom, dateTo),
-        
-        // Hour range (min/max hours)
-        getHourRange(currentSiteId, dateFrom, dateTo),
-        
-        // Distinct days count
-        getDistinctDays(currentSiteId, dateFrom, dateTo),
+        // All period stats via RPC (no 1000-row limit)
+        supabase.rpc("rpc_data_quality_stats" as any, {
+          p_site_id: currentSiteId,
+          p_start_date: dateFrom,
+          p_end_date: dateTo,
+        }),
       ]);
+
+      // Parse RPC result
+      const rpcRow = periodStatsResult.data?.[0] || periodStatsResult.data;
+      const operationsCount = Number(rpcRow?.operations_count) || 0;
+      const totalRevenue = Number(rpcRow?.total_revenue) || 0;
+      const minDate = rpcRow?.min_date || null;
+      const maxDate = rpcRow?.max_date || null;
+      const minHour = rpcRow?.min_hour != null ? Number(rpcRow.min_hour) : null;
+      const maxHour = rpcRow?.max_hour != null ? Number(rpcRow.max_hour) : null;
+      const distinctDays = Number(rpcRow?.distinct_days) || 0;
 
       // Detect provider from filename
       const filename = lastImportResult.data?.filename || '';
@@ -100,11 +106,11 @@ export function useDataQuality(options: UseDataQualityOptions = {}) {
 
       // Build warnings
       const warnings = buildWarnings({
-        minHour: hourRangeResult.minHour,
-        maxHour: hourRangeResult.maxHour,
-        operationsCount: periodStatsResult.count,
-        totalRevenue: periodStatsResult.revenue,
-        distinctDays: distinctDaysResult,
+        minHour,
+        maxHour,
+        operationsCount,
+        totalRevenue,
+        distinctDays,
         periodDays,
       });
 
@@ -117,13 +123,13 @@ export function useDataQuality(options: UseDataQualityOptions = {}) {
         lastImportDate: lastImportResult.data?.created_at || null,
         lastOperationDate: lastOperationResult.data?.operation_date || null,
         provider,
-        periodStart: periodStatsResult.minDate,
-        periodEnd: periodStatsResult.maxDate,
-        operationsCount: periodStatsResult.count,
-        totalRevenue: periodStatsResult.revenue,
-        minHour: hourRangeResult.minHour,
-        maxHour: hourRangeResult.maxHour,
-        distinctDays: distinctDaysResult,
+        periodStart: minDate,
+        periodEnd: maxDate,
+        operationsCount,
+        totalRevenue,
+        minHour,
+        maxHour,
+        distinctDays,
         periodDays,
         warnings,
       };
@@ -166,101 +172,6 @@ function detectProvider(filename: string): string | null {
     return 'CSV';
   }
   return null;
-}
-
-async function getPeriodStats(siteId: string, dateFrom?: string, dateTo?: string) {
-  let query = supabase
-    .from("operations")
-    .select("amount, operation_date")
-    .eq("site_id", siteId);
-
-  if (dateFrom) {
-    query = query.gte("operation_date", dateFrom);
-  }
-  if (dateTo) {
-    query = query.lte("operation_date", dateTo);
-  }
-
-  const { data, error } = await query;
-
-  if (error || !data) {
-    return { count: 0, revenue: 0, minDate: null, maxDate: null };
-  }
-
-  const revenue = data.reduce((sum, op) => {
-    const amount = Number(op.amount) || 0;
-    return sum + amount;
-  }, 0);
-
-  const dates = data.map(op => op.operation_date).filter(Boolean).sort();
-
-  return {
-    count: data.length,
-    revenue,
-    minDate: dates[0] || null,
-    maxDate: dates[dates.length - 1] || null,
-  };
-}
-
-async function getHourRange(siteId: string, dateFrom?: string, dateTo?: string) {
-  let query = supabase
-    .from("operations")
-    .select("operation_time")
-    .eq("site_id", siteId)
-    .not("operation_time", "is", null);
-
-  if (dateFrom) {
-    query = query.gte("operation_date", dateFrom);
-  }
-  if (dateTo) {
-    query = query.lte("operation_date", dateTo);
-  }
-
-  const { data, error } = await query;
-
-  if (error || !data || data.length === 0) {
-    return { minHour: null, maxHour: null };
-  }
-
-  const hours = data
-    .map(op => {
-      if (!op.operation_time) return null;
-      const hour = parseInt(op.operation_time.split(':')[0], 10);
-      return isNaN(hour) ? null : hour;
-    })
-    .filter((h): h is number => h !== null);
-
-  if (hours.length === 0) {
-    return { minHour: null, maxHour: null };
-  }
-
-  return {
-    minHour: Math.min(...hours),
-    maxHour: Math.max(...hours),
-  };
-}
-
-async function getDistinctDays(siteId: string, dateFrom?: string, dateTo?: string): Promise<number> {
-  let query = supabase
-    .from("operations")
-    .select("operation_date")
-    .eq("site_id", siteId);
-
-  if (dateFrom) {
-    query = query.gte("operation_date", dateFrom);
-  }
-  if (dateTo) {
-    query = query.lte("operation_date", dateTo);
-  }
-
-  const { data, error } = await query;
-
-  if (error || !data) {
-    return 0;
-  }
-
-  const uniqueDays = new Set(data.map(op => op.operation_date));
-  return uniqueDays.size;
 }
 
 interface WarningInput {

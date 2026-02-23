@@ -3913,6 +3913,18 @@ export type Database = {
           total_operations: number
         }[]
       }
+      rpc_data_quality_stats: {
+        Args: { p_end_date?: string; p_site_id: string; p_start_date?: string }
+        Returns: {
+          distinct_days: number
+          max_date: string
+          max_hour: number
+          min_date: string
+          min_hour: number
+          operations_count: number
+          total_revenue: number
+        }[]
+      }
       rpc_date_bounds: {
         Args: { p_site_id: string }
         Returns: {
