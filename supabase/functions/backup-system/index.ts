@@ -139,7 +139,7 @@ Deno.serve(async (req) => {
       severity: "info",
       message: `Manual backup triggered by ${user.email}`,
       details: { job_id: job.id, triggered_by: user.id },
-    }).catch(() => {}); // non-blocking
+    });
 
     return new Response(
       JSON.stringify({ success: true, job_id: job.id }),
@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error("backup-system error:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: (error as Error).message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
