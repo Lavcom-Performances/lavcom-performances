@@ -5,22 +5,22 @@
 # Replace placeholders below with your actual GitHub usernames.
 
 # ── Default: all files require review from the lead dev ──────────────────────
-*                           @YOUR-LEAD-DEV-USERNAME
+*                           @rnaranjoromero
 
 # ── Workflow & CI files — extra scrutiny ─────────────────────────────────────
-.github/                    @YOUR-LEAD-DEV-USERNAME
+.github/                    @rnaranjoromero
 
 # ── Supabase / database migrations ───────────────────────────────────────────
-supabase/                   @YOUR-LEAD-DEV-USERNAME
+supabase/                   @rnaranjoromero
 
 # ── Environment & config files ───────────────────────────────────────────────
-.env*                       @YOUR-LEAD-DEV-USERNAME
-*.config.*                  @YOUR-LEAD-DEV-USERNAME
-vite.config.*               @YOUR-LEAD-DEV-USERNAME
-tsconfig*.json              @YOUR-LEAD-DEV-USERNAME
+.env*                       @rnaranjoromero
+*.config.*                  @rnaranjoromero
+vite.config.*               @rnaranjoromero
+tsconfig*.json              @rnaranjoromero
 
 # ── Source code — shared ownership across team ───────────────────────────────
-src/                        @YOUR-LEAD-DEV-USERNAME @TEAM-MEMBER-2
+src/                        @rnaranjoromero @TEAM-MEMBER-2
 
 # ── Public assets — lighter touch ────────────────────────────────────────────
-public/                     @YOUR-LEAD-DEV-USERNAME
+public/                     @rnaranjoromero
