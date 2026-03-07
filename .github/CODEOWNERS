@@ -20,7 +20,7 @@ vite.config.*               @rnaranjoromero
 tsconfig*.json              @rnaranjoromero
 
 # ── Source code — shared ownership across team ───────────────────────────────
-src/                        @rnaranjoromero @TruffleHog
+src/                        @rnaranjoromero
 
 # ── Public assets — lighter touch ────────────────────────────────────────────
 public/                     @rnaranjoromero
