@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
         ? `Backup completed successfully (${formatBytes(total_size || 0)})`
         : `Backup failed: ${error_message || "Unknown error"}`,
       details: { job_id, status, total_size, files_count: files?.length || 0 },
-    }).catch(() => {});
+    });
 
     // Send alert on failure
     if (status === "failed") {
@@ -142,7 +142,7 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error("backup-callback error:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: (error as Error).message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
