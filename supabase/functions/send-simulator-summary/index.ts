@@ -139,10 +139,10 @@ function getCtaConfig(p: SummaryPayload, siteUrl: string): CtaConfig {
   }
   const ici = Math.round(p.ici_score);
   if (ici >= 75) {
-    return { label: "Voir le Pack Projet", url: `${siteUrl}/subscribe-simulator` };
+    return { label: "Voir le Pack Projet", url: `${siteUrl}/subscribe-simulator#pack-project` };
   }
   if (ici >= 55) {
-    return { label: "Voir le Pack Essentiel", url: `${siteUrl}/subscribe-simulator` };
+    return { label: "Voir le Pack Essentiel", url: `${siteUrl}/subscribe-simulator#pack-essential` };
   }
   return { label: "Télécharger le guide gratuit", url: "https://lavcom.fr/nos-ebooks-2/" };
 }
