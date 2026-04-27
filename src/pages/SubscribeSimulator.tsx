@@ -114,7 +114,8 @@ export default function SubscribeSimulator() {
           {SIMULATOR_PACKS.map((pack) => (
             <Card 
               key={pack.id}
-              className={`relative flex flex-col transition-all duration-300 hover:shadow-xl ${
+              id={`pack-${pack.id}`}
+              className={`relative flex flex-col scroll-mt-24 transition-all duration-300 hover:shadow-xl ${
                 pack.isRecommended 
                   ? 'border-primary shadow-lg ring-2 ring-primary/20' 
                   : 'border-border hover:border-primary/50'
