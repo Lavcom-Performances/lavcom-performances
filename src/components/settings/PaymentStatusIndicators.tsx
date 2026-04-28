@@ -19,10 +19,14 @@ export function PaymentStatusIndicators() {
   const [webhookLoading, setWebhookLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Determine Stripe mode from publishable key
-  const stripeKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
-  const isTestMode = stripeKey.startsWith('pk_test_');
-  const isLiveMode = stripeKey.startsWith('pk_live_');
+  // Determine Stripe mode from a dedicated env flag, with fallback to a
+  // Stripe publishable key if provided. Previously this incorrectly read
+  // VITE_SUPABASE_PUBLISHABLE_KEY (a Supabase JWT), so the indicator
+  // always displayed UNKNOWN.
+  const stripeModeEnv = (import.meta.env.VITE_STRIPE_MODE || '').toLowerCase();
+  const stripePubKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
+  const isTestMode = stripeModeEnv === 'test' || stripePubKey.startsWith('pk_test_');
+  const isLiveMode = stripeModeEnv === 'live' || stripePubKey.startsWith('pk_live_');
   const stripeMode = isTestMode ? 'TEST' : isLiveMode ? 'LIVE' : 'UNKNOWN';
 
   const fetchLastEvent = async () => {
