@@ -126,13 +126,6 @@ serve(async (req) => {
           price: pack.priceId,
           quantity: 1,
         },
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: pack.priceId,
-          quantity: 1,
-        },
       ],
       mode: "payment",
       success_url: successUrl,
