@@ -66,7 +66,11 @@ function computeSegment(qualifData: QualifData, ici: number): SegmentType {
 
 // ─── Supabase persistence (non-blocking) ─────────────────────────────────────
 
-async function persistLead(lead: LeadData, project: SimulationProject): Promise<void> {
+async function persistLead(
+  lead: LeadData,
+  project: SimulationProject,
+  antiAbuse: { website: string; elapsed_ms: number }
+): Promise<void> {
   const zone = (project as any).zone || (project as any).density_zone || null;
   
   const payload = {
@@ -81,6 +85,8 @@ async function persistLead(lead: LeadData, project: SimulationProject): Promise<
     gap_score: lead.gap_score,
     segmentation_type: lead.segmentation_type,
     ab_variant: lead.ab_variant,
+    website: antiAbuse.website,
+    elapsed_ms: antiAbuse.elapsed_ms,
   };
 
   try {
@@ -91,12 +97,14 @@ async function persistLead(lead: LeadData, project: SimulationProject): Promise<
   } catch (edgeFnError) {
     console.warn("Edge function unavailable, falling back to direct insert:", edgeFnError);
     try {
-      await supabase.from("simulator_leads").insert(payload as any);
+      const { website, elapsed_ms, ...dbPayload } = payload;
+      await supabase.from("simulator_leads").insert(dbPayload as any);
     } catch (directInsertError) {
       console.error("Direct insert also failed:", directInsertError);
     }
   }
 }
+
 
 // ─── Capital range display ────────────────────────────────────────────────────
 
@@ -124,6 +132,8 @@ function machineLabel(range: string): string {
 
 export function EmailCaptureModal({ qualifData, results, project, onComplete, onClose }: Props) {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [mountedAt] = useState(() => Date.now());
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -160,8 +170,9 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
 
     await Promise.all([
       new Promise((r) => setTimeout(r, 1200)),
-      persistLead(lead, project),
+      persistLead(lead, project, { website, elapsed_ms: Date.now() - mountedAt }),
     ]);
+
 
     trackEmailSubmitted({
       segmentation_type: lead.segmentation_type,
@@ -237,7 +248,20 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
                 ))}
               </div>
 
+              {/* Honeypot — hidden from real users, must stay empty */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+                aria-hidden="true"
+              />
+
               {/* Email input */}
+
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-foreground">
                   {t('app:emailCapture.emailLabel')}

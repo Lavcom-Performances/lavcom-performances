@@ -69,7 +69,10 @@ function computeSegment(qualifData: QualifData, ici: number): SegmentType {
   return "segment_a";
 }
 
-async function persistLead(lead: FreeLeadData): Promise<void> {
+async function persistLead(
+  lead: FreeLeadData,
+  antiAbuse: { website: string; elapsed_ms: number }
+): Promise<void> {
   const payload = {
     email: lead.email.toLowerCase().trim(),
     stage: lead.stage,
@@ -82,6 +85,8 @@ async function persistLead(lead: FreeLeadData): Promise<void> {
     gap_score: lead.gap_score,
     segmentation_type: lead.segmentation_type,
     ab_variant: lead.ab_variant,
+    website: antiAbuse.website,
+    elapsed_ms: antiAbuse.elapsed_ms,
   };
 
   try {
@@ -90,12 +95,14 @@ async function persistLead(lead: FreeLeadData): Promise<void> {
   } catch (edgeFnError) {
     console.warn("Edge function unavailable, falling back to direct insert:", edgeFnError);
     try {
-      await supabase.from("simulator_leads").insert(payload as any);
+      const { website, elapsed_ms, ...dbPayload } = payload;
+      await supabase.from("simulator_leads").insert(dbPayload as any);
     } catch (directInsertError) {
       console.error("Direct insert also failed:", directInsertError);
     }
   }
 }
+
 
 function capitalLabel(range: string): string {
   const map: Record<string, string> = {
@@ -115,6 +122,8 @@ function machineLabel(range: string): string {
 
 export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onClose }: Props) {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [mountedAt] = useState(() => Date.now());
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -149,7 +158,7 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
 
     await Promise.all([
       new Promise((r) => setTimeout(r, 1200)),
-      persistLead(lead),
+      persistLead(lead, { website, elapsed_ms: Date.now() - mountedAt }),
     ]);
 
     trackEmailSubmitted({
@@ -203,7 +212,20 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
                 ))}
               </div>
 
+              {/* Honeypot — hidden from real users, must stay empty */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+                aria-hidden="true"
+              />
+
               <div className="space-y-2">
+
                 <label className="text-sm font-semibold text-foreground">{t('app:emailCapture.emailLabel')}</label>
                 <input
                   type="email"
