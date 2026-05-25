@@ -89,19 +89,24 @@ async function persistLead(
     elapsed_ms: antiAbuse.elapsed_ms,
   };
 
-  try {
-    const response = await supabase.functions.invoke("create-simulator-lead", {
-      body: payload,
-    });
-    if (response.error) throw new Error("Edge function failed");
-  } catch (edgeFnError) {
-    console.warn("Edge function unavailable, falling back to direct insert:", edgeFnError);
-    try {
-      const { website, elapsed_ms, ...dbPayload } = payload;
-      await supabase.from("simulator_leads").insert(dbPayload as any);
-    } catch (directInsertError) {
-      console.error("Direct insert also failed:", directInsertError);
-    }
+  const response = await supabase.functions.invoke("create-simulator-lead", {
+    body: payload,
+  });
+
+  // Network / function-level error
+  if (response.error) {
+    const serverMsg =
+      (response.data as any)?.error ||
+      response.error.message ||
+      "Enregistrement impossible. Réessayez dans un instant.";
+    throw new Error(serverMsg);
+  }
+
+  // Server returned success:false (e.g. DB insert failure)
+  if (response.data && (response.data as any).success === false) {
+    throw new Error(
+      (response.data as any).error || "Enregistrement impossible. Réessayez dans un instant."
+    );
   }
 }
 
