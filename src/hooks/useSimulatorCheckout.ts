@@ -22,8 +22,14 @@ export function useSimulatorCheckout() {
       }
 
       if (data?.url) {
-        // Open Stripe Checkout in new tab
-        window.open(data.url, '_blank');
+        if (data?.bypass) {
+          // Bypass: redirect dans le même onglet (pas de Stripe)
+          toast.success("Accès activé — aucun paiement requis.");
+          window.location.href = data.url;
+        } else {
+          // Stripe Checkout in new tab
+          window.open(data.url, '_blank');
+        }
       } else {
         toast.error(t('errors:payment.noSessionUrl'));
       }
