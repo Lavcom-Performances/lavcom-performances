@@ -69,7 +69,10 @@ function computeSegment(qualifData: QualifData, ici: number): SegmentType {
   return "segment_a";
 }
 
-async function persistLead(lead: FreeLeadData): Promise<void> {
+async function persistLead(
+  lead: FreeLeadData,
+  antiAbuse: { website: string; elapsed_ms: number }
+): Promise<void> {
   const payload = {
     email: lead.email.toLowerCase().trim(),
     stage: lead.stage,
@@ -82,6 +85,8 @@ async function persistLead(lead: FreeLeadData): Promise<void> {
     gap_score: lead.gap_score,
     segmentation_type: lead.segmentation_type,
     ab_variant: lead.ab_variant,
+    website: antiAbuse.website,
+    elapsed_ms: antiAbuse.elapsed_ms,
   };
 
   try {
@@ -90,12 +95,14 @@ async function persistLead(lead: FreeLeadData): Promise<void> {
   } catch (edgeFnError) {
     console.warn("Edge function unavailable, falling back to direct insert:", edgeFnError);
     try {
-      await supabase.from("simulator_leads").insert(payload as any);
+      const { website, elapsed_ms, ...dbPayload } = payload;
+      await supabase.from("simulator_leads").insert(dbPayload as any);
     } catch (directInsertError) {
       console.error("Direct insert also failed:", directInsertError);
     }
   }
 }
+
 
 function capitalLabel(range: string): string {
   const map: Record<string, string> = {
