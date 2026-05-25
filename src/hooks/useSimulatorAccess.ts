@@ -50,11 +50,12 @@ export function useSimulatorAccess() {
       const expiresAt = profile?.access_expires_at 
         ? new Date(profile.access_expires_at) 
         : null;
-      
-      const hasAccess = expiresAt ? expiresAt > now : false;
-      const maxProjects = profile?.max_projects || 0;
-      const planCode = profile?.plan_code || null;
-      const tier = getTierFromPlanCode(planCode);
+
+      const isBypassed = !!user.email && SIMULATOR_BYPASS_EMAILS.has(user.email.toLowerCase().trim());
+      const hasAccess = isBypassed || (expiresAt ? expiresAt > now : false);
+      const maxProjects = isBypassed ? 999 : (profile?.max_projects || 0);
+      const planCode = isBypassed ? (profile?.plan_code || "bypass") : (profile?.plan_code || null);
+      const tier = isBypassed ? "premium" : getTierFromPlanCode(planCode);
 
       let daysRemaining: number | null = null;
       if (expiresAt && hasAccess) {
