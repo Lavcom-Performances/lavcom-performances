@@ -134,6 +134,7 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState(""); // honeypot
   const [mountedAt] = useState(() => Date.now());
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -149,8 +150,13 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
       setError(t('app:emailCapture.invalidEmail'));
       return;
     }
+    if (!consent) {
+      setError("Vous devez accepter la politique de confidentialité pour continuer.");
+      return;
+    }
     setError("");
     setLoading(true);
+
 
     const { ici, gap } = computeIciAndGap(qualifData, project);
     const segmentation_type = computeSegment(qualifData, ici);
