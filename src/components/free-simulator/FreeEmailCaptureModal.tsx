@@ -158,7 +158,7 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
 
     await Promise.all([
       new Promise((r) => setTimeout(r, 1200)),
-      persistLead(lead),
+      persistLead(lead, { website, elapsed_ms: Date.now() - mountedAt }),
     ]);
 
     trackEmailSubmitted({
