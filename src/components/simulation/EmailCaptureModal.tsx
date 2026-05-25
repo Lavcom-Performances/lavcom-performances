@@ -248,7 +248,20 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
                 ))}
               </div>
 
+              {/* Honeypot — hidden from real users, must stay empty */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+                aria-hidden="true"
+              />
+
               {/* Email input */}
+
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-foreground">
                   {t('app:emailCapture.emailLabel')}
