@@ -127,6 +127,7 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [consent, setConsent] = useState(false);
   const { t } = useTranslation(['app']);
   const { variant, ctaLabel } = useABVariant("cta_button");
 
@@ -137,8 +138,13 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
       setError(t('app:emailCapture.invalidEmail'));
       return;
     }
+    if (!consent) {
+      setError("Vous devez accepter la politique de confidentialité pour continuer.");
+      return;
+    }
     setError("");
     setLoading(true);
+
 
     const { ici, gap } = computeIciAndGap(qualifData);
     const segmentation_type = computeSegment(qualifData, ici);
