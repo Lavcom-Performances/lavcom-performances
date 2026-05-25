@@ -165,10 +165,16 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
       ab_variant: variant,
     };
 
-    await Promise.all([
-      new Promise((r) => setTimeout(r, 1200)),
-      persistLead(lead, { website, elapsed_ms: Date.now() - mountedAt }),
-    ]);
+    try {
+      await Promise.all([
+        new Promise((r) => setTimeout(r, 1200)),
+        persistLead(lead, { website, elapsed_ms: Date.now() - mountedAt }),
+      ]);
+    } catch (e: any) {
+      setLoading(false);
+      setError(e?.message || "Une erreur est survenue. Réessayez.");
+      return;
+    }
 
     trackEmailSubmitted({
       segmentation_type: lead.segmentation_type,
