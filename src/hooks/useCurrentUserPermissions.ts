@@ -193,7 +193,9 @@ export function useCurrentUserPermissions() {
     // While still loading, return minimal permissions to prevent flickering
     // but allow viewing (prevents blank screens)
     if (isLoading) {
-      console.log('[Permissions Debug] Still loading, returning view-only permissions');
+      if (import.meta.env.DEV) {
+        console.log('[Permissions Debug] Still loading, returning view-only permissions');
+      }
       return {
         ...DEFAULT_PERMISSIONS_BY_ROLE.guest,
         can_view_sites: true,
@@ -201,19 +203,21 @@ export function useCurrentUserPermissions() {
       };
     }
 
-    // Debug logging
-    console.log('[Permissions Debug]', {
-      userRole: userRole?.role,
-      isSiteOwner,
-      orgLoading,
-      sitesLoading,
-      hasOrganization: !!organization,
-      sitesCount: sites.length,
-    });
+    // Debug logging (dev-only)
+    if (import.meta.env.DEV) {
+      console.log('[Permissions Debug]', {
+        userRole: userRole?.role,
+        isSiteOwner,
+        orgLoading,
+        sitesLoading,
+        hasOrganization: !!organization,
+        sitesCount: sites.length,
+      });
+    }
 
     // Super admins always have all permissions (check first)
     if (userRole?.role === 'super_admin') {
-      console.log('[Permissions Debug] Granting super_admin permissions');
+      if (import.meta.env.DEV) console.log('[Permissions Debug] Granting super_admin permissions');
       return DEFAULT_PERMISSIONS_BY_ROLE.super_admin;
     }
 
@@ -221,8 +225,8 @@ export function useCurrentUserPermissions() {
     if (userRole?.role) {
       const role = userRole.role;
       const defaultPerms = DEFAULT_PERMISSIONS_BY_ROLE[role] || DEFAULT_PERMISSIONS_BY_ROLE.guest;
-      console.log('[Permissions Debug] Using role permissions:', role);
-      
+      if (import.meta.env.DEV) console.log('[Permissions Debug] Using role permissions:', role);
+
       // Merge with custom permissions if any
       if (customPermissions) {
         return {
@@ -236,12 +240,12 @@ export function useCurrentUserPermissions() {
     // If user has no organization role but owns sites, grant owner permissions
     // This handles the case of first-time users who created sites before organizations
     if (isSiteOwner) {
-      console.log('[Permissions Debug] Granting owner permissions (no org role but owns sites)');
+      if (import.meta.env.DEV) console.log('[Permissions Debug] Granting owner permissions (no org role but owns sites)');
       return DEFAULT_PERMISSIONS_BY_ROLE.owner;
     }
 
     // No role and no sites - guest permissions
-    console.log('[Permissions Debug] No role, no sites - guest permissions');
+    if (import.meta.env.DEV) console.log('[Permissions Debug] No role, no sites - guest permissions');
     return DEFAULT_PERMISSIONS_BY_ROLE.guest;
   }, [userRole, customPermissions, isSiteOwner, organization, isLoading, sites.length, orgLoading, sitesLoading]);
 
