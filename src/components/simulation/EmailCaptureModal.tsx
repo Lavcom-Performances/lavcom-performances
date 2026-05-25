@@ -132,6 +132,8 @@ function machineLabel(range: string): string {
 
 export function EmailCaptureModal({ qualifData, results, project, onComplete, onClose }: Props) {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [mountedAt] = useState(() => Date.now());
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -168,8 +170,9 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
 
     await Promise.all([
       new Promise((r) => setTimeout(r, 1200)),
-      persistLead(lead, project),
+      persistLead(lead, project, { website, elapsed_ms: Date.now() - mountedAt }),
     ]);
+
 
     trackEmailSubmitted({
       segmentation_type: lead.segmentation_type,
