@@ -122,6 +122,8 @@ function machineLabel(range: string): string {
 
 export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onClose }: Props) {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [mountedAt] = useState(() => Date.now());
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
