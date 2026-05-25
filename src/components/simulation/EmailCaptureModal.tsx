@@ -66,7 +66,11 @@ function computeSegment(qualifData: QualifData, ici: number): SegmentType {
 
 // ─── Supabase persistence (non-blocking) ─────────────────────────────────────
 
-async function persistLead(lead: LeadData, project: SimulationProject): Promise<void> {
+async function persistLead(
+  lead: LeadData,
+  project: SimulationProject,
+  antiAbuse: { website: string; elapsed_ms: number }
+): Promise<void> {
   const zone = (project as any).zone || (project as any).density_zone || null;
   
   const payload = {
@@ -81,6 +85,8 @@ async function persistLead(lead: LeadData, project: SimulationProject): Promise<
     gap_score: lead.gap_score,
     segmentation_type: lead.segmentation_type,
     ab_variant: lead.ab_variant,
+    website: antiAbuse.website,
+    elapsed_ms: antiAbuse.elapsed_ms,
   };
 
   try {
@@ -91,12 +97,14 @@ async function persistLead(lead: LeadData, project: SimulationProject): Promise<
   } catch (edgeFnError) {
     console.warn("Edge function unavailable, falling back to direct insert:", edgeFnError);
     try {
-      await supabase.from("simulator_leads").insert(payload as any);
+      const { website, elapsed_ms, ...dbPayload } = payload;
+      await supabase.from("simulator_leads").insert(dbPayload as any);
     } catch (directInsertError) {
       console.error("Direct insert also failed:", directInsertError);
     }
   }
 }
+
 
 // ─── Capital range display ────────────────────────────────────────────────────
 
