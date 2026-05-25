@@ -89,17 +89,20 @@ async function persistLead(
     elapsed_ms: antiAbuse.elapsed_ms,
   };
 
-  try {
-    const response = await supabase.functions.invoke("create-simulator-lead", { body: payload });
-    if (response.error) throw new Error("Edge function failed");
-  } catch (edgeFnError) {
-    console.warn("Edge function unavailable, falling back to direct insert:", edgeFnError);
-    try {
-      const { website, elapsed_ms, ...dbPayload } = payload;
-      await supabase.from("simulator_leads").insert(dbPayload as any);
-    } catch (directInsertError) {
-      console.error("Direct insert also failed:", directInsertError);
-    }
+  const response = await supabase.functions.invoke("create-simulator-lead", { body: payload });
+
+  if (response.error) {
+    const serverMsg =
+      (response.data as any)?.error ||
+      response.error.message ||
+      "Enregistrement impossible. Réessayez dans un instant.";
+    throw new Error(serverMsg);
+  }
+
+  if (response.data && (response.data as any).success === false) {
+    throw new Error(
+      (response.data as any).error || "Enregistrement impossible. Réessayez dans un instant."
+    );
   }
 }
 
@@ -162,10 +165,16 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
       ab_variant: variant,
     };
 
-    await Promise.all([
-      new Promise((r) => setTimeout(r, 1200)),
-      persistLead(lead, { website, elapsed_ms: Date.now() - mountedAt }),
-    ]);
+    try {
+      await Promise.all([
+        new Promise((r) => setTimeout(r, 1200)),
+        persistLead(lead, { website, elapsed_ms: Date.now() - mountedAt }),
+      ]);
+    } catch (e: any) {
+      setLoading(false);
+      setError(e?.message || "Une erreur est survenue. Réessayez.");
+      return;
+    }
 
     trackEmailSubmitted({
       segmentation_type: lead.segmentation_type,

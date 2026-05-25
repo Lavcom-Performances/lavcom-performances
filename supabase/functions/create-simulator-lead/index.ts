@@ -186,7 +186,7 @@ serve(async (req) => {
     });
 
     // --- Insert lead ---
-    const { error } = await supabase.from("simulator_leads").insert({
+    const { error: insertError } = await supabase.from("simulator_leads").insert({
       email: payload.email.toLowerCase().trim(),
       stage: payload.stage,
       capital_range: payload.capital_range,
@@ -201,11 +201,23 @@ serve(async (req) => {
       ab_variant: payload.ab_variant ?? "A",
     });
 
-    if (error) {
-      console.error("Supabase insert error:", error);
+    if (insertError) {
+      console.error("Supabase insert error:", insertError);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Impossible d'enregistrer votre demande pour le moment.",
+          code: insertError.code ?? "insert_failed",
+          details: insertError.message,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
-    // --- Trigger email (fire-and-forget) ---
+    // --- Trigger email (fire-and-forget, only after successful insert) ---
     const emailPromise = triggerEmailSummary(payload, supabaseUrl, anonKey);
     try {
       // @ts-ignore — EdgeRuntime available in Supabase Edge Functions
@@ -221,9 +233,17 @@ serve(async (req) => {
 
   } catch (err) {
     console.error("create-simulator-lead error:", err);
-    return new Response(JSON.stringify({ success: false }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    const message = err instanceof Error ? err.message : "Erreur inconnue";
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Erreur serveur lors de l'enregistrement.",
+        details: message,
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 });
