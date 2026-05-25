@@ -179,10 +179,16 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
       ab_variant: variant,
     };
 
-    await Promise.all([
-      new Promise((r) => setTimeout(r, 1200)),
-      persistLead(lead, project, { website, elapsed_ms: Date.now() - mountedAt }),
-    ]);
+    try {
+      await Promise.all([
+        new Promise((r) => setTimeout(r, 1200)),
+        persistLead(lead, project, { website, elapsed_ms: Date.now() - mountedAt }),
+      ]);
+    } catch (e: any) {
+      setLoading(false);
+      setError(e?.message || "Une erreur est survenue. Réessayez.");
+      return;
+    }
 
 
     trackEmailSubmitted({
