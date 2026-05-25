@@ -3,6 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { getTierFromPlanCode } from "@/config/pricingConfig";
 
+const SIMULATOR_BYPASS_EMAILS = new Set([
+  "yohana@lavcom.fr",
+  "yoann.misericordia@laposte.net",
+  "illies.kaleche@hotmail.fr",
+  "rnaranjoromero@gmail.com",
+]);
+
 interface SimulatorAccess {
   hasAccess: boolean;
   accessExpiresAt: Date | null;
