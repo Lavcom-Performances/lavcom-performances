@@ -92,7 +92,40 @@ serve(async (req) => {
     const successUrl = `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${origin}/billing/cancel`;
 
+    // --- BYPASS: grant access immediately for allowlisted emails (no payment) ---
+    if (user && BYPASS_EMAILS.has(user.email.toLowerCase().trim())) {
+      logStep("Bypass triggered for allowlisted email", { email: user.email });
+
+      const expiresAt = new Date(Date.now() + pack.accessDays * 86_400_000).toISOString();
+      const { error: updErr } = await supabaseClient
+        .from("profiles")
+        .update({
+          access_expires_at: expiresAt,
+          max_projects: pack.maxProjects,
+          plan_code: packId,
+        })
+        .eq("id", user.id);
+
+      if (updErr) {
+        logStep("Bypass update error", { error: updErr.message });
+        throw new Error(`Bypass grant failed: ${updErr.message}`);
+      }
+
+      const bypassUrl = `${origin}/billing/success?bypass=1&pack=${encodeURIComponent(packId)}`;
+      return new Response(JSON.stringify({ url: bypassUrl, bypass: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     // Create checkout session (one-time payment)
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: pack.priceId,
+          quantity: 1,
+        },
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: [
