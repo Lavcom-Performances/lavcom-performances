@@ -290,10 +290,31 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
                 )}
               </div>
 
+              {/* RGPD consent */}
+              <label className="flex items-start gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => { setConsent(e.target.checked); setError(""); }}
+                  className="mt-0.5 h-4 w-4 rounded border-border accent-accent cursor-pointer shrink-0"
+                />
+                <span className="text-xs text-muted-foreground leading-snug">
+                  J'accepte de recevoir mes résultats par email et la{" "}
+                  <a href="/politique-confidentialite" target="_blank" rel="noopener noreferrer" className="text-accent underline hover:opacity-80">
+                    politique de confidentialité
+                  </a>
+                  {" "}(voir aussi les{" "}
+                  <a href="/mentions-legales" target="_blank" rel="noopener noreferrer" className="text-accent underline hover:opacity-80">
+                    mentions légales
+                  </a>
+                  ).
+                </span>
+              </label>
+
               {/* CTA */}
               <button
                 onClick={handleSubmit}
-                disabled={loading}
+                disabled={loading || !consent}
                 className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl
                   bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-sm
                   transition-all shadow-lg shadow-accent/30 disabled:opacity-70 disabled:cursor-not-allowed"
@@ -301,6 +322,7 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
                 {ctaLabel}
                 <ArrowRight size={16} />
               </button>
+
 
               {/* Reassurance */}
               <div className="flex items-center gap-3 pt-1">
