@@ -16,6 +16,14 @@ const SIMULATOR_PACKS: Record<string, { priceId: string; accessDays: number; max
   premium: { priceId: "price_1Sh8QjB849ikvSjDvYjSHo57", accessDays: 90, maxProjects: 3, amountTtc: 279 },
 };
 
+// Emails autorisés à accéder gratuitement (aucun paiement requis)
+const BYPASS_EMAILS = new Set([
+  "yohana@lavcom.fr",
+  "yoann.misericordia@laposte.net",
+  "illies.kaleche@hotmail.fr",
+  "rnaranjoromero@gmail.com",
+]);
+
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-SIMULATOR-CHECKOUT] ${step}${detailsStr}`);
