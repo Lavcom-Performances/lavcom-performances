@@ -8,6 +8,7 @@ const SIMULATOR_BYPASS_EMAILS = new Set([
   "yoann.misericordia@laposte.net",
   "illies.kaleche@hotmail.fr",
   "rnaranjoromero@gmail.com",
+  "contact@lavcom.fr",
 ]);
 
 interface SimulatorAccess {
