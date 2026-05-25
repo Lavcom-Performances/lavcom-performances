@@ -22,6 +22,7 @@ const BYPASS_EMAILS = new Set([
   "yoann.misericordia@laposte.net",
   "illies.kaleche@hotmail.fr",
   "rnaranjoromero@gmail.com",
+  "contact@lavcom.fr",
 ]);
 
 const logStep = (step: string, details?: unknown) => {
