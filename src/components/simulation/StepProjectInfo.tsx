@@ -39,7 +39,7 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
   };
 
   const handleAddressSelect = (result: { address: string; city: string; postalCode: string; department: string }) => {
-    console.log('Address selected:', result);
+    console.log('[DEBUG] Address selected:', result);
     // Ensure all fields are properly updated
     const updates: Partial<SimulationProject> = {
       address: result.address,
@@ -48,7 +48,7 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
       department: result.department,
       location: `${result.address}, ${result.city} (${result.postalCode})`
     };
-    console.log('Updating project with:', updates);
+    console.log('[DEBUG] Updates to apply:', updates);
     onUpdate(updates);
   };
 
@@ -181,6 +181,7 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
               <CityAutocomplete
                 value={project.city || ""}
                 onSelect={handleCitySelect}
+                onInputChange={(value) => onUpdate({ city: value, postal_code: "", department: "" })}
                 placeholder="Rechercher une ville..."
                 country={project.country || "FR"}
                 hasError={showErrors && !!errors.city}
