@@ -38,17 +38,15 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
     });
   };
 
-  const handleAddressSelect = (result: { address: string; city: string; postalCode: string; department: string }) => {
-    console.log('[DEBUG] Address selected:', result);
-    // Ensure all fields are properly updated
+  const handleAddressSelect = (result: { address: string; city: string; postalCode?: string; postal_code?: string; department: string }) => {
+    const postalCode = result.postalCode || result.postal_code || "";
     const updates: Partial<SimulationProject> = {
       address: result.address,
       city: result.city,
-      postal_code: result.postalCode,
+      postal_code: postalCode,
       department: result.department,
-      location: `${result.address}, ${result.city} (${result.postalCode})`
+      location: `${result.address}, ${result.city} (${postalCode})`
     };
-    console.log('[DEBUG] Updates to apply:', updates);
     onUpdate(updates);
   };
 

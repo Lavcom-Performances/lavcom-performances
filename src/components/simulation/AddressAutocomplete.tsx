@@ -12,6 +12,23 @@ interface AddressResult {
   department: string;
 }
 
+function extractPostalCode(value: string): string {
+  const match = value.match(/\b\d{5}\b/);
+  return match ? match[0] : "";
+}
+
+function extractCityFromLabel(label: string, postalCode: string): string {
+  if (!label) return "";
+  if (!postalCode) {
+    const parts = label.split(",").map((part) => part.trim()).filter(Boolean);
+    return parts.length > 1 ? parts[parts.length - 1] : "";
+  }
+  const normalized = label.replace(/\s+/g, " ").trim();
+  const postalIndex = normalized.lastIndexOf(postalCode);
+  if (postalIndex === -1) return "";
+  return normalized.slice(postalIndex + postalCode.length).trim();
+}
+
 interface AddressAutocompleteProps {
   value: string;
   onSelect: (result: AddressResult) => void;
@@ -49,12 +66,15 @@ function useAddressSearch(query: string, minChars: number = 3) {
         .filter((feature: any) => feature.properties && feature.properties.label)
         .map((feature: any) => {
           const props = feature.properties;
+          const label = props.label || "";
+          const postalCode = props.postcode || extractPostalCode(label);
+          const city = props.city || extractCityFromLabel(label, postalCode);
           return {
-            label: props.label || '',
-            address: props.name || props.label || '',
-            city: props.city || '',
-            postalCode: props.postcode || '',
-            department: props.context?.split(',')[0]?.trim() || '',
+            label,
+            address: props.name || label || "",
+            city,
+            postalCode,
+            department: props.context?.split(",")[0]?.trim() || "",
           };
         });
 
