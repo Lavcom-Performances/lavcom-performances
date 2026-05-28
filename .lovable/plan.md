@@ -1,141 +1,80 @@
+
+# Documentation technique du Simulateur payant (`/simulation`)
+
 ## Objectif
+Produire un seul fichier markdown `docs/simulateur-architecture.md` qui décrit en profondeur le fonctionnement de la fonctionnalité « simulateur payant » accessible via la route `/simulation`, sans modifier le code applicatif.
 
-Produire un fichier `simulateur-gratuit.zip` (dans `/mnt/documents/`) contenant un projet **Vite + React 18 + TypeScript + Tailwind + shadcn/ui** autonome, exécutable hors de Lovable, qui reproduit exactement le simulateur gratuit accessible sur `/simulateur`.
+## Livrable
+Un fichier : `docs/simulateur-architecture.md` (téléchargeable depuis le repo).
 
-## Périmètre fonctionnel inclus
+## Plan du document
 
-1. **Page d'accueil = `/`** rendant directement `SimulateurPage` (le projet n'a qu'une seule route principale).
-2. **Gate de qualification** (`SimulatorQualification`) : étape, capital, nombre de machines.
-3. **Simulateur de CA** : surface, horaires, templates (small/standard/large), parc machines (laveuses/sécheuses S/M/L), prix personnalisables, affluence → calcul du CA journalier/mensuel.
-4. **Capture email post-résultat** (`FreeEmailCaptureModal`) → calcul ICI/Gap/segmentation.
-5. **Écran de redirection segmentée** (`SegmentedRedirect`) avec recommandation par segment (A/B/C/D).
-6. **Footer + SEOHead** simplifiés.
+### 1. Vue d'ensemble
+- Rôle du simulateur payant vs `/simulateur` (gratuit)
+- Conditions d'accès (paywall via `useSimulatorAccess`, `profiles.access_expires_at`, `max_projects`, `plan_code`, bypass emails)
+- Schéma global frontend ↔ localStorage ↔ Supabase ↔ Stripe
 
-## Ce qui est retiré / remplacé (pour l'autonomie)
+### 2. Cartographie des routes & pages
+Pour chaque route (`/simulation`, `/simulation/local`, `/simulation/charges`, `/simulation/results`) :
+- Fichier page concerné
+- Composant `Step*` rendu
+- Navigation (boutons précédent/suivant, validation)
+- Layout commun (`SimulationLayout`, `SimulationStepper`)
 
-| Élément Lovable | Remplacement dans le ZIP |
-|---|---|
-| `@/integrations/supabase/client` | Stub : log du lead en console + sauvegarde `localStorage`. Un fichier `src/integrations/leadSink.ts` documente comment brancher un backend (fetch POST sur n'importe quelle API). |
-| Edge function `create-simulator-lead` + `send-simulator-summary` | Fournies en bonus dans `extras/edge-functions/` (code source Deno) avec un README expliquant le déploiement Supabase optionnel. |
-| `react-i18next` (clés `app:simulateur.*`) | Strings FR codées en dur (le projet conserve la même UI sans dépendance i18n). |
-| `useABVariant` (table Supabase) | Hook simplifié renvoyant toujours variant `"A"` + label CTA fixe. |
-| `trackEmailSubmitted`, `trackSimulationStep`, GTM | `src/lib/analytics.ts` no-op (logs `console.debug`) — point d'extension documenté. |
-| `UxClarityQuestion` (dépend de Supabase) | Retiré (composant non essentiel au simulateur). |
-| Footer avec liens vers `/pricing`, `/login`, etc. | Footer minimal avec mentions + lien vers `lavcom.fr`. |
-| Tokens couleur `lavcom-orange*` | Ajoutés dans `tailwind.config.ts` du nouveau projet. |
-| Logo + ebook (`src/assets/*.jpg/png`) | Copiés tels quels dans le ZIP. |
+### 3. Dictionnaire des variables (state)
+Tableau exhaustif des variables du `SimulationProject` (depuis `src/types/simulation.ts`) :
+- nom, type, valeur par défaut, page où elle est saisie, événement déclencheur (`onChange`, `onBlur`...), composant input, contrainte de validation (`useSimulationValidation`)
+- Sous-objets : `MachineConfig[]`, `FixedCostItem[]`, `VariableCostItem[]`, contraintes locales (`local_shape`, `door_width_cm`, etc.)
+- Tableau séparé pour `SimulationResults` (variables calculées)
+- Variables d'accès (`SimulatorAccess` : `hasAccess`, `tier`, `daysRemaining`, `maxProjects`, `projectsUsed`)
 
-## Structure du projet livré
+### 4. Gestion du formulaire & persistance
+- Hook `useSimulationProject` : state React + `localStorage` clé `lavcom_simulation_project`
+- `updateProject(partial)` / `resetProject()` / `clearStorage()`
+- Validation : `useSimulationValidation` (champs obligatoires, messages, `errorCount`)
+- Cycle de vie : initialisation depuis localStorage → modifications page par page → recalcul des résultats avec `useMemo(calculateSimulationResults)`
+- **Important** : aucun enregistrement automatique en BDD pendant la saisie ; tout vit côté client jusqu'à un événement explicite (email capture, paiement, export PDF)
 
-```text
-simulateur-gratuit/
-├── README.md                    # install, dev, build, comment brancher un backend
-├── package.json                 # react, vite, tailwind, shadcn deps, lucide-react
-├── vite.config.ts
-├── tsconfig.json / tsconfig.app.json / tsconfig.node.json
-├── tailwind.config.ts           # tokens lavcom-orange + design system
-├── postcss.config.js
-├── index.html
-├── components.json              # config shadcn
-├── .gitignore
-├── public/
-│   └── placeholder.svg
-└── src/
-    ├── main.tsx
-    ├── App.tsx                  # rend SimulateurPage
-    ├── index.css                # variables HSL + reset
-    ├── vite-env.d.ts
-    ├── assets/
-    │   ├── lavcom-performances-header.png
-    │   └── ebook-avant-ouvrir.jpg
-    ├── lib/
-    │   ├── utils.ts             # cn()
-    │   └── analytics.ts         # no-op trackers
-    ├── integrations/
-    │   └── leadSink.ts          # remplace supabase, persiste leads
-    ├── hooks/
-    │   └── useABVariant.ts      # version simplifiée
-    ├── components/
-    │   ├── ui/                  # button, card, input, label, dialog (shadcn minimum)
-    │   ├── SimulatorQualification.tsx
-    │   ├── seo/SEOHead.tsx      # version sans react-helmet (document.title)
-    │   ├── layout/Footer.tsx    # version minimale
-    │   ├── free-simulator/
-    │   │   └── FreeEmailCaptureModal.tsx
-    │   └── simulation/
-    │       └── SegmentedRedirect.tsx
-    └── pages/
-        └── SimulateurPage.tsx
-└── extras/
-    └── edge-functions/          # OPTIONNEL — pour brancher Supabase
-        ├── README.md
-        ├── create-simulator-lead/index.ts
-        └── send-simulator-summary/index.ts
-```
+### 5. Mapping inputs ↔ base de données
+Tableau pour chaque champ du formulaire :
+- input UI → propriété `SimulationProject` (localStorage) → table/colonne Supabase éventuelle (`simulator_leads`, `profiles`, `fin_projects` si export, etc.)
+- Distinction claire « stocké côté client uniquement » vs « envoyé via edge function »
+- Flux email capture (`EmailCaptureModal` → `create-simulator-lead`)
+- Flux paiement (paywall → `create-simulator-checkout` → Stripe → `stripe-webhook` → `profiles`)
 
-## Étapes d'exécution (build mode)
+### 6. Affichage dynamique par page
+Pour chaque page (Projet, Local, Charges, Résultats) :
+- Liste des composants rendus
+- Variables consommées et fonctions appelées (`calculateMaxMachinesEstimate`, `getTotalUserMachines`, `getShapeFactor`, `getObstacleFactor`, `calculateSimulationResults`)
+- Conditions d'affichage (badges erreur, alertes, IciIndicators, paywall, addons)
+- Ce qui est calculé côté front (tous les KPI de résultats, seuils de rentabilité) vs ce qui dépend du backend (droits d'accès, génération PDF si applicable, envoi email)
 
-1. **Créer l'arborescence** `/tmp/simulateur-gratuit/` avec tous les fichiers de config (package.json, vite, tailwind, tsconfig, postcss, components.json, index.html, .gitignore).
-2. **Copier les composants source** depuis ce projet :
-   - `src/pages/SimulateurPage.tsx`
-   - `src/components/SimulatorQualification.tsx`
-   - `src/components/free-simulator/FreeEmailCaptureModal.tsx`
-   - `src/components/simulation/SegmentedRedirect.tsx`
-   - `src/components/seo/SEOHead.tsx`, `src/components/layout/Footer.tsx`
-   - `src/lib/utils.ts`
-   - Les composants shadcn nécessaires (`button`, `card`, `input`, `label`, `dialog`)
-   - Assets `lavcom-performances-header.png`, `ebook-avant-ouvrir.jpg`, `placeholder.svg`
-3. **Adapter chaque fichier copié** pour retirer les dépendances Lovable :
-   - Remplacer imports `@/integrations/supabase/client` → `@/integrations/leadSink`
-   - Retirer `useTranslation` → strings FR en dur
-   - Retirer `react-i18next` complètement
-   - Retirer `UxClarityQuestion` de `SimulateurPage`
-   - Footer simplifié (sans liens internes inexistants)
-   - SEOHead version `useEffect` + `document.title` (pas de `react-helmet-async`)
-   - `EmailCaptureModal` (référence dans `SegmentedRedirect`) → définir le type `LeadData` localement
-4. **Ajouter les fichiers stub** : `leadSink.ts`, `analytics.ts` no-op, `useABVariant.ts` simplifié.
-5. **Copier les Edge Functions** dans `extras/edge-functions/` avec README de déploiement.
-6. **Rédiger le README principal** : prérequis, `npm install`, `npm run dev`, comment activer la persistance backend (3 lignes à modifier dans `leadSink.ts`).
-7. **Tester la cohérence** : `tsc --noEmit` rapide dans `/tmp/simulateur-gratuit/` pour s'assurer qu'il n'y a pas de référence cassée.
-8. **Zipper** vers `/mnt/documents/simulateur-gratuit.zip` (via `nix run nixpkgs#zip`).
-9. **Livrer** via `<lov-artifact>`.
+### 7. Schéma de base de données
+- **Dictionnaire de données** : tableau par table (`profiles`, `simulator_leads`, `simulator_addon_purchases`, `paywall_bypass_allowlist`, `fin_projects` si lié, `platform_feature_flags`) avec colonnes, types, contraintes, RLS
+- **Diagramme Mermaid** `erDiagram` montrant les relations entre ces tables
+- Requête live `supabase--read_query` sur `information_schema` pour récupérer la définition réelle des tables liées au simulateur avant rédaction
 
-## Détails techniques (dépendances npm finales)
+### 8. Edge functions impliquées
+Liste avec rôle, déclencheur, entrées/sorties :
+- `create-simulator-checkout` : crée session Stripe pour un pack (`essential`/`project`/`comparator`/`premium`), gère bypass emails
+- `create-simulator-lead` : enregistre lead email + déclenche `send-simulator-summary`
+- `send-simulator-summary` : email récapitulatif au prospect
+- `create-addon-checkout` : achat add-on (extension 30j, +1 projet)
+- `stripe-webhook` : met à jour `profiles.access_expires_at`, `max_projects`, `plan_code`
+- `stripe-reconcile-cron` : réconciliation
+- `generate-financial-pdf` (si utilisée pour export résultats)
+- Autres satellites (`validate-postal-code`, `fetch-from-siret`) si appelées dans les étapes
 
-```json
-{
-  "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.x",
-    "lucide-react": "^0.x",
-    "class-variance-authority": "^0.7.x",
-    "clsx": "^2.x",
-    "tailwind-merge": "^2.x",
-    "@radix-ui/react-dialog": "^1.x",
-    "@radix-ui/react-label": "^2.x",
-    "@radix-ui/react-slot": "^1.x"
-  },
-  "devDependencies": {
-    "vite", "@vitejs/plugin-react-swc", "typescript",
-    "tailwindcss", "tailwindcss-animate", "autoprefixer", "postcss",
-    "@types/react", "@types/react-dom"
-  }
-}
-```
+### 9. Frontend vs Backend (synthèse)
+Tableau résumé : pour chaque fonctionnalité (saisie, calcul KPI, validation, persistance temporaire, paywall, paiement, email, PDF), indiquer où elle s'exécute.
 
-## Validation finale
+### 10. Diagrammes Mermaid
+- `flowchart` du parcours utilisateur `/simulation` → `/results`
+- `sequenceDiagram` du flux paiement (User → Frontend → create-simulator-checkout → Stripe → stripe-webhook → profiles → useSimulatorAccess)
+- `erDiagram` du modèle de données
 
-- Le projet doit `npm install && npm run dev` sans erreur.
-- L'utilisateur navigue sur `http://localhost:5173`, voit la qualification → simulateur → email capture → écran segmenté.
-- Les leads s'affichent en console + persistance `localStorage` sous la clé `simulateur_leads`.
-- Aucun appel réseau vers Supabase / Lovable n'est requis pour fonctionner.
-
-## Hors périmètre (volontairement)
-
-- Authentification, paywall, abonnement Stripe (`/subscribe-simulator` reste un lien externe inactif dans le ZIP).
-- Système d'A/B testing complet, GTM, analytics avancés.
-- Tests automatisés.
-- i18n multi-langues.
-
-Ces éléments peuvent être ajoutés ultérieurement, mais ne font pas partie du "simulateur gratuit" minimal demandé.
+## Méthode d'exécution (en mode build)
+1. Lire en parallèle : `StepProjectInfo`, `StepLocal`, `StepMachines`, `StepCosts`, `StepResults`, `useSimulationValidation`, `useSimulatorCheckout`, `useSimulatorAddons`, `SimulatorPaywall`, `EmailCaptureModal`, `SimulationLayout`, `SimulationChargesPage`, `SimulationLocalPage`, `create-simulator-lead/index.ts`, `send-simulator-summary/index.ts`, `create-addon-checkout/index.ts`, `stripe-webhook/index.ts` (sections pertinentes).
+2. Requêter le schéma BDD via `supabase--read_query` pour `profiles`, `simulator_*`, `paywall_bypass_allowlist`.
+3. Rédiger `docs/simulateur-architecture.md` avec les sections ci-dessus et les 3 diagrammes Mermaid intégrés.
+4. Ne créer aucun autre fichier, ne modifier aucun code applicatif.
