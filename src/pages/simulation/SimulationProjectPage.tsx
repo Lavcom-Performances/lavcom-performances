@@ -26,7 +26,7 @@ export default function SimulationProjectPage() {
   const [activeTab, setActiveTab] = useState("project");
   const [showErrors, setShowErrors] = useState(false);
   
-  const { isValid, errors, errorCount } = useSimulationValidation(project);
+  const { isValid, errors, errorCount } = useSimulationValidation(project, "project");
 
   const handleNext = () => {
     if (!isValid) {
@@ -36,7 +36,7 @@ export default function SimulationProjectPage() {
         description: `Veuillez remplir les ${errorCount} champ${errorCount > 1 ? 's' : ''} obligatoire${errorCount > 1 ? 's' : ''} avant de continuer.`,
         variant: "destructive",
       });
-      if (errors.name || errors.city || errors.zone_type || errors.surface_m2 || errors.opening_hours_description) {
+      if (errors.name || errors.city || errors.zone_type || errors.opening_hours_description) {
         setActiveTab("project");
       }
       return;

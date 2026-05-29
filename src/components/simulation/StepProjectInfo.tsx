@@ -3,13 +3,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, MapPin, Maximize, Clock, Map, Globe, AlertCircle, Home } from "lucide-react";
+import { Building2, MapPin, Clock, Map, Globe, AlertCircle, Home } from "lucide-react";
 import { SimulationProject } from "@/types/simulation";
 import { CityAutocomplete } from "./CityAutocomplete";
 import { AddressAutocomplete } from "./AddressAutocomplete";
 import { formatUserInput } from "@/lib/textUtils";
 import { 
-  SURFACE_OPTIONS, 
   OPENING_HOURS_OPTIONS, 
   ZONE_TYPES,
   COUNTRIES,
@@ -26,7 +25,6 @@ interface StepProjectInfoProps {
 }
 
 export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = false }: StepProjectInfoProps) {
-  const [showCustomSurface, setShowCustomSurface] = useState(false);
   const [showCustomHours, setShowCustomHours] = useState(false);
 
   const handleCitySelect = (result: CitySearchResult) => {
@@ -50,15 +48,6 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
     onUpdate(updates);
   };
 
-  const handleSurfaceChange = (value: string) => {
-    if (value === "custom") {
-      setShowCustomSurface(true);
-    } else {
-      setShowCustomSurface(false);
-      onUpdate({ surface_m2: parseFloat(value) });
-    }
-  };
-
   const handleHoursChange = (value: string) => {
     if (value === "custom") {
       setShowCustomHours(true);
@@ -67,13 +56,6 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
       setShowCustomHours(false);
       onUpdate({ opening_hours_description: value });
     }
-  };
-
-  const getCurrentSurfaceValue = () => {
-    const match = SURFACE_OPTIONS.find(opt => opt.value === String(project.surface_m2));
-    if (match) return match.value;
-    if (project.surface_m2 > 0 && !match) return "custom";
-    return "";
   };
 
   const getCurrentHoursValue = () => {
@@ -248,51 +230,6 @@ export function StepProjectInfo({ project, onUpdate, errors = {}, showErrors = f
                   className="bg-muted"
                 />
               </div>
-            )}
-          </div>
-
-          {/* Surface */}
-          <div className="space-y-2">
-            <Label className={cn("flex items-center gap-2", showErrors && errors.surface_m2 && "text-destructive")}>
-              <Maximize className="h-4 w-4" />
-              Surface du local <span className="text-destructive">*</span>
-            </Label>
-            <div className="flex gap-3">
-              <Select
-                value={getCurrentSurfaceValue()}
-                onValueChange={handleSurfaceChange}
-              >
-                <SelectTrigger className={cn("flex-1", showErrors && errors.surface_m2 && "border-destructive focus:ring-destructive")}>
-                  <SelectValue placeholder="Sélectionner une surface" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SURFACE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {showCustomSurface && (
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    min="10"
-                    max="500"
-                    placeholder="m²"
-                    value={project.surface_m2 || ''}
-                    onChange={(e) => onUpdate({ surface_m2: parseFloat(e.target.value) || 0 })}
-                    className={cn("w-24", showErrors && errors.surface_m2 && "border-destructive focus-visible:ring-destructive")}
-                  />
-                  <span className="text-muted-foreground">m²</span>
-                </div>
-              )}
-            </div>
-            {showErrors && errors.surface_m2 && (
-              <p className="text-sm text-destructive flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                {errors.surface_m2}
-              </p>
             )}
           </div>
 

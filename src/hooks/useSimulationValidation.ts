@@ -15,36 +15,45 @@ export interface ValidationResult {
   errorCount: number;
 }
 
-export function useSimulationValidation(project: SimulationProject): ValidationResult {
+export type SimulationValidationScope = "project" | "local" | "all";
+
+export function useSimulationValidation(
+  project: SimulationProject,
+  scope: SimulationValidationScope = "all"
+): ValidationResult {
   return useMemo(() => {
     const errors: ValidationErrors = {};
 
     console.log('[DEBUG] Validation - project.city:', project.city);
     console.log('[DEBUG] Validation - project.postal_code:', project.postal_code);
 
-    // Nom du projet (obligatoire, min 3 caractères)
-    if (!project.name || project.name.trim().length < 3) {
-      errors.name = "Le nom du projet est requis (min. 3 caractères)";
+    if (scope === "all" || scope === "project") {
+      // Nom du projet (obligatoire, min 3 caractères)
+      if (!project.name || project.name.trim().length < 3) {
+        errors.name = "Le nom du projet est requis (min. 3 caractères)";
+      }
+
+      // Ville (obligatoire)
+      if (!project.city || project.city.trim().length === 0) {
+        errors.city = "La ville est requise";
+      }
+
+      // Type de zone (obligatoire)
+      if (!project.zone_type) {
+        errors.zone_type = "Le type de zone est requis";
+      }
+
+      // Horaires (obligatoire)
+      if (!project.opening_hours_description || project.opening_hours_description.trim().length === 0) {
+        errors.opening_hours_description = "Les horaires d'ouverture sont requis";
+      }
     }
 
-    // Ville (obligatoire)
-    if (!project.city || project.city.trim().length === 0) {
-      errors.city = "La ville est requise";
-    }
-
-    // Type de zone (obligatoire)
-    if (!project.zone_type) {
-      errors.zone_type = "Le type de zone est requis";
-    }
-
-    // Surface (obligatoire, > 10m²)
-    if (!project.surface_m2 || project.surface_m2 < 10) {
-      errors.surface_m2 = "La surface est requise (min. 10 m²)";
-    }
-
-    // Horaires (obligatoire)
-    if (!project.opening_hours_description || project.opening_hours_description.trim().length === 0) {
-      errors.opening_hours_description = "Les horaires d'ouverture sont requis";
+    if (scope === "all" || scope === "local") {
+      // Surface (obligatoire, > 10m²) — validée à l'étape Local & machines
+      if (!project.surface_m2 || project.surface_m2 < 10) {
+        errors.surface_m2 = "La surface est requise (min. 10 m²)";
+      }
     }
 
     const errorCount = Object.keys(errors).length;
@@ -56,5 +65,5 @@ export function useSimulationValidation(project: SimulationProject): ValidationR
       errors,
       errorCount,
     };
-  }, [project]);
+  }, [project, scope]);
 }
