@@ -1,8 +1,3 @@
-Créer le fichier `docs/plans/parcours-simulateur-enregistrement.md` contenant le plan complet du parcours « Simuler → Enregistrer → Payer → Récupérer », pour archivage et consultation ultérieure.
-
-## Contenu du fichier
-
-```markdown
 # Parcours « Simuler → Enregistrer → Payer → Récupérer »
 
 ## Objectif
@@ -11,7 +6,7 @@ Permettre à un visiteur **non connecté** d'utiliser le simulateur payant (`/si
 
 ## Flow cible
 
-​```text
+```text
 /simulation (libre, non connecté)
    └─ Étapes 0→4 (state local + localStorage)
         └─ Étape Résultats
@@ -31,7 +26,7 @@ Permettre à un visiteur **non connecté** d'utiliser le simulateur payant (`/si
                                            ├─ INSERT simulation_projects
                                            ├─ Edge "send-simulation-summary" → email PDF
                                            └─ Redirige → /simulation/mes-projets
-​```
+```
 
 ## Changements techniques
 
@@ -89,11 +84,3 @@ Charge depuis `simulation_projects` au lieu de localStorage.
 1. Confirmation email retarde la reprise checkout — magic link envisageable ?
 2. PDF côté serveur (Deno jsPDF) vs client (génération à `/billing/success` puis upload)
 3. Alignement des routes (`/signup`, `/auth/callback`, `/simulation/mes-projets`)
-```
-
-## Étapes
-1. Créer le dossier `docs/plans/` s'il n'existe pas
-2. Écrire le fichier markdown ci-dessus
-
-## Hors scope
-Aucune modification de code applicatif, aucune migration de base. Seule la documentation est ajoutée.
