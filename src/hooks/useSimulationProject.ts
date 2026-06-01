@@ -36,8 +36,14 @@ export function useSimulationProject() {
   }, []);
 
   const updateProject = useCallback((updates: Partial<SimulationProject>) => {
-    setProject(prev => ({ ...prev, ...updates }));
-  }, []);
+    console.log('[DEBUG] updateProject called with:', updates);
+    console.log('[DEBUG] Current project before update:', project);
+    setProject(prev => {
+      const updated = { ...prev, ...updates };
+      console.log('[DEBUG] Project after update:', updated);
+      return updated;
+    });
+  }, [project]);
 
   const resetProject = useCallback(() => {
     setProject(defaultSimulationProject);
