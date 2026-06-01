@@ -1,97 +1,204 @@
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#3b82f6'}}}%%
 graph TB
-    subgraph Frontend["Frontend React"]
+    subgraph Frontend["Frontend React (Vite)"]
         APP[Application Web]
+        SIM[/simulateur public/]
     end
-    
-    subgraph Auth["Edge Functions - Authentication"]
+
+    subgraph Auth["Auth & Sessions"]
         AUTH_SIGNUP[auth-signup]
         LOG_LOGIN[log-login]
-        LOG_ADMIN_LOGIN[log-admin-login]
-        CLEANUP[cleanup-login-logs]
+        LOG_LOGIN_EVT[log-login-event]
+        LOG_ADMIN[log-admin-login]
+        SEND_OTP[send-login-otp]
+        VERIFY_OTP[verify-login-otp]
+        VERIFY_MFA[verify-mfa-challenge]
+        VERIFY_REC[verify-recovery-code]
+        GEN_REC[generate-recovery-codes]
+        REQ_MFA[require-mfa]
+        REVOKE_SESS[revoke-other-sessions]
+        REM_DEVICE[remove-trusted-device]
+        CLEAN_LOGIN[cleanup-login-logs]
     end
-    
-    subgraph Payment["Edge Functions - Payment & Billing"]
+
+    subgraph Payment["Payments & Billing"]
         STRIPE_WH[stripe-webhook]
+        STRIPE_REC[stripe-reconcile-cron]
         CREATE_SUB[create-subscription-checkout]
-        CREATE_SIM[create-simulator-checkout]
+        CREATE_SIM_CO[create-simulator-checkout]
+        CREATE_SIM_LEAD[create-simulator-lead]
         CREATE_ADDON[create-addon-checkout]
-        CUSTOMER_PORTAL[customer-portal]
-        LIST_INVOICES[list-invoices]
+        CUST_PORTAL[customer-portal]
+        LIST_INV[list-invoices]
+        SEND_SUB_EMAIL[send-subscription-email]
+        SEND_SIM_SUM[send-simulator-summary]
     end
-    
-    subgraph Analytics["Edge Functions - Analytics"]
+
+    subgraph Analytics["Analytics & Reporting"]
         COMPUTE[compute-analytics]
         COMPUTE_CRON[compute-analytics-cron]
+        RECOMPUTE[recompute-analytics]
+        GEN_FIN_PDF[generate-financial-pdf]
+        GEN_FIN_EXP[generate-fin-export]
     end
-    
-    subgraph Team["Edge Functions - Team Management"]
+
+    subgraph Team["Team & Org"]
         SEND_INVITE[send-team-invitation]
         ACCEPT_INVITE[accept-invitation]
         VALIDATE_INVITE[validate-invitation]
         SEND_ADMIN_INVITE[send-admin-invitation]
+        ENROLL_BETA[enroll-company-in-beta]
+        END_BETA[end-beta-early]
+        BETA_INACT[beta-inactivity-check]
+        SUBMIT_BETA_FB[submit-beta-feedback]
+        LOG_BETA[log-beta-event]
     end
-    
-    subgraph Notifications["Edge Functions - Notifications"]
-        TRIAL_REMINDER[trial-reminder]
-        SEND_SUB_EMAIL[send-subscription-email]
+
+    subgraph Notifications["Notifications & Alerts"]
+        TRIAL_REM[trial-reminder]
         CHECK_CHURN[check-churn-alert]
-        SEND_CRON_ALERT[send-cron-alert]
-        SEND_SYSTEM_ALERT[send-system-alert]
-        SEND_PERMISSION[send-permission-alert]
-        SEND_SUSPICIOUS[send-suspicious-login-alert]
+        SEND_CRON_AL[send-cron-alert]
+        SEND_SYS_AL[send-system-alert]
+        SEND_PERM_AL[send-permission-alert]
+        SEND_SUSP[send-suspicious-login-alert]
+        SEND_AUDIT_AL[send-audit-alert]
+        SEND_AUDIT_RP[send-audit-report]
+        SEND_ORPHAN[send-orphan-page-alert]
+        LOG_EVT[log-event]
     end
-    
-    subgraph Features["Edge Functions - User Features"]
+
+    subgraph Features["User Features"]
         SUPPORT_CHAT[support-chatbot]
+        AI_PROXY[ai-proxy]
+        AI_HYPO[ai-hypothesis-suggest]
         SEND_CONTACT[send-contact]
         SUBMIT_EXPERT[submit-expert-request]
         CREATE_DEMO[create-demo]
+        RESET_DEMO[reset-demo]
+        CREATE_PROJ[create-project]
         IMPORT_CHECK[import-csv-check]
+        CLOSE_LAV[close-laundromat]
+        REACT_LAV[reactivate-laundromat]
     end
-    
-    subgraph Utilities["Edge Functions - Utilities"]
+
+    subgraph Admin["Admin & Compliance"]
+        START_IMP[start-impersonation]
+        END_IMP[end-impersonation]
+        GET_IMP[get-impersonation-session]
+        GEN_COMP[generate-compliance-report]
+        VERIFY_COMP[verify-compliance-report-integrity]
+        GET_COMP_DL[get-compliance-report-download-url]
+        MONTHLY_COMP[monthly-compliance-report]
+        CLEAN_COMP[cleanup-compliance-reports]
+        EVAL_PLAT[evaluate-platform-readiness]
+        COLLECT_DIAG[collect-diagnostics]
+        SECRETS_HEALTH[secrets-health]
+    end
+
+    subgraph Audit["Audit & Archives"]
+        CLEAN_AUDIT[cleanup-audit-logs]
+        CLEAN_AUDIT_ARCH[cleanup-audit-archives]
+        VERIFY_ARCH[verify-archive-integrity]
+        VERIFY_ARCH_BULK[verify-archives-bulk]
+        GET_ARCH_DL[get-audit-archive-download-url]
+    end
+
+    subgraph DR["Disaster Recovery & Backups"]
+        BACKUP_SYS[backup-system]
+        BACKUP_CB[backup-callback]
+        BACKUP_REM[backup-drill-reminder]
+        DR_RUN[run-dr-drill]
+        DR_REM[dr-drill-reminder]
+    end
+
+    subgraph CSV["CSV Imports & Exports"]
+        IMP_PARSER_CRON[import-parser-tests-cron]
+        CREATE_EXP[create-export-job]
+        RUN_EXP[run-export-job]
+        GET_EXP_DL[get-export-download-url]
+    end
+
+    subgraph Cron["Cron Tests & Smoke"]
+        SMOKE[smoke-tests-cron]
+        PERM_TESTS[permission-tests-cron]
+        CHECK_WH[check-webhook-status]
+        LOG_PERF[log-performance]
+    end
+
+    subgraph Utils["Utilities"]
         FETCH_SIRET[fetch-from-siret]
-        VALIDATE_POSTAL[validate-postal-code]
-        CSP_REPORT[csp-report]
-        CHECK_WEBHOOK[check-webhook-status]
-        SMOKE_TESTS[smoke-tests-cron]
+        VAL_POSTAL[validate-postal-code]
+        CSP_REP[csp-report]
     end
-    
+
     subgraph External["Services Externes"]
-        STRIPE[Stripe API]
-        RESEND[Resend Email]
-        SIRENE[API SIRENE]
-        LOVABLE_AI[Lovable AI Gateway]
-        SLACK[Slack Webhooks]
+        STRIPE[(Stripe API)]
+        RESEND[(Resend Email)]
+        SIRENE[(API SIRENE)]
+        LOVABLE_AI[(Lovable AI Gateway)]
+        SCREENSHOT[(ScreenshotOne)]
+        SLACK[(Slack Webhooks)]
     end
-    
-    subgraph Database["Database"]
-        SUPABASE[(Supabase PostgreSQL)]
+
+    subgraph DB["Backend"]
+        SUPABASE[(PostgreSQL + Auth + Storage + Realtime)]
     end
-    
+
     APP --> AUTH_SIGNUP
     APP --> LOG_LOGIN
     APP --> CREATE_SUB
     APP --> SUPPORT_CHAT
     APP --> SEND_CONTACT
     APP --> IMPORT_CHECK
-    
+    APP --> CUST_PORTAL
+    APP --> CREATE_PROJ
+    APP --> AI_HYPO
+    APP --> GEN_FIN_PDF
+
+    SIM --> CREATE_SIM_LEAD
+    SIM --> CREATE_SIM_CO
+    SIM --> SEND_SIM_SUM
+
     STRIPE --> STRIPE_WH
     STRIPE_WH --> SEND_SUB_EMAIL
-    
+    STRIPE_WH --> SEND_SYS_AL
+    STRIPE_REC --> STRIPE
+    STRIPE_REC --> SEND_CRON_AL
+
     COMPUTE_CRON --> COMPUTE
-    COMPUTE_CRON --> SEND_CRON_ALERT
-    
-    SEND_INVITE --> RESEND
-    TRIAL_REMINDER --> RESEND
-    CHECK_CHURN --> RESEND
-    SEND_CRON_ALERT --> RESEND
-    SEND_CRON_ALERT --> SLACK
-    
+    COMPUTE_CRON --> RECOMPUTE
+    COMPUTE_CRON --> SEND_CRON_AL
+
+    LOG_ADMIN --> SEND_SUSP
+
+    DR_RUN --> SCREENSHOT
+    DR_REM --> SEND_SYS_AL
+    BACKUP_REM --> SEND_SYS_AL
+
     SUPPORT_CHAT --> LOVABLE_AI
+    AI_PROXY --> LOVABLE_AI
+    AI_HYPO --> LOVABLE_AI
+
     FETCH_SIRET --> SIRENE
-    
+
+    SEND_INVITE --> RESEND
+    SEND_ADMIN_INVITE --> RESEND
+    SEND_SIM_SUM --> RESEND
+    SEND_SUB_EMAIL --> RESEND
+    TRIAL_REM --> RESEND
+    CHECK_CHURN --> RESEND
+    SEND_CRON_AL --> RESEND
+    SEND_CRON_AL --> SLACK
+    SEND_SYS_AL --> RESEND
+    SEND_AUDIT_AL --> RESEND
+    SEND_AUDIT_RP --> RESEND
+    SEND_PERM_AL --> RESEND
+    SEND_ORPHAN --> RESEND
+
     AUTH_SIGNUP --> SUPABASE
     COMPUTE --> SUPABASE
     CREATE_SUB --> STRIPE
+    CREATE_SIM_CO --> STRIPE
+    CREATE_ADDON --> STRIPE
+    CUST_PORTAL --> STRIPE
+    LIST_INV --> STRIPE

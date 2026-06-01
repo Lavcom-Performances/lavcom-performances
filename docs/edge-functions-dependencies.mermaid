@@ -1,26 +1,45 @@
 %%{init: {'theme': 'base'}}%%
 graph LR
-    subgraph Called["Appelées par d autres functions"]
-        SEND_SUB_EMAIL[send-subscription-email]
-        SEND_SYSTEM_ALERT[send-system-alert]
-        SEND_CRON_ALERT[send-cron-alert]
+    subgraph Called["Functions appelees"]
         COMPUTE[compute-analytics]
+        RECOMPUTE[recompute-analytics]
+        SEND_SUB_EMAIL[send-subscription-email]
+        SEND_SYS_AL[send-system-alert]
+        SEND_CRON_AL[send-cron-alert]
+        SEND_SUSP[send-suspicious-login-alert]
+        SEND_SIM_SUM[send-simulator-summary]
     end
-    
+
     subgraph Callers["Functions appelantes"]
         STRIPE_WH[stripe-webhook]
+        STRIPE_REC[stripe-reconcile-cron]
         COMPUTE_CRON[compute-analytics-cron]
         IMPORT_CHECK[import-csv-check]
+        IMP_PARSER[import-parser-tests-cron]
         LOG_ADMIN[log-admin-login]
+        DR_RUN[run-dr-drill]
+        BACKUP_CB[backup-callback]
+        PERM_TESTS[permission-tests-cron]
+        SIM_LEAD[create-simulator-lead]
     end
-    
+
     STRIPE_WH --> SEND_SUB_EMAIL
-    STRIPE_WH --> SEND_SYSTEM_ALERT
-    
+    STRIPE_WH --> SEND_SYS_AL
+    STRIPE_REC --> SEND_CRON_AL
+
     COMPUTE_CRON --> COMPUTE
-    COMPUTE_CRON --> SEND_CRON_ALERT
-    COMPUTE_CRON --> SEND_SYSTEM_ALERT
-    
-    IMPORT_CHECK --> SEND_SYSTEM_ALERT
-    
-    LOG_ADMIN --> SEND_SUSPICIOUS[send-suspicious-login-alert]
+    COMPUTE_CRON --> RECOMPUTE
+    COMPUTE_CRON --> SEND_CRON_AL
+    COMPUTE_CRON --> SEND_SYS_AL
+
+    IMPORT_CHECK --> SEND_SYS_AL
+    IMP_PARSER --> SEND_SYS_AL
+
+    LOG_ADMIN --> SEND_SUSP
+
+    DR_RUN --> SEND_SYS_AL
+    BACKUP_CB --> SEND_SYS_AL
+
+    PERM_TESTS --> SEND_SYS_AL
+
+    SIM_LEAD --> SEND_SIM_SUM

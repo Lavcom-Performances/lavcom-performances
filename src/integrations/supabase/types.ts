@@ -2801,6 +2801,27 @@ export type Database = {
         }
         Relationships: []
       }
+      simulator_lead_rate_limits: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: number
+          ip_hash: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: number
+          ip_hash: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: number
+          ip_hash?: string
+        }
+        Relationships: []
+      }
       simulator_leads: {
         Row: {
           ab_variant: string | null

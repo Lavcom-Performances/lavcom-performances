@@ -69,7 +69,10 @@ function computeSegment(qualifData: QualifData, ici: number): SegmentType {
   return "segment_a";
 }
 
-async function persistLead(lead: FreeLeadData): Promise<void> {
+async function persistLead(
+  lead: FreeLeadData,
+  antiAbuse: { website: string; elapsed_ms: number }
+): Promise<void> {
   const payload = {
     email: lead.email.toLowerCase().trim(),
     stage: lead.stage,
@@ -82,20 +85,27 @@ async function persistLead(lead: FreeLeadData): Promise<void> {
     gap_score: lead.gap_score,
     segmentation_type: lead.segmentation_type,
     ab_variant: lead.ab_variant,
+    website: antiAbuse.website,
+    elapsed_ms: antiAbuse.elapsed_ms,
   };
 
-  try {
-    const response = await supabase.functions.invoke("create-simulator-lead", { body: payload });
-    if (response.error) throw new Error("Edge function failed");
-  } catch (edgeFnError) {
-    console.warn("Edge function unavailable, falling back to direct insert:", edgeFnError);
-    try {
-      await supabase.from("simulator_leads").insert(payload as any);
-    } catch (directInsertError) {
-      console.error("Direct insert also failed:", directInsertError);
-    }
+  const response = await supabase.functions.invoke("create-simulator-lead", { body: payload });
+
+  if (response.error) {
+    const serverMsg =
+      (response.data as any)?.error ||
+      response.error.message ||
+      "Enregistrement impossible. Réessayez dans un instant.";
+    throw new Error(serverMsg);
+  }
+
+  if (response.data && (response.data as any).success === false) {
+    throw new Error(
+      (response.data as any).error || "Enregistrement impossible. Réessayez dans un instant."
+    );
   }
 }
+
 
 function capitalLabel(range: string): string {
   const map: Record<string, string> = {
@@ -115,9 +125,12 @@ function machineLabel(range: string): string {
 
 export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onClose }: Props) {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [mountedAt] = useState(() => Date.now());
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [consent, setConsent] = useState(false);
   const { t } = useTranslation(['app']);
   const { variant, ctaLabel } = useABVariant("cta_button");
 
@@ -128,8 +141,13 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
       setError(t('app:emailCapture.invalidEmail'));
       return;
     }
+    if (!consent) {
+      setError("Vous devez accepter la politique de confidentialité pour continuer.");
+      return;
+    }
     setError("");
     setLoading(true);
+
 
     const { ici, gap } = computeIciAndGap(qualifData);
     const segmentation_type = computeSegment(qualifData, ici);
@@ -147,10 +165,16 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
       ab_variant: variant,
     };
 
-    await Promise.all([
-      new Promise((r) => setTimeout(r, 1200)),
-      persistLead(lead),
-    ]);
+    try {
+      await Promise.all([
+        new Promise((r) => setTimeout(r, 1200)),
+        persistLead(lead, { website, elapsed_ms: Date.now() - mountedAt }),
+      ]);
+    } catch (e: any) {
+      setLoading(false);
+      setError(e?.message || "Une erreur est survenue. Réessayez.");
+      return;
+    }
 
     trackEmailSubmitted({
       segmentation_type: lead.segmentation_type,
@@ -203,7 +227,20 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
                 ))}
               </div>
 
+              {/* Honeypot — hidden from real users, must stay empty */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+                aria-hidden="true"
+              />
+
               <div className="space-y-2">
+
                 <label className="text-sm font-semibold text-foreground">{t('app:emailCapture.emailLabel')}</label>
                 <input
                   type="email"
@@ -218,9 +255,30 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
                 {error && <p className="text-xs text-destructive">{error}</p>}
               </div>
 
+              {/* RGPD consent */}
+              <label className="flex items-start gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => { setConsent(e.target.checked); setError(""); }}
+                  className="mt-0.5 h-4 w-4 rounded border-border accent-accent cursor-pointer shrink-0"
+                />
+                <span className="text-xs text-muted-foreground leading-snug">
+                  J'accepte de recevoir mes résultats par email et la{" "}
+                  <a href="/politique-confidentialite" target="_blank" rel="noopener noreferrer" className="text-accent underline hover:opacity-80">
+                    politique de confidentialité
+                  </a>
+                  {" "}(voir aussi les{" "}
+                  <a href="/mentions-legales" target="_blank" rel="noopener noreferrer" className="text-accent underline hover:opacity-80">
+                    mentions légales
+                  </a>
+                  ).
+                </span>
+              </label>
+
               <button
                 onClick={handleSubmit}
-                disabled={loading}
+                disabled={loading || !consent}
                 className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl
                   bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-sm
                   transition-all shadow-lg shadow-accent/30 disabled:opacity-70 disabled:cursor-not-allowed"
@@ -228,6 +286,7 @@ export function FreeEmailCaptureModal({ qualifData, freeResults, onComplete, onC
                 {ctaLabel}
                 <ArrowRight size={16} />
               </button>
+
 
               <div className="flex items-center gap-3 pt-1">
                 <CheckCircle2 size={14} className="text-green-500 shrink-0" />

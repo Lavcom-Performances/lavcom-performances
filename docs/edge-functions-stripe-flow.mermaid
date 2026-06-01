@@ -1,22 +1,56 @@
 %%{init: {'theme': 'base'}}%%
 flowchart TD
-    STRIPE[Stripe] -->|Webhook| WH[stripe-webhook]
-    WH -->|checkout.session.completed| CS{Type de session?}
-    CS -->|simulator| SIM[handleSimulatorPurchase]
-    CS -->|addon| ADDON[handleAddonPurchase]
-    CS -->|subscription| SUB[handleSubscriptionCheckout]
-    
-    WH -->|subscription.updated| UPDATE[handleSubscriptionUpdate]
-    WH -->|subscription.deleted| DELETE[handleSubscriptionDeleted]
+    USER([User]) -->|/simulateur guest| CREATE_SIM_CO[create-simulator-checkout]
+    USER -->|app authenticated| CREATE_SUB[create-subscription-checkout]
+    USER -->|simulator add-on| CREATE_ADDON[create-addon-checkout]
+
+    CREATE_SIM_CO --> STRIPE[(Stripe Checkout)]
+    CREATE_SUB --> STRIPE
+    CREATE_ADDON --> STRIPE
+
+    STRIPE -->|Webhook signed| WH[stripe-webhook]
+
+    WH -->|checkout.session.completed| TYPE{session metadata.type}
+    TYPE -->|simulator| SIM[handleSimulatorPurchase]
+    TYPE -->|addon| ADDON[handleAddonPurchase]
+    TYPE -->|subscription| SUB[handleSubscriptionCheckout]
+
+    WH -->|customer.subscription.updated| UPDATE[handleSubscriptionUpdate]
+    WH -->|customer.subscription.deleted| DELETE[handleSubscriptionDeleted]
     WH -->|invoice.paid| INV[upsertStripeInvoice]
     WH -->|invoice.payment_failed| FAIL[handlePaymentFailed]
-    
+
     SIM --> PROFILES[(profiles)]
     SIM --> PURCHASES[(purchases)]
-    
-    SUB --> SUBSCRIPTIONS[(subscriptions)]
-    SUB -->|success| EMAIL[send-subscription-email]
-    
+    SIM --> SEND_SIM_SUM[send-simulator-summary]
+
+    ADDON --> PURCHASES
+    ADDON --> SUBSCRIPTIONS[(subscriptions: extension/+1 project)]
+
+    SUB --> SUBSCRIPTIONS
+    SUB --> SEND_SUB_EMAIL[send-subscription-email]
+
+    UPDATE --> SUBSCRIPTIONS
+    DELETE --> SUBSCRIPTIONS
+
     INV --> STRIPE_INV[(stripe_invoices)]
-    
-    WH -->|Error| ALERT[send-system-alert]
+    FAIL --> SEND_SYS_AL[send-system-alert]
+
+    WH -->|idempotence| STRIPE_EVT[(stripe_events)]
+    WH -->|Error| SEND_SYS_AL
+
+    SEND_SUB_EMAIL --> RESEND[(Resend)]
+    SEND_SIM_SUM --> RESEND
+    SEND_SYS_AL --> RESEND
+
+    %% Reconciliation
+    CRON[stripe-reconcile-cron] -->|daily| STRIPE
+    CRON --> SUBSCRIPTIONS
+    CRON --> STRIPE_INV
+    CRON --> SEND_CRON_AL[send-cron-alert]
+
+    %% Customer self-service
+    USER -->|manage billing| PORTAL[customer-portal]
+    PORTAL --> STRIPE
+    USER -->|view invoices| LIST_INV[list-invoices]
+    LIST_INV --> STRIPE

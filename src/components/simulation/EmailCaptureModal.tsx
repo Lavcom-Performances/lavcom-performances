@@ -66,7 +66,11 @@ function computeSegment(qualifData: QualifData, ici: number): SegmentType {
 
 // ─── Supabase persistence (non-blocking) ─────────────────────────────────────
 
-async function persistLead(lead: LeadData, project: SimulationProject): Promise<void> {
+async function persistLead(
+  lead: LeadData,
+  project: SimulationProject,
+  antiAbuse: { website: string; elapsed_ms: number }
+): Promise<void> {
   const zone = (project as any).zone || (project as any).density_zone || null;
   
   const payload = {
@@ -81,22 +85,31 @@ async function persistLead(lead: LeadData, project: SimulationProject): Promise<
     gap_score: lead.gap_score,
     segmentation_type: lead.segmentation_type,
     ab_variant: lead.ab_variant,
+    website: antiAbuse.website,
+    elapsed_ms: antiAbuse.elapsed_ms,
   };
 
-  try {
-    const response = await supabase.functions.invoke("create-simulator-lead", {
-      body: payload,
-    });
-    if (response.error) throw new Error("Edge function failed");
-  } catch (edgeFnError) {
-    console.warn("Edge function unavailable, falling back to direct insert:", edgeFnError);
-    try {
-      await supabase.from("simulator_leads").insert(payload as any);
-    } catch (directInsertError) {
-      console.error("Direct insert also failed:", directInsertError);
-    }
+  const response = await supabase.functions.invoke("create-simulator-lead", {
+    body: payload,
+  });
+
+  // Network / function-level error
+  if (response.error) {
+    const serverMsg =
+      (response.data as any)?.error ||
+      response.error.message ||
+      "Enregistrement impossible. Réessayez dans un instant.";
+    throw new Error(serverMsg);
+  }
+
+  // Server returned success:false (e.g. DB insert failure)
+  if (response.data && (response.data as any).success === false) {
+    throw new Error(
+      (response.data as any).error || "Enregistrement impossible. Réessayez dans un instant."
+    );
   }
 }
+
 
 // ─── Capital range display ────────────────────────────────────────────────────
 
@@ -124,6 +137,9 @@ function machineLabel(range: string): string {
 
 export function EmailCaptureModal({ qualifData, results, project, onComplete, onClose }: Props) {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [mountedAt] = useState(() => Date.now());
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -139,8 +155,13 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
       setError(t('app:emailCapture.invalidEmail'));
       return;
     }
+    if (!consent) {
+      setError("Vous devez accepter la politique de confidentialité pour continuer.");
+      return;
+    }
     setError("");
     setLoading(true);
+
 
     const { ici, gap } = computeIciAndGap(qualifData, project);
     const segmentation_type = computeSegment(qualifData, ici);
@@ -158,10 +179,17 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
       ab_variant: variant,
     };
 
-    await Promise.all([
-      new Promise((r) => setTimeout(r, 1200)),
-      persistLead(lead, project),
-    ]);
+    try {
+      await Promise.all([
+        new Promise((r) => setTimeout(r, 1200)),
+        persistLead(lead, project, { website, elapsed_ms: Date.now() - mountedAt }),
+      ]);
+    } catch (e: any) {
+      setLoading(false);
+      setError(e?.message || "Une erreur est survenue. Réessayez.");
+      return;
+    }
+
 
     trackEmailSubmitted({
       segmentation_type: lead.segmentation_type,
@@ -237,7 +265,20 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
                 ))}
               </div>
 
+              {/* Honeypot — hidden from real users, must stay empty */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
+                aria-hidden="true"
+              />
+
               {/* Email input */}
+
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-foreground">
                   {t('app:emailCapture.emailLabel')}
@@ -260,10 +301,31 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
                 )}
               </div>
 
+              {/* RGPD consent */}
+              <label className="flex items-start gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => { setConsent(e.target.checked); setError(""); }}
+                  className="mt-0.5 h-4 w-4 rounded border-border accent-accent cursor-pointer shrink-0"
+                />
+                <span className="text-xs text-muted-foreground leading-snug">
+                  J'accepte de recevoir mes résultats par email et la{" "}
+                  <a href="/politique-confidentialite" target="_blank" rel="noopener noreferrer" className="text-accent underline hover:opacity-80">
+                    politique de confidentialité
+                  </a>
+                  {" "}(voir aussi les{" "}
+                  <a href="/mentions-legales" target="_blank" rel="noopener noreferrer" className="text-accent underline hover:opacity-80">
+                    mentions légales
+                  </a>
+                  ).
+                </span>
+              </label>
+
               {/* CTA */}
               <button
                 onClick={handleSubmit}
-                disabled={loading}
+                disabled={loading || !consent}
                 className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl
                   bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-sm
                   transition-all shadow-lg shadow-accent/30 disabled:opacity-70 disabled:cursor-not-allowed"
@@ -271,6 +333,7 @@ export function EmailCaptureModal({ qualifData, results, project, onComplete, on
                 {ctaLabel}
                 <ArrowRight size={16} />
               </button>
+
 
               {/* Reassurance */}
               <div className="flex items-center gap-3 pt-1">

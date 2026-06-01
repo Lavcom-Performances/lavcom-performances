@@ -16,6 +16,15 @@ const SIMULATOR_PACKS: Record<string, { priceId: string; accessDays: number; max
   premium: { priceId: "price_1Sh8QjB849ikvSjDvYjSHo57", accessDays: 90, maxProjects: 3, amountTtc: 279 },
 };
 
+// Emails autorisés à accéder gratuitement (aucun paiement requis)
+const BYPASS_EMAILS = new Set([
+  "yohana@lavcom.fr",
+  "yoann.misericordia@laposte.net",
+  "illies.kaleche@hotmail.fr",
+  "rnaranjoromero@gmail.com",
+  "contact@lavcom.fr",
+]);
+
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-SIMULATOR-CHECKOUT] ${step}${detailsStr}`);
@@ -83,6 +92,32 @@ serve(async (req) => {
     const origin = req.headers.get("origin") || "https://app.lavcom.fr";
     const successUrl = `${origin}/billing/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${origin}/billing/cancel`;
+
+    // --- BYPASS: grant access immediately for allowlisted emails (no payment) ---
+    if (user && BYPASS_EMAILS.has(user.email.toLowerCase().trim())) {
+      logStep("Bypass triggered for allowlisted email", { email: user.email });
+
+      const expiresAt = new Date(Date.now() + pack.accessDays * 86_400_000).toISOString();
+      const { error: updErr } = await supabaseClient
+        .from("profiles")
+        .update({
+          access_expires_at: expiresAt,
+          max_projects: pack.maxProjects,
+          plan_code: packId,
+        })
+        .eq("id", user.id);
+
+      if (updErr) {
+        logStep("Bypass update error", { error: updErr.message });
+        throw new Error(`Bypass grant failed: ${updErr.message}`);
+      }
+
+      const bypassUrl = `${origin}/billing/success?bypass=1&pack=${encodeURIComponent(packId)}`;
+      return new Response(JSON.stringify({ url: bypassUrl, bypass: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
 
     // Create checkout session (one-time payment)
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
