@@ -19,6 +19,9 @@ export function useSimulationValidation(project: SimulationProject): ValidationR
   return useMemo(() => {
     const errors: ValidationErrors = {};
 
+    console.log('[DEBUG] Validation - project.city:', project.city);
+    console.log('[DEBUG] Validation - project.postal_code:', project.postal_code);
+
     // Nom du projet (obligatoire, min 3 caractères)
     if (!project.name || project.name.trim().length < 3) {
       errors.name = "Le nom du projet est requis (min. 3 caractères)";
@@ -45,6 +48,8 @@ export function useSimulationValidation(project: SimulationProject): ValidationR
     }
 
     const errorCount = Object.keys(errors).length;
+
+    console.log('[DEBUG] Validation - errors:', errors);
 
     return {
       isValid: errorCount === 0,

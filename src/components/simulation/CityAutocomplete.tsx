@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 interface CityAutocompleteProps {
   value: string;
   onSelect: (result: CitySearchResult) => void;
+  onInputChange?: (value: string) => void;
   placeholder?: string;
   className?: string;
   country?: string;
@@ -17,6 +18,7 @@ interface CityAutocompleteProps {
 export function CityAutocomplete({ 
   value, 
   onSelect, 
+  onInputChange,
   placeholder = "Rechercher une ville...",
   className,
   country = "FR",
@@ -30,9 +32,11 @@ export function CityAutocomplete({
   const { results, isLoading } = useCitySearch(justSelected ? "" : inputValue, 2, country);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Sync with external value changes (e.g., reset)
+  // Sync with external value changes (e.g., reset, address selection)
   useEffect(() => {
     setInputValue(value);
+    // Reset justSelected flag when value changes externally to ensure proper behavior
+    setJustSelected(false);
   }, [value]);
 
   useEffect(() => {
@@ -56,6 +60,7 @@ export function CityAutocomplete({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
+    onInputChange?.(newValue);
     setJustSelected(false);
     setIsOpen(true);
   };
