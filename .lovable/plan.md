@@ -1,59 +1,52 @@
-## Dashboard Overview — Plan
+# Subscription Management — Mockup Plan (Direction B)
 
-Generate **1 high-fidelity PNG mockup** (1600×1200, premium model) for the **Simulator Dashboard Overview**, following the same B+C visual direction already validated for the project workspace and scenario comparator.
+Generate a single high-fidelity PNG mockup at `/mnt/documents/subscription-management-B.png` (1600×1200, premium model) showing the **Mon abonnement** screen, consistent with the previously approved Dashboard Overview B (sidebar + main area, lime accent, French copy).
 
-### Layout
+## Layout
 
-**Left sidebar (240px, persistent, white `#FFFFFF`, right border `#EEF0F3`)**
-- Lavcom lime leaf logo + "LAVCOM Simulateur" wordmark at top
-- Nav items (Inter 14px, slate `#383838`, lime active state with left lime bar + light lime bg `#A3C615/10`):
-  1. **Tableau de bord** (active, lime)
-  2. **Mes projets**
-  3. **Mon abonnement**
-  4. **Mon compte**
-- Bottom: user avatar + name "Marc Dupont" + small `⋯`
+**Left sidebar (240px, white `#FFFFFF`, right border `#EEF0F3`)**
+- Lavcom lime leaf icon + "LAVCOM Simulateur" wordmark
+- Nav: Tableau de bord · Mes projets · **Mon abonnement (active, lime 3px left bar, lime text `#A3C615`)** · Mon compte
+- Bottom: avatar "Marc Dupont" + `⋯`
 
-**Main area (`#F7F8FA` background, 32px padding)**
+**Main area (`#F7F8FA`, 24px gutter)**
+1. **Top bar** — search input + "Bonjour Marc 👋" greeting.
 
-1. **Top bar:** Search input (left), help `?` + bell + lime "Nouveau projet +" button (right)
+2. **Current pack hero card** (white, `rounded-xl shadow-sm`, lime left accent bar)
+   - "Pack Pro" pill + green "Actif" badge
+   - Subline: "Renouvellement le 22 juin 2026 · 18,90 €/mois"
+   - Right: "Gérer le paiement" outline button + "Changer de pack" lime button
 
-2. **Page header:** "Bonjour Marc 👋" (28px slate) + subtitle "Voici votre activité simulateur"
+3. **Usage meters row** (2 cards, lime progress bars)
+   - "Projets utilisés — 4 / 9" (~44%)
+   - "Scénarios utilisés — 12 / 27" (~44%)
+   - Yellow chip "Renouvellement dans 18 jours"
 
-3. **Pack card (full-width hero, white `rounded-xl shadow-sm`, lime left accent bar):**
-   - Left: lime pill "Pack Pro", title "Abonnement actif", line "9 projets · 27 scénarios · PDF illimités"
-   - Center: progress strip "4 / 9 projets utilisés" with lime fill + "12 / 27 scénarios"
-   - Right: yellow chip "Renouvellement dans 18 jours" + ghost button "Gérer mon abonnement →"
+4. **Billing info strip** (3 mini-cards)
+   - Forfait actuel · Prochain paiement (22 juin · 18,90 €) · Carte •••• 4242 (Visa)
 
-4. **KPI strip (4 cards, white `rounded-xl shadow-sm`):**
-   - Projets actifs: **4**
-   - Scénarios créés: **12**
-   - Meilleur ROI simulé: **18 mois** (lime ▲)
-   - PDF générés ce mois: **7**
+5. **Plan comparison & change** (section title "Changer de pack", 3 plan cards side-by-side)
+   - **Pack Essentiel** (3 projets · 9 scénarios · 9,90 €/mois) — outline "Choisir"
+   - **Pack Pro** — lime border, "Votre pack actuel" badge, disabled CTA
+   - **Pack Premium** (illimité · 39 €/mois) — lime "Passer au Premium" CTA
+   - Each card: feature checklist (4 items), price, CTA
 
-5. **"Mes projets" section header:** title + filter chips (Tous · Récents · Validés) + link "Voir tous mes projets →" (lime)
+6. **Historique des factures** (table card)
+   - Columns: Date · Description · Montant · Statut · Action (PDF download icon)
+   - 4 rows: Mai/Avr/Mar/Fév 2026 — all "Payée" green chip
 
-6. **Project cards grid (3 columns, 4 cards):**
-   Each card (white `rounded-xl shadow-sm`, hover lift):
-   - Top: project name (16px slate bold) + status chip (lime "Validé" / yellow "En cours" / slate "Brouillon")
-   - Subtitle: city · surface · zone
-   - Mini KPI row: CA réf · ROI · scénarios count
-   - Footer: "Modifié il y a 2j" + lime "Ouvrir →"
-   
-   Cards: "Laverie Bastille" (Validé, 3 scénarios), "Laverie République" (En cours, 2), "Projet Lyon Part-Dieu" (Brouillon, 1), "+ Nouveau projet" (dashed lime border, centered "+")
+7. **Cancellation flow preview** (right-side overlay panel showing the in-app modal)
+   - Title: "Annuler votre abonnement ?"
+   - Retention block: "Vous perdrez l'accès à vos 12 scénarios le 22 juin 2026"
+   - Two offers: "Pause 1 mois" / "−20% pendant 3 mois"
+   - Footer: "Garder mon abonnement" (lime primary) + "Confirmer l'annulation" (ghost red)
 
-7. **Footer row (2 cards side by side):**
-   - **Activité récente** (timeline): "Scénario Optimiste créé · Bastille · il y a 1h", "PDF comparatif généré · il y a 3h", "Nouveau projet créé · Lyon · hier"
-   - **Suggestions** (lime star icon): "3 scénarios prêts à comparer sur Bastille", "Votre pack expire bientôt — économisez 20% en annuel"
-
-### Design tokens (unchanged from prior mockups)
-- Background `#F7F8FA`, cards white `rounded-xl shadow-sm`
-- Lime `#A3C615`, yellow `#FCD259`, slate `#383838`, muted `#6B7280`
+## Tokens
+- Background `#F7F8FA`, white cards `rounded-xl shadow-sm`
+- Lime `#A3C615`, yellow `#FCD259`, slate `#383838`, muted `#6B7280`, success green `#22A06B`, danger red `#E5484D`
 - Inter font, French numbers with non-breaking space before €
-- Sidebar active = left lime bar 3px + bg `#A3C615/10` + lime text
 
-### Out of scope
-- No code changes — static PNG only for validation
-- No mobile variant
-- Subscription/account detail pages not generated (just nav entries)
-
-Deliverable: `/mnt/documents/dashboard-overview-B.png`
+## Deliverable
+- One PNG: `/mnt/documents/subscription-management-B.png`
+- Embedded via `<presentation-artifact>` after QA pass
+- No code changes (mockup only)
