@@ -1,52 +1,63 @@
-# Subscription Management — Mockup Plan (Direction B)
+# Mon Compte — Mockup Plan (Direction B)
 
-Generate a single high-fidelity PNG mockup at `/mnt/documents/subscription-management-B.png` (1600×1200, premium model) showing the **Mon abonnement** screen, consistent with the previously approved Dashboard Overview B (sidebar + main area, lime accent, French copy).
+Generate a single high-fidelity PNG mockup at `/mnt/documents/mon-compte-B.png` (1600×1200, premium model) showing the **Mon compte** screen, consistent with the previously approved Dashboard, Projects, and Subscription screens (sidebar + main area, lime accent, French copy).
+
+## Scope (per user answers)
+- Personal info only — no security/notifications/documents sections on this page
+- Account deletion danger-zone included
+- Logout button visible directly in the sidebar (no dropdown)
 
 ## Layout
 
 **Left sidebar (240px, white `#FFFFFF`, right border `#EEF0F3`)**
 - Lavcom lime leaf icon + "LAVCOM Simulateur" wordmark
-- Nav: Tableau de bord · Mes projets · **Mon abonnement (active, lime 3px left bar, lime text `#A3C615`)** · Mon compte
-- Bottom: avatar "Marc Dupont" + `⋯`
+- Nav: Tableau de bord · Mes projets · Mon abonnement · **Mon compte (active, lime 3px left bar, lime text `#A3C615`)**
+- Bottom block: avatar "Marc Dupont" + email muted, then a full-width outline **"Se déconnecter"** button with door-arrow icon (red text `#E5484D`, red-50 hover)
 
 **Main area (`#F7F8FA`, 24px gutter)**
-1. **Top bar** — search input + "Bonjour Marc 👋" greeting.
 
-2. **Current pack hero card** (white, `rounded-xl shadow-sm`, lime left accent bar)
-   - "Pack Pro" pill + green "Actif" badge
-   - Subline: "Renouvellement le 22 juin 2026 · 18,90 €/mois"
-   - Right: "Gérer le paiement" outline button + "Changer de pack" lime button
+1. **Top bar** — search input + "Bonjour Marc 👋" greeting (consistent with other screens).
 
-3. **Usage meters row** (2 cards, lime progress bars)
-   - "Projets utilisés — 4 / 9" (~44%)
-   - "Scénarios utilisés — 12 / 27" (~44%)
-   - Yellow chip "Renouvellement dans 18 jours"
+2. **Page header** — "Mon compte" H1 + subline "Gérez vos informations personnelles et votre accès".
 
-4. **Billing info strip** (3 mini-cards)
-   - Forfait actuel · Prochain paiement (22 juin · 18,90 €) · Carte •••• 4242 (Visa)
+3. **Profile identity card** (white, `rounded-xl shadow-sm`, lime left accent)
+   - Left: large avatar (96px) with lime ring + "Changer la photo" / "Supprimer" small links underneath
+   - Right block: "Marc Dupont" name (lg/semibold), email "marc.dupont@laverie-pro.fr", "Membre depuis mars 2025" muted, green "Email vérifié ✓" pill
 
-5. **Plan comparison & change** (section title "Changer de pack", 3 plan cards side-by-side)
-   - **Pack Essentiel** (3 projets · 9 scénarios · 9,90 €/mois) — outline "Choisir"
-   - **Pack Pro** — lime border, "Votre pack actuel" badge, disabled CTA
-   - **Pack Premium** (illimité · 39 €/mois) — lime "Passer au Premium" CTA
-   - Each card: feature checklist (4 items), price, CTA
+4. **Informations personnelles card** (form)
+   - Two-column grid: Prénom · Nom · Email (disabled, muted bg + "L'email ne peut pas être modifié" helper) · Téléphone
+   - Section divider "Entreprise"
+   - Two columns: Raison sociale · SIRET
+   - Footer: outline "Annuler" + lime "Enregistrer les modifications" with floppy icon
 
-6. **Historique des factures** (table card)
-   - Columns: Date · Description · Montant · Statut · Action (PDF download icon)
-   - 4 rows: Mai/Avr/Mar/Fév 2026 — all "Payée" green chip
+5. **Mot de passe card**
+   - Title "Sécurité du compte" + lock icon
+   - Two inputs: Nouveau mot de passe (eye toggle) · Confirmer le mot de passe
+   - Password strength meter (3 segments, "Fort" green label)
+   - Footer note "Vous serez invité à confirmer votre identité avant la mise à jour"
+   - Right-aligned lime button "Mettre à jour le mot de passe"
 
-7. **Cancellation flow preview** (right-side overlay panel showing the in-app modal)
-   - Title: "Annuler votre abonnement ?"
-   - Retention block: "Vous perdrez l'accès à vos 12 scénarios le 22 juin 2026"
-   - Two offers: "Pause 1 mois" / "−20% pendant 3 mois"
-   - Footer: "Garder mon abonnement" (lime primary) + "Confirmer l'annulation" (ghost red)
+6. **Préférences card** (light, condensed)
+   - Toggle row: Langue de l'interface — Français ▾
+   - Toggle row: Recevoir les emails de récap mensuel — switch ON (lime)
+
+7. **Zone de danger card** (red-tinted, `border-l-4 border-[#E5484D]`, `bg-[#FFF5F5]`)
+   - Title "Supprimer mon compte" + ⚠ icon (red)
+   - Body: "Cette action est définitive. Vos 4 projets, 12 scénarios et l'historique des factures seront supprimés sous 30 jours."
+   - Ghost-red button "Supprimer mon compte"
+
+8. **Deletion confirmation modal** (right-side overlay, shown on top of the page)
+   - Title: "Supprimer définitivement votre compte ?"
+   - Red warning block listing what will be lost (projets, scénarios, abonnement actif annulé)
+   - Input "Tapez SUPPRIMER pour confirmer"
+   - Footer: lime primary "Annuler" + ghost red "Confirmer la suppression"
 
 ## Tokens
 - Background `#F7F8FA`, white cards `rounded-xl shadow-sm`
-- Lime `#A3C615`, yellow `#FCD259`, slate `#383838`, muted `#6B7280`, success green `#22A06B`, danger red `#E5484D`
-- Inter font, French numbers with non-breaking space before €
+- Lime `#A3C615`, slate `#383838`, muted `#6B7280`, success green `#22A06B`, danger red `#E5484D`, danger bg `#FFF5F5`
+- Inter font, French copy throughout
 
 ## Deliverable
-- One PNG: `/mnt/documents/subscription-management-B.png`
+- One PNG: `/mnt/documents/mon-compte-B.png`
 - Embedded via `<presentation-artifact>` after QA pass
 - No code changes (mockup only)
