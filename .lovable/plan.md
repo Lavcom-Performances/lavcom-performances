@@ -1,71 +1,59 @@
-# Comparateur de scénarios (intra-projet) — PNG haute-fidélité
+## Dashboard Overview — Plan
 
-Même direction visuelle que le comparateur de projets (B+C) : cartes face-à-face + différentiel central + radar + synthèse. Adaptation au **contexte intra-projet** : on compare 2 à 3 scénarios d'un même projet (mêmes lieu/surface/zone), donc l'écart porte sur les **hypothèses** (prix cycle, fréquentation, charges) et non sur l'emplacement.
+Generate **1 high-fidelity PNG mockup** (1600×1200, premium model) for the **Simulator Dashboard Overview**, following the same B+C visual direction already validated for the project workspace and scenario comparator.
 
-## Livrable
+### Layout
 
-- `/mnt/documents/comparateur-scenarios-bc.png` (1600×1200, premium quality)
-- Aucune modification de code, visuel statique uniquement.
+**Left sidebar (240px, persistent, white `#FFFFFF`, right border `#EEF0F3`)**
+- Lavcom lime leaf logo + "LAVCOM Simulateur" wordmark at top
+- Nav items (Inter 14px, slate `#383838`, lime active state with left lime bar + light lime bg `#A3C615/10`):
+  1. **Tableau de bord** (active, lime)
+  2. **Mes projets**
+  3. **Mon abonnement**
+  4. **Mon compte**
+- Bottom: user avatar + name "Marc Dupont" + small `⋯`
 
-## Composition
+**Main area (`#F7F8FA` background, 32px padding)**
 
-```text
-┌────────────────────────────────────────────────────────────────────┐
-│ Lavcom · Simulateur › Mes projets › Laverie Bastille › Scénarios   │
-├────────────────────────────────────────────────────────────────────┤
-│ Comparer les scénarios — Laverie Bastille    [⬇ PDF comparatif]    │
-│ Paris 11e · 95 m² · Zone B · 3 scénarios sur 9 utilisés            │
-├──────────────────┬──────────────────────┬──────────────────────────┤
-│ SCÉNARIO 1       │ SCÉNARIO 2 (réf)     │ SCÉNARIO 3                │
-│ Prudent          │ Réaliste     [Réf]   │ Optimiste                 │
-│ Modifié il y a 3j│ Validé · 1 sem.      │ Brouillon · 2j            │
-│ ──── hypothèses ─│ ──── hypothèses ─────│ ──── hypothèses ─────────│
-│ Prix lavage 6 €  │ Prix lavage 7 €      │ Prix lavage 8 €           │
-│ Cycles/j  60     │ Cycles/j  82         │ Cycles/j  105 ▲           │
-│ Charges +5 %     │ Charges  réf         │ Charges −3 %              │
-│ ──── résultats ──│ ──── résultats ──────│ ──── résultats ──────────│
-│ CA      9 200 €  │ CA     12 400 €      │ CA     16 100 € ▲         │
-│ Seuil   8 200 €  │ Seuil   8 200 €      │ Seuil   7 950 € ▲         │
-│ Résult. 1 000 €  │ Résult. 3 900 €      │ Résult. 6 850 € ▲         │
-│ ROI 38 mois      │ ROI 22 mois          │ ROI 14 mois ▲             │
-└──────────────────┴──────────────────────┴──────────────────────────┘
-        ┌── Écart Optimiste vs Réaliste (référence) ──┐
-        │ Résultat  +2 950 €/mois  (+76 %)             │
-        │ CA        +3 700 €/mois  (+30 %)             │
-        │ ROI       −8 mois        (−36 %)             │
-        └──────────────────────────────────────────────┘
-┌────────────────────────────────────────────────────────────────────┐
-│ COURBES ROI (24 mois)              SYNTHÈSE                         │
-│ 3 lignes superposées :             ★ Scénario Optimiste atteint le  │
-│  · Prudent  (slate)                seuil dès le mois 14, contre 22  │
-│  · Réaliste (lime, pleine)         pour Réaliste. Risque : repose   │
-│  · Optimiste(jaune, pointillé)     sur 105 cycles/j (+28 %) — à     │
-│ Ligne horizontale seuil            valider avec étude de zone.       │
-│                                    [Définir Réaliste comme réf]      │
-└────────────────────────────────────────────────────────────────────┘
-│ Sélectionnez 2 à 3 scénarios · Le scénario « Réf » sert de base     │
-└────────────────────────────────────────────────────────────────────┘
-```
+1. **Top bar:** Search input (left), help `?` + bell + lime "Nouveau projet +" button (right)
 
-### Détails clés (différences vs comparateur de projets)
+2. **Page header:** "Bonjour Marc 👋" (28px slate) + subtitle "Voici votre activité simulateur"
 
-- **3 colonnes** au lieu de 2 — un scénario peut être désigné « Référence » (badge slate), les autres se comparent à lui.
-- **Bloc "hypothèses"** distinct du bloc "résultats" dans chaque carte (séparateur visible), pour montrer la cause avant l'effet.
-- **Statuts** : `Brouillon`, `Validé`, `Réf` (chips).
-- **Différentiel central** = écart du scénario le plus favorable vs la **référence** (pas vs l'autre projet).
-- **Visualisation bas-gauche** : **courbes ROI 24 mois** superposées (au lieu d'un radar) — plus pertinent pour montrer la trajectoire d'un même lieu sous différentes hypothèses. Ligne horizontale = seuil.
-- **Synthèse** : insiste sur le **risque/hypothèse clé** qui rend un scénario optimiste atteignable, avec CTA « Définir comme référence ».
-- CTA primaire : « ⬇ PDF comparatif » (un seul PDF, 3 scénarios côte-à-côte).
+3. **Pack card (full-width hero, white `rounded-xl shadow-sm`, lime left accent bar):**
+   - Left: lime pill "Pack Pro", title "Abonnement actif", line "9 projets · 27 scénarios · PDF illimités"
+   - Center: progress strip "4 / 9 projets utilisés" with lime fill + "12 / 27 scénarios"
+   - Right: yellow chip "Renouvellement dans 18 jours" + ghost button "Gérer mon abonnement →"
 
-### Tokens
+4. **KPI strip (4 cards, white `rounded-xl shadow-sm`):**
+   - Projets actifs: **4**
+   - Scénarios créés: **12**
+   - Meilleur ROI simulé: **18 mois** (lime ▲)
+   - PDF générés ce mois: **7**
 
-- Mêmes que le comparateur de projets : fond `#F7F8FA`, cartes blanches `rounded-xl shadow-sm`, lime `#A3C615` (favorable), jaune `#FCD259` (variante haute), slate `#383838`.
-- Référence en slate neutre (pas d'effet "avantage" sur la colonne référence).
+5. **"Mes projets" section header:** title + filter chips (Tous · Récents · Validés) + link "Voir tous mes projets →" (lime)
 
-## Technique
+6. **Project cards grid (3 columns, 4 cards):**
+   Each card (white `rounded-xl shadow-sm`, hover lift):
+   - Top: project name (16px slate bold) + status chip (lime "Validé" / yellow "En cours" / slate "Brouillon")
+   - Subtitle: city · surface · zone
+   - Mini KPI row: CA réf · ROI · scénarios count
+   - Footer: "Modifié il y a 2j" + lime "Ouvrir →"
+   
+   Cards: "Laverie Bastille" (Validé, 3 scénarios), "Laverie République" (En cours, 2), "Projet Lyon Part-Dieu" (Brouillon, 1), "+ Nouveau projet" (dashed lime border, centered "+")
 
-- Un seul appel `imagegen--generate_image` (`model: premium`, 1600×1200), prompt FR détaillé reprenant la composition ci-dessus.
+7. **Footer row (2 cards side by side):**
+   - **Activité récente** (timeline): "Scénario Optimiste créé · Bastille · il y a 1h", "PDF comparatif généré · il y a 3h", "Nouveau projet créé · Lyon · hier"
+   - **Suggestions** (lime star icon): "3 scénarios prêts à comparer sur Bastille", "Votre pack expire bientôt — économisez 20% en annuel"
 
-## Hors-scope
+### Design tokens (unchanged from prior mockups)
+- Background `#F7F8FA`, cards white `rounded-xl shadow-sm`
+- Lime `#A3C615`, yellow `#FCD259`, slate `#383838`, muted `#6B7280`
+- Inter font, French numbers with non-breaking space before €
+- Sidebar active = left lime bar 3px + bg `#A3C615/10` + lime text
 
-- Aucun code, aucune route, aucun composant. Visuel statique pour validation.
+### Out of scope
+- No code changes — static PNG only for validation
+- No mobile variant
+- Subscription/account detail pages not generated (just nav entries)
+
+Deliverable: `/mnt/documents/dashboard-overview-B.png`
