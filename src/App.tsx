@@ -189,9 +189,17 @@ const App = () => (
             <Route path="/simulation/charges" element={<SimulationChargesPage />} />
             <Route path="/simulation/results" element={<SimulationResultsPage />} />
           </Route>
-          
-          {/* Financial Projections routes with dedicated layout */}
-          <Route element={
+
+          {/* New visitor simulator flow (redesigned, static) */}
+          <Route element={<SimulatorLayout />}>
+            <Route path="/simulator" element={<Navigate to="/simulator/project" replace />} />
+            <Route path="/simulator/project" element={<SimulatorProjectPage />} />
+            <Route path="/simulator/machines" element={<SimulatorMachinesPage />} />
+            <Route path="/simulator/charges" element={<SimulatorChargesPage />} />
+            <Route path="/simulator/results" element={<SimulatorResultsPage />} />
+          </Route>
+
+
             <ProtectedRoute>
               <FinProjectLayout />
             </ProtectedRoute>
