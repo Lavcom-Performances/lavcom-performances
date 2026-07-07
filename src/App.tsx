@@ -94,6 +94,11 @@ import SimulationProjectPage from "./pages/simulation/SimulationProjectPage";
 import SimulationLocalPage from "./pages/simulation/SimulationLocalPage";
 import SimulationChargesPage from "./pages/simulation/SimulationChargesPage";
 import SimulationResultsPage from "./pages/simulation/SimulationResultsPage";
+import SimulatorLayout from "./layouts/SimulatorLayout";
+import SimulatorProjectPage from "./pages/simulator/SimulatorProjectPage";
+import SimulatorMachinesPage from "./pages/simulator/SimulatorMachinesPage";
+import SimulatorChargesPage from "./pages/simulator/SimulatorChargesPage";
+import SimulatorResultsPage from "./pages/simulator/SimulatorResultsPage";
 import ProjectionsListPage from "./pages/projections/ProjectionsListPage";
 import HypothesesPage from "./pages/projections/HypothesesPage";
 import PrevisionnelPage from "./pages/projections/PrevisionnelPage";
@@ -184,13 +189,23 @@ const App = () => (
             <Route path="/simulation/charges" element={<SimulationChargesPage />} />
             <Route path="/simulation/results" element={<SimulationResultsPage />} />
           </Route>
-          
+
+          {/* New visitor simulator flow (redesigned, static) */}
+          <Route element={<SimulatorLayout />}>
+            <Route path="/simulator" element={<Navigate to="/simulator/project" replace />} />
+            <Route path="/simulator/project" element={<SimulatorProjectPage />} />
+            <Route path="/simulator/machines" element={<SimulatorMachinesPage />} />
+            <Route path="/simulator/charges" element={<SimulatorChargesPage />} />
+            <Route path="/simulator/results" element={<SimulatorResultsPage />} />
+          </Route>
+
           {/* Financial Projections routes with dedicated layout */}
           <Route element={
             <ProtectedRoute>
               <FinProjectLayout />
             </ProtectedRoute>
           }>
+
             <Route path="/projections" element={<ProjectionsListPage />} />
             <Route path="/projections/machines" element={<LineItemsPage />} />
             <Route path="/projections/hypotheses" element={<HypothesesPage />} />
