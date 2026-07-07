@@ -199,11 +199,13 @@ const App = () => (
             <Route path="/simulator/results" element={<SimulatorResultsPage />} />
           </Route>
 
-
+          {/* Financial Projections routes with dedicated layout */}
+          <Route element={
             <ProtectedRoute>
               <FinProjectLayout />
             </ProtectedRoute>
           }>
+
             <Route path="/projections" element={<ProjectionsListPage />} />
             <Route path="/projections/machines" element={<LineItemsPage />} />
             <Route path="/projections/hypotheses" element={<HypothesesPage />} />
