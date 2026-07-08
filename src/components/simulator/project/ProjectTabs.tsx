@@ -1,4 +1,5 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
+import { SimulatorTabsTrigger } from "./SimulatorTabsTrigger";
 import { ProjectInfoForm } from "./ProjectInfoForm";
 import { LocalConstraintsForm } from "./LocalConstraintsForm";
 
@@ -6,8 +7,8 @@ export function ProjectTabs() {
   return (
     <Tabs defaultValue="project" className="w-full">
       <TabsList className="grid w-full max-w-md grid-cols-2">
-        <TabsTrigger value="project">Mon projet</TabsTrigger>
-        <TabsTrigger value="local">Contraintes du local</TabsTrigger>
+        <SimulatorTabsTrigger value="project">Mon projet</SimulatorTabsTrigger>
+        <SimulatorTabsTrigger value="local">Contraintes du local</SimulatorTabsTrigger>
       </TabsList>
       <TabsContent value="project" className="mt-8">
         <ProjectInfoForm />
