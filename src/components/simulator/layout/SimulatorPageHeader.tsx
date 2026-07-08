@@ -11,7 +11,7 @@ export function SimulatorPageHeader({ title, description, onReset }: Props) {
   return (
     <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
       <div>
-        <h1 className="font-display text-2xl font-bold">{title}</h1>
+        <h1 className="font-display text-2xl font-bold text-foreground">{title}</h1>
         <p className="mt-1 text-base text-muted-foreground">{description}</p>
       </div>
       <Button
