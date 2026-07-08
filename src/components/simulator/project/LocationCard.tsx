@@ -15,16 +15,12 @@ export function LocationCard() {
       >
         <div className="relative">
           <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            id="address"
-            placeholder="Tapez et sélectionnez une adresse..."
-            className="pl-9"
-          />
+          <Input id="address" placeholder="Tapez et sélectionnez une adresse..." className="pl-9" />
         </div>
       </FormField>
 
       <div className="grid gap-5 md:grid-cols-2">
-        <FormField label="Ville" htmlFor="city" icon={MapPin} required>
+        <FormField label="Ville" htmlFor="city" icon={MapPin} required hint="Rempli automatiquement">
           <div className="relative">
             <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input id="city" placeholder="Rechercher une ville..." defaultValue="Lyon" className="pl-9" />
