@@ -4,7 +4,7 @@ interface Props {
   align?: "center" | "left";
 }
 
-export function SectionHeading({ title, description, align = "center" }: Props) {
+export function TabSectionHeading({ title, description, align = "center" }: Props) {
   const alignClass = align === "center" ? "text-center" : "text-left";
   return (
     <div className={`space-y-2 ${alignClass}`}>

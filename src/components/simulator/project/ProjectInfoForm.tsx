@@ -1,4 +1,4 @@
-import { SectionHeading } from "@/components/simulator/layout/SectionHeading";
+import { TabSectionHeading } from "./TabSectionHeading";
 import { ProjectIdentityCard } from "./ProjectIdentityCard";
 import { LocationCard } from "./LocationCard";
 import { SurfaceHoursCard } from "./SurfaceHoursCard";
@@ -6,7 +6,7 @@ import { SurfaceHoursCard } from "./SurfaceHoursCard";
 export function ProjectInfoForm() {
   return (
     <div className="space-y-8">
-      <SectionHeading
+      <TabSectionHeading
         title="Informations sur votre projet"
         description="Décrivez les caractéristiques principales de votre future laverie"
       />
