@@ -1,4 +1,4 @@
-import { SectionHeading } from "@/components/simulator/shared/SectionHeading";
+import { SectionHeading } from "@/components/simulator/layout/SectionHeading";
 import { ProjectIdentityCard } from "./ProjectIdentityCard";
 import { LocationCard } from "./LocationCard";
 import { SurfaceHoursCard } from "./SurfaceHoursCard";

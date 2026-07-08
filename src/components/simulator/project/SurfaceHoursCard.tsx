@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Clock } from "lucide-react";
-import { FormField } from "@/components/simulator/shared/FormField";
+import { FormField } from "@/components/simulator/layout/FormField";
 import { OPENING_HOURS_PRESETS, SURFACE_PRESETS } from "@/components/simulator/mockData";
 
 export function SurfaceHoursCard() {

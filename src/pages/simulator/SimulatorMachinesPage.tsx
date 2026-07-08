@@ -1,5 +1,5 @@
-import { SimulatorPageHeader } from "@/components/simulator/shared/SimulatorPageHeader";
-import { SimulatorFooterNav } from "@/components/simulator/shared/SimulatorFooterNav";
+import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
+import { SimulatorFooterNav } from "@/components/simulator/layout/SimulatorFooterNav";
 import { PricingHintBanner } from "@/components/simulator/machines/PricingHintBanner";
 import { WashersConfigCard } from "@/components/simulator/machines/WashersConfigCard";
 import { DryersConfigCard } from "@/components/simulator/machines/DryersConfigCard";

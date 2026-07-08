@@ -1,5 +1,5 @@
-import { SimulatorPageHeader } from "@/components/simulator/shared/SimulatorPageHeader";
-import { SimulatorFooterNav } from "@/components/simulator/shared/SimulatorFooterNav";
+import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
+import { SimulatorFooterNav } from "@/components/simulator/layout/SimulatorFooterNav";
 import { ResultsSummaryCard } from "@/components/simulator/results/ResultsSummaryCard";
 import { ResultsHeroKpis } from "@/components/simulator/results/ResultsHeroKpis";
 import { PartialInsightsList } from "@/components/simulator/results/PartialInsightsList";
