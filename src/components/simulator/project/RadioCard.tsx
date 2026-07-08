@@ -12,7 +12,7 @@ interface Props {
   icon: LucideIcon;
   title: string;
   description?: string;
-  options: Option[];
+  options: readonly Option[];
   defaultValue?: string;
   name: string;
 }

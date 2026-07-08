@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Ruler } from "lucide-react";
-import { SURFACE_PRESETS } from "@/components/simulator/mockData";
+import { SURFACE_PRESETS } from "@/config/simulatorFormOptions";
 
 export function SurfaceCard() {
   return (

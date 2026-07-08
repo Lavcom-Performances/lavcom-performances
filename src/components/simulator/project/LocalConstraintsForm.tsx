@@ -12,7 +12,7 @@ import {
   LOCAL_SHAPES,
   STRUCTURAL_OBSTACLES,
   TECHNICAL_CONSTRAINTS,
-} from "@/components/simulator/mockData";
+} from "@/config/simulatorFormOptions";
 
 export function LocalConstraintsForm() {
   return (

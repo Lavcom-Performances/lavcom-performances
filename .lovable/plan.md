@@ -1,86 +1,74 @@
+## Objectif
 
-## Contexte
+Extraire les **options de formulaire** (listes de choix statiques) de `src/components/simulator/mockData.ts` vers deux nouveaux fichiers dans `src/config/`, en séparant valeurs et types. Les données de mock métier (MOCK_PROJECT, MOCK_WASHERS, MOCK_REVENUE, MOCK_PACKS, etc.) restent dans `mockData.ts`.
 
-Comparaison du rendu actuel de `/simulator/project` avec les deux maquettes HTML fournies :
-- `step1_tab1-2.html` → onglet **« Mon projet »**
-- `step1_tab2-2.html` → onglet **« Contraintes du local »**
+## Périmètre : constantes déplacées
 
-Le contenu et la répartition des cartes ne correspondent pas au design attendu.
+Ce sont des listes d'options pour selects/radios, non des valeurs par défaut :
 
----
+- `ZONE_TYPES`
+- `SURFACE_PRESETS`
+- `OPENING_HOURS_PRESETS`
+- `LOCAL_SHAPES`
+- `STRUCTURAL_OBSTACLES`
+- `FACADE_OPTIONS`
+- `TECHNICAL_CONSTRAINTS`
+- `FIXED_COST_CATEGORIES` (utilisé comme liste d'options catégorie coût)
 
-## Différences identifiées
+Restent dans `mockData.ts` : `MOCK_PROJECT`, `MOCK_WASHERS`, `MOCK_DRYERS`, `MOCK_REVENUE`, `MOCK_FIXED_COSTS`, `MOCK_FIXED_TOTAL`, `MOCK_VARIABLE_COSTS`, `MOCK_VARIABLE_TOTAL_PERCENT`, `MOCK_BREAKEVEN`, `MOCK_PACKS`.
 
-### Onglet 1 — « Mon projet »
+## Fichiers créés
 
-**Actuel** : 3 cartes distinctes empilées (`ProjectIdentityCard`, `LocationCard`, `SurfaceHoursCard`).
+### 1. `src/config/simulatorFormOptions.types.ts`
 
-**Design attendu** : **une seule carte unique** intitulée **« Détails du projet »** (icône Building2, sous-titre *« Ces informations nous aideront à personnaliser votre simulation »*), contenant dans l'ordre :
-1. Nom du projet* + Nom du scénario (2 colonnes)
-2. Pays (pleine largeur, select avec drapeau)
-3. Adresse du local (input pleine largeur avec icône MapPin à l'intérieur + hint « 💡 Sélectionnez une adresse… »)
-4. Ville* + Code postal (2 colonnes, code postal grisé 50 % + hint « Rempli automatiquement »)
-5. Type de zone* + Horaires d'ouverture envisagés* (2 colonnes)
+```ts
+export interface SimulatorSelectOption {
+  value: string;
+  label: string;
+}
 
-Chaque label est préfixé d'une **petite icône 16 px** (lucide) et suivi d'un **astérisque rouge** pour les champs requis (Nom du projet, Ville, Type de zone, Horaires).
+export type ZoneTypeValue = "urbaine" | "peri-urbaine" | "rurale" | "commerciale";
+export type SurfacePresetValue = "30" | "40" | "60" | "80";
+export type OpeningHoursPresetValue = "7-22" | "6-23" | "24-7" | "custom";
+export type LocalShapeValue = "rectangular" | "narrow" | "l-shape" | "corner";
+export type StructuralObstacleValue = "none" | "few" | "many";
+export type FacadeOptionValue = "yes" | "no" | "unknown";
+export type TechnicalConstraintValue = "ok" | "check_with_installer" | "heavy_work";
+export type FixedCostCategory =
+  | "Loyer / Charges locatives"
+  | "Prêt / Leasing"
+  | "Assurance"
+  | "Impôt / Taxe"
+  | "Salaire / Charges sociales"
+  | "Ménage / Entretien"
+  | "Autre";
 
-La **Surface du local ne fait plus partie de cet onglet** — elle migre vers l'onglet 2.
+// Chaque liste d'options est typée comme readonly SimulatorSelectOption[]
+// avec le `value` restreint à l'union correspondante via `satisfies`.
+```
 
-### Onglet 2 — « Contraintes du local »
+### 2. `src/config/simulatorFormOptions.ts`
 
-**Actuel** : Forme, Obstacles, [Accès + Contraintes techniques].
+Réexporte les 8 constantes ci-dessus, typées via `satisfies readonly (SimulatorSelectOption & { value: XxxValue })[]` pour conserver l'inférence stricte des `value`. `FIXED_COST_CATEGORIES` reste `readonly FixedCostCategory[]`.
 
-**Design attendu**, dans l'ordre :
-1. **Nouvelle carte « Surface du local »*** (select simple « 40 m² - Laverie standard ») — déplacée depuis l'onglet 1
-2. Carte « Forme du local » (radios) — déjà présente ✓
-3. Carte « Obstacles structurels » (radios) — déjà présente ✓
-4. Grille 2 colonnes :
-   - Carte « Accès au local » (input « Largeur de la porte (cm) » + groupe radio « Façade modifiable ? »)
-   - Carte « Contraintes techniques » (radios)
+## Mise à jour des imports
 
----
+Remplacer `@/components/simulator/mockData` par `@/config/simulatorFormOptions` dans :
 
-## Modifications à effectuer
+- `src/components/simulator/project/SurfaceCard.tsx` — `SURFACE_PRESETS`
+- `src/components/simulator/project/LocationCard.tsx` — `ZONE_TYPES`
+- `src/components/simulator/project/OpeningHoursCard.tsx` — `OPENING_HOURS_PRESETS`
+- `src/components/simulator/project/LocalConstraintsForm.tsx` — `FACADE_OPTIONS`, `LOCAL_SHAPES`, `STRUCTURAL_OBSTACLES`, `TECHNICAL_CONSTRAINTS`
 
-### 1. Onglet 1 — nouvelle carte unique `ProjectDetailsCard.tsx`
+`FIXED_COST_CATEGORIES` n'est pas importé actuellement, aucune mise à jour supplémentaire.
 
-- **Créer** `src/components/simulator/project/ProjectDetailsCard.tsx`.
-- Cette carte unique **compose** en interne les 3 sous-composants existants (`ProjectIdentityCard`, `LocationCard`, et l'ex-`SurfaceHoursCard` renommé — voir ci-dessous), mais **le rendu final doit visuellement produire une seule Card shadcn** avec un unique `CardHeader` (icône Building2 + titre « Détails du projet » + description).
-- Pour permettre cette composition sans casser l'existant : **adapter les 3 sous-composants** pour qu'ils exposent uniquement le contenu de leurs champs (sections internes), et non plus leur propre `<Card>` wrapper. Deux options équivalentes — retenir la plus simple :
-  - **Option A (recommandée)** : les 3 sous-composants rendent juste un fragment `<>…</>` de leurs `FormField`s (retirer `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent` de chacun). `ProjectDetailsCard` les enveloppe dans une seule `<Card>` + `<CardContent className="space-y-6">`.
-  - Option B : ajouter une prop `asSection?: boolean` à chacun pour basculer le wrapper.
-- **Ordre de composition dans `ProjectDetailsCard`** :
-  1. `<ProjectIdentityCard />` (Nom, Scénario, Pays)
-  2. `<LocationCard />` (Adresse, Ville, CP, Type de zone)
-  3. `<OpeningHoursCard />` (Horaires uniquement)
-- Chaque `FormField` doit accepter (ou être adapté pour accepter) une prop `icon?: LucideIcon` et une prop `required?: boolean` (astérisque rouge), pour reproduire la mise en forme des labels du design.
+Les 10 autres fichiers qui importent `MOCK_*` depuis `mockData.ts` ne sont pas touchés.
 
-### 2. Renommage `SurfaceHoursCard.tsx` → `OpeningHoursCard.tsx`
+## Nettoyage
 
-- **Renommer** le fichier `src/components/simulator/project/SurfaceHoursCard.tsx` en `OpeningHoursCard.tsx`, ainsi que l'export nommé `SurfaceHoursCard` → `OpeningHoursCard`.
-- **Retirer** le champ « Surface du local » de ce composant : il ne conserve que le select « Horaires d'ouverture envisagés » (icône Clock, requis).
-- Mettre à jour tout import (`ProjectInfoForm.tsx`, futur `ProjectDetailsCard.tsx`).
+Supprimer les 8 constantes déplacées de `src/components/simulator/mockData.ts`.
 
-### 3. `ProjectInfoForm.tsx`
+## Validation
 
-- Remplacer les 3 cartes actuelles par un unique `<ProjectDetailsCard />` en dessous de `<TabSectionHeading … />`.
-
-### 4. Onglet 2 — ajouter la carte « Surface du local »
-
-- **Créer** `src/components/simulator/project/SurfaceCard.tsx` : carte simple avec icône, titre « Surface du local », astérisque requis, et le select `SURFACE_PRESETS`.
-- Mettre à jour `LocalConstraintsForm.tsx` pour insérer `<SurfaceCard />` en premier, avant `Forme du local`.
-
-### 5. Ajustements & vérifications
-
-- Étendre `FormField.tsx` (props `icon?: LucideIcon`, `required?: boolean`) sans casser les appels existants.
-- Vérifier `FACADE_OPTIONS`, `TECHNICAL_CONSTRAINTS`, `LOCAL_SHAPES`, `STRUCTURAL_OBSTACLES` dans `mockData.ts` : libellés conformes au design (a priori déjà OK).
-- Lancer `bunx tsgo --noEmit` et `rg` pour confirmer qu'aucun import ne pointe vers l'ancien nom `SurfaceHoursCard` ni vers un wrapper `Card` supprimé.
-
----
-
-## Fichiers impactés
-
-- **Créés** : `ProjectDetailsCard.tsx`, `SurfaceCard.tsx`
-- **Renommé** : `SurfaceHoursCard.tsx` → `OpeningHoursCard.tsx` (contenu allégé aux horaires uniquement)
-- **Modifiés** : `ProjectIdentityCard.tsx`, `LocationCard.tsx` (wrapper `Card` retiré → rendent juste leurs `FormField`s), `ProjectInfoForm.tsx`, `LocalConstraintsForm.tsx`, `FormField.tsx`
-- **Supprimés** : aucun (les sous-composants restent, mais deviennent des "sections" de la carte unique)
+- `bunx tsgo --noEmit` doit passer
+- `rg "ZONE_TYPES|SURFACE_PRESETS|OPENING_HOURS_PRESETS|LOCAL_SHAPES|STRUCTURAL_OBSTACLES|FACADE_OPTIONS|TECHNICAL_CONSTRAINTS|FIXED_COST_CATEGORIES" src` doit uniquement pointer vers `src/config/simulatorFormOptions*` et les consommateurs mis à jour
