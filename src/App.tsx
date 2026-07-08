@@ -94,7 +94,7 @@ import SimulationProjectPage from "./pages/simulation/SimulationProjectPage";
 import SimulationLocalPage from "./pages/simulation/SimulationLocalPage";
 import SimulationChargesPage from "./pages/simulation/SimulationChargesPage";
 import SimulationResultsPage from "./pages/simulation/SimulationResultsPage";
-import SimulatorLayout from "./layouts/SimulatorLayout";
+import SimulatorLayout from "@/components/simulator/layout/SimulatorLayout";
 import SimulatorProjectPage from "./pages/simulator/SimulatorProjectPage";
 import SimulatorMachinesPage from "./pages/simulator/SimulatorMachinesPage";
 import SimulatorChargesPage from "./pages/simulator/SimulatorChargesPage";
