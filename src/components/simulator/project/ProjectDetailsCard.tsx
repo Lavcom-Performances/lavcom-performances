@@ -18,8 +18,6 @@ export function ProjectDetailsCard() {
         <ProjectIdentityCard />
         <LocationCard />
         <OpeningHoursCard />
-        {/*<div className="md:w-1/2">
-        </div>*/}
       </CardContent>
     </Card>
   );
