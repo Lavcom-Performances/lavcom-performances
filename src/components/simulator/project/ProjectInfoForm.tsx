@@ -1,7 +1,5 @@
 import { TabSectionHeading } from "./TabSectionHeading";
-import { ProjectIdentityCard } from "./ProjectIdentityCard";
-import { LocationCard } from "./LocationCard";
-import { SurfaceHoursCard } from "./SurfaceHoursCard";
+import { ProjectDetailsCard } from "./ProjectDetailsCard";
 
 export function ProjectInfoForm() {
   return (
@@ -10,11 +8,7 @@ export function ProjectInfoForm() {
         title="Informations sur votre projet"
         description="Décrivez les caractéristiques principales de votre future laverie"
       />
-      <div className="space-y-6">
-        <ProjectIdentityCard />
-        <LocationCard />
-        <SurfaceHoursCard />
-      </div>
+      <ProjectDetailsCard />
     </div>
   );
 }

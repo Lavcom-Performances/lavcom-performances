@@ -1,129 +1,86 @@
 
-## Objectif
+## Contexte
 
-Intégrer les 4 pages Figma (`step1_tab1`, `step1_tab2`, `step2`, `step3`, `step4-results`) comme un **nouveau parcours visiteur statique** sous `/simulator/*`, sans toucher au parcours existant `/simulation/*` (qui reste tel quel pour l'espace SaaS authentifié).
+Comparaison du rendu actuel de `/simulator/project` avec les deux maquettes HTML fournies :
+- `step1_tab1-2.html` → onglet **« Mon projet »**
+- `step1_tab2-2.html` → onglet **« Contraintes du local »**
 
-Aucune logique métier : uniquement structure + données fictives + navigation entre étapes via `Link` / `useNavigate`.
-
-Design : mapping sur les tokens Shadcn existants (`primary`, `muted-foreground`, `border`, `card`) — le vert lime `#a2c516` et l'orange `#f9941f` de Figma sont mappés respectivement sur `--primary` (SaaS Green) et `--brand` (Orange). Fonts Outfit + Inter déjà présentes dans le projet.
-
----
-
-## Arborescence de fichiers à créer
-
-```text
-src/
-├── layouts/
-│   └── SimulatorLayout.tsx                 # Header minimal (logo + retour accueil) + <Outlet/>
-│
-├── pages/simulator/
-│   ├── SimulatorProjectPage.tsx            # Route /simulator/project (étape 1, 2 onglets)
-│   ├── SimulatorMachinesPage.tsx           # Route /simulator/machines (étape 2)
-│   ├── SimulatorChargesPage.tsx            # Route /simulator/charges (étape 3)
-│   └── SimulatorResultsPage.tsx            # Route /simulator/results (étape 4 + paywall)
-│
-└── components/simulator/
-    ├── shared/
-    │   ├── SimulatorStepper.tsx            # Barre horizontale 4 étapes (état actif/complété/à venir)
-    │   ├── SimulatorPageHeader.tsx         # Titre + sous-titre + bouton "Réinitialiser"
-    │   ├── SimulatorFooterNav.tsx          # Boutons "Retour" / "Continuer"
-    │   ├── SectionHeading.tsx              # Titre H2 centré + description (répété dans chaque étape)
-    │   └── FormField.tsx                   # Wrapper Label + input/select + hint (uniformise le rendu)
-    │
-    ├── project/                            # Étape 1
-    │   ├── ProjectTabs.tsx                 # Tabs "Mon projet" / "Contraintes du local"
-    │   ├── ProjectInfoForm.tsx             # Contenu onglet 1 (nom, ville, zone, surface, horaires…)
-    │   ├── LocalConstraintsForm.tsx        # Contenu onglet 2 (forme, obstacles, accès, technique)
-    │   ├── ProjectIdentityCard.tsx         # Card "Identité du projet"
-    │   ├── LocationCard.tsx                # Card "Localisation" (ville + zone type)
-    │   ├── SurfaceHoursCard.tsx            # Card "Surface & horaires"
-    │   ├── LocalShapeCard.tsx              # Card "Forme du local"
-    │   ├── StructuralObstaclesCard.tsx     # Card "Obstacles structurels"
-    │   ├── AccessCard.tsx                  # Card "Accès au local"
-    │   └── TechnicalConstraintsCard.tsx    # Card "Contraintes techniques"
-    │
-    ├── machines/                           # Étape 2
-    │   ├── MachineMixSummary.tsx           # Bandeau récap (nb machines / capacité totale / CA estimé)
-    │   ├── WashersConfigCard.tsx           # Card lave-linges (quantité par capacité + tarif)
-    │   ├── DryersConfigCard.tsx            # Card sèche-linges
-    │   ├── ExtraServicesCard.tsx           # Card options (centrale, distributeur, etc.)
-    │   ├── MachineCounter.tsx              # Ligne "Type X kg" avec stepper +/- et prix
-    │   └── PricingHintBanner.tsx           # Alert info tarifs recommandés
-    │
-    ├── charges/                            # Étape 3
-    │   ├── FixedCostsCard.tsx              # Loyer, assurance, abonnements
-    │   ├── VariableCostsCard.tsx           # Eau, électricité, produits, maintenance
-    │   ├── FinancingCard.tsx               # Apport, emprunt, durée, taux
-    │   ├── CostRow.tsx                     # Ligne libellé + input € + périodicité (mens/an)
-    │   └── ChargesTotalsBanner.tsx         # Récap total charges fixes/variables
-    │
-    └── results/                            # Étape 4
-        ├── ResultsHeroKpis.tsx             # 3 KPI cards floutés partiellement (CA / marge / ROI)
-        ├── ResultsSummaryCard.tsx          # Récap projet (rappel des inputs clés)
-        ├── PartialInsightsList.tsx         # Liste d'insights teasés (2 visibles, N floutés)
-        ├── PaywallCallout.tsx              # Bloc CTA "Débloquer l'analyse complète"
-        └── PackChoiceCard.tsx              # Card d'un pack (Essentiel / Pro), utilisée dans PaywallCallout
-```
+Le contenu et la répartition des cartes ne correspondent pas au design attendu.
 
 ---
 
-## Modifications du code existant
+## Différences identifiées
 
-| Fichier | Changement |
-|---|---|
-| `src/App.tsx` | Ajouter les 4 routes sous `<Route element={<SimulatorLayout/>}>` (`/simulator/project`, `/simulator/machines`, `/simulator/charges`, `/simulator/results`) + redirect `/simulator` → `/simulator/project`. **Ne pas toucher** aux routes `/simulation/*`. |
-| `src/pages/simulation/*` | **Inchangé** (parcours SaaS authentifié). |
-| `src/components/simulation/*` | **Inchangé**. Les nouveaux composants vivent sous `src/components/simulator/` pour éviter toute collision. |
-| `tailwind.config.ts` / `src/index.css` | **Aucune modification** — on utilise les tokens existants (`primary`, `brand`, `muted`, `border`, `card`, `foreground`). |
-| `package.json` | **Aucune dépendance ajoutée** (Shadcn `Card`, `Tabs`, `Button`, `Input`, `Label`, `RadioGroup`, `Select` déjà présents). |
+### Onglet 1 — « Mon projet »
 
----
+**Actuel** : 3 cartes distinctes empilées (`ProjectIdentityCard`, `LocationCard`, `SurfaceHoursCard`).
 
-## Mapping Figma → tokens Shadcn
+**Design attendu** : **une seule carte unique** intitulée **« Détails du projet »** (icône Building2, sous-titre *« Ces informations nous aideront à personnaliser votre simulation »*), contenant dans l'ordre :
+1. Nom du projet* + Nom du scénario (2 colonnes)
+2. Pays (pleine largeur, select avec drapeau)
+3. Adresse du local (input pleine largeur avec icône MapPin à l'intérieur + hint « 💡 Sélectionnez une adresse… »)
+4. Ville* + Code postal (2 colonnes, code postal grisé 50 % + hint « Rempli automatiquement »)
+5. Type de zone* + Horaires d'ouverture envisagés* (2 colonnes)
 
-| Figma | Token utilisé |
-|---|---|
-| `#a2c516` (vert lime — étape active, CTA principal) | `bg-primary` / `text-primary` / `border-primary` |
-| `#f9941f` (orange — bouton Réinitialiser, badges) | `bg-brand` / `text-brand` |
-| `#383838` (texte titres) | `text-foreground` |
-| `#737373` / `neutral-500` (texte secondaire) | `text-muted-foreground` |
-| `#d9d9d9` / `#e6e6e6` (bordures, séparateurs) | `border-border` / `bg-muted` |
-| `rgba(230,230,230,0.3)` (fond stepper) | `bg-muted/30` |
-| Font `Outfit` (titres) | `font-heading` (déjà configuré) |
-| Font `Inter` (corps) | `font-sans` (défaut) |
+Chaque label est préfixé d'une **petite icône 16 px** (lucide) et suivi d'un **astérisque rouge** pour les champs requis (Nom du projet, Ville, Type de zone, Horaires).
 
----
+La **Surface du local ne fait plus partie de cet onglet** — elle migre vers l'onglet 2.
 
-## Données fictives
+### Onglet 2 — « Contraintes du local »
 
-Un seul fichier `src/components/simulator/mockData.ts` exporte des constantes typées (`MOCK_PROJECT`, `MOCK_MACHINES`, `MOCK_CHARGES`, `MOCK_RESULTS`) consommées par les pages. Aucune persistance, aucun hook, aucun appel API.
+**Actuel** : Forme, Obstacles, [Accès + Contraintes techniques].
+
+**Design attendu**, dans l'ordre :
+1. **Nouvelle carte « Surface du local »*** (select simple « 40 m² - Laverie standard ») — déplacée depuis l'onglet 1
+2. Carte « Forme du local » (radios) — déjà présente ✓
+3. Carte « Obstacles structurels » (radios) — déjà présente ✓
+4. Grille 2 colonnes :
+   - Carte « Accès au local » (input « Largeur de la porte (cm) » + groupe radio « Façade modifiable ? »)
+   - Carte « Contraintes techniques » (radios)
 
 ---
 
-## Navigation
+## Modifications à effectuer
 
-- `SimulatorFooterNav` reçoit `previousPath` et `nextPath` en props (ou `null` pour désactiver).
-- Étape 4 : bouton "Retour" vers `/simulator/charges`, pas de "Continuer" — remplacé par le CTA paywall.
-- Le `SimulatorStepper` reçoit `currentStep: 1 | 2 | 3 | 4` et rend les étapes précédentes cliquables (via `Link`).
+### 1. Onglet 1 — nouvelle carte unique `ProjectDetailsCard.tsx`
+
+- **Créer** `src/components/simulator/project/ProjectDetailsCard.tsx`.
+- Cette carte unique **compose** en interne les 3 sous-composants existants (`ProjectIdentityCard`, `LocationCard`, et l'ex-`SurfaceHoursCard` renommé — voir ci-dessous), mais **le rendu final doit visuellement produire une seule Card shadcn** avec un unique `CardHeader` (icône Building2 + titre « Détails du projet » + description).
+- Pour permettre cette composition sans casser l'existant : **adapter les 3 sous-composants** pour qu'ils exposent uniquement le contenu de leurs champs (sections internes), et non plus leur propre `<Card>` wrapper. Deux options équivalentes — retenir la plus simple :
+  - **Option A (recommandée)** : les 3 sous-composants rendent juste un fragment `<>…</>` de leurs `FormField`s (retirer `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent` de chacun). `ProjectDetailsCard` les enveloppe dans une seule `<Card>` + `<CardContent className="space-y-6">`.
+  - Option B : ajouter une prop `asSection?: boolean` à chacun pour basculer le wrapper.
+- **Ordre de composition dans `ProjectDetailsCard`** :
+  1. `<ProjectIdentityCard />` (Nom, Scénario, Pays)
+  2. `<LocationCard />` (Adresse, Ville, CP, Type de zone)
+  3. `<OpeningHoursCard />` (Horaires uniquement)
+- Chaque `FormField` doit accepter (ou être adapté pour accepter) une prop `icon?: LucideIcon` et une prop `required?: boolean` (astérisque rouge), pour reproduire la mise en forme des labels du design.
+
+### 2. Renommage `SurfaceHoursCard.tsx` → `OpeningHoursCard.tsx`
+
+- **Renommer** le fichier `src/components/simulator/project/SurfaceHoursCard.tsx` en `OpeningHoursCard.tsx`, ainsi que l'export nommé `SurfaceHoursCard` → `OpeningHoursCard`.
+- **Retirer** le champ « Surface du local » de ce composant : il ne conserve que le select « Horaires d'ouverture envisagés » (icône Clock, requis).
+- Mettre à jour tout import (`ProjectInfoForm.tsx`, futur `ProjectDetailsCard.tsx`).
+
+### 3. `ProjectInfoForm.tsx`
+
+- Remplacer les 3 cartes actuelles par un unique `<ProjectDetailsCard />` en dessous de `<TabSectionHeading … />`.
+
+### 4. Onglet 2 — ajouter la carte « Surface du local »
+
+- **Créer** `src/components/simulator/project/SurfaceCard.tsx` : carte simple avec icône, titre « Surface du local », astérisque requis, et le select `SURFACE_PRESETS`.
+- Mettre à jour `LocalConstraintsForm.tsx` pour insérer `<SurfaceCard />` en premier, avant `Forme du local`.
+
+### 5. Ajustements & vérifications
+
+- Étendre `FormField.tsx` (props `icon?: LucideIcon`, `required?: boolean`) sans casser les appels existants.
+- Vérifier `FACADE_OPTIONS`, `TECHNICAL_CONSTRAINTS`, `LOCAL_SHAPES`, `STRUCTURAL_OBSTACLES` dans `mockData.ts` : libellés conformes au design (a priori déjà OK).
+- Lancer `bunx tsgo --noEmit` et `rg` pour confirmer qu'aucun import ne pointe vers l'ancien nom `SurfaceHoursCard` ni vers un wrapper `Card` supprimé.
 
 ---
 
-## Hors périmètre (à traiter plus tard)
+## Fichiers impactés
 
-- Persistance des données saisies (localStorage / hook partagé).
-- Validation des champs.
-- Intégration du calcul de rentabilité réel.
-- Branchement du paywall Stripe sur les packs.
-- Migration éventuelle de `/simulation/*` vers cette nouvelle UI.
-
----
-
-## Détails techniques
-
-- Layout : `SimulatorLayout` = `<header>` sticky (h-16, logo + `<Link to="/">Accueil</Link>`) + `<SimulatorStepper/>` + `<main class="max-w-4xl mx-auto px-6 py-8">` + `<Outlet/>` + `<SimulatorFooterNav/>` rendu par chaque page.
-- Toutes les Cards utilisent `<Card>` / `<CardHeader>` / `<CardTitle>` / `<CardContent>` de Shadcn avec l'icône Lucide en préfixe du titre (pattern déjà utilisé dans `StepLocal.tsx`).
-- Les Tabs de l'étape 1 utilisent `<Tabs>` Shadcn (déjà utilisé dans `SimulationProjectPage.tsx`), valeurs `"project"` / `"local"`.
-- Le paywall (étape 4) réutilise le pattern visuel de `SimulatorPaywall.tsx` existant mais dans un nouveau composant `PaywallCallout` propre au parcours (pas de dépendance croisée).
-- Icônes : Lucide (`Building2`, `MapPin`, `Ruler`, `Clock`, `LayoutGrid`, `Construction`, `DoorOpen`, `Wrench`, `WashingMachine`, `Wind`, `Euro`, `TrendingUp`, `Lock`, `Sparkles`).
-- Responsive : `grid gap-6 md:grid-cols-2` pour les paires de cards, stepper horizontal scrollable sur mobile (`overflow-x-auto`).
-
+- **Créés** : `ProjectDetailsCard.tsx`, `SurfaceCard.tsx`
+- **Renommé** : `SurfaceHoursCard.tsx` → `OpeningHoursCard.tsx` (contenu allégé aux horaires uniquement)
+- **Modifiés** : `ProjectIdentityCard.tsx`, `LocationCard.tsx` (wrapper `Card` retiré → rendent juste leurs `FormField`s), `ProjectInfoForm.tsx`, `LocalConstraintsForm.tsx`, `FormField.tsx`
+- **Supprimés** : aucun (les sous-composants restent, mais deviennent des "sections" de la carte unique)
