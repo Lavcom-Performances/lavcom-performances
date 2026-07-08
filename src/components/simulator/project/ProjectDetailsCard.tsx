@@ -12,16 +12,14 @@ export function ProjectDetailsCard() {
           <Building2 className="h-5 w-5 text-primary" />
           Détails du projet
         </CardTitle>
-        <CardDescription>
-          Ces informations nous aideront à personnaliser votre simulation
-        </CardDescription>
+        <CardDescription>Ces informations nous aideront à personnaliser votre simulation</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <ProjectIdentityCard />
         <LocationCard />
-        <div className="md:w-1/2">
-          <OpeningHoursCard />
-        </div>
+        <OpeningHoursCard />
+        {/*<div className="md:w-1/2">
+        </div>*/}
       </CardContent>
     </Card>
   );
