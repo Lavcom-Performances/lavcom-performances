@@ -3,8 +3,8 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Construction, DoorOpen, LayoutGrid, Wrench } from "lucide-react";
-import { SectionHeading } from "@/components/simulator/layout/SectionHeading";
-import { FormField } from "@/components/simulator/layout/FormField";
+import { TabSectionHeading } from "./TabSectionHeading";
+import { FormField } from "./FormField";
 import { RadioCard } from "./RadioCard";
 import {
   FACADE_OPTIONS,
