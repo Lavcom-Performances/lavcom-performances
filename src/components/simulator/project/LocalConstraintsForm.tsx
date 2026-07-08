@@ -6,6 +6,7 @@ import { Construction, DoorOpen, LayoutGrid, Wrench } from "lucide-react";
 import { TabSectionHeading } from "./TabSectionHeading";
 import { FormField } from "./FormField";
 import { RadioCard } from "./RadioCard";
+import { SurfaceCard } from "./SurfaceCard";
 import {
   FACADE_OPTIONS,
   LOCAL_SHAPES,
@@ -22,6 +23,8 @@ export function LocalConstraintsForm() {
       />
 
       <div className="space-y-6">
+        <SurfaceCard />
+
         <RadioCard
           icon={LayoutGrid}
           title="Forme du local"
