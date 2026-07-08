@@ -16,7 +16,7 @@ import {
 export function LocalConstraintsForm() {
   return (
     <div className="space-y-8">
-      <SectionHeading
+      <TabSectionHeading
         title="Votre local"
         description="Décrivez la configuration et les contraintes de votre futur emplacement"
       />
