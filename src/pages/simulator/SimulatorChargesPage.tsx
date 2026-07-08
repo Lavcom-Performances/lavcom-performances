@@ -1,5 +1,5 @@
-import { SimulatorPageHeader } from "@/components/simulator/shared/SimulatorPageHeader";
-import { SimulatorFooterNav } from "@/components/simulator/shared/SimulatorFooterNav";
+import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
+import { SimulatorFooterNav } from "@/components/simulator/layout/SimulatorFooterNav";
 import { PricingHintBanner } from "@/components/simulator/machines/PricingHintBanner";
 import { FixedCostsCard } from "@/components/simulator/charges/FixedCostsCard";
 import { VariableCostsCard } from "@/components/simulator/charges/VariableCostsCard";

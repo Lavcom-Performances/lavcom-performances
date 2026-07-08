@@ -1,5 +1,5 @@
-import { SimulatorPageHeader } from "@/components/simulator/shared/SimulatorPageHeader";
-import { SimulatorFooterNav } from "@/components/simulator/shared/SimulatorFooterNav";
+import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
+import { SimulatorFooterNav } from "@/components/simulator/layout/SimulatorFooterNav";
 import { ProjectTabs } from "@/components/simulator/project/ProjectTabs";
 
 export default function SimulatorProjectPage() {

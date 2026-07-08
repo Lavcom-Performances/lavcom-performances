@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2 } from "lucide-react";
-import { FormField } from "@/components/simulator/shared/FormField";
+import { FormField } from "@/components/simulator/layout/FormField";
 import { MOCK_PROJECT } from "@/components/simulator/mockData";
 
 export function ProjectIdentityCard() {
