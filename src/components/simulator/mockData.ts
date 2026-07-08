@@ -63,61 +63,7 @@ export const MOCK_BREAKEVEN = {
   cyclesPerDay: 23,
 };
 
-export const FIXED_COST_CATEGORIES = [
-  "Loyer / Charges locatives",
-  "Prêt / Leasing",
-  "Assurance",
-  "Impôt / Taxe",
-  "Salaire / Charges sociales",
-  "Ménage / Entretien",
-  "Autre",
-];
-
-export const ZONE_TYPES = [
-  { value: "urbaine", label: "Zone urbaine dense" },
-  { value: "peri-urbaine", label: "Zone péri-urbaine" },
-  { value: "rurale", label: "Zone rurale" },
-  { value: "commerciale", label: "Zone commerciale" },
-];
-
-export const SURFACE_PRESETS = [
-  { value: "30", label: "30 m² - Petite laverie" },
-  { value: "40", label: "40 m² - Laverie standard" },
-  { value: "60", label: "60 m² - Grande laverie" },
-  { value: "80", label: "80 m² - Très grande laverie" },
-];
-
-export const OPENING_HOURS_PRESETS = [
-  { value: "7-22", label: "7h - 22h (standard)" },
-  { value: "6-23", label: "6h - 23h (étendu)" },
-  { value: "24-7", label: "24h/24 - 7j/7" },
-  { value: "custom", label: "Horaires personnalisés..." },
-];
-
-export const LOCAL_SHAPES = [
-  { value: "rectangular", label: "Rectangulaire, murs plutôt pleins" },
-  { value: "narrow", label: "Long et étroit" },
-  { value: "l-shape", label: "En L / découpé" },
-  { value: "corner", label: "Angle avec beaucoup de vitrines" },
-];
-
-export const STRUCTURAL_OBSTACLES = [
-  { value: "none", label: "Aucun obstacle particulier" },
-  { value: "few", label: "Quelques poteaux / gaines le long des murs" },
-  { value: "many", label: "Plusieurs poteaux / murs porteurs gênants" },
-];
-
-export const FACADE_OPTIONS = [
-  { value: "yes", label: "Oui, il est possible de déposer une vitrine" },
-  { value: "no", label: "Non, façade non modifiable" },
-  { value: "unknown", label: "Je ne sais pas encore" },
-];
-
-export const TECHNICAL_CONSTRAINTS = [
-  { value: "ok", label: "A priori OK (eau, évacuation, puissance, ventilation)" },
-  { value: "check_with_installer", label: "À vérifier avec un installateur" },
-  { value: "heavy_work", label: "Gros travaux à prévoir" },
-];
+// Form option lists moved to src/config/simulatorFormOptions.ts
 
 export const MOCK_PACKS = [
   {

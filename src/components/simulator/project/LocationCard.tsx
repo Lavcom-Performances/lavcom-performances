@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Home, MapPin, Mailbox, Map } from "lucide-react";
 import { FormField } from "./FormField";
-import { ZONE_TYPES } from "@/components/simulator/mockData";
+import { ZONE_TYPES } from "@/config/simulatorFormOptions";
 
 export function LocationCard() {
   return (
