@@ -1,6 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode, Children, cloneElement, isValidElement } from "react";
 import { LucideIcon } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface Props {
   label: string;
@@ -13,8 +14,20 @@ interface Props {
 }
 
 export function FormField({ label, htmlFor, hint, icon: Icon, required, children, className }: Props) {
+  const styledChildren = Children.map(children, (child) => {
+    if (isValidElement(child)) {
+      return cloneElement(child, {
+        className: cn(
+          (child.props as { className?: string }).className,
+          "bg-white shadow-lavcom"
+        ),
+      });
+    }
+    return child;
+  });
+
   return (
-    <div className={`space-y-2 ${className ?? ""}`}>
+    <div className={cn("space-y-2", className)}>
       <Label
         htmlFor={htmlFor}
         className="flex items-center gap-2 text-sm font-medium text-foreground"
@@ -23,7 +36,7 @@ export function FormField({ label, htmlFor, hint, icon: Icon, required, children
         <span>{label}</span>
         {required && <span className="text-destructive">*</span>}
       </Label>
-      {children}
+      {styledChildren}
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
