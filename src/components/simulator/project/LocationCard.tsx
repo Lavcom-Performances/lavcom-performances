@@ -1,12 +1,27 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Home, MapPin, Mailbox, Map } from "lucide-react";
+import { Home, MapPin, Mailbox, Map, Globe } from "lucide-react";
 import { FormField } from "./FormField";
 import { ZONE_TYPES } from "@/config/simulatorFormOptions";
+import { MOCK_PROJECT } from "@/components/simulator/mockData";
 
 export function LocationCard() {
   return (
     <div className="space-y-6">
+      <FormField label="Pays" htmlFor="country" icon={Globe} required>
+        <Select defaultValue="fr">
+          <SelectTrigger id="country">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="fr">
+              <span className="mr-2">{MOCK_PROJECT.countryFlag}</span>
+              {MOCK_PROJECT.country}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </FormField>
+
       <FormField
         label="Adresse du local"
         htmlFor="address"
