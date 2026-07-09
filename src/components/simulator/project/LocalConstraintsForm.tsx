@@ -46,7 +46,7 @@ export function LocalConstraintsForm() {
         <div className="grid gap-6 md:grid-cols-2">
           <FormCard className="">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
+              <CardTitle className="flex items-center gap-2">
                 <DoorOpen className="h-5 w-5 text-primary" />
                 Accès au local
               </CardTitle>

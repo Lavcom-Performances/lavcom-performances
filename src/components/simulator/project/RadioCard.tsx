@@ -21,7 +21,7 @@ export function RadioCard({ icon: Icon, title, description, options, defaultValu
   return (
     <FormCard className="">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
+        <CardTitle className="flex items-center gap-2">
           <Icon className="h-5 w-5 text-primary" />
           {title}
         </CardTitle>
