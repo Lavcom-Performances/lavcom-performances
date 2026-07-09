@@ -6,7 +6,7 @@ import { OpeningHoursCard } from "./OpeningHoursCard";
 
 export function ProjectDetailsCard() {
   return (
-    <Card className="shadow-card">
+    <Card className="shadow-form">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading text-2xl font-bold tracking-tight text-foreground">
           <Building2 className="h-5 w-5 text-primary" />
