@@ -6,7 +6,7 @@ import { MOCK_REVENUE } from "@/components/simulator/mockData";
 
 export function ResultsHeroKpis() {
   return (
-    <Card>
+    <Card className="shadow-form">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Euro className="h-5 w-5 text-primary" />

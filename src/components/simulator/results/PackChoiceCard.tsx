@@ -13,8 +13,8 @@ export function PackChoiceCard({ name, price, features, highlight }: Props) {
   return (
     <Card
       className={cn(
-        "relative flex flex-col",
-        highlight && "border-primary shadow-lg ring-2 ring-primary/30"
+        "relative flex flex-col shadow-form",
+        highlight && "border-primary ring-2 ring-primary/30"
       )}
     >
       {highlight && (

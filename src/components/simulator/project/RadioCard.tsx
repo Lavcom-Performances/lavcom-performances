@@ -19,7 +19,7 @@ interface Props {
 
 export function RadioCard({ icon: Icon, title, description, options, defaultValue, name }: Props) {
   return (
-    <Card>
+    <Card className="shadow-form">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Icon className="h-5 w-5 text-primary" />

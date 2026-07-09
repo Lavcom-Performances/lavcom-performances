@@ -6,7 +6,7 @@ import { MOCK_WASHERS, MOCK_REVENUE } from "@/components/simulator/mockData";
 
 export function WashersConfigCard() {
   return (
-    <Card>
+    <Card className="shadow-form">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <WashingMachine className="h-5 w-5 text-primary" />

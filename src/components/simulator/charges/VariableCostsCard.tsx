@@ -6,7 +6,7 @@ import { MOCK_VARIABLE_COSTS, MOCK_VARIABLE_TOTAL_PERCENT } from "@/components/s
 
 export function VariableCostsCard() {
   return (
-    <Card>
+    <Card className="shadow-form">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <TrendingUp className="h-5 w-5 text-primary" />
