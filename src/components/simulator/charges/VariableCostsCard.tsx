@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { Button } from "@/components/ui/button";
 import { Plus, TrendingUp } from "lucide-react";
 import { CostRow } from "./CostRow";
@@ -6,7 +6,7 @@ import { MOCK_VARIABLE_COSTS, MOCK_VARIABLE_TOTAL_PERCENT } from "@/components/s
 
 export function VariableCostsCard() {
   return (
-    <Card className="shadow-form">
+    <FormCard className="">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <TrendingUp className="h-5 w-5 text-primary" />
@@ -40,6 +40,6 @@ export function VariableCostsCard() {
           équipements.
         </p>
       </CardContent>
-    </Card>
+    </FormCard>
   );
 }

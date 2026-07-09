@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { Button } from "@/components/ui/button";
 import { Plus, WashingMachine } from "lucide-react";
 import { MachineCounter } from "./MachineCounter";
@@ -6,7 +6,7 @@ import { MOCK_WASHERS, MOCK_REVENUE } from "@/components/simulator/mockData";
 
 export function WashersConfigCard() {
   return (
-    <Card className="shadow-form">
+    <FormCard className="">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <WashingMachine className="h-5 w-5 text-primary" />
@@ -29,6 +29,6 @@ export function WashersConfigCard() {
           </span>
         </div>
       </CardContent>
-    </Card>
+    </FormCard>
   );
 }

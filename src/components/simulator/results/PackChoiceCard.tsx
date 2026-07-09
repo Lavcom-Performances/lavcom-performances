@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { FormCard, CardContent } from "@/components/ui/form-card";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -11,9 +11,9 @@ interface Props {
 
 export function PackChoiceCard({ name, price, features, highlight }: Props) {
   return (
-    <Card
+    <FormCard
       className={cn(
-        "relative flex flex-col shadow-form",
+        "relative flex flex-col",
         highlight && "border-primary ring-2 ring-primary/30"
       )}
     >
@@ -36,6 +36,6 @@ export function PackChoiceCard({ name, price, features, highlight }: Props) {
           ))}
         </ul>
       </CardContent>
-    </Card>
+    </FormCard>
   );
 }

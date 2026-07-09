@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { FormCard, CardContent } from "@/components/ui/form-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight } from "lucide-react";
@@ -14,7 +14,7 @@ interface Props {
 
 export function MachineCounter({ capacity, count, price, cyclesPerDay, monthlyRevenue }: Props) {
   return (
-    <Card className="border-border bg-muted/20 shadow-form">
+    <FormCard className="border-border bg-muted/20">
       <CardContent className="grid gap-3 p-4 md:grid-cols-[100px_1fr_1fr_1fr_auto] md:items-end">
         <div>
           <div className="text-lg font-semibold text-foreground">{capacity} kg</div>
@@ -36,6 +36,6 @@ export function MachineCounter({ capacity, count, price, cyclesPerDay, monthlyRe
           <Input type="number" defaultValue={cyclesPerDay} />
         </div>
       </CardContent>
-    </Card>
+    </FormCard>
   );
 }

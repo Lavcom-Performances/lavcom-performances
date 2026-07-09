@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { LucideIcon } from "lucide-react";
@@ -19,7 +19,7 @@ interface Props {
 
 export function RadioCard({ icon: Icon, title, description, options, defaultValue, name }: Props) {
   return (
-    <Card className="shadow-form">
+    <FormCard className="">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Icon className="h-5 w-5 text-primary" />
@@ -42,6 +42,6 @@ export function RadioCard({ icon: Icon, title, description, options, defaultValu
           ))}
         </RadioGroup>
       </CardContent>
-    </Card>
+    </FormCard>
   );
 }

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -44,7 +44,7 @@ export function LocalConstraintsForm() {
         />
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="shadow-form">
+          <FormCard className="">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <DoorOpen className="h-5 w-5 text-primary" />
@@ -79,7 +79,7 @@ export function LocalConstraintsForm() {
                 </RadioGroup>
               </div>
             </CardContent>
-          </Card>
+          </FormCard>
 
           <RadioCard
             icon={Wrench}

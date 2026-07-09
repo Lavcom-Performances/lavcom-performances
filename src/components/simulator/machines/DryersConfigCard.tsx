@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { Button } from "@/components/ui/button";
 import { Plus, Wind } from "lucide-react";
 import { MachineCounter } from "./MachineCounter";
@@ -6,7 +6,7 @@ import { MOCK_DRYERS, MOCK_REVENUE } from "@/components/simulator/mockData";
 
 export function DryersConfigCard() {
   return (
-    <Card className="shadow-form">
+    <FormCard className="">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Wind className="h-5 w-5 text-primary" />
@@ -29,6 +29,6 @@ export function DryersConfigCard() {
           </span>
         </div>
       </CardContent>
-    </Card>
+    </FormCard>
   );
 }

@@ -1,11 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormCard, CardContent, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Ruler } from "lucide-react";
 import { SURFACE_PRESETS } from "@/config/simulatorFormOptions";
 
 export function SurfaceCard() {
   return (
-    <Card className="shadow-form">
+    <FormCard className="">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading text-2xl font-bold tracking-tight text-foreground">
           <Ruler className="h-5 w-5 text-primary" />
@@ -27,6 +27,6 @@ export function SurfaceCard() {
           </SelectContent>
         </Select>
       </CardContent>
-    </Card>
+    </FormCard>
   );
 }
