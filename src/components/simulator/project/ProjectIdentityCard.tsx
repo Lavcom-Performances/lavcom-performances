@@ -11,11 +11,11 @@ export function ProjectIdentityCard() {
         <FormField label="Nom du projet" htmlFor="project-name" icon={Store} required>
           <Input id="project-name" defaultValue={MOCK_PROJECT.projectName} />
         </FormField>
-        <FormField label="Nom du scénario" htmlFor="scenario-name" icon={ClipboardPenLine}>
+        <FormField label="Nom du scénario" htmlFor="scenario-name" icon={ClipboardPenLine} required>
           <Input id="scenario-name" defaultValue={MOCK_PROJECT.scenarioName} />
         </FormField>
       </div>
-      <FormField label="Pays" htmlFor="country" icon={Globe}>
+      <FormField label="Pays" htmlFor="country" icon={Globe} required>
         <Select defaultValue="fr">
           <SelectTrigger id="country">
             <SelectValue />
