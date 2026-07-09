@@ -10,7 +10,7 @@ import type {
   SurfacePresetOption,
   TechnicalConstraintOption,
   ZoneTypeOption,
-} from "./simulatorFormOptions.types";
+} from "@/types/simulatorFormOptions.types";
 
 export const ZONE_TYPES: readonly ZoneTypeOption[] = [
   { value: "urbaine", label: "Zone urbaine dense" },
