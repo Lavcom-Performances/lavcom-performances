@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { Button } from "@/components/ui/button";
 import { Plus, Receipt } from "lucide-react";
 import { CostRow } from "./CostRow";
@@ -6,7 +6,7 @@ import { MOCK_FIXED_COSTS, MOCK_FIXED_TOTAL } from "@/components/simulator/mockD
 
 export function FixedCostsCard() {
   return (
-    <Card className="shadow-form">
+    <FormCard className="">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Receipt className="h-5 w-5 text-primary" />
@@ -42,6 +42,6 @@ export function FixedCostsCard() {
           </span>
         </div>
       </CardContent>
-    </Card>
+    </FormCard>
   );
 }
