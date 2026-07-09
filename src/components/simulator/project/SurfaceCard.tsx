@@ -7,7 +7,7 @@ export function SurfaceCard() {
   return (
     <FormCard className="">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 font-heading text-2xl font-bold tracking-tight text-foreground">
+        <CardTitle className="flex items-center gap-2 font-heading text-lg font-bold tracking-tight text-foreground">
           <Ruler className="h-5 w-5 text-primary" />
           Surface du local
           <span className="text-sm font-medium text-destructive">*</span>
