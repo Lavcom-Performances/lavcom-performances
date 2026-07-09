@@ -6,7 +6,7 @@ import { MOCK_FIXED_COSTS, MOCK_FIXED_TOTAL } from "@/components/simulator/mockD
 
 export function FixedCostsCard() {
   return (
-    <Card>
+    <Card className="shadow-form">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Receipt className="h-5 w-5 text-primary" />

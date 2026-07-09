@@ -14,7 +14,7 @@ interface Props {
 
 export function MachineCounter({ capacity, count, price, cyclesPerDay, monthlyRevenue }: Props) {
   return (
-    <Card className="border-border bg-muted/20">
+    <Card className="border-border bg-muted/20 shadow-form">
       <CardContent className="grid gap-3 p-4 md:grid-cols-[100px_1fr_1fr_1fr_auto] md:items-end">
         <div>
           <div className="text-lg font-semibold text-foreground">{capacity} kg</div>

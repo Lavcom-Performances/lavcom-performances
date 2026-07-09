@@ -5,7 +5,7 @@ import { SURFACE_PRESETS } from "@/config/simulatorFormOptions";
 
 export function SurfaceCard() {
   return (
-    <Card>
+    <Card className="shadow-form">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading text-2xl font-bold tracking-tight text-foreground">
           <Ruler className="h-5 w-5 text-primary" />

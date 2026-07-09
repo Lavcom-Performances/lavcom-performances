@@ -1,30 +1,34 @@
-## Plan : Créer un token de box-shadow réutilisable
+## Objectif
+Harmoniser l'apparence des cartes du simulateur en appliquant la classe `shadow-form` sur toutes les cartes de section principales et sous-cartes, sans toucher aux callouts colorés qui ont déjà un traitement visuel distinctif.
 
-### Fichiers concernés
-1. `tailwind.config.ts`
-2. `src/components/simulator/project/FormField.tsx`
+## Cartes modifiées (ajout de `shadow-form`)
 
-### Changements
+**Project**
+- `src/components/simulator/project/ProjectDetailsCard.tsx` — déjà présent, aucun changement
+- `src/components/simulator/project/SurfaceCard.tsx` — `<Card>` → `<Card className="shadow-form">`
+- `src/components/simulator/project/RadioCard.tsx` — `<Card>` → conserver classes existantes + `shadow-form`
+- `src/components/simulator/project/LocalConstraintsForm.tsx` (l.47) — `<Card>` → `<Card className="shadow-form">`
 
-#### 1. `tailwind.config.ts`
-Ajouter un nouveau token `shadow-form` dans la section `boxShadow` :
-```
-'shadow-form': '1px 2px 2px 0px rgba(0, 0, 0, 0.1)',
-```
+**Machines**
+- `src/components/simulator/machines/WashersConfigCard.tsx`
+- `src/components/simulator/machines/DryersConfigCard.tsx`
+- `src/components/simulator/machines/MachineCounter.tsx` — conserver `border-border bg-muted/20` + ajouter `shadow-form`
 
-Paramètres :
-- X = 1px
-- Y = 2px
-- Blur = 2px
-- Spread = 0px
-- Couleur = #000000 10%
+**Charges**
+- `src/components/simulator/charges/FixedCostsCard.tsx`
+- `src/components/simulator/charges/VariableCostsCard.tsx`
 
-#### 2. `src/components/simulator/project/FormField.tsx`
-Remplacer `shadow-card` par `shadow-form` aux deux points d'injection (enfant direct et `SelectTrigger` imbriqué).
+**Résultats**
+- `src/components/simulator/results/ResultsHeroKpis.tsx`
+- `src/components/simulator/results/ResultsSummaryCard.tsx`
+- `src/components/simulator/results/PartialInsightsList.tsx`
+- `src/components/simulator/results/PackChoiceCard.tsx` (si présent, à vérifier au moment de l'édition)
 
-### Pourquoi
-Le token `shadow-card` est un shadow générique (0 1px 3px…). Un token dédié `shadow-form` permet de centraliser la définition exacte demandée et de la réutiliser sur d'autres composants sans duplication de classes arbitraires.
+## Cartes exclues (callouts colorés)
+- `PaywallCallout.tsx` (bordure/gradient primary)
+- `GuideCallout.tsx` (bordure/fond orange)
+- `ChargesTotalsBanner.tsx` (bordure/fond primary)
+- `MachineMixSummary.tsx` (bordure/fond primary)
 
-### Validation
-- `bun run build` pour confirmer la compilation.
-- Vérification visuelle que l'ombre fine noire s'applique correctement aux champs de formulaire.
+## Validation
+- `bun run build` pour s'assurer que rien ne casse.
