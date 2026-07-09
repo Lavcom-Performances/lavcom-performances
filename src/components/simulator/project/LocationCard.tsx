@@ -11,6 +11,7 @@ export function LocationCard() {
         label="Adresse du local"
         htmlFor="address"
         icon={Home}
+        required
         hint="💡 Sélectionnez une adresse dans la liste pour remplir automatiquement la ville et le code postal"
       >
         <Input id="address" placeholder="Tapez et sélectionnez une adresse..." />
@@ -20,7 +21,7 @@ export function LocationCard() {
         <FormField label="Ville" htmlFor="city" icon={MapPin} required hint="Rempli automatiquement">
           <Input id="city" placeholder="Rechercher une ville..." defaultValue="Lyon" />
         </FormField>
-        <FormField label="Code postal" htmlFor="zip" icon={Mailbox} hint="Rempli automatiquement">
+        <FormField label="Code postal" htmlFor="zip" icon={Mailbox} required hint="Rempli automatiquement">
           <Input id="zip" placeholder="Ex: 75001" defaultValue="69003" className="opacity-50" />
         </FormField>
       </div>
