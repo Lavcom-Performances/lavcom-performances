@@ -1,99 +1,60 @@
-Créer le fichier `docs/plans/parcours-simulateur-enregistrement.md` contenant le plan complet du parcours « Simuler → Enregistrer → Payer → Récupérer », pour archivage et consultation ultérieure.
-
-## Contenu du fichier
-
-```markdown
-# Parcours « Simuler → Enregistrer → Payer → Récupérer »
-
 ## Objectif
 
-Permettre à un visiteur **non connecté** d'utiliser le simulateur payant (`/simulation`), de cliquer « Enregistrer ma synthèse » sur la page Résultats, puis d'être guidé : choix du pack → création de compte → paiement Stripe → réception de la synthèse par mail + accès à ses simulations dans son dashboard.
+Résoudre le conflit `shadow-sm` (base `Card` shadcn) vs `shadow-form` en créant un composant dédié aux cartes du simulateur, sans toucher au `Card` de base.
 
-## Flow cible
+## Cause du bug
 
-​```text
-/simulation (libre, non connecté)
-   └─ Étapes 0→4 (state local + localStorage)
-        └─ Étape Résultats
-             └─ [Bouton "Enregistrer ma synthèse"]
-                  ├─ Sauvegarde brouillon localStorage (pending_simulation)
-                  └─ Redirige → /subscribe-simulator?return=save
-                       └─ Choix d'un pack
-                            ├─ Si non connecté → /signup?pack=XXX&next=checkout
-                            │     └─ Création compte (email+password ou Google)
-                            │     └─ Email de confirmation
-                            │     └─ Après login → reprise auto checkout pack XXX
-                            └─ Si connecté → checkout Stripe direct
-                                 └─ Stripe Checkout (mode=payment)
-                                      └─ /billing/success
-                                           ├─ Hydrate entitlements
-                                           ├─ Lit pending_simulation
-                                           ├─ INSERT simulation_projects
-                                           ├─ Edge "send-simulation-summary" → email PDF
-                                           └─ Redirige → /simulation/mes-projets
-​```
-
-## Changements techniques
-
-### 1. Base de données
-Table `public.simulation_projects` (`user_id`, `name`, `project` jsonb, `results_snapshot` jsonb, `deleted_at`). RLS `auth.uid() = user_id`. Trigger BEFORE INSERT : force `user_id` et vérifie quota `profiles.max_projects`.
-
-### 2. StepResults
-Bouton « Enregistrer ma synthèse » toujours visible :
-- Non connecté / sans accès payant → `localStorage.pending_simulation` + redirect `/subscribe-simulator?return=save`
-- Connecté + accès actif → `useSimulationProjects().save()` direct
-
-### 3. SubscribeSimulator
-- Bandeau si `?return=save`
-- Si non connecté au clic pack → `/signup?pack=<id>&next=checkout`
-
-### 4. Signup / Login
-- Page `/signup` (email+password + Google)
-- Lit `?pack` et `?next` ; après login auto → invoque `create-simulator-checkout` → Stripe
-- Lien « Déjà un compte ? » → `/login` avec mêmes paramètres
-
-### 5. BillingSuccess
-Après hydratation entitlements :
-1. Lire `localStorage.pending_simulation`
-2. Save dans `simulation_projects`
-3. Invoke edge `send-simulation-summary`
-4. Clear localStorage
-5. Redirect `/simulation/mes-projets`
-
-### 6. Edge function `send-simulation-summary`
-JWT user, input `simulation_id`, génère PDF, envoie via Resend, log `system_events`.
-
-### 7. Hook `useSimulationProjects`
-`list()`, `save()`, `remove()`, `rename()`. Remplace le `projectsUsed = 0` hardcodé dans `useSimulatorAccess`.
-
-### 8. Page `/simulation/mes-projets`
-Liste des simulations, quota, actions Voir/Renommer/Supprimer/PDF. Entrée sidebar.
-
-### 9. `/simulation?id=<uuid>`
-Charge depuis `simulation_projects` au lieu de localStorage.
-
-## Hors scope
-- Migration auto localStorage existant → compte
-- Partage public d'une simulation
-- `EmailCaptureModal` (free) inchangé
-- Guest checkout Stripe désactivé pour ce parcours
-
-## Détails techniques
-- `localStorage.pending_simulation` = `{ project, results, ts }`, TTL 24h
-- Reprise post-signup via `sessionStorage.post_auth_action`
-- Email confirmation requis (pas d'auto-confirm)
-- Google OAuth `redirectTo` = `/auth/callback?pack=&next=checkout`
-- Si quota atteint → proposer add-on `+1 Projet`
-
-## Risques à valider
-1. Confirmation email retarde la reprise checkout — magic link envisageable ?
-2. PDF côté serveur (Deno jsPDF) vs client (génération à `/billing/success` puis upload)
-3. Alignement des routes (`/signup`, `/auth/callback`, `/simulation/mes-projets`)
-```
+Le `Card` shadcn applique `shadow-sm` en dur. `tailwind-merge` ne reconnaît pas la clé custom `form` dans le groupe `shadow`, donc `shadow-sm` et `shadow-form` cohabitent et `shadow-sm` gagne dans la CSS générée. Sur les inputs, pas de `shadow-sm` de base → `shadow-form` s'applique.
 
 ## Étapes
-1. Créer le dossier `docs/plans/` s'il n'existe pas
-2. Écrire le fichier markdown ci-dessus
 
-## Hors scope
-Aucune modification de code applicatif, aucune migration de base. Seule la documentation est ajoutée.
+### 1. Créer `src/components/ui/form-card.tsx`
+
+Nouveau composant `FormCard` qui wrappe la même structure que `Card` mais avec `shadow-form` en base au lieu de `shadow-sm`. Réexporte les sous-composants existants (`CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`) pour usage identique.
+
+```tsx
+import * as React from "react";
+import { cn } from "@/lib/utils";
+
+const FormCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("rounded-lg border bg-card text-card-foreground shadow-form", className)}
+      {...props}
+    />
+  ),
+);
+FormCard.displayName = "FormCard";
+
+export { FormCard };
+export { CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./card";
+```
+
+### 2. Remplacer `Card` par `FormCard` dans les 12 fichiers du simulateur
+
+Pour chacun : changer l'import (`Card` → `FormCard` depuis `@/components/ui/form-card`) et le JSX (`<Card>` → `<FormCard>`). Retirer la classe `shadow-form` désormais redondante ajoutée à l'étape précédente. Conserver les autres classes (`border-primary`, `bg-muted/20`, etc.).
+
+Fichiers :
+- `src/components/simulator/project/SurfaceCard.tsx`
+- `src/components/simulator/project/RadioCard.tsx`
+- `src/components/simulator/project/LocalConstraintsForm.tsx`
+- `src/components/simulator/machines/WashersConfigCard.tsx`
+- `src/components/simulator/machines/DryersConfigCard.tsx`
+- `src/components/simulator/machines/MachineCounter.tsx`
+- `src/components/simulator/charges/FixedCostsCard.tsx`
+- `src/components/simulator/charges/VariableCostsCard.tsx`
+- `src/components/simulator/results/ResultsHeroKpis.tsx`
+- `src/components/simulator/results/ResultsSummaryCard.tsx`
+- `src/components/simulator/results/PartialInsightsList.tsx`
+- `src/components/simulator/results/PackChoiceCard.tsx`
+
+### 3. Vérification
+
+- `bun run build` doit passer.
+- Contrôle visuel : les cartes du simulateur affichent bien l'ombre douce (X:1, Y:2, Blur:2, #000 10%), identique à celle des champs de formulaire.
+- Le reste de l'app (dashboard, settings, etc.) reste inchangé — aucun risque de régression puisque `Card` n'est pas modifié.
+
+## Détails techniques
+
+`FormCard` réexporte les sous-composants pour minimiser la duplication et permettre un import unique par fichier. Aucune modification à `card.tsx`, `tailwind.config.ts`, ou `lib/utils.ts`.
