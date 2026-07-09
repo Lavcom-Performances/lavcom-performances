@@ -90,6 +90,7 @@ export default {
       boxShadow: {
         'card': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
         'lavcom': '0 4px 14px 0 rgba(163, 198, 21, 0.15)',
+        'form': '1px 2px 2px 0px rgba(0, 0, 0, 0.1)',
       },
       keyframes: {
         "accordion-down": {
