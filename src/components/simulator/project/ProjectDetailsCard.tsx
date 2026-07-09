@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { Building2 } from "lucide-react";
 import { ProjectIdentityCard } from "./ProjectIdentityCard";
 import { LocationCard } from "./LocationCard";
@@ -6,7 +6,7 @@ import { OpeningHoursCard } from "./OpeningHoursCard";
 
 export function ProjectDetailsCard() {
   return (
-    <Card className="shadow-form">
+    <FormCard className="shadow-form">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading text-2xl font-bold tracking-tight text-foreground">
           <Building2 className="h-5 w-5 text-primary" />
@@ -19,6 +19,6 @@ export function ProjectDetailsCard() {
         <LocationCard />
         <OpeningHoursCard />
       </CardContent>
-    </Card>
+    </FormCard>
   );
 }
