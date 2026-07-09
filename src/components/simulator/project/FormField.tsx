@@ -21,7 +21,7 @@ function injectStyle(node: ReactNode): ReactNode {
 
   // Apply style to the node itself (Input, Textarea, etc.)
   const styledNode = cloneElement(node, {
-    className: cn(nodeProps.className, "bg-white shadow-card"),
+    className: cn(nodeProps.className, "bg-white shadow-form"),
   });
 
   // Recursively style nested children (e.g. SelectTrigger inside Select)
@@ -31,7 +31,7 @@ function injectStyle(node: ReactNode): ReactNode {
         return cloneElement(child, {
           className: cn(
             (child.props as { className?: string }).className,
-            "bg-white shadow-card"
+            "bg-white shadow-form"
           ),
         });
       }
