@@ -60,7 +60,7 @@ export function LocalConstraintsForm() {
                 htmlFor="door-width"
                 hint="Une largeur inférieure à 90 cm peut compliquer l'installation de gros équipements"
               >
-                <Input id="door-width" type="number" defaultValue={90} />
+                <Input id="door-width" type="number" defaultValue={90} className="bg-white shadow-form" />
               </FormField>
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Façade modifiable ?</Label>

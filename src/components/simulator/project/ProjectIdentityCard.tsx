@@ -7,10 +7,10 @@ export function ProjectIdentityCard() {
   return (
     <div className="grid gap-5 md:grid-cols-2">
       <FormField label="Nom du projet" htmlFor="project-name" icon={Store} required>
-        <Input id="project-name" defaultValue={MOCK_PROJECT.projectName} />
+        <Input id="project-name" defaultValue={MOCK_PROJECT.projectName} className="bg-white shadow-form" />
       </FormField>
       <FormField label="Nom du scénario" htmlFor="scenario-name" icon={ClipboardPenLine} required>
-        <Input id="scenario-name" defaultValue={MOCK_PROJECT.scenarioName} />
+        <Input id="scenario-name" defaultValue={MOCK_PROJECT.scenarioName} className="bg-white shadow-form" />
       </FormField>
     </div>
   );

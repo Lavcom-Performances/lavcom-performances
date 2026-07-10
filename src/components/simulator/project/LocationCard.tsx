@@ -10,7 +10,7 @@ export function LocationCard() {
     <div className="space-y-6">
       <FormField label="Pays" htmlFor="country" icon={Globe} required>
         <Select defaultValue="fr">
-          <SelectTrigger id="country">
+          <SelectTrigger id="country" className="bg-white shadow-form">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -33,21 +33,21 @@ export function LocationCard() {
         required
         hint="💡 Sélectionnez une adresse dans la liste pour remplir automatiquement la ville et le code postal"
       >
-        <Input id="address" placeholder="Tapez et sélectionnez une adresse..." />
+        <Input id="address" placeholder="Tapez et sélectionnez une adresse..." className="bg-white shadow-form" />
       </FormField>
 
       <div className="grid gap-5 md:grid-cols-2">
         <FormField label="Ville" htmlFor="city" icon={MapPin} required hint="Rempli automatiquement">
-          <Input id="city" placeholder="Rechercher une ville..." defaultValue="Lyon" />
+          <Input id="city" placeholder="Rechercher une ville..." defaultValue="Lyon" className="bg-white shadow-form" />
         </FormField>
         <FormField label="Code postal" htmlFor="zip" icon={Mailbox} required hint="Rempli automatiquement">
-          <Input id="zip" placeholder="Ex: 75001" defaultValue="69003" className="opacity-50" />
+          <Input id="zip" placeholder="Ex: 75001" defaultValue="69003" className="bg-white shadow-form opacity-50" />
         </FormField>
       </div>
 
       <FormField label="Type de zone" htmlFor="zone" icon={Map} required>
         <Select>
-          <SelectTrigger id="zone">
+          <SelectTrigger id="zone" className="bg-white shadow-form">
             <SelectValue placeholder="Sélectionnez un type de zone" />
           </SelectTrigger>
           <SelectContent>
