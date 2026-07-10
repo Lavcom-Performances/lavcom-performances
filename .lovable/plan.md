@@ -1,25 +1,27 @@
-# Déplacement de `SimulatorLayout.tsx`
-
 ## Objectif
-Déplacer `src/components/simulator/layout/SimulatorLayout.tsx` vers `src/components/layout/SimulatorLayout.tsx` et mettre à jour les imports.
+Modifier `SurfaceCard.tsx` pour remplacer le `Select` par un champ de saisie manuelle (`Input`) encapsulé dans le composant `FormField`, tout en conservant la structure de carte `FormCard`.
 
-## Étapes
+## Fichiers concernés
+- `src/components/simulator/project/SurfaceCard.tsx`
 
-1. **Déplacer le fichier** via `mv` :
-   - `src/components/simulator/layout/SimulatorLayout.tsx` → `src/components/layout/SimulatorLayout.tsx`
+## Détails d'implémentation
 
-2. **Vérifier les imports internes du fichier déplacé**
-   Le fichier importe :
-   - `SimulatorStepper` depuis `@/components/simulator/layout/SimulatorStepper` — chemin absolu (`@/`), reste valide après le déplacement. Aucun changement.
+### SurfaceCard.tsx
+- **Conserver** l'import de `FormCard`, `CardHeader`, `CardTitle`, `CardContent` depuis `@/components/ui/form-card`.
+- **Conserver** l'import de l'icône `Ruler` depuis `lucide-react` pour le titre de la carte.
+- **Remplacer** les imports liés à `Select` par l'import de `Input` depuis `@/components/ui/input`.
+- **Ajouter** l'import de `FormField` depuis `./FormField`.
+- **Retirer** l'import de `SURFACE_PRESETS`.
+- **Remplacer** le contenu du composant :
+  - Garder la structure `FormCard` > `CardHeader` > `CardTitle` avec l'icône `Ruler`.
+  - Dans `CardContent`, utiliser `FormField` avec les props suivantes :
+    - `label="Surface totale du local en m²"`
+    - `htmlFor="surface"`
+    - `required={true}`
+    - Aucune prop `hint` ni `icon`.
+  - Le `FormField` doit encapsuler un `Input` de type `number` avec `id="surface"` et `placeholder="Ex: 40"`.
+  - **Ajouter** un `<span>` immédiatement après le `Input` (dans le même conteneur flex) pour afficher "m²" (avec le caractère Unicode ² directement, pas de balise `<sup>`).
 
-3. **Mettre à jour le seul consommateur** (`src/App.tsx`, ligne 97) :
-   ```ts
-   import SimulatorLayout from "@/components/layout/SimulatorLayout";
-   ```
-
-4. **Validation**
-   - `rg -n "simulator/layout/SimulatorLayout"` doit retourner 0 résultat.
-   - `bun run build` doit passer.
-
-## Portée
-Aucun autre fichier n'importe `SimulatorLayout` (vérifié via ripgrep). Les autres fichiers du dossier `src/components/simulator/layout/` (`SimulatorStepper`, `SimulatorPageHeader`, `SimulatorFooterNav`) restent en place.
+### Validation
+- Exécuter `bun run build` pour vérifier l'absence d'erreurs de compilation.
+- Vérifier visuellement que la carte affiche correctement le champ numérique avec l'unité "m²" à côté.

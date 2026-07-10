@@ -1,7 +1,7 @@
 import { FormCard, CardContent, CardHeader, CardTitle } from "@/components/ui/form-card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Ruler } from "lucide-react";
-import { SURFACE_PRESETS } from "@/config/simulatorFormOptions";
+import { FormField } from "./FormField";
 
 export function SurfaceCard() {
   return (
@@ -14,18 +14,12 @@ export function SurfaceCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Select defaultValue="40">
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {SURFACE_PRESETS.map((s) => (
-              <SelectItem key={s.value} value={s.value}>
-                {s.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <FormField label="Surface totale du local en m²" htmlFor="surface" required>
+          <div className="flex items-center gap-2">
+            <Input id="surface" type="number" placeholder="Ex: 40" />
+            <span className="text-sm text-muted-foreground shrink-0">m²</span>
+          </div>
+        </FormField>
       </CardContent>
     </FormCard>
   );
