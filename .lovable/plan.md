@@ -1,32 +1,25 @@
+# Déplacement de `SimulatorLayout.tsx`
+
 ## Objectif
+Déplacer `src/components/simulator/layout/SimulatorLayout.tsx` vers `src/components/layout/SimulatorLayout.tsx` et mettre à jour les imports.
 
-Dans `src/components/simulator/project/SurfaceCard.tsx`, remplacer le `Select` brut par le composant `FormField` custom (`src/components/simulator/project/FormField.tsx`) avec un `<Input />` numérique en enfant, pour permettre à l'utilisateur de saisir manuellement la surface de sa laverie en m².
+## Étapes
 
-## Changements
+1. **Déplacer le fichier** via `mv` :
+   - `src/components/simulator/layout/SimulatorLayout.tsx` → `src/components/layout/SimulatorLayout.tsx`
 
-**Fichier modifié :** `src/components/simulator/project/SurfaceCard.tsx`
+2. **Vérifier les imports internes du fichier déplacé**
+   Le fichier importe :
+   - `SimulatorStepper` depuis `@/components/simulator/layout/SimulatorStepper` — chemin absolu (`@/`), reste valide après le déplacement. Aucun changement.
 
-- Supprimer les imports `Select`, `SelectContent`, `SelectItem`, `SelectTrigger`, `SelectValue` et `SURFACE_PRESETS`.
-- Supprimer le `CardHeader` / `CardTitle` actuel (le label + icône + astérisque sont désormais portés par `FormField`).
-- Conserver `FormCard` + `CardContent` comme conteneur.
-- Utiliser `FormField` avec :
-  - `label="Surface du local"`
-  - `icon={Ruler}`
-  - `required`
-  - `htmlFor="surface"`
-  - `hint="Surface totale en m² (ex : 45)"`
-- Enfant : `<Input id="surface" type="number" min={1} placeholder="Ex : 45" />` avec suffixe `m²` via un wrapper `relative` (ou un simple `<span>` à côté).
+3. **Mettre à jour le seul consommateur** (`src/App.tsx`, ligne 97) :
+   ```ts
+   import SimulatorLayout from "@/components/layout/SimulatorLayout";
+   ```
 
-## Détails techniques
+4. **Validation**
+   - `rg -n "simulator/layout/SimulatorLayout"` doit retourner 0 résultat.
+   - `bun run build` doit passer.
 
-- `FormField` injecte automatiquement `bg-white shadow-form` sur son enfant direct (`Input`), donc pas de style à ajouter.
-- Composant non contrôlé pour l'instant (`defaultValue="40"` initial retiré, ou converti en `defaultValue={40}` sur l'Input) — pas de logique de state ajoutée, conforme au reste du fichier actuel qui n'a pas de handler.
-- Aucun autre fichier n'importe `SURFACE_PRESETS` via `SurfaceCard`, donc suppression sans impact.
-
-## Rendu attendu
-
-```
-[Ruler] Surface du local *
-[  45          ] m²
-Surface totale en m² (ex : 45)
-```
+## Portée
+Aucun autre fichier n'importe `SimulatorLayout` (vérifié via ripgrep). Les autres fichiers du dossier `src/components/simulator/layout/` (`SimulatorStepper`, `SimulatorPageHeader`, `SimulatorFooterNav`) restent en place.

@@ -1,27 +1,31 @@
-import { FormCard, CardContent } from "@/components/ui/form-card";
-import { Input } from "@/components/ui/input";
+import { FormCard, CardContent, CardHeader, CardTitle } from "@/components/ui/form-card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Ruler } from "lucide-react";
-import { FormField } from "./FormField";
+import { SURFACE_PRESETS } from "@/config/simulatorFormOptions";
 
 export function SurfaceCard() {
   return (
-    <FormCard>
-      <CardContent className="pt-6">
-        <FormField
-          label="Surface du local"
-          htmlFor="surface"
-          icon={Ruler}
-          required
-          hint="Surface totale en m² (ex : 45)"
-        >
-          <Input
-            id="surface"
-            type="number"
-            min={1}
-            defaultValue={40}
-            placeholder="Ex : 45 m²"
-          />
-        </FormField>
+    <FormCard className="">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Ruler className="h-5 w-5 text-primary" />
+          Surface du local
+          <span className="text-sm font-medium text-destructive">*</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Select defaultValue="40">
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {SURFACE_PRESETS.map((s) => (
+              <SelectItem key={s.value} value={s.value}>
+                {s.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </CardContent>
     </FormCard>
   );
