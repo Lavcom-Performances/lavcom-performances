@@ -30,7 +30,6 @@ export function SurfaceCard() {
         <CardTitle className="flex items-center gap-2">
           <Ruler className="h-5 w-5 text-primary" />
           Surface du local
-          <span className="text-sm font-medium text-destructive">*</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -42,7 +41,8 @@ export function SurfaceCard() {
               placeholder="Ex: 40"
               value={surface}
               onChange={(e) => setSurface(e.target.value)}
-              className="bg-white shadow-form"
+              className="bg-white shadow-form md:w-1/2"
+              required
             />
             <span className="text-sm text-muted-foreground shrink-0">m²</span>
           </div>
