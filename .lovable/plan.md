@@ -1,27 +1,40 @@
 ## Objectif
-Modifier `SurfaceCard.tsx` pour remplacer le `Select` par un champ de saisie manuelle (`Input`) encapsulé dans le composant `FormField`, tout en conservant la structure de carte `FormCard`.
 
-## Fichiers concernés
-- `src/components/simulator/project/SurfaceCard.tsx`
+Ajouter un `hint` dynamique sous l'input de surface dans `SurfaceCard.tsx`, dont le texte change en fonction de la valeur saisie par l'utilisateur.
 
-## Détails d'implémentation
+## Comportement
 
-### SurfaceCard.tsx
-- **Conserver** l'import de `FormCard`, `CardHeader`, `CardTitle`, `CardContent` depuis `@/components/ui/form-card`.
-- **Conserver** l'import de l'icône `Ruler` depuis `lucide-react` pour le titre de la carte.
-- **Remplacer** les imports liés à `Select` par l'import de `Input` depuis `@/components/ui/input`.
-- **Ajouter** l'import de `FormField` depuis `./FormField`.
-- **Retirer** l'import de `SURFACE_PRESETS`.
-- **Remplacer** le contenu du composant :
-  - Garder la structure `FormCard` > `CardHeader` > `CardTitle` avec l'icône `Ruler`.
-  - Dans `CardContent`, utiliser `FormField` avec les props suivantes :
-    - `label="Surface totale du local en m²"`
-    - `htmlFor="surface"`
-    - `required={true}`
-    - Aucune prop `hint` ni `icon`.
-  - Le `FormField` doit encapsuler un `Input` de type `number` avec `id="surface"` et `placeholder="Ex: 40"`.
-  - **Ajouter** un `<span>` immédiatement après le `Input` (dans le même conteneur flex) pour afficher "m²" (avec le caractère Unicode ² directement, pas de balise `<sup>`).
+- Ajouter un state local `surface` (nombre) dans `SurfaceCard`, contrôlant l'`Input`.
+- Calculer un label descriptif via une fonction `getSurfaceLabel(value)` basée sur des seuils.
+- Passer ce label à la prop `hint` du `FormField`.
+- **Règle critique : si aucune valeur n'est saisie (input vide), le hint ne doit pas apparaître.**
 
-### Validation
-- Exécuter `bun run build` pour vérifier l'absence d'erreurs de compilation.
-- Vérifier visuellement que la carte affiche correctement le champ numérique avec l'unité "m²" à côté.
+## Seuils de correspondance
+
+Basés sur les paliers de `SURFACE_OPTIONS` (dans `useCitySearch.ts`) :
+
+```text
+< 20      → "Surface très petite pour une laverie"
+20–29     → "Micro laverie"
+30–39     → "Petite laverie"
+40–49     → "Laverie standard"
+50–59     → "Laverie moyenne"
+60–79     → "Grande laverie"
+80–99     → "Très grande laverie"
+≥ 100     → "Laverie XXL"
+```
+
+Le hint affiché sera par ex. : `"40 m² — Laverie standard"`.
+
+## Détails techniques
+
+- Fichier modifié : `src/components/simulator/project/SurfaceCard.tsx` uniquement.
+- Ajouter `useState` (React) pour gérer la valeur.
+- `Input` : `value={surface}` + `onChange={(e) => setSurface(e.target.value)}`, type `number`.
+- Fonction utilitaire locale `getSurfaceHint(value: string): string | undefined` retournant `undefined` si vide/NaN.
+- Aucun import depuis `useCitySearch.ts` (les données `SURFACE_OPTIONS` y sont couplées à d'autres logiques ; on inline les seuils dans le composant pour rester léger et non-régressif).
+
+## Validation
+
+- `bun run build` doit passer.
+- Vérification visuelle Playwright : saisir 25, 45, 100 → le hint doit changer en conséquence ; vider le champ → le hint doit disparaître.
