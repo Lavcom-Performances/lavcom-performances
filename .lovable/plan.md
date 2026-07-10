@@ -1,40 +1,60 @@
-## Objectif
+# Refactor `FormField` avec shadcn `Field` — Option A retenue
 
-Ajouter un `hint` dynamique sous l'input de surface dans `SurfaceCard.tsx`, dont le texte change en fonction de la valeur saisie par l'utilisateur.
+## Étapes
 
-## Comportement
+### 1. Installer la primitive `Field`
+`bunx shadcn@latest add field` → crée `src/components/ui/field.tsx` (exports : `Field`, `FieldLabel`, `FieldDescription`, `FieldError`, `FieldGroup`, `FieldSet`, `FieldLegend`, `FieldSeparator`, `FieldContent`, `FieldTitle`).
 
-- Ajouter un state local `surface` (nombre) dans `SurfaceCard`, contrôlant l'`Input`.
-- Calculer un label descriptif via une fonction `getSurfaceLabel(value)` basée sur des seuils.
-- Passer ce label à la prop `hint` du `FormField`.
-- **Règle critique : si aucune valeur n'est saisie (input vide), le hint ne doit pas apparaître.**
+### 2. Réécrire `src/components/simulator/project/FormField.tsx`
+Wrapper mince, **même API publique** :
 
-## Seuils de correspondance
+```tsx
+import { ReactNode } from "react";
+import { LucideIcon } from "lucide-react";
+import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { cn } from "@/lib/utils";
 
-Basés sur les paliers de `SURFACE_OPTIONS` (dans `useCitySearch.ts`) :
+interface Props {
+  label: string;
+  htmlFor?: string;
+  hint?: string;
+  icon?: LucideIcon;
+  required?: boolean;
+  children: ReactNode;
+  className?: string;
+}
 
-```text
-< 20      → "Surface très petite pour une laverie"
-20–29     → "Micro laverie"
-30–39     → "Petite laverie"
-40–49     → "Laverie standard"
-50–59     → "Laverie moyenne"
-60–79     → "Grande laverie"
-80–99     → "Très grande laverie"
-≥ 100     → "Laverie XXL"
+export function FormField({ label, htmlFor, hint, icon: Icon, required, children, className }: Props) {
+  return (
+    <Field className={cn(className)}>
+      <FieldLabel htmlFor={htmlFor} className="flex items-center gap-2 text-sm font-medium text-foreground">
+        {Icon && <Icon className="h-4 w-4 shrink-0 text-foreground" />}
+        <span>{label}</span>
+        {required && <span className="text-destructive">*</span>}
+      </FieldLabel>
+      {children}
+      {hint && <FieldDescription>{hint}</FieldDescription>}
+    </Field>
+  );
+}
 ```
 
-Le hint affiché sera par ex. : `"40 m² — Laverie standard"`.
+Suppression totale de `Children.map` / `cloneElement` / `injectStyle` et de l'import `SelectTrigger`.
 
-## Détails techniques
+### 3. Option A — appliquer `bg-white shadow-form` explicitement dans les appelants
+Ajouter `className="bg-white shadow-form"` sur chaque `<Input>` et `<SelectTrigger>` enfant de `FormField`, dans :
 
-- Fichier modifié : `src/components/simulator/project/SurfaceCard.tsx` uniquement.
-- Ajouter `useState` (React) pour gérer la valeur.
-- `Input` : `value={surface}` + `onChange={(e) => setSurface(e.target.value)}`, type `number`.
-- Fonction utilitaire locale `getSurfaceHint(value: string): string | undefined` retournant `undefined` si vide/NaN.
-- Aucun import depuis `useCitySearch.ts` (les données `SURFACE_OPTIONS` y sont couplées à d'autres logiques ; on inline les seuils dans le composant pour rester léger et non-régressif).
+- `SurfaceCard.tsx` → `<Input>` surface
+- `ProjectIdentityCard.tsx` → 2 `<Input>`
+- `OpeningHoursCard.tsx` → `<SelectTrigger>`
+- `LocationCard.tsx` → `<SelectTrigger>` (country), `<Input>` (address, city, zip), `<SelectTrigger>` (zone)
+- `LocalConstraintsForm.tsx` → `<Input id="door-width">`
 
-## Validation
+Fusionner avec les classes déjà présentes (`opacity-50` sur le CP) via une simple concaténation string.
 
+### 4. Validation
 - `bun run build` doit passer.
-- Vérification visuelle Playwright : saisir 25, 45, 100 → le hint doit changer en conséquence ; vider le champ → le hint doit disparaître.
+- Vérif Playwright sur `/simulator/project` (onglets Projet + Local) : labels + icônes + `*` + hints inchangés, fond blanc + `shadow-form` toujours présents sur inputs/selects. Vérifier le hint dynamique de surface (25 → Micro laverie, vide → pas de hint).
+
+## Hors scope
+Pas de `FieldError`/validation, pas de migration des `<Label>` ad hoc hors `FormField`.
