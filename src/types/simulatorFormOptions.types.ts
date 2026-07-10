@@ -16,7 +16,7 @@ export type ZoneTypeValue = "centre-ville"
   | "zone-touristique"
   | "banlieue";
 export type SurfacePresetValue = "30" | "40" | "60" | "80";
-export type OpeningHoursPresetValue = "7-22" | "6-23" | "24-7" | "custom";
+export type OpeningHoursOptionValue = "7h-21h" | "7h-22h" | "6h-22h" | "24h/24" | "24h/24-badge" | "custom";
 export type LocalShapeValue = "rectangular" | "narrow" | "l-shape" | "corner";
 export type StructuralObstacleValue = "none" | "few" | "many";
 export type FacadeOptionValue = "yes" | "no" | "unknown";
@@ -34,7 +34,7 @@ export type FixedCostCategory =
 export type CountryOption = CountrySelectOption;
 export type ZoneTypeOption = SimulatorSelectOption<ZoneTypeValue>;
 export type SurfacePresetOption = SimulatorSelectOption<SurfacePresetValue>;
-export type OpeningHoursPresetOption = SimulatorSelectOption<OpeningHoursPresetValue>;
+export type OpeningHoursPresetOption = SimulatorSelectOption<OpeningHoursOptionValue>;
 export type LocalShapeOption = SimulatorSelectOption<LocalShapeValue>;
 export type StructuralObstacleOption = SimulatorSelectOption<StructuralObstacleValue>;
 export type FacadeOption = SimulatorSelectOption<FacadeOptionValue>;

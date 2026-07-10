@@ -42,10 +42,12 @@ export const SURFACE_PRESETS: readonly SurfacePresetOption[] = [
   { value: "80", label: "80 m² - Très grande laverie" },
 ];
 
-export const OPENING_HOURS_PRESETS: readonly OpeningHoursPresetOption[] = [
-  { value: "7-22", label: "7h - 22h (standard)" },
-  { value: "6-23", label: "6h - 23h (étendu)" },
-  { value: "24-7", label: "24h/24 - 7j/7" },
+export const OPENING_HOURS_OPTIONS: readonly OpeningHoursPresetOption[] = [
+  { value: "7h-21h", label: "7h - 21h (standard)" },
+  { value: "7h-22h", label: "7h - 22h (étendu)" },
+  { value: "6h-22h", label: "6h - 22h (matinal)" },
+  { value: "24h/24", label: "24h/24 (accès libre)" },
+  { value: "24h/24-badge", label: "24h/24 avec badge" },
   { value: "custom", label: "Horaires personnalisés..." },
 ];
 
