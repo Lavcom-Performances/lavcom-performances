@@ -3,6 +3,12 @@ export interface SimulatorSelectOption<TValue extends string = string> {
   label: string;
 }
 
+export interface CountrySelectOption extends SimulatorSelectOption<CountryValue> {
+  code: string;
+  flag: string;
+}
+
+export type CountryValue = "fr" | "be" | "ch" | "lu" | "mc" | "de" | "nl" | "es" | "it";
 export type ZoneTypeValue = "urbaine" | "peri-urbaine" | "rurale" | "commerciale";
 export type SurfacePresetValue = "30" | "40" | "60" | "80";
 export type OpeningHoursPresetValue = "7-22" | "6-23" | "24-7" | "custom";
@@ -20,6 +26,7 @@ export type FixedCostCategory =
   | "Ménage / Entretien"
   | "Autre";
 
+export type CountryOption = CountrySelectOption;
 export type ZoneTypeOption = SimulatorSelectOption<ZoneTypeValue>;
 export type SurfacePresetOption = SimulatorSelectOption<SurfacePresetValue>;
 export type OpeningHoursPresetOption = SimulatorSelectOption<OpeningHoursPresetValue>;

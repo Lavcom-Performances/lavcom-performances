@@ -1,9 +1,9 @@
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectGroup, SelectValue } from "@/components/ui/select";
 import { Home, MapPin, Mailbox, Map, Globe } from "lucide-react";
 import { FormField } from "./FormField";
 import { ZONE_TYPES } from "@/config/simulatorFormOptions";
-import { MOCK_PROJECT } from "@/components/simulator/mockData";
+import { COUNTRIES } from "@/config/simulatorFormOptions";
 
 export function LocationCard() {
   return (
@@ -14,10 +14,14 @@ export function LocationCard() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="fr">
-              <span className="mr-2">{MOCK_PROJECT.countryFlag}</span>
-              {MOCK_PROJECT.country}
-            </SelectItem>
+            <SelectGroup>
+              {COUNTRIES.map((country) => (
+                  <SelectItem key={country.code} value={country.value}>
+                    <span className="mr-2">{country.flag}</span>
+                    {country.label}
+                  </SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
       </FormField>

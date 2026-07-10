@@ -1,7 +1,8 @@
 // Static option lists used by the simulator forms (selects and radio groups).
-// Values here drive the UI options; default/preselected values live in mockData.
+// Values here drive the UI options;
 
 import type {
+  CountryOption,
   FacadeOption,
   FixedCostCategory,
   LocalShapeOption,
@@ -11,6 +12,19 @@ import type {
   TechnicalConstraintOption,
   ZoneTypeOption,
 } from "@/types/simulatorFormOptions.types";
+
+// Countries with their codes and flags
+export const COUNTRIES: readonly CountryOption[] = [
+  { value: "fr", label: "France", code: "FR", flag: "🇫🇷" },
+  { value: "be", label: "Belgique" , code: "BE", flag: "🇧🇪" },
+  { value: "ch", label: "Suisse", code: "CH", flag: "🇨🇭" },
+  { value: "lu", label: "Luxembourg", code: "LU", flag: "🇱🇺" },
+  { value: "mc", label: "Monaco", code: "MC", flag: "🇲🇨" },
+  { value: "de", label: "Allemagne", code: "DE", flag: "🇩🇪" },
+  { value: "nl", label: "Pays-Bas", code: "NL", flag: "🇳🇱" },
+  { value: "es", label: "Espagne", code: "ES", flag: "🇪🇸" },
+  { value: "it", label: "Italie", code: "IT", flag: "🇮🇹" },
+];
 
 export const ZONE_TYPES: readonly ZoneTypeOption[] = [
   { value: "urbaine", label: "Zone urbaine dense" },
