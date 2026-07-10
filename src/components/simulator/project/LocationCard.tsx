@@ -46,7 +46,7 @@ export function LocationCard() {
       </div>
 
       <FormField label="Type de zone" htmlFor="zone" icon={Map} required>
-        <Select defaultValue="urbaine">
+        <Select>
           <SelectTrigger id="zone">
             <SelectValue placeholder="Sélectionnez un type de zone" />
           </SelectTrigger>

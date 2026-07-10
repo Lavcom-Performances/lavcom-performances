@@ -27,10 +27,12 @@ export const COUNTRIES: readonly CountryOption[] = [
 ];
 
 export const ZONE_TYPES: readonly ZoneTypeOption[] = [
-  { value: "urbaine", label: "Zone urbaine dense" },
-  { value: "peri-urbaine", label: "Zone péri-urbaine" },
-  { value: "rurale", label: "Zone rurale" },
-  { value: "commerciale", label: "Zone commerciale" },
+  { value: "centre-ville", label: "Centre-ville" },
+  { value: "quartier-residentiel", label: "Quartier résidentiel" },
+  { value: "zone-commerciale", label: "Zone commerciale" },
+  { value: "zone-universitaire", label: "Zone universitaire / étudiante" },
+  { value: "zone-touristique", label: "Zone touristique" },
+  { value: "banlieue", label: "Banlieue / Périphérie" },
 ];
 
 export const SURFACE_PRESETS: readonly SurfacePresetOption[] = [

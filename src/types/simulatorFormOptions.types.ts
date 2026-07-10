@@ -9,7 +9,12 @@ export interface CountrySelectOption extends SimulatorSelectOption<CountryValue>
 }
 
 export type CountryValue = "fr" | "be" | "ch" | "lu" | "mc" | "de" | "nl" | "es" | "it";
-export type ZoneTypeValue = "urbaine" | "peri-urbaine" | "rurale" | "commerciale";
+export type ZoneTypeValue = "centre-ville"
+  | "quartier-residentiel"
+  | "zone-commerciale"
+  | "zone-universitaire"
+  | "zone-touristique"
+  | "banlieue";
 export type SurfacePresetValue = "30" | "40" | "60" | "80";
 export type OpeningHoursPresetValue = "7-22" | "6-23" | "24-7" | "custom";
 export type LocalShapeValue = "rectangular" | "narrow" | "l-shape" | "corner";
