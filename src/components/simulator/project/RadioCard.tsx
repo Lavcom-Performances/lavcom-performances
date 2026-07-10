@@ -24,6 +24,7 @@ export function RadioCard({ icon: Icon, title, description, options, defaultValu
         <CardTitle className="flex items-center gap-2">
           <Icon className="h-5 w-5 text-primary" />
           {title}
+          <span className="text-sm font-medium text-destructive">*</span>
         </CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
