@@ -68,7 +68,7 @@ export function LocalConstraintsForm() {
                   {FACADE_OPTIONS.map((opt) => (
                     <div
                       key={opt.value}
-                      className="flex items-center gap-3 rounded-lg border p-2 transition hover:bg-muted/40"
+                      className="flex items-center gap-3 rounded-lg border p-2 transition hover:bg-muted/40 shadow-form"
                     >
                       <RadioGroupItem value={opt.value} id={`facade-${opt.value}`} />
                       <Label htmlFor={`facade-${opt.value}`} className="flex-1 cursor-pointer text-sm">

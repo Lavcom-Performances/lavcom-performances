@@ -33,7 +33,7 @@ export function RadioCard({ icon: Icon, title, description, options, defaultValu
           {options.map((opt) => (
             <div
               key={opt.value}
-              className="flex items-center gap-3 rounded-lg border p-3 transition hover:bg-muted/40"
+              className="flex items-center gap-3 rounded-lg border p-3 transition hover:bg-muted/40 shadow-form"
             >
               <RadioGroupItem value={opt.value} id={`${name}-${opt.value}`} />
               <Label htmlFor={`${name}-${opt.value}`} className="flex-1 cursor-pointer text-sm">
