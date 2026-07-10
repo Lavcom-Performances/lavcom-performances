@@ -42,6 +42,7 @@ export function SurfaceCard() {
               placeholder="Ex: 40"
               value={surface}
               onChange={(e) => setSurface(e.target.value)}
+              className="bg-white shadow-form"
             />
             <span className="text-sm text-muted-foreground shrink-0">m²</span>
           </div>

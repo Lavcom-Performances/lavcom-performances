@@ -7,7 +7,7 @@ export function OpeningHoursCard() {
   return (
     <FormField label="Horaires d'ouverture envisagés" htmlFor="hours" icon={Clock} required>
       <Select>
-        <SelectTrigger id="hours">
+        <SelectTrigger id="hours" className="bg-white shadow-form">
           <SelectValue placeholder="Sélectionnez un horaire"/>
         </SelectTrigger>
         <SelectContent>
