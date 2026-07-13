@@ -49,6 +49,7 @@ export const LOCAL_SHAPES: readonly LocalShapeOption[] = [
   { value: "narrow", label: "Long et étroit" },
   { value: "l-shape", label: "En L / découpé" },
   { value: "corner", label: "Angle avec beaucoup de vitrines" },
+  { value: "unknown", label: "Je ne sais pas encore" },
 ];
 
 export const STRUCTURAL_OBSTACLES: readonly StructuralObstacleOption[] = [

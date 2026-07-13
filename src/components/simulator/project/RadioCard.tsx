@@ -15,16 +15,17 @@ interface Props {
   options: readonly Option[];
   defaultValue?: string;
   name: string;
+  required: boolean;
 }
 
-export function RadioCard({ icon: Icon, title, description, options, defaultValue, name }: Props) {
+export function RadioCard({ icon: Icon, title, description, options, defaultValue, name, required }: Props) {
   return (
     <FormCard className="">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Icon className="h-5 w-5 text-primary" />
           {title}
-          <span className="text-sm font-medium text-destructive">*</span>
+          {required && <span className="text-sm font-medium text-destructive">*</span>}
         </CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>

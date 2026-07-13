@@ -16,7 +16,7 @@ export type ZoneTypeValue = "centre-ville"
   | "zone-touristique"
   | "banlieue";
 export type OpeningHoursOptionValue = "7h-21h" | "7h-22h" | "6h-22h" | "24h/24" | "24h/24-badge" | "custom";
-export type LocalShapeValue = "rectangular" | "narrow" | "l-shape" | "corner";
+export type LocalShapeValue = "rectangular" | "narrow" | "l-shape" | "corner" | "unknown";
 export type StructuralObstacleValue = "none" | "few" | "many" | "unknown";
 export type FacadeOptionValue = "yes" | "no" | "unknown";
 export type TechnicalConstraintValue = "ok" | "check_with_installer" | "heavy_work" | "unknown";

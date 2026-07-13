@@ -30,7 +30,7 @@ export function LocalConstraintsForm() {
           title="Forme du local"
           description="La forme du local influence l'agencement optimal des machines"
           options={LOCAL_SHAPES}
-          defaultValue="rectangular"
+          defaultValue="unknown"
           name="shape"
         />
 
@@ -39,7 +39,7 @@ export function LocalConstraintsForm() {
           title="Obstacles structurels"
           description="Poteaux, gaines techniques ou murs porteurs impactant l'espace utilisable"
           options={STRUCTURAL_OBSTACLES}
-          defaultValue="none"
+          defaultValue="unknown"
           name="obstacles"
         />
 
@@ -86,7 +86,7 @@ export function LocalConstraintsForm() {
             title="Contraintes techniques"
             description="État des raccordements (eau, électricité, évacuation, ventilation)"
             options={TECHNICAL_CONSTRAINTS}
-            defaultValue="check_with_installer"
+            defaultValue="unknown"
             name="tech"
           />
         </div>
