@@ -6,7 +6,8 @@ import type {
   FacadeOption,
   FixedCostCategory,
   LocalShapeOption,
-  OpeningHoursPresetOption,
+  OpeningHoursOption,
+  OpeningDaysOption,
   StructuralObstacleOption,
   TechnicalConstraintOption,
   ZoneTypeOption,
@@ -38,13 +39,18 @@ export const ZONE_TYPES: readonly ZoneTypeOption[] = [
   { value: "banlieue", label: "Banlieue / Périphérie" },
 ];
 
-export const OPENING_HOURS_OPTIONS: readonly OpeningHoursPresetOption[] = [
-  { value: "7h-21h", label: "7h - 21h (standard)" },
-  { value: "7h-22h", label: "7h - 22h (étendu)" },
-  { value: "6h-22h", label: "6h - 22h (matinal)" },
-  { value: "24h/24", label: "24h/24 (accès libre)" },
-  { value: "24h/24-badge", label: "24h/24 avec badge" },
-  { value: "custom", label: "Horaires personnalisés..." },
+export const OPENING_HOURS_OPTIONS: readonly OpeningHoursOption[] = [
+  { value: "7h-21h", label: "7h - 21h (standard)", openAt: 7, closeAt: 21 },
+  { value: "7h-22h", label: "7h - 22h (étendu)", openAt: 7, closeAt: 21 },
+  { value: "6h-22h", label: "6h - 22h (matinal)", openAt: 7, closeAt: 21 },
+  { value: "24h/24", label: "24h/24 (accès libre)", openAt: 7, closeAt: 21 },
+  { value: "custom", label: "Horaires personnalisés...", openAt: 7, closeAt: 21 },
+];
+
+export const OPENING_DAYS_OPTIONS: readonly OpeningDaysOption[] = [
+  { value: "7/7", label: "7 / 7 jours" },
+  { value: "6/7", label: "6 / 7 jours (fermé le dimanche" },
+  { value: "custom", label: "Jours personnalisés..." },
 ];
 
 export const LOCAL_SHAPES: readonly LocalShapeOption[] = [

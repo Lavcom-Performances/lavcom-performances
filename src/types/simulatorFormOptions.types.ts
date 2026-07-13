@@ -8,6 +8,11 @@ export interface CountrySelectOption extends SimulatorSelectOption<CountryValue>
   flag: string;
 }
 
+export interface OpeningHoursSelectOption extends SimulatorSelectOption<OpeningHoursValue> {
+  openAt: number;
+  closeAt: number;
+}
+
 export interface LocalShapeSelectOption extends SimulatorSelectOption<LocalShapeValue> {
   shape: string | undefined;
 }
@@ -19,7 +24,8 @@ export type ZoneTypeValue = "centre-ville"
   | "zone-universitaire"
   | "zone-touristique"
   | "banlieue";
-export type OpeningHoursOptionValue = "7h-21h" | "7h-22h" | "6h-22h" | "24h/24" | "24h/24-badge" | "custom";
+export type OpeningHoursValue = "7h-21h" | "7h-22h" | "6h-22h" | "24h/24" | "custom";
+export type OpeningDaysValue = "7/7" | "6/7" | "custom";
 export type LocalShapeValue = "rectangular" | "narrow" | "l-shape" | "corner" | "unknown";
 export type StructuralObstacleValue = "none" | "few" | "many" | "unknown";
 export type FacadeOptionValue = "yes" | "no" | "unknown";
@@ -36,7 +42,8 @@ export type FixedCostCategory =
 
 export type CountryOption = CountrySelectOption;
 export type ZoneTypeOption = SimulatorSelectOption<ZoneTypeValue>;
-export type OpeningHoursPresetOption = SimulatorSelectOption<OpeningHoursOptionValue>;
+export type OpeningHoursOption = OpeningHoursSelectOption;
+export type OpeningDaysOption = SimulatorSelectOption<OpeningDaysValue>;
 export type LocalShapeOption = LocalShapeSelectOption;
 export type StructuralObstacleOption = SimulatorSelectOption<StructuralObstacleValue>;
 export type FacadeOption = SimulatorSelectOption<FacadeOptionValue>;
