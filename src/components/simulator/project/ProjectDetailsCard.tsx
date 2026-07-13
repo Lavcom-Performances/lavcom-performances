@@ -3,8 +3,14 @@ import { Building2 } from "lucide-react";
 import { ProjectIdentityCard } from "./ProjectIdentityCard";
 import { LocationCard } from "./LocationCard";
 import { OpeningHoursCard } from "./OpeningHoursCard";
+import type { ProjectLocationState } from "./ProjectInfoForm";
 
-export function ProjectDetailsCard() {
+interface Props {
+  projectLocation: ProjectLocationState;
+  onProjectLocationChange: (next: ProjectLocationState) => void;
+}
+
+export function ProjectDetailsCard({ projectLocation, onProjectLocationChange }: Props) {
   return (
     <FormCard>
       <CardHeader>
@@ -16,7 +22,10 @@ export function ProjectDetailsCard() {
       </CardHeader>
       <CardContent className="space-y-6">
         <ProjectIdentityCard />
-        <LocationCard />
+        <LocationCard
+          projectLocation={projectLocation}
+          onProjectLocationChange={onProjectLocationChange}
+        />
         <OpeningHoursCard />
       </CardContent>
     </FormCard>
