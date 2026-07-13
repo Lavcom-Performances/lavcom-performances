@@ -10,6 +10,12 @@ export interface AddressSearchResult {
   countryCode: string;
   countryName: string;
   department?: string;
+  // Champs enrichis (optionnels pour ne pas casser les consommateurs existants).
+  // FR : renseignés depuis properties.context de la BAN ("75, Paris, Île-de-France").
+  // Hors FR : dérivés de Nominatim (county/state_district, state).
+  departmentCode?: string;
+  departmentName?: string;
+  region?: string;
 }
 
 const COMPLETION_URL = "https://data.geopf.fr/geocodage/completion/";
@@ -54,11 +60,12 @@ export function useAddressSearch(
         abortRef.current = controller;
         lastQueryRef.current = searchQuery;
 
-        // New French government geocoding API
-        const url = `${COMPLETION_URL}?text=${encodeURIComponent(searchQuery)}&type=StreetAddress&terr=METROPOLE&maximumResponses=6`;
-        
+        // API BAN officielle : renvoie déjà postalCode, city ET context
+        // ("75, Paris, Île-de-France") qui permet d'extraire département + région.
+        const url = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchQuery)}&limit=8`;
+
         console.log("[AddressSearch] Fetching FR addresses:", url);
-        
+
         const response = await fetch(url, { signal: controller.signal });
 
         if (!response.ok) {
@@ -67,36 +74,41 @@ export function useAddressSearch(
         }
 
         const data = await response.json();
-        
-        // Normalize response (structure may vary)
-        const items = (data?.results || data?.suggestions || data || []) as any[];
-        
-        console.log("[AddressSearch] API response:", items.length || 0, "results");
-        
-        formattedResults = items
-          .map((item: any) => {
-            const fullText = item?.fulltext || item?.fullText || item?.label || item?.text || item?.value;
-            if (!fullText) return null;
-            
-            // Extract what we can from the completion response
-            const postalCode = String(item?.postcode || item?.postalcode || item?.zipcode || "").trim();
-            const city = String(item?.city || item?.municipality || item?.commune || "").trim();
-            
+        const features = (data?.features ?? []) as any[];
+
+        console.log("[AddressSearch] API response:", features.length, "results");
+
+        formattedResults = features
+          .filter((f: any) => f?.properties?.label)
+          .map((f: any) => {
+            const p = f.properties;
+            const postalCode = String(p.postcode ?? "").trim();
+            const city = String(p.city ?? "").trim();
+            // context BAN : "75, Paris, Île-de-France"
+            const [departmentCode = "", departmentName = "", region = ""] =
+              String(p.context ?? "").split(",").map((s: string) => s.trim());
+            // address = numéro + rue si dispo, sinon "name" renvoyé par la BAN
+            const address = p.housenumber
+              ? `${p.housenumber} ${p.name ?? ""}`.trim()
+              : String(p.name ?? p.label);
+
             const result: AddressSearchResult = {
-              label: fullText,
-              address: fullText,
+              label: p.label,
+              address,
               postalCode,
               city,
               context: postalCode && city ? `${postalCode} ${city}` : "",
               countryCode: "FR",
               countryName: "France",
+              departmentCode,
+              departmentName,
+              region,
             };
             if (postalCode) {
               result.department = getDepartmentFromPostcode(postalCode);
             }
             return result;
-          })
-          .filter((item): item is AddressSearchResult => item !== null);
+          });
 
         // Only update if this is still the current query
         if (lastQueryRef.current === searchQuery) {
@@ -149,6 +161,10 @@ export function useAddressSearch(
               countryCode: country,
               countryName,
               department: postalCode ? getDepartmentFromPostcode(postalCode) : undefined,
+              // Pas de code département officiel hors FR
+              departmentCode: "",
+              departmentName: addr.county || addr.state_district || "",
+              region: addr.state || "",
             };
           });
 
