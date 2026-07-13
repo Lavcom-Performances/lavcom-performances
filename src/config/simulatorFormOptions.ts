@@ -49,9 +49,21 @@ export const OPENING_HOURS_OPTIONS: readonly OpeningHoursOption[] = [
 
 export const OPENING_DAYS_OPTIONS: readonly OpeningDaysOption[] = [
   { value: "7/7", label: "7 / 7 jours" },
-  { value: "6/7", label: "6 / 7 jours (fermé le dimanche" },
+  { value: "6/7", label: "6 / 7 jours (fermé le dimanche)" },
   { value: "custom", label: "Jours personnalisés..." },
 ];
+
+export const WEEK_DAYS = [
+  { value: "mon", label: "Lun" },
+  { value: "tue", label: "Mar" },
+  { value: "wed", label: "Mer" },
+  { value: "thu", label: "Jeu" },
+  { value: "fri", label: "Ven" },
+  { value: "sat", label: "Sam" },
+  { value: "sun", label: "Dim" },
+] as const;
+
+export type WeekDayValue = typeof WEEK_DAYS[number]["value"];
 
 export const LOCAL_SHAPES: readonly LocalShapeOption[] = [
   { value: "rectangular", label: "Rectangulaire, murs plutôt pleins", shape: rectangleShape },
