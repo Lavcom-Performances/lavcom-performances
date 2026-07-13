@@ -161,6 +161,10 @@ export function useAddressSearch(
               countryCode: country,
               countryName,
               department: postalCode ? getDepartmentFromPostcode(postalCode) : undefined,
+              // Pas de code département officiel hors FR
+              departmentCode: "",
+              departmentName: addr.county || addr.state_district || "",
+              region: addr.state || "",
             };
           });
 
