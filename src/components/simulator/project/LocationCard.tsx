@@ -38,10 +38,10 @@ export function LocationCard() {
 
       <div className="grid gap-5 md:grid-cols-2">
         <FormField label="Ville" htmlFor="city" icon={MapPin} required hint="Rempli automatiquement">
-          <Input id="city" placeholder="Rechercher une ville..." defaultValue="Lyon" className="bg-white shadow-form" />
+          <Input id="city" placeholder="Ex. : Paris" disabled className="bg-white shadow-form opacity-50" />
         </FormField>
         <FormField label="Code postal" htmlFor="zip" icon={Mailbox} required hint="Rempli automatiquement">
-          <Input id="zip" placeholder="Ex: 75001" defaultValue="69003" className="bg-white shadow-form opacity-50" />
+          <Input id="zip" placeholder="Ex. : 75004" disabled className="bg-white shadow-form opacity-50" />
         </FormField>
       </div>
 
