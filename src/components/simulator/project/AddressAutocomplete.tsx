@@ -50,10 +50,13 @@ export function AddressAutocomplete({
     country,
   );
 
-  // Sync quand le parent modifie la valeur (ex. reset au changement de pays).
+  // Sync uniquement quand la prop diffère réellement de l'état interne
+  // (reset pays, hydratation initiale, sélection). On NE touche PAS à
+  // isUserTyping ici : sinon chaque keystroke, qui remonte via
+  // onInputChange -> parent -> value, effacerait l'intention de recherche
+  // et empêcherait le hook useAddressSearch de fetch.
   useEffect(() => {
-    setInputValue(value);
-    setIsUserTyping(false);
+    setInputValue((prev) => (prev === value ? prev : value));
   }, [value]);
 
   // Fermeture au clic à l'extérieur.
