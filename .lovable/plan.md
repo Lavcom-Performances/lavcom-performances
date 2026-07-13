@@ -1,57 +1,67 @@
-# Correction du bug "5 5 avenue Charles de Gaulle"
+# Fix : recherche d'adresse hors France bloquée par la CSP
 
 ## Cause
 
-Dans `src/hooks/useAddressSearch.ts` (branche FR, lignes 91-93), on construit `address` ainsi :
+Quand l'utilisateur sélectionne un autre pays que la France (ex. Suisse), le hook `useAddressSearch` bascule sur l'API Nominatim (`https://nominatim.openstreetmap.org/search`). Les requêtes échouent immédiatement avec :
 
-```ts
-const address = p.housenumber
-  ? `${p.housenumber} ${p.name ?? ""}`.trim()
-  : String(p.name ?? p.label);
+```
+TypeError: Failed to fetch
 ```
 
-Or l'API BAN (`api-adresse.data.gouv.fr/search/`) renvoie déjà, pour un résultat de type `housenumber`, un champ `properties.name` qui **inclut le numéro de rue**. Exemple concret pour "5 avenue Charles de Gaulle" :
+Aucun code HTTP n'est renvoyé — la requête n'est jamais envoyée. C'est le comportement typique d'un blocage par la **Content-Security-Policy**.
 
-```json
-{
-  "label": "5 Avenue Charles de Gaulle 75008 Paris",
-  "name": "5 Avenue Charles de Gaulle",
-  "housenumber": "5",
-  "street": "Avenue Charles de Gaulle",
-  "postcode": "75008",
-  "city": "Paris",
-  "type": "housenumber"
-}
+Dans `index.html` ligne 12, la directive `connect-src` autorise uniquement :
+
+```
+connect-src 'self'
+  https://betvwipgtcrhmludzgxw.supabase.co
+  wss://betvwipgtcrhmludzgxw.supabase.co
+  https://www.google-analytics.com
+  https://www.googletagmanager.com
+  https://region1.google-analytics.com
+  https://api.stripe.com
+  https://api-adresse.data.gouv.fr;
 ```
 
-En concaténant `housenumber` + `name`, on obtient donc `"5 5 Avenue Charles de Gaulle"`, qui est ensuite écrit dans l'input via `setInputValue(r.address)` au moment de la sélection dans `AddressAutocomplete.tsx`.
+`https://nominatim.openstreetmap.org` n'y figure pas → le navigateur bloque le `fetch` avant émission, d'où l'absence de requête réseau observable et l'erreur générique. La BAN fonctionne parce qu'elle est déjà listée.
 
-C'est un vestige de l'ancienne API `data.geopf.fr` où `name` correspondait uniquement au nom de la voie (sans numéro). Sur la BAN actuelle ce n'est plus le cas.
+À noter : la mémoire projet `security/csp-configuration` documente cette CSP comme critique, il faut donc étendre la liste, pas la relâcher.
 
 ## Correctif
 
-Dans `src/hooks/useAddressSearch.ts`, remplacer la construction de `address` par une version qui n'ajoute le `housenumber` que si `p.name` ne le contient pas déjà. Le plus propre est d'utiliser `p.street` (nom de voie sans numéro) quand `housenumber` est présent, avec fallback sur `p.name` :
+Ajouter le domaine Nominatim (et le domaine officiel `nominatim.osm.org` par sécurité) à `connect-src` dans `index.html` :
 
-```ts
-// BAN : pour un résultat "housenumber", p.name inclut déjà le numéro.
-// On préfère donc utiliser p.name tel quel, et ne recomposer à partir
-// de p.street que si p.name est absent.
-const address = p.housenumber && p.street
-  ? `${p.housenumber} ${p.street}`.trim()
-  : String(p.name ?? p.label ?? "").trim();
+```html
+connect-src 'self'
+  https://betvwipgtcrhmludzgxw.supabase.co
+  wss://betvwipgtcrhmludzgxw.supabase.co
+  https://www.google-analytics.com
+  https://www.googletagmanager.com
+  https://region1.google-analytics.com
+  https://api.stripe.com
+  https://api-adresse.data.gouv.fr
+  https://nominatim.openstreetmap.org;
 ```
 
-Comportement final :
-- Type `housenumber` avec `street` → `"5 Avenue Charles de Gaulle"` (via `housenumber + street`).
-- Type `housenumber` sans `street` (rare) → `p.name` brut.
-- Type `street` / `municipality` / `locality` → `p.name` (nom de rue ou ville).
+Aucun autre fichier n'est modifié : le hook `useAddressSearch` gère déjà correctement Nominatim (parsing `address`, extraction `city/postcode/state`), il était simplement empêché d'émettre la requête.
+
+## Point annexe (à ne pas corriger ici)
+
+Le hook envoie l'en-tête `User-Agent: LavcomPerformances/1.0`. Les navigateurs ignorent silencieusement cette surcharge (header interdit côté client) — ce n'est **pas** la cause du blocage et cela peut rester en l'état ; Nominatim autorise les requêtes CORS sans User-Agent personnalisé.
 
 ## Fichiers modifiés
 
-- `src/hooks/useAddressSearch.ts` — lignes 91-93 uniquement, aucun autre changement.
+- `index.html` — extension unique de `connect-src`.
+
+## Mémoire à mettre à jour
+
+Mettre à jour `mem://security/csp-configuration` pour lister `nominatim.openstreetmap.org` parmi les domaines `connect-src` autorisés (autocomplétion adresse hors FR).
 
 ## Validation
 
-1. `bunx tsgo --noEmit` — type-check.
-2. Playwright sur `/simulator/project` : taper "5 avenue Charles de Gaulle", sélectionner la première suggestion, vérifier que l'input affiche exactement `"5 Avenue Charles de Gaulle"` (screenshot) et que Ville / Code postal se remplissent (`Paris` / `75008`).
-3. Cas de non-régression : taper "Paris" et sélectionner une commune (résultat de type `municipality`, sans `housenumber`) → l'adresse doit rester `"Paris"`.
+1. Playwright sur `/simulator/project` :
+   - Changer le pays en **Suisse**.
+   - Taper `Rue du Rhône Genève` dans le champ adresse.
+   - Vérifier qu'une requête `GET https://nominatim.openstreetmap.org/search?...&countrycodes=ch...` retourne **200** avec des résultats, et que le dropdown affiche des suggestions.
+   - Sélectionner une suggestion → Ville et Code postal se remplissent.
+2. Non-régression FR : repasser sur France, vérifier que la BAN répond toujours.
