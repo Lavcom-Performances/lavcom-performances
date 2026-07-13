@@ -1,67 +1,47 @@
-# Fix : recherche d'adresse hors France bloquée par la CSP
+## Objectif
 
-## Cause
+Refondre `OpeningHoursCard` pour proposer deux Select (heures + jours) avec option "personnalisé" révélant des inputs inline.
 
-Quand l'utilisateur sélectionne un autre pays que la France (ex. Suisse), le hook `useAddressSearch` bascule sur l'API Nominatim (`https://nominatim.openstreetmap.org/search`). Les requêtes échouent immédiatement avec :
+## Comportement UI
 
-```
-TypeError: Failed to fetch
-```
+**Champ 1 — Heures d'ouverture** (Select, options depuis `OPENING_HOURS_OPTIONS`)
 
-Aucun code HTTP n'est renvoyé — la requête n'est jamais envoyée. C'est le comportement typique d'un blocage par la **Content-Security-Policy**.
+- Options standard : `7h-21h`, `7h-22h`, `6h-22h`, `24h/24`
+- Option `custom` = "Horaires personnalisés…"
+- Si `custom` sélectionné → deux Input inline apparaissent :
+  - Horaire d'ouverture (`<input type="time">`)
+  - Horaire de fermeture (`<input type="time">`)
+- Sinon → inputs masqués
 
-Dans `index.html` ligne 12, la directive `connect-src` autorise uniquement :
+**Champ 2 — Jours d'ouverture** (Select, options depuis `OPENING_DAYS_OPTIONS`)
 
-```
-connect-src 'self'
-  https://betvwipgtcrhmludzgxw.supabase.co
-  wss://betvwipgtcrhmludzgxw.supabase.co
-  https://www.google-analytics.com
-  https://www.googletagmanager.com
-  https://region1.google-analytics.com
-  https://api.stripe.com
-  https://api-adresse.data.gouv.fr;
-```
+- Options standard : `7/7`, `6/7`
+- Option `custom` = "Jours personnalisés…"
+- Si `custom` sélectionné → 7 Checkbox inline (Lun → Dim)
+- Sinon → checkboxes masquées
 
-`https://nominatim.openstreetmap.org` n'y figure pas → le navigateur bloque le `fetch` avant émission, d'où l'absence de requête réseau observable et l'erreur générique. La BAN fonctionne parce qu'elle est déjà listée.
+## Changements techniques
 
-À noter : la mémoire projet `security/csp-configuration` documente cette CSP comme critique, il faut donc étendre la liste, pas la relâcher.
+1. `**src/config/simulatorFormOptions.ts**`
+  - Corriger la coquille "fermé le dimanche" (parenthèse manquante) dans `OPENING_DAYS_OPTIONS`.
+  - Ajouter un export `WEEK_DAYS` : `[{ value: 'mon', label: 'Lun' }, …, { value: 'sun', label: 'Dim' }]` pour piloter les checkboxes.
+2. `**src/components/simulator/project/OpeningHoursCard.tsx**` (réécriture)
+  - État local (`useState`) pour :
+    - `hoursPreset: OpeningHoursValue` (défaut vide/undefined)
+    - `customOpenTime`, `customCloseTime` (strings)
+    - `daysPreset: OpeningDaysValue`
+    - `customDays: Set<string>`
+  - Deux `FormField` empilés dans un même conteneur (garde le style existant).
+  - Rendu conditionnel des inputs custom uniquement quand `preset === 'custom'`.
+  - Composants shadcn utilisés : `Select`, `Input`, `Checkbox`, `Label`.
+  - Aucune persistance dans `SimulationProject` pour cette itération (le champ existant `opening_hours_description` reste inchangé) — purement présentationnel, comme le composant actuel. À confirmer si un branchement store est attendu (voir question ci-dessous).
 
-## Correctif
+## Hors périmètre
 
-Ajouter le domaine Nominatim (et le domaine officiel `nominatim.osm.org` par sécurité) à `connect-src` dans `index.html` :
+- Pas de modification du store `useSimulationProject` ni du type `SimulationProject`.
+- Pas de validation (`useSimulationValidation`) modifiée.
 
-```html
-connect-src 'self'
-  https://betvwipgtcrhmludzgxw.supabase.co
-  wss://betvwipgtcrhmludzgxw.supabase.co
-  https://www.google-analytics.com
-  https://www.googletagmanager.com
-  https://region1.google-analytics.com
-  https://api.stripe.com
-  https://api-adresse.data.gouv.fr
-  https://nominatim.openstreetmap.org;
-```
+## Question ouverte
 
-Aucun autre fichier n'est modifié : le hook `useAddressSearch` gère déjà correctement Nominatim (parsing `address`, extraction `city/postcode/state`), il était simplement empêché d'émettre la requête.
-
-## Point annexe (à ne pas corriger ici)
-
-Le hook envoie l'en-tête `User-Agent: LavcomPerformances/1.0`. Les navigateurs ignorent silencieusement cette surcharge (header interdit côté client) — ce n'est **pas** la cause du blocage et cela peut rester en l'état ; Nominatim autorise les requêtes CORS sans User-Agent personnalisé.
-
-## Fichiers modifiés
-
-- `index.html` — extension unique de `connect-src`.
-
-## Mémoire à mettre à jour
-
-Mettre à jour `mem://security/csp-configuration` pour lister `nominatim.openstreetmap.org` parmi les domaines `connect-src` autorisés (autocomplétion adresse hors FR).
-
-## Validation
-
-1. Playwright sur `/simulator/project` :
-   - Changer le pays en **Suisse**.
-   - Taper `Rue du Rhône Genève` dans le champ adresse.
-   - Vérifier qu'une requête `GET https://nominatim.openstreetmap.org/search?...&countrycodes=ch...` retourne **200** avec des résultats, et que le dropdown affiche des suggestions.
-   - Sélectionner une suggestion → Ville et Code postal se remplissent.
-2. Non-régression FR : repasser sur France, vérifier que la BAN répond toujours.
+Le composant actuel n'écrit dans aucun store. Faut-il, dans cette même tâche, brancher les valeurs choisies sur `project.opening_hours_description` (ex. concaténation `"7h-21h · 6/7"` ou nouveau champ `opening_days_description`) ? Sinon je laisse le composant purement présentationnel comme aujourd'hui.  
+=> Laisser le composant.
