@@ -87,10 +87,11 @@ export function useAddressSearch(
             // context BAN : "75, Paris, Île-de-France"
             const [departmentCode = "", departmentName = "", region = ""] =
               String(p.context ?? "").split(",").map((s: string) => s.trim());
-            // address = numéro + rue si dispo, sinon "name" renvoyé par la BAN
-            const address = p.housenumber
-              ? `${p.housenumber} ${p.name ?? ""}`.trim()
-              : String(p.name ?? p.label);
+            // BAN : pour un résultat "housenumber", p.name inclut déjà le numéro.
+            // On recompose donc à partir de p.street quand dispo, sinon p.name brut.
+            const address = p.housenumber && p.street
+              ? `${p.housenumber} ${p.street}`.trim()
+              : String(p.name ?? p.label ?? "").trim();
 
             const result: AddressSearchResult = {
               label: p.label,
