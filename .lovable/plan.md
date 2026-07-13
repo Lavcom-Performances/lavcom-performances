@@ -1,72 +1,57 @@
-# Diagnostic
+# Correction du bug "5 5 avenue Charles de Gaulle"
 
-## Test effectué
-Playwright sur `/simulator/project` → focus sur `#address` → frappe "10 rue de rivoli".
-Résultat observé :
-- Aucune requête réseau vers `api-adresse.data.gouv.fr` n'est déclenchée.
-- Aucun log `[AddressSearch] Fetching FR addresses:` n'apparaît dans la console.
-- La liste déroulante ne s'ouvre jamais.
+## Cause
 
-## Cause racine
-Dans `src/components/simulator/project/AddressAutocomplete.tsx`, la synchronisation `value` (prop) ↔ `inputValue` (state local) casse le flux :
+Dans `src/hooks/useAddressSearch.ts` (branche FR, lignes 91-93), on construit `address` ainsi :
 
-```tsx
-// Sync quand le parent modifie la valeur (ex. reset au changement de pays).
-useEffect(() => {
-  setInputValue(value);
-  setIsUserTyping(false);   // ← problème
-}, [value]);
+```ts
+const address = p.housenumber
+  ? `${p.housenumber} ${p.name ?? ""}`.trim()
+  : String(p.name ?? p.label);
 ```
 
-Enchaînement à chaque frappe :
+Or l'API BAN (`api-adresse.data.gouv.fr/search/`) renvoie déjà, pour un résultat de type `housenumber`, un champ `properties.name` qui **inclut le numéro de rue**. Exemple concret pour "5 avenue Charles de Gaulle" :
 
-```text
-user tape "1"
-  → handleChange
-    → setIsUserTyping(true)
-    → onInputChange("1")
-      → parent handleAddressInputChange
-        → onProjectLocationChange({ ...projectLocation, address: "1", city: "", ... })
-          → parent re-render, prop `value` passe à "1"
-            → useEffect([value]) se déclenche
-              → setIsUserTyping(false)   ❌ annule l'intention de recherche
+```json
+{
+  "label": "5 Avenue Charles de Gaulle 75008 Paris",
+  "name": "5 Avenue Charles de Gaulle",
+  "housenumber": "5",
+  "street": "Avenue Charles de Gaulle",
+  "postcode": "75008",
+  "city": "Paris",
+  "type": "housenumber"
+}
 ```
 
-Le hook `useAddressSearch` est appelé avec :
-```tsx
-useAddressSearch(justSelected || !isUserTyping ? "" : inputValue, 3, country)
-```
-Comme `isUserTyping` retombe à `false` immédiatement après chaque keystroke, la query envoyée au hook est toujours `""` → jamais de fetch.
+En concaténant `housenumber` + `name`, on obtient donc `"5 5 Avenue Charles de Gaulle"`, qui est ensuite écrit dans l'input via `setInputValue(r.address)` au moment de la sélection dans `AddressAutocomplete.tsx`.
 
-Ce bug n'existe pas dans le composant legacy `src/components/simulation/AddressAutocomplete.tsx` parce qu'il est **non contrôlé** (le parent ne réécrit pas `value` pendant la frappe). Ici on l'a rendu **contrôlé** pour piloter city/postalCode → il faut adapter la logique de sync.
+C'est un vestige de l'ancienne API `data.geopf.fr` où `name` correspondait uniquement au nom de la voie (sans numéro). Sur la BAN actuelle ce n'est plus le cas.
 
-# Correctif proposé
+## Correctif
 
-Un seul fichier à modifier : `src/components/simulator/project/AddressAutocomplete.tsx`.
+Dans `src/hooks/useAddressSearch.ts`, remplacer la construction de `address` par une version qui n'ajoute le `housenumber` que si `p.name` ne le contient pas déjà. Le plus propre est d'utiliser `p.street` (nom de voie sans numéro) quand `housenumber` est présent, avec fallback sur `p.name` :
 
-Ne synchroniser depuis la prop `value` que quand elle diverge **réellement** de l'état interne (cas légitime : reset au changement de pays, sélection d'une suggestion qui remplit `address`). Ne pas réinitialiser `isUserTyping` dans ce sync — laisser la frappe piloter ce flag.
-
-```tsx
-// Sync uniquement quand la prop diffère de l'état interne
-// (reset pays, hydratation initiale, sélection). On NE touche PAS à
-// isUserTyping ici : sinon chaque keystroke, qui remonte via
-// onInputChange -> parent -> value, effacerait l'intention de recherche.
-useEffect(() => {
-  setInputValue((prev) => (prev === value ? prev : value));
-}, [value]);
+```ts
+// BAN : pour un résultat "housenumber", p.name inclut déjà le numéro.
+// On préfère donc utiliser p.name tel quel, et ne recomposer à partir
+// de p.street que si p.name est absent.
+const address = p.housenumber && p.street
+  ? `${p.housenumber} ${p.street}`.trim()
+  : String(p.name ?? p.label ?? "").trim();
 ```
 
-Effets attendus :
-- Frappe : `isUserTyping=true` reste vrai → `useAddressSearch` reçoit la query → fetch BAN → dropdown.
-- Sélection : `handleSelect` fait déjà `setIsUserTyping(false)` + `setJustSelected(true)` → pas de re-fetch après clic.
-- Reset pays : le parent passe `address=""`, `inputValue` était non vide → sync met à `""`, `isUserTyping` reste à sa valeur courante (false au montage, sinon inoffensif car query vide).
+Comportement final :
+- Type `housenumber` avec `street` → `"5 Avenue Charles de Gaulle"` (via `housenumber + street`).
+- Type `housenumber` sans `street` (rare) → `p.name` brut.
+- Type `street` / `municipality` / `locality` → `p.name` (nom de rue ou ville).
 
-# Validation
+## Fichiers modifiés
 
-1. `bun run build` (typecheck).
-2. Playwright refait le même scénario : vérifier qu'une requête `api-adresse.data.gouv.fr/search/?q=...` part et que le dropdown affiche des suggestions.
-3. Cliquer une suggestion → `Ville` et `Code postal` se remplissent, pas de nouvelle requête.
-4. Changer le pays → champs vidés, aucune requête parasite.
-5. Passer en Belgique (`BE`), taper "rue neuve bruxelles" → requête Nominatim visible, dropdown rempli.
+- `src/hooks/useAddressSearch.ts` — lignes 91-93 uniquement, aucun autre changement.
 
-Aucune autre modification (pas de changement au hook, au parent, ni au composant legacy `/simulation`).
+## Validation
+
+1. `bunx tsgo --noEmit` — type-check.
+2. Playwright sur `/simulator/project` : taper "5 avenue Charles de Gaulle", sélectionner la première suggestion, vérifier que l'input affiche exactement `"5 Avenue Charles de Gaulle"` (screenshot) et que Ville / Code postal se remplissent (`Paris` / `75008`).
+3. Cas de non-régression : taper "Paris" et sélectionner une commune (résultat de type `municipality`, sans `housenumber`) → l'adresse doit rester `"Paris"`.
