@@ -35,13 +35,6 @@ export const ZONE_TYPES: readonly ZoneTypeOption[] = [
   { value: "banlieue", label: "Banlieue / Périphérie" },
 ];
 
-export const SURFACE_PRESETS: readonly SurfacePresetOption[] = [
-  { value: "30", label: "30 m² - Petite laverie" },
-  { value: "40", label: "40 m² - Laverie standard" },
-  { value: "60", label: "60 m² - Grande laverie" },
-  { value: "80", label: "80 m² - Très grande laverie" },
-];
-
 export const OPENING_HOURS_OPTIONS: readonly OpeningHoursPresetOption[] = [
   { value: "7h-21h", label: "7h - 21h (standard)" },
   { value: "7h-22h", label: "7h - 22h (étendu)" },
@@ -62,6 +55,7 @@ export const STRUCTURAL_OBSTACLES: readonly StructuralObstacleOption[] = [
   { value: "none", label: "Aucun obstacle particulier" },
   { value: "few", label: "Quelques poteaux / gaines le long des murs" },
   { value: "many", label: "Plusieurs poteaux / murs porteurs gênants" },
+  { value: "unknown", label: "Je ne sais pas encore" },
 ];
 
 export const FACADE_OPTIONS: readonly FacadeOption[] = [
@@ -74,6 +68,7 @@ export const TECHNICAL_CONSTRAINTS: readonly TechnicalConstraintOption[] = [
   { value: "ok", label: "A priori OK (eau, évacuation, puissance, ventilation)" },
   { value: "check_with_installer", label: "À vérifier avec un installateur" },
   { value: "heavy_work", label: "Gros travaux à prévoir" },
+  { value: "unknown", label: "Je ne sais pas encore" },
 ];
 
 export const FIXED_COST_CATEGORIES: readonly FixedCostCategory[] = [
