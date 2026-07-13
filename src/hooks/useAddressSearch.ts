@@ -10,6 +10,12 @@ export interface AddressSearchResult {
   countryCode: string;
   countryName: string;
   department?: string;
+  // Champs enrichis (optionnels pour ne pas casser les consommateurs existants).
+  // FR : renseignés depuis properties.context de la BAN ("75, Paris, Île-de-France").
+  // Hors FR : dérivés de Nominatim (county/state_district, state).
+  departmentCode?: string;
+  departmentName?: string;
+  region?: string;
 }
 
 const COMPLETION_URL = "https://data.geopf.fr/geocodage/completion/";
