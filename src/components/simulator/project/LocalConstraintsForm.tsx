@@ -32,6 +32,7 @@ export function LocalConstraintsForm() {
           options={LOCAL_SHAPES}
           defaultValue="unknown"
           name="shape"
+          required={false}
         />
 
         <RadioCard
@@ -41,6 +42,7 @@ export function LocalConstraintsForm() {
           options={STRUCTURAL_OBSTACLES}
           defaultValue="unknown"
           name="obstacles"
+          required={false}
         />
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -88,6 +90,7 @@ export function LocalConstraintsForm() {
             options={TECHNICAL_CONSTRAINTS}
             defaultValue="unknown"
             name="tech"
+            required={false}
           />
         </div>
       </div>

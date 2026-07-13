@@ -8,6 +8,10 @@ export interface CountrySelectOption extends SimulatorSelectOption<CountryValue>
   flag: string;
 }
 
+export interface LocalShapeSelectOption extends SimulatorSelectOption<LocalShapeValue> {
+  shape: string | undefined;
+}
+
 export type CountryValue = "fr" | "be" | "ch" | "lu" | "mc" | "de" | "nl" | "es" | "it";
 export type ZoneTypeValue = "centre-ville"
   | "quartier-residentiel"
@@ -33,7 +37,7 @@ export type FixedCostCategory =
 export type CountryOption = CountrySelectOption;
 export type ZoneTypeOption = SimulatorSelectOption<ZoneTypeValue>;
 export type OpeningHoursPresetOption = SimulatorSelectOption<OpeningHoursOptionValue>;
-export type LocalShapeOption = SimulatorSelectOption<LocalShapeValue>;
+export type LocalShapeOption = LocalShapeSelectOption;
 export type StructuralObstacleOption = SimulatorSelectOption<StructuralObstacleValue>;
 export type FacadeOption = SimulatorSelectOption<FacadeOptionValue>;
 export type TechnicalConstraintOption = SimulatorSelectOption<TechnicalConstraintValue>;

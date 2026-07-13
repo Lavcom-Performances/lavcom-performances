@@ -8,10 +8,13 @@ import type {
   LocalShapeOption,
   OpeningHoursPresetOption,
   StructuralObstacleOption,
-  SurfacePresetOption,
   TechnicalConstraintOption,
   ZoneTypeOption,
 } from "@/types/simulatorFormOptions.types";
+import rectangleShape from "@/assets/rectangle-shape.svg";
+import lShape from "@/assets/l-shape.svg";
+import longRectShape from "@/assets/long-rect-shape.svg";
+import squareShape from "@/assets/square-shape.svg";
 
 // Countries with their codes and flags
 export const COUNTRIES: readonly CountryOption[] = [
@@ -45,11 +48,11 @@ export const OPENING_HOURS_OPTIONS: readonly OpeningHoursPresetOption[] = [
 ];
 
 export const LOCAL_SHAPES: readonly LocalShapeOption[] = [
-  { value: "rectangular", label: "Rectangulaire, murs plutôt pleins" },
-  { value: "narrow", label: "Long et étroit" },
-  { value: "l-shape", label: "En L / découpé" },
-  { value: "corner", label: "Angle avec beaucoup de vitrines" },
-  { value: "unknown", label: "Je ne sais pas encore" },
+  { value: "rectangular", label: "Rectangulaire, murs plutôt pleins", shape: rectangleShape },
+  { value: "narrow", label: "Long et étroit", shape: longRectShape },
+  { value: "l-shape", label: "En L / découpé", shape: lShape },
+  { value: "corner", label: "Angle avec beaucoup de vitrines", shape: squareShape },
+  { value: "unknown", label: "Je ne sais pas encore", shape: undefined },
 ];
 
 export const STRUCTURAL_OBSTACLES: readonly StructuralObstacleOption[] = [

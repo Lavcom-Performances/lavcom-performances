@@ -6,6 +6,7 @@ import { LucideIcon } from "lucide-react";
 interface Option {
   value: string;
   label: string;
+  shape?: string;
 }
 
 interface Props {
@@ -37,8 +38,9 @@ export function RadioCard({ icon: Icon, title, description, options, defaultValu
               className="flex items-center gap-3 rounded-lg border p-3 transition hover:bg-muted/40 shadow-form"
             >
               <RadioGroupItem value={opt.value} id={`${name}-${opt.value}`} />
-              <Label htmlFor={`${name}-${opt.value}`} className="flex-1 cursor-pointer text-sm">
+              <Label htmlFor={`${name}-${opt.value}`} className="flex items-center cursor-pointer text-sm">
                 {opt.label}
+                {opt.shape && <span className="inline-block ml-3"><img src={opt.shape} alt="" /></span>}
               </Label>
             </div>
           ))}
