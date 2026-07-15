@@ -1,15 +1,11 @@
-import { useState } from "react";
 import { FormCard, CardContent, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { Input } from "@/components/ui/input";
 import { Ruler } from "lucide-react";
 import { FormField } from "./FormField";
+import type { SimulatorProjectFormProps } from "./types";
 
-function getSurfaceHint(value: string): string | undefined {
-  const num = Number(value);
-  if (value === "" || Number.isNaN(num) || num <= 0) {
-    return undefined;
-  }
-
+function getSurfaceHint(num: number): string | undefined {
+  if (Number.isNaN(num) || num <= 0) return undefined;
   if (num < 20) return "Surface très petite pour une laverie";
   if (num < 30) return `${num} m² — Micro laverie`;
   if (num < 40) return `${num} m² — Petite laverie`;
@@ -20,8 +16,8 @@ function getSurfaceHint(value: string): string | undefined {
   return `${num} m² — Laverie XXL`;
 }
 
-export function SurfaceCard() {
-  const [surface, setSurface] = useState("");
+export function SurfaceCard({ project, onUpdate }: SimulatorProjectFormProps) {
+  const surface = project.surface ?? 0;
   const hint = getSurfaceHint(surface);
 
   return (
@@ -39,8 +35,8 @@ export function SurfaceCard() {
               id="surface"
               type="number"
               placeholder="Ex: 40"
-              value={surface}
-              onChange={(e) => setSurface(e.target.value)}
+              value={surface || ""}
+              onChange={(e) => onUpdate({ surface: Number(e.target.value) })}
               className="bg-white shadow-form md:w-1/2"
               required
             />
