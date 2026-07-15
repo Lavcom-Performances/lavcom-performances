@@ -63,6 +63,8 @@ export const WEEK_DAYS = [
   { value: "sunday", label: "Dim", isWeekend: true },
 ] as const;
 
+export type WeekDayValue = typeof WEEK_DAYS[number]["value"];
+
 export const LOCAL_SHAPES: readonly LocalShapeOption[] = [
   { value: "rectangular", label: "Rectangulaire, murs plutôt pleins", shape: rectangleShape },
   { value: "narrow", label: "Long et étroit", shape: longRectShape },

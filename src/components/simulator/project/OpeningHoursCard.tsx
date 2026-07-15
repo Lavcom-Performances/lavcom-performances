@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,22 +11,50 @@ import {
   type WeekDayValue,
 } from "@/config/simulatorFormOptions";
 import type { OpeningHoursValue, OpeningDaysValue } from "@/types/simulatorFormOptions.types";
+import type { SimulatorProjectFormProps } from "./types";
 
-export function OpeningHoursCard() {
-  const [hoursPreset, setHoursPreset] = useState<OpeningHoursValue | "">("");
-  const [customOpenTime, setCustomOpenTime] = useState("07:00");
-  const [customCloseTime, setCustomCloseTime] = useState("21:00");
+export function OpeningHoursCard({ project, onUpdate }: SimulatorProjectFormProps) {
+  const hours = project.openingHours ?? {};
+  const days = project.openingDays ?? {};
+  const hoursPreset = (hours.value as OpeningHoursValue | undefined) ?? "";
+  const daysPreset = (days.value as OpeningDaysValue | undefined) ?? "";
+  const customOpen = hours.openAt ?? "07:00";
+  const customClose = hours.closeAt ?? "21:00";
+  const customDays = new Set<WeekDayValue>((days.days ?? []) as WeekDayValue[]);
 
-  const [daysPreset, setDaysPreset] = useState<OpeningDaysValue | "">("");
-  const [customDays, setCustomDays] = useState<Set<WeekDayValue>>(new Set());
+  const setHoursPreset = (v: OpeningHoursValue) => {
+    const preset = OPENING_HOURS_OPTIONS.find((o) => o.value === v);
+    if (v === "custom") {
+      onUpdate({ openingHours: { value: v, openAt: customOpen, closeAt: customClose } });
+    } else if (preset) {
+      onUpdate({ openingHours: { value: preset.value, openAt: preset.openAt, closeAt: preset.closeAt } });
+    }
+  };
+
+  const setDaysPreset = (v: OpeningDaysValue) => {
+    const preset = OPENING_DAYS_OPTIONS.find((o) => o.value === v);
+    if (v === "custom") {
+      onUpdate({ openingDays: { value: v, days: Array.from(customDays) } });
+    } else if (preset) {
+      onUpdate({ openingDays: { value: preset.value, days: [...preset.days] } });
+    }
+  };
+
+  const updateCustomHour = (which: "openAt" | "closeAt", value: string) => {
+    onUpdate({
+      openingHours: {
+        value: "custom",
+        openAt: which === "openAt" ? value : customOpen,
+        closeAt: which === "closeAt" ? value : customClose,
+      },
+    });
+  };
 
   const toggleDay = (day: WeekDayValue, checked: boolean) => {
-    setCustomDays((prev) => {
-      const next = new Set(prev);
-      if (checked) next.add(day);
-      else next.delete(day);
-      return next;
-    });
+    const next = new Set(customDays);
+    if (checked) next.add(day);
+    else next.delete(day);
+    onUpdate({ openingDays: { value: "custom", days: Array.from(next) } });
   };
 
   return (
@@ -53,8 +80,8 @@ export function OpeningHoursCard() {
               <Input
                 id="custom-open"
                 type="time"
-                value={customOpenTime}
-                onChange={(e) => setCustomOpenTime(e.target.value)}
+                value={customOpen}
+                onChange={(e) => updateCustomHour("openAt", e.target.value)}
                 className="bg-white shadow-form"
               />
             </div>
@@ -63,8 +90,8 @@ export function OpeningHoursCard() {
               <Input
                 id="custom-close"
                 type="time"
-                value={customCloseTime}
-                onChange={(e) => setCustomCloseTime(e.target.value)}
+                value={customClose}
+                onChange={(e) => updateCustomHour("closeAt", e.target.value)}
                 className="bg-white shadow-form"
               />
             </div>

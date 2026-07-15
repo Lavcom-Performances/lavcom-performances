@@ -5,22 +5,14 @@ import { FormField } from "./FormField";
 import { AddressAutocomplete } from "./AddressAutocomplete";
 import { ZONE_TYPES, COUNTRIES } from "@/config/simulatorFormOptions";
 import type { AddressSearchResult } from "@/hooks/useAddressSearch";
-import type { ProjectLocationState } from "./ProjectInfoForm";
+import type { SimulatorProjectFormProps } from "./types";
 
-interface Props {
-  projectLocation: ProjectLocationState;
-  onProjectLocationChange: (next: ProjectLocationState) => void;
-}
+export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
+  const country = (project.country ?? "fr").toString();
 
-export function LocationCard({ projectLocation, onProjectLocationChange }: Props) {
-  // Changement de pays -> on conserve le pays, on reset les champs géo dépendants
-  // pour éviter d'afficher une ville/CP incohérents avec le nouveau pays.
   const handleCountryChange = (value: string) => {
-    onProjectLocationChange({
-      ...projectLocation,
-      // Les valeurs de COUNTRIES sont en minuscule ("fr"), on stocke en ISO majuscule
-      // pour matcher l'attente du hook (BAN pour "FR", Nominatim sinon).
-      country: value.toUpperCase(),
+    onUpdate({
+      country: value,
       address: "",
       city: "",
       postalCode: "",
@@ -30,10 +22,8 @@ export function LocationCard({ projectLocation, onProjectLocationChange }: Props
     });
   };
 
-  // Sélection d'une suggestion complète : on remplit tous les champs dérivés.
   const handleAddressSelect = (r: AddressSearchResult) => {
-    onProjectLocationChange({
-      ...projectLocation,
+    onUpdate({
       address: r.address,
       city: r.city,
       postalCode: r.postalCode,
@@ -43,11 +33,8 @@ export function LocationCard({ projectLocation, onProjectLocationChange }: Props
     });
   };
 
-  // Frappe libre : on met à jour uniquement `address` et on invalide
-  // les champs auto-remplis tant que rien n'est sélectionné.
   const handleAddressInputChange = (value: string) => {
-    onProjectLocationChange({
-      ...projectLocation,
+    onUpdate({
       address: value,
       city: "",
       postalCode: "",
@@ -60,19 +47,16 @@ export function LocationCard({ projectLocation, onProjectLocationChange }: Props
   return (
     <div className="space-y-6">
       <FormField label="Pays" htmlFor="country" icon={Globe} required>
-        <Select
-          value={projectLocation.country.toLowerCase()}
-          onValueChange={handleCountryChange}
-        >
+        <Select value={country.toLowerCase()} onValueChange={handleCountryChange}>
           <SelectTrigger id="country" className="bg-white shadow-form">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {COUNTRIES.map((country) => (
-                <SelectItem key={country.code} value={country.value}>
-                  <span className="mr-2">{country.flag}</span>
-                  {country.label}
+              {COUNTRIES.map((c) => (
+                <SelectItem key={c.code} value={c.value}>
+                  <span className="mr-2">{c.flag}</span>
+                  {c.label}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -89,8 +73,8 @@ export function LocationCard({ projectLocation, onProjectLocationChange }: Props
       >
         <AddressAutocomplete
           id="address"
-          value={projectLocation.address}
-          country={projectLocation.country}
+          value={project.address ?? ""}
+          country={country.toUpperCase()}
           onSelect={handleAddressSelect}
           onInputChange={handleAddressInputChange}
         />
@@ -100,7 +84,7 @@ export function LocationCard({ projectLocation, onProjectLocationChange }: Props
         <FormField label="Ville" htmlFor="city" icon={MapPin} required hint="Rempli automatiquement">
           <Input
             id="city"
-            value={projectLocation.city}
+            value={project.city ?? ""}
             readOnly
             placeholder="Ex. : Paris"
             className="bg-white shadow-form opacity-70"
@@ -109,7 +93,7 @@ export function LocationCard({ projectLocation, onProjectLocationChange }: Props
         <FormField label="Code postal" htmlFor="zip" icon={Mailbox} required hint="Rempli automatiquement">
           <Input
             id="zip"
-            value={projectLocation.postalCode}
+            value={project.postalCode ?? ""}
             readOnly
             placeholder="Ex. : 75004"
             className="bg-white shadow-form opacity-70"
@@ -118,7 +102,7 @@ export function LocationCard({ projectLocation, onProjectLocationChange }: Props
       </div>
 
       <FormField label="Type de zone" htmlFor="zone" icon={Map} required>
-        <Select>
+        <Select value={project.zoneType ?? ""} onValueChange={(v) => onUpdate({ zoneType: v })}>
           <SelectTrigger id="zone" className="bg-white shadow-form">
             <SelectValue placeholder="Sélectionnez un type de zone" />
           </SelectTrigger>

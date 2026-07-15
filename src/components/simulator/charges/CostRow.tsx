@@ -4,21 +4,23 @@ import { Trash2 } from "lucide-react";
 
 interface Props {
   label: string;
-  amount?: number;
+  value: number;
   suffix?: string;
   placeholder?: string;
+  onChange: (v: number) => void;
   onRemove?: () => void;
 }
 
-export function CostRow({ label, amount, suffix = "€/mois", placeholder, onRemove }: Props) {
+export function CostRow({ label, value, suffix = "€/mois", placeholder, onChange, onRemove }: Props) {
   return (
     <div className="grid gap-3 md:grid-cols-[1fr_140px_auto] md:items-center">
       <span className="text-sm text-foreground">{label}</span>
       <div className="flex items-center gap-2">
         <Input
           type="number"
-          defaultValue={amount ?? ""}
+          value={value || ""}
           placeholder={placeholder}
+          onChange={(e) => onChange(Number(e.target.value))}
           className="text-right"
         />
         <span className="whitespace-nowrap text-xs text-muted-foreground">{suffix}</span>

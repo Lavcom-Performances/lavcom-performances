@@ -2,8 +2,9 @@ import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { SimulatorTabsTrigger } from "./SimulatorTabsTrigger";
 import { ProjectInfoForm } from "./ProjectInfoForm";
 import { LocalConstraintsForm } from "./LocalConstraintsForm";
+import type { SimulatorProjectFormProps } from "./types";
 
-export function ProjectTabs() {
+export function ProjectTabs({ project, onUpdate }: SimulatorProjectFormProps) {
   return (
     <Tabs defaultValue="project" className="w-full">
       <TabsList className="grid w-full max-w-md grid-cols-2">
@@ -11,10 +12,10 @@ export function ProjectTabs() {
         <SimulatorTabsTrigger value="local">Contraintes du local</SimulatorTabsTrigger>
       </TabsList>
       <TabsContent value="project" className="mt-8">
-        <ProjectInfoForm />
+        <ProjectInfoForm project={project} onUpdate={onUpdate} />
       </TabsContent>
       <TabsContent value="local" className="mt-8">
-        <LocalConstraintsForm />
+        <LocalConstraintsForm project={project} onUpdate={onUpdate} />
       </TabsContent>
     </Tabs>
   );

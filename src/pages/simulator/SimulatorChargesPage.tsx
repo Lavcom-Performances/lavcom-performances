@@ -4,8 +4,11 @@ import { PricingHintBanner } from "@/components/simulator/machines/PricingHintBa
 import { FixedCostsCard } from "@/components/simulator/charges/FixedCostsCard";
 import { VariableCostsCard } from "@/components/simulator/charges/VariableCostsCard";
 import { ChargesTotalsBanner } from "@/components/simulator/charges/ChargesTotalsBanner";
+import { useSimulatorProject } from "@/hooks/useSimulatorProject";
 
 export default function SimulatorChargesPage() {
+  const { project, updateProject } = useSimulatorProject();
+
   return (
     <>
       <SimulatorPageHeader
@@ -16,8 +19,8 @@ export default function SimulatorChargesPage() {
         <PricingHintBanner>
           Valeurs indicatives pré-remplies – ajustez selon votre situation
         </PricingHintBanner>
-        <FixedCostsCard />
-        <VariableCostsCard />
+        <FixedCostsCard project={project} onUpdate={updateProject} />
+        <VariableCostsCard project={project} onUpdate={updateProject} />
         <ChargesTotalsBanner />
       </div>
       <SimulatorFooterNav

@@ -3,10 +3,21 @@ import { SimulationProject, defaultMachines, defaultFixedCosts, defaultVariableC
 
 const STORAGE_KEY = "simulationProject";
 
-// Default values ​​for a new project (pre-filled with indicative values)
+// Default values for a new simulator project (pre-filled with indicative values)
 const defaultSimulationProject: Partial<SimulationProject> = {
+  projectName: "",
   scenarioName: "Scénario 1",
   country: "fr",
+  address: "",
+  city: "",
+  postalCode: "",
+  departmentCode: "",
+  departmentName: "",
+  region: "",
+  zoneType: "",
+  openingHours: {},
+  openingDays: {},
+  surface: 40,
   localShape: "unknown",
   structuralObstacles: "unknown",
   doorWidth: 90,
@@ -17,7 +28,7 @@ const defaultSimulationProject: Partial<SimulationProject> = {
   variableCosts: [...defaultVariableCosts],
 };
 
-export function useSimulationProject() {
+export function useSimulatorProject() {
   const [project, setProject] = useState<Partial<SimulationProject>>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -46,14 +57,8 @@ export function useSimulationProject() {
   }, []);
 
   const updateProject = useCallback((updates: Partial<SimulationProject>) => {
-    console.log('[DEBUG] updateProject called with:', updates);
-    console.log('[DEBUG] Current project before update:', project);
-    setProject(prev => {
-      const updated = { ...prev, ...updates };
-      console.log('[DEBUG] Project after update:', updated);
-      return updated;
-    });
-  }, [project]);
+    setProject(prev => ({ ...prev, ...updates }));
+  }, []);
 
   const resetProject = useCallback(() => {
     setProject(defaultSimulationProject);

@@ -3,14 +3,9 @@ import { Building2 } from "lucide-react";
 import { ProjectIdentityCard } from "./ProjectIdentityCard";
 import { LocationCard } from "./LocationCard";
 import { OpeningHoursCard } from "./OpeningHoursCard";
-import type { ProjectLocationState } from "./ProjectInfoForm";
+import type { SimulatorProjectFormProps } from "./types";
 
-interface Props {
-  projectLocation: ProjectLocationState;
-  onProjectLocationChange: (next: ProjectLocationState) => void;
-}
-
-export function ProjectDetailsCard({ projectLocation, onProjectLocationChange }: Props) {
+export function ProjectDetailsCard({ project, onUpdate }: SimulatorProjectFormProps) {
   return (
     <FormCard>
       <CardHeader>
@@ -21,12 +16,9 @@ export function ProjectDetailsCard({ projectLocation, onProjectLocationChange }:
         <CardDescription>Ces informations nous aideront à personnaliser votre simulation</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <ProjectIdentityCard />
-        <LocationCard
-          projectLocation={projectLocation}
-          onProjectLocationChange={onProjectLocationChange}
-        />
-        <OpeningHoursCard />
+        <ProjectIdentityCard project={project} onUpdate={onUpdate} />
+        <LocationCard project={project} onUpdate={onUpdate} />
+        <OpeningHoursCard project={project} onUpdate={onUpdate} />
       </CardContent>
     </FormCard>
   );

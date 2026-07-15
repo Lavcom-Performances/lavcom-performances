@@ -14,12 +14,14 @@ interface Props {
   title: string;
   description?: string;
   options: readonly Option[];
+  value?: string;
+  onValueChange?: (v: string) => void;
   defaultValue?: string;
   name: string;
   required: boolean;
 }
 
-export function RadioCard({ icon: Icon, title, description, options, defaultValue, name, required }: Props) {
+export function RadioCard({ icon: Icon, title, description, options, value, onValueChange, defaultValue, name, required }: Props) {
   return (
     <FormCard className="">
       <CardHeader>
@@ -31,7 +33,12 @@ export function RadioCard({ icon: Icon, title, description, options, defaultValu
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
-        <RadioGroup defaultValue={defaultValue} className="space-y-2">
+        <RadioGroup
+          value={value}
+          onValueChange={onValueChange}
+          defaultValue={value === undefined ? defaultValue : undefined}
+          className="space-y-2"
+        >
           {options.map((opt) => (
             <div
               key={opt.value}

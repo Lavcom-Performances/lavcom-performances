@@ -13,8 +13,15 @@ import {
   STRUCTURAL_OBSTACLES,
   TECHNICAL_CONSTRAINTS,
 } from "@/config/simulatorFormOptions";
+import type {
+  LocalShapeValue,
+  StructuralObstacleValue,
+  FacadeOptionValue,
+  TechnicalConstraintValue,
+} from "@/types/simulatorFormOptions.types";
+import type { SimulatorProjectFormProps } from "./types";
 
-export function LocalConstraintsForm() {
+export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectFormProps) {
   return (
     <div className="space-y-8">
       <TabSectionHeading
@@ -23,14 +30,15 @@ export function LocalConstraintsForm() {
       />
 
       <div className="space-y-6">
-        <SurfaceCard />
+        <SurfaceCard project={project} onUpdate={onUpdate} />
 
         <RadioCard
           icon={LayoutGrid}
           title="Forme du local"
           description="La forme du local influence l'agencement optimal des machines"
           options={LOCAL_SHAPES}
-          defaultValue="unknown"
+          value={project.localShape ?? "unknown"}
+          onValueChange={(v) => onUpdate({ localShape: v as LocalShapeValue })}
           name="shape"
           required={false}
         />
@@ -40,7 +48,8 @@ export function LocalConstraintsForm() {
           title="Obstacles structurels"
           description="Poteaux, gaines techniques ou murs porteurs impactant l'espace utilisable"
           options={STRUCTURAL_OBSTACLES}
-          defaultValue="unknown"
+          value={project.structuralObstacles ?? "unknown"}
+          onValueChange={(v) => onUpdate({ structuralObstacles: v as StructuralObstacleValue })}
           name="obstacles"
           required={false}
         />
@@ -62,11 +71,21 @@ export function LocalConstraintsForm() {
                 htmlFor="door-width"
                 hint="Une largeur inférieure à 90 cm peut compliquer l'installation de gros équipements"
               >
-                <Input id="door-width" type="number" defaultValue={90} className="bg-white shadow-form" />
+                <Input
+                  id="door-width"
+                  type="number"
+                  value={project.doorWidth ?? 90}
+                  onChange={(e) => onUpdate({ doorWidth: Number(e.target.value) })}
+                  className="bg-white shadow-form"
+                />
               </FormField>
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Façade modifiable ?</Label>
-                <RadioGroup defaultValue="unknown" className="space-y-2">
+                <RadioGroup
+                  value={project.canModifyFacade ?? "unknown"}
+                  onValueChange={(v) => onUpdate({ canModifyFacade: v as FacadeOptionValue })}
+                  className="space-y-2"
+                >
                   {FACADE_OPTIONS.map((opt) => (
                     <div
                       key={opt.value}
@@ -88,7 +107,8 @@ export function LocalConstraintsForm() {
             title="Contraintes techniques"
             description="État des raccordements (eau, électricité, évacuation, ventilation)"
             options={TECHNICAL_CONSTRAINTS}
-            defaultValue="unknown"
+            value={project.technicalConstraints ?? "unknown"}
+            onValueChange={(v) => onUpdate({ technicalConstraints: v as TechnicalConstraintValue })}
             name="tech"
             required={false}
           />
