@@ -34,6 +34,8 @@ export function SurfaceCard({ project, onUpdate }: SimulatorProjectFormProps) {
             <Input
               id="surface"
               type="number"
+              min={0}
+              max={500}
               placeholder="Ex: 40"
               value={surface || ""}
               onChange={(e) => onUpdate({ surface: Number(e.target.value) })}
