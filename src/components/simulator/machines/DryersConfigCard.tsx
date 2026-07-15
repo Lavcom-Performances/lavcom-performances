@@ -2,9 +2,21 @@ import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@
 import { Button } from "@/components/ui/button";
 import { Plus, Wind } from "lucide-react";
 import { MachineCounter } from "./MachineCounter";
-import { MOCK_DRYERS, MOCK_REVENUE } from "@/components/simulator/mockData";
+import {
+  addMachine,
+  machineMonthlyRevenue,
+  removeMachine,
+  updateMachineList,
+  type SimulatorMachinesFormProps,
+} from "./types";
 
-export function DryersConfigCard() {
+export function DryersConfigCard({ project, onUpdate }: SimulatorMachinesFormProps) {
+  const dryers = (project.machines ?? []).filter((m) => m.type === "dryer");
+  const total = dryers.reduce((sum, m) => sum + machineMonthlyRevenue(m), 0);
+
+  const patch = (id: string, p: Partial<typeof dryers[number]>) =>
+    onUpdate({ machines: updateMachineList(project.machines, id, p) });
+
   return (
     <FormCard className="">
       <CardHeader>
@@ -15,17 +27,33 @@ export function DryersConfigCard() {
         <CardDescription>Configurez vos sèche-linge</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {MOCK_DRYERS.map((d) => (
-          <MachineCounter key={d.id} {...d} />
+        {dryers.map((d) => (
+          <MachineCounter
+            key={d.id}
+            capacity={d.capacity_kg}
+            count={d.count}
+            price={d.price}
+            cyclesPerDay={d.cycles_day}
+            monthlyRevenue={machineMonthlyRevenue(d)}
+            onCountChange={(v) => patch(d.id, { count: v })}
+            onPriceChange={(v) => patch(d.id, { price: v })}
+            onCyclesChange={(v) => patch(d.id, { cycles_day: v })}
+            onRemove={() => onUpdate({ machines: removeMachine(project.machines, d.id) })}
+          />
         ))}
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => onUpdate({ machines: addMachine(project.machines, "dryer") })}
+        >
           <Plus className="h-4 w-4" />
           Ajouter un sèche-linge
         </Button>
         <div className="flex items-center justify-between rounded-lg bg-primary/10 px-4 py-3">
           <span className="text-sm font-medium text-foreground">CA séchage estimé</span>
           <span className="text-lg font-bold text-primary">
-            {MOCK_REVENUE.drying.toLocaleString("fr-FR")} € / mois
+            {Math.round(total).toLocaleString("fr-FR")} € / mois
           </span>
         </div>
       </CardContent>
