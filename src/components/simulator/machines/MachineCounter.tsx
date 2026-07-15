@@ -1,7 +1,8 @@
 import { FormCard, CardContent } from "@/components/ui/form-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Trash2 } from "lucide-react";
 
 interface Props {
   capacity: number;
@@ -9,10 +10,23 @@ interface Props {
   price: number;
   cyclesPerDay: number;
   monthlyRevenue: number;
-  unit?: "kg";
+  onCountChange?: (v: number) => void;
+  onPriceChange?: (v: number) => void;
+  onCyclesChange?: (v: number) => void;
+  onRemove?: () => void;
 }
 
-export function MachineCounter({ capacity, count, price, cyclesPerDay, monthlyRevenue }: Props) {
+export function MachineCounter({
+  capacity,
+  count,
+  price,
+  cyclesPerDay,
+  monthlyRevenue,
+  onCountChange,
+  onPriceChange,
+  onCyclesChange,
+  onRemove,
+}: Props) {
   return (
     <FormCard className="border-border bg-muted/20">
       <CardContent className="grid gap-3 p-4 md:grid-cols-[100px_1fr_1fr_1fr_auto] md:items-end">
@@ -25,16 +39,35 @@ export function MachineCounter({ capacity, count, price, cyclesPerDay, monthlyRe
         </div>
         <div className="space-y-1">
           <Label className="text-xs text-muted-foreground">Nombre</Label>
-          <Input type="number" defaultValue={count} min={0} />
+          <Input
+            type="number"
+            value={count}
+            min={0}
+            onChange={(e) => onCountChange?.(Number(e.target.value))}
+          />
         </div>
         <div className="space-y-1">
           <Label className="text-xs text-muted-foreground">Prix (€)</Label>
-          <Input type="number" step="0.5" defaultValue={price} />
+          <Input
+            type="number"
+            step="0.5"
+            value={price}
+            onChange={(e) => onPriceChange?.(Number(e.target.value))}
+          />
         </div>
         <div className="space-y-1">
           <Label className="text-xs text-muted-foreground">Cycles/jour</Label>
-          <Input type="number" defaultValue={cyclesPerDay} />
+          <Input
+            type="number"
+            value={cyclesPerDay}
+            onChange={(e) => onCyclesChange?.(Number(e.target.value))}
+          />
         </div>
+        {onRemove && (
+          <Button variant="ghost" size="icon" onClick={onRemove}>
+            <Trash2 className="h-4 w-4 text-muted-foreground" />
+          </Button>
+        )}
       </CardContent>
     </FormCard>
   );
