@@ -2,9 +2,17 @@ import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@
 import { Button } from "@/components/ui/button";
 import { Plus, Receipt } from "lucide-react";
 import { CostRow } from "./CostRow";
-import { MOCK_FIXED_COSTS, MOCK_FIXED_TOTAL } from "@/components/simulator/mockData";
+import {
+  addFixedCost,
+  removeFixedCost,
+  updateFixedCost,
+  type SimulatorChargesFormProps,
+} from "./types";
 
-export function FixedCostsCard() {
+export function FixedCostsCard({ project, onUpdate }: SimulatorChargesFormProps) {
+  const items = project.fixedCosts ?? [];
+  const total = items.reduce((s, c) => s + (c.amount || 0), 0);
+
   return (
     <FormCard className="">
       <CardHeader>
@@ -15,29 +23,29 @@ export function FixedCostsCard() {
         <CardDescription>Montants fixes à payer chaque mois</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {MOCK_FIXED_COSTS.map((c) => (
-          <CostRow key={c.id} label={c.label} amount={c.amount || undefined} placeholder="0" />
+        {items.map((c) => (
+          <CostRow
+            key={c.id}
+            label={c.label}
+            value={c.amount}
+            placeholder="0"
+            onChange={(v) => onUpdate({ fixedCosts: updateFixedCost(project.fixedCosts, c.id, v) })}
+            onRemove={() => onUpdate({ fixedCosts: removeFixedCost(project.fixedCosts, c.id) })}
+          />
         ))}
-        <div className="border-t pt-4">
-          <div className="mb-3 text-xs uppercase tracking-wider text-muted-foreground">
-            Abonnements
-          </div>
-          <CostRow label="Centrale de paiement" placeholder="Montant" />
-          <div className="mt-3">
-            <Button variant="ghost" size="sm" className="gap-2 text-primary">
-              <Plus className="h-4 w-4" />
-              Ajouter un abonnement
-            </Button>
-          </div>
-        </div>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => onUpdate({ fixedCosts: addFixedCost(project.fixedCosts) })}
+        >
           <Plus className="h-4 w-4" />
           Ajouter une charge fixe
         </Button>
         <div className="flex items-center justify-between rounded-lg bg-primary/10 px-4 py-3">
           <span className="text-sm font-medium text-foreground">Total charges fixes</span>
           <span className="text-lg font-bold text-primary">
-            {MOCK_FIXED_TOTAL.toLocaleString("fr-FR")} €
+            {total.toLocaleString("fr-FR")} €
             <span className="ml-1 text-sm font-normal text-muted-foreground">/ mois</span>
           </span>
         </div>
