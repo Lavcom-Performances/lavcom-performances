@@ -9,13 +9,19 @@ export interface CountrySelectOption extends SimulatorSelectOption<CountryValue>
 }
 
 export interface OpeningHoursSelectOption extends SimulatorSelectOption<OpeningHoursValue> {
-  openAt: number;
-  closeAt: number;
+  openAt: string;
+  closeAt: string;
+}
+
+export interface OpeningDaysSelectOption extends SimulatorSelectOption<OpeningDaysValue> {
+  days: WeekDay[];
 }
 
 export interface LocalShapeSelectOption extends SimulatorSelectOption<LocalShapeValue> {
   shape: string | undefined;
 }
+
+export type WeekDay = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
 
 export type CountryValue = "fr" | "be" | "ch" | "lu" | "mc" | "de" | "nl" | "es" | "it";
 export type ZoneTypeValue = "centre-ville"
@@ -43,7 +49,7 @@ export type FixedCostCategory =
 export type CountryOption = CountrySelectOption;
 export type ZoneTypeOption = SimulatorSelectOption<ZoneTypeValue>;
 export type OpeningHoursOption = OpeningHoursSelectOption;
-export type OpeningDaysOption = SimulatorSelectOption<OpeningDaysValue>;
+export type OpeningDaysOption = OpeningDaysSelectOption;
 export type LocalShapeOption = LocalShapeSelectOption;
 export type StructuralObstacleOption = SimulatorSelectOption<StructuralObstacleValue>;
 export type FacadeOption = SimulatorSelectOption<FacadeOptionValue>;
