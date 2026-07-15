@@ -11,7 +11,7 @@ import {
   type WeekDayValue,
 } from "@/config/simulatorFormOptions";
 import type { OpeningHoursValue, OpeningDaysValue } from "@/types/simulatorFormOptions.types";
-import type { SimulatorProjectFormProps } from "./types";
+import type { SimulatorProjectFormProps } from "@/types/simulator.types";
 
 export function OpeningHoursCard({ project, onUpdate }: SimulatorProjectFormProps) {
   const hours = project.openingHours ?? {};

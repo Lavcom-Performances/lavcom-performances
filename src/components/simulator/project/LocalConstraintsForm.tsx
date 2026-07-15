@@ -19,7 +19,7 @@ import type {
   FacadeOptionValue,
   TechnicalConstraintValue,
 } from "@/types/simulatorFormOptions.types";
-import type { SimulatorProjectFormProps } from "./types";
+import type { SimulatorProjectFormProps } from "@/types/simulator.types";
 
 export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectFormProps) {
   return (

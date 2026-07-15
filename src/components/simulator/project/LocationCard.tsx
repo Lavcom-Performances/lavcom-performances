@@ -5,7 +5,7 @@ import { FormField } from "./FormField";
 import { AddressAutocomplete } from "./AddressAutocomplete";
 import { ZONE_TYPES, COUNTRIES } from "@/config/simulatorFormOptions";
 import type { AddressSearchResult } from "@/hooks/useAddressSearch";
-import type { SimulatorProjectFormProps } from "./types";
+import type { SimulatorProjectFormProps } from "@/types/simulator.types";
 
 export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
   const country = (project.country ?? "fr").toString();

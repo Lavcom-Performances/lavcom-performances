@@ -2,7 +2,7 @@ import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { SimulatorTabsTrigger } from "./SimulatorTabsTrigger";
 import { ProjectInfoForm } from "./ProjectInfoForm";
 import { LocalConstraintsForm } from "./LocalConstraintsForm";
-import type { SimulatorProjectFormProps } from "./types";
+import type { SimulatorProjectFormProps } from "@/types/simulator.types";
 
 export function ProjectTabs({ project, onUpdate }: SimulatorProjectFormProps) {
   return (

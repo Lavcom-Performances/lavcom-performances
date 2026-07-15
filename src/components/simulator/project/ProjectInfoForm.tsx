@@ -1,6 +1,6 @@
 import { TabSectionHeading } from "./TabSectionHeading";
 import { ProjectDetailsCard } from "./ProjectDetailsCard";
-import type { SimulatorProjectFormProps } from "./types";
+import type { SimulatorProjectFormProps } from "@/types/simulator.types";
 
 export function ProjectInfoForm({ project, onUpdate }: SimulatorProjectFormProps) {
   return (

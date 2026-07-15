@@ -2,7 +2,7 @@ import { FormCard, CardContent, CardHeader, CardTitle } from "@/components/ui/fo
 import { Input } from "@/components/ui/input";
 import { Ruler } from "lucide-react";
 import { FormField } from "./FormField";
-import type { SimulatorProjectFormProps } from "./types";
+import type { SimulatorProjectFormProps } from "@/types/simulator.types";
 
 function getSurfaceHint(num: number): string | undefined {
   if (Number.isNaN(num) || num <= 0) return undefined;

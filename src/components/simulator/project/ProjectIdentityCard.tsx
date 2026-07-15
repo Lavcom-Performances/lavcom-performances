@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Store, ClipboardPenLine } from "lucide-react";
 import { FormField } from "./FormField";
-import type { SimulatorProjectFormProps } from "./types";
+import type { SimulatorProjectFormProps } from "@/types/simulator.types";
 
 export function ProjectIdentityCard({ project, onUpdate }: SimulatorProjectFormProps) {
   return (
