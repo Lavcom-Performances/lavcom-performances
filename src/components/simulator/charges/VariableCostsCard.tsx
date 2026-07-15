@@ -2,9 +2,17 @@ import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@
 import { Button } from "@/components/ui/button";
 import { Plus, TrendingUp } from "lucide-react";
 import { CostRow } from "./CostRow";
-import { MOCK_VARIABLE_COSTS, MOCK_VARIABLE_TOTAL_PERCENT } from "@/components/simulator/mockData";
+import {
+  addVariableCost,
+  removeVariableCost,
+  updateVariableCost,
+  type SimulatorChargesFormProps,
+} from "./types";
 
-export function VariableCostsCard() {
+export function VariableCostsCard({ project, onUpdate }: SimulatorChargesFormProps) {
+  const items = project.variableCosts ?? [];
+  const totalPercent = items.reduce((s, c) => s + (c.percent || 0), 0);
+
   return (
     <FormCard className="">
       <CardHeader>
@@ -15,23 +23,30 @@ export function VariableCostsCard() {
         <CardDescription>Estimées en pourcentage du chiffre d'affaires</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {MOCK_VARIABLE_COSTS.map((c) => (
+        {items.map((c) => (
           <CostRow
             key={c.id}
             label={c.label}
-            amount={c.percent || undefined}
+            value={c.percent}
             suffix="% du CA"
             placeholder="0"
+            onChange={(v) => onUpdate({ variableCosts: updateVariableCost(project.variableCosts, c.id, v) })}
+            onRemove={() => onUpdate({ variableCosts: removeVariableCost(project.variableCosts, c.id) })}
           />
         ))}
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => onUpdate({ variableCosts: addVariableCost(project.variableCosts) })}
+        >
           <Plus className="h-4 w-4" />
           Ajouter une charge variable
         </Button>
         <div className="flex items-center justify-between rounded-lg bg-primary/10 px-4 py-3">
           <span className="text-sm font-medium text-foreground">Total charges variables</span>
           <span className="text-lg font-bold text-primary">
-            {MOCK_VARIABLE_TOTAL_PERCENT.toFixed(1)} %
+            {totalPercent.toFixed(1)} %
             <span className="ml-1 text-sm font-normal text-muted-foreground">du CA</span>
           </span>
         </div>
