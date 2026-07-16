@@ -12,9 +12,10 @@ import {
 } from "@/config/simulatorFormOptions";
 import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
 import type { OpeningHoursValue, OpeningDaysValue, OpeningHoursOption, OpeningDaysOption, WeekDay } from "@/types/simulatorFormOptions.types";
-import type { SimulatorProjectFormProps } from "@/types/simulator.types";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
-export function OpeningHoursCard({ project, onUpdate }: SimulatorProjectFormProps) {
+export function OpeningHoursCard() {
+  const { project, updateProject: onUpdate } = useSimulatorProjectContext();
   const getPresetHoursOption = (value: OpeningHoursValue): OpeningHoursOption => OPENING_HOURS_OPTIONS.find((option) => option.value === value)
   const getPresetDaysOption = (value: OpeningDaysValue): OpeningDaysOption => OPENING_DAYS_OPTIONS.find((option) => option.value === value)
   

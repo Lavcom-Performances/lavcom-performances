@@ -1,66 +1,62 @@
 ## Objectif
 
-Câbler l'ensemble des composants du simulateur payant (`src/components/simulator/**`) sur le hook `useSimulationProject` défini dans `src/hooks/useSimulatorProject.ts` afin de persister l'état du projet dans le `localStorage` à chaque modification, et compléter les valeurs par défaut du hook.
+Remplacer le "props drilling" (`project`/`onUpdate` passés de page → tabs → forms → cards) par un `SimulatorProjectContext` unique qui expose l'état du hook `useSimulatorProject`, tout en préservant les refactorisations réalisées dans `src/components/simulator/` (fichiers `types.ts` par domaine, helpers `updateMachineList`, `addFixedCost`, etc.).
 
-## Modifications à apporter au hook `src/hooks/useSimulatorProject.ts`
+## Portée
 
-Le hook fonctionne, mais deux points sont à adapter :
+Ajout d'un provider monté au niveau `SimulatorLayout` (une seule instance partagée entre les 3 pages du simulateur payant : Projet, Machines, Charges). Les composants consomment le contexte via un hook dédié. Aucune modification de la logique métier ni des helpers dans les `types.ts` de domaine.
 
-1. **Nom du hook exporté** : il s'appelle actuellement `useSimulationProject`, identique à celui utilisé par le module SaaS (`src/hooks/useSimulationProject.ts`). Cela crée une ambiguïté forte (imports mixés, risque de bug). Le renommer en `**useSimulatorProject**` pour matcher le nom du fichier, et réserver `useSimulationProject` au module SaaS existant.
+## Fichiers créés
 
-## Intégration dans les composants du simulateur
+**`src/contexts/SimulatorProjectContext.tsx`**
+- `SimulatorProjectContext` (React Context) typé sur la valeur de retour de `useSimulatorProject`.
+- `SimulatorProjectProvider` : instancie `useSimulatorProject()` une seule fois et fournit `{ project, updateProject, resetProject, clearStorage, setProject, isLoaded }`.
+- `useSimulatorProjectContext()` : hook consommateur qui `throw` si utilisé hors provider (garde-fou).
+- Optionnel : sélecteurs pratiques exportés (`useSimulatorProjectValue()`, `useSimulatorProjectUpdate()`) — retenu si tu veux limiter les re-rendus, sinon on garde un seul hook.
 
-### Principe
+## Fichiers modifiés
 
-- Un unique appel à `useSimulatorProject()` par page (`SimulatorProjectPage`, `SimulatorMachinesPage`, `SimulatorChargesPage`, `SimulatorResultsPage`).
-- La page passe `project` et `updateProject` en props aux sous-composants (pattern déjà en place dans le module `simulation/`).
-- Le `localStorage` est mis à jour automatiquement par le `useEffect` du hook.
+1. **`src/components/layout/SimulatorLayout.tsx`**  
+   Envelopper `<Outlet />` avec `<SimulatorProjectProvider>` pour que les 3 pages partagent le même état (utile si l'utilisateur navigue entre les onglets sans recharger la page).
 
-### Étape 1 — Projet & localisation (`SimulatorProjectPage`)
+2. **Pages** — suppression de l'appel local à `useSimulatorProject` et des props passées aux composants :
+   - `src/pages/simulator/SimulatorProjectPage.tsx` → `<ProjectTabs />` sans props
+   - `src/pages/simulator/SimulatorMachinesPage.tsx` → `<WashersConfigCard />`, `<DryersConfigCard />`, `<MachineMixSummary />` sans props
+   - `src/pages/simulator/SimulatorChargesPage.tsx` → `<FixedCostsCard />`, `<VariableCostsCard />` sans props
 
-- `ProjectTabs`, `ProjectInfoForm`, `LocalConstraintsForm` reçoivent `project` + `onUpdate`.
-- `**ProjectIdentityCard**` : `projectName` et `scenarioName` — remplacer `defaultValue` par `value` + `onChange` -> `updateProject`.
-- `**LocationCard**` : supprimer l'état local `ProjectLocationState` de `ProjectInfoForm` ; brancher directement sur `project.country`, `project.address`, `project.city`, `project.postalCode`, `project.departmentCode`, `project.departmentName`, `project.region` via `updateProject`.
-- `**OpeningHoursCard**` : conserver l'état local pour l'UI (preset + custom time/days), mais écrire dans `project.openingHours` et `project.openingDays` à chaque changement. Les valeurs stockées correspondent aux options de `OPENING_HOURS_OPTIONS` / `OPENING_DAYS_OPTIONS` (incluant `custom` + valeurs personnalisées).
-- `**SurfaceCard**` : remplacer `useState("")` par `project.surface` / `updateProject({ surface: ... })`.
-- `**LocalConstraintsForm**` : brancher les `RadioCard` (`localShape`, `structuralObstacles`, `technicalConstraints`, `canModifyFacade`) et l'input `doorWidth` sur `project` + `updateProject`. Ceci nécessite d'ajouter des props `value` / `onValueChange` à `RadioCard` (actuellement uniquement `defaultValue`).
+3. **Composants simulator** — chaque composant consomme `useSimulatorProjectContext()` au lieu de recevoir `project` / `onUpdate` en props. Les signatures deviennent `export function X()` sans props liées au projet (les props purement UI comme `children` sont conservées).
+   - `project/ProjectTabs.tsx`
+   - `project/ProjectInfoForm.tsx`
+   - `project/LocalConstraintsForm.tsx`
+   - `project/ProjectDetailsCard.tsx`
+   - `project/ProjectIdentityCard.tsx`
+   - `project/LocationCard.tsx`
+   - `project/OpeningHoursCard.tsx`
+   - `project/SurfaceCard.tsx`
+   - `machines/WashersConfigCard.tsx`
+   - `machines/DryersConfigCard.tsx`
+   - `machines/MachineMixSummary.tsx`
+   - `charges/FixedCostsCard.tsx`
+   - `charges/VariableCostsCard.tsx`
 
-### Étape 2 — Machines (`SimulatorMachinesPage`)
+## Ce qu'on NE touche PAS
 
-- `**WashersConfigCard` / `DryersConfigCard**` : remplacer `MOCK_WASHERS` / `MOCK_DRYERS` par `project.machines.filter(m => m.type === 'washer' | 'dryer')`.
-- `**MachineCounter**` : ajouter props `onCountChange`, `onPriceChange`, `onCyclesChange` qui appellent `updateProject({ machines: ... })` (mise à jour immuable d'un item).
-- Bouton "Ajouter" -> ajoute une entrée à `project.machines` avec un `id` unique (`crypto.randomUUID()`).
-- `**MachineMixSummary**` : dérive ses totaux depuis `project.machines` (au lieu de mock).
+- Les helpers purs (`updateMachineList`, `addFixedCost`, `removeVariableCost`, `machineMonthlyRevenue`, …) dans `charges/types.ts`, `machines/types.ts`, `project/types.ts` — ils restent utilisés tels quels dans les cards.
+- Les composants de présentation "feuilles" (`CostRow`, `MachineCounter`, `RadioCard`, `FormField`, `AddressAutocomplete`, `TabSectionHeading`, `PricingHintBanner`, `ChargesTotalsBanner`) — ils gardent leurs props locales `value`/`onChange` car ils sont réutilisables et n'ont pas à connaître le projet.
+- Le hook `useSimulatorProject` lui-même (aucune modification).
+- Le type `SimulatorProjectFormProps` dans `src/types/simulator.types.ts` — laissé en place le temps de la migration, à supprimer une fois tous les consommateurs migrés (dernier commit du chantier).
 
-### Étape 3 — Charges (`SimulatorChargesPage`)
+## Points techniques
 
-- `**FixedCostsCard**` : itère sur `project.fixedCosts` ; `CostRow` reçoit `value` + `onChange` ; suppression = filtre sur `id` ; ajout = append.
-- `**VariableCostsCard**` : idem avec `project.variableCosts` et `percent`.
-- `**ChargesTotalsBanner**` : totaux dérivés de `project.fixedCosts` / `project.variableCosts`.
-
-### Étape 4 — Résultats (`SimulatorResultsPage`)
-
-- Passe `project` aux composants existants (`ResultsHeroKpis`, `ResultsSummaryCard`, etc.).
-- Pas de calculs pour le moment.
-
-## Détails techniques
-
-- **Aucun changement fonctionnel** sur le module SaaS `src/pages/simulation/**` ni sur `src/hooks/useSimulationProject.ts` (mandat "additive only").
-- **Clé de stockage** : reste `"simulationProject"` (déjà défini dans le hook).
-- `**MOCK_***` dans `src/components/simulator/mockData.ts` : conservés uniquement pour le calcul de démo (CA affiché) tant que les résultats ne sont pas branchés, puis remplacés à l'étape 4.
-- **Champs typés `Partial<OpeningHoursOption>` / `Partial<OpeningDaysOption>**` : je stockerai la clé `value` + les champs personnalisés (`openAt`/`closeAt` ou `days`) pour rester compatible avec le type existant.
+- Le provider est monté dans `SimulatorLayout`, pas dans `App.tsx`, pour garder l'état isolé au sous-arbre `/simulator/*` et permettre un `resetProject` en quittant le layout si souhaité plus tard.
+- Les pages de l'ancien parcours `/simulation/*` (SaaS intégré) restent sur `useSimulationProject` — aucun changement là-bas.
+- Le hook `useSimulatorProject` doit être appelé **une seule fois** par arbre (dans le provider). Sinon chaque page instancierait son propre state avec un `isLoaded` séparé et des writes concurrents dans `localStorage`. Le montage dans `SimulatorLayout` garantit cette unicité.
+- Compatible avec la future validation Zod : `useSimulatorValidation` consommera aussi le contexte au lieu de recevoir `project` en argument (à faire dans un second chantier).
 
 ## Ordre d'implémentation
 
-1. Adapter le hook (renommage + defaults complets).
-2. Câbler la page Projet (étape la plus riche).
-3. Câbler Machines.
-4. Câbler Charges.
-5. Câbler Résultats + calcul.
-6. Vérifier persistance localStorage via Playwright (recharger la page, valeurs conservées).
-
-## Question ouverte
-
-Souhaites-tu que je renomme la clé `localStorage` en `"lavcom_simulator_project"` pour la distinguer clairement de celle du module SaaS (`"lavcom_simulation_project"`) ? Sinon je garde `"simulationProject"` telle qu'elle est dans le hook actuel.
-
-Réponse : garder `"simulationProject"`
+1. Créer `SimulatorProjectContext.tsx` + provider + hook.
+2. Wrapper `SimulatorLayout`.
+3. Migrer les cards (feuilles du drilling) → puis les forms → puis les tabs → puis les pages.
+4. Supprimer `SimulatorProjectFormProps` de `src/types/simulator.types.ts` et les imports orphelins.
+5. Vérification build.

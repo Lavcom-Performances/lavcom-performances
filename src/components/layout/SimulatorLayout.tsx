@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Home } from "lucide-react";
 import { SimulatorStepper } from "@/components/simulator/layout/SimulatorStepper";
+import { SimulatorProjectProvider } from "@/contexts/SimulatorProjectContext";
 
 const STEP_BY_PATH: Record<string, 1 | 2 | 3 | 4> = {
   "/simulator/project": 1,
@@ -33,7 +34,9 @@ export default function SimulatorLayout() {
       <SimulatorStepper currentStep={currentStep} />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
-        <Outlet />
+        <SimulatorProjectProvider>
+          <Outlet />
+        </SimulatorProjectProvider>
       </main>
 
       <footer className="border-t bg-muted/30 py-6">

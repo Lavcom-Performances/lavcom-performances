@@ -6,10 +6,11 @@ import {
   addVariableCost,
   removeVariableCost,
   updateVariableCost,
-  type SimulatorChargesFormProps,
 } from "./types";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
-export function VariableCostsCard({ project, onUpdate }: SimulatorChargesFormProps) {
+export function VariableCostsCard() {
+  const { project, updateProject } = useSimulatorProjectContext();
   const items = project.variableCosts ?? [];
   const totalPercent = items.reduce((s, c) => s + (c.percent || 0), 0);
 
@@ -30,15 +31,15 @@ export function VariableCostsCard({ project, onUpdate }: SimulatorChargesFormPro
             value={c.percent}
             suffix="% du CA"
             placeholder="0"
-            onChange={(v) => onUpdate({ variableCosts: updateVariableCost(project.variableCosts, c.id, v) })}
-            onRemove={() => onUpdate({ variableCosts: removeVariableCost(project.variableCosts, c.id) })}
+            onChange={(v) => updateProject({ variableCosts: updateVariableCost(project.variableCosts, c.id, v) })}
+            onRemove={() => updateProject({ variableCosts: removeVariableCost(project.variableCosts, c.id) })}
           />
         ))}
         <Button
           variant="outline"
           size="sm"
           className="gap-2"
-          onClick={() => onUpdate({ variableCosts: addVariableCost(project.variableCosts) })}
+          onClick={() => updateProject({ variableCosts: addVariableCost(project.variableCosts) })}
         >
           <Plus className="h-4 w-4" />
           Ajouter une charge variable

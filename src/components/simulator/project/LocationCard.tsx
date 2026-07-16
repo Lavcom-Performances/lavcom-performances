@@ -5,11 +5,12 @@ import { FormField } from "./FormField";
 import { AddressAutocomplete } from "./AddressAutocomplete";
 import { ZONE_TYPES, COUNTRIES } from "@/config/simulatorFormOptions";
 import type { AddressSearchResult } from "@/hooks/useAddressSearch";
-import type { SimulatorProjectFormProps } from "@/types/simulator.types";
 import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
 import { CountryValue } from "@/types/simulatorFormOptions.types";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
-export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
+export function LocationCard() {
+  const { project, updateProject } = useSimulatorProjectContext();
   const projectCountry = COUNTRIES.find(
     (country) => country.label === (project.country || defaultSimulationProject.country)
   );
@@ -19,7 +20,7 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
   ).label;
 
   const handleCountryChange = (value: CountryValue) => {
-    onUpdate({
+    updateProject({
       country: getCountryLabel(value),
       address: "",
       city: "",
@@ -31,7 +32,7 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
   };
 
   const handleAddressSelect = (selectedAddress: AddressSearchResult) => {
-    onUpdate({
+    updateProject({
       address: selectedAddress.address,
       city: selectedAddress.city,
       postalCode: selectedAddress.postalCode,
@@ -42,7 +43,7 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
   };
 
   const handleAddressInputChange = (value: string) => {
-    onUpdate({
+    updateProject({
       address: value,
       city: "",
       postalCode: "",
@@ -112,7 +113,7 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
       <FormField label="Type de zone" htmlFor="zone" icon={Map} required>
         <Select
           value={project.zoneType ?? defaultSimulationProject.zoneType}
-          onValueChange={(value) => onUpdate({ zoneType: value })}
+          onValueChange={(value) => updateProject({ zoneType: value })}
         >
           <SelectTrigger id="zone" className="bg-white shadow-form">
             <SelectValue placeholder="Sélectionnez un type de zone" />
