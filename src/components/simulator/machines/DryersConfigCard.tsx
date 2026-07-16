@@ -7,15 +7,17 @@ import {
   machineMonthlyRevenue,
   removeMachine,
   updateMachineList,
-  type SimulatorMachinesFormProps,
 } from "./types";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import type { MachineConfig } from "@/types/simulator.types";
 
-export function DryersConfigCard({ project, onUpdate }: SimulatorMachinesFormProps) {
+export function DryersConfigCard() {
+  const { project, updateProject } = useSimulatorProjectContext();
   const dryers = (project.machines ?? []).filter((m) => m.type === "dryer");
   const total = dryers.reduce((sum, m) => sum + machineMonthlyRevenue(m), 0);
 
-  const patch = (id: string, p: Partial<typeof dryers[number]>) =>
-    onUpdate({ machines: updateMachineList(project.machines, id, p) });
+  const patch = (id: string, p: Partial<MachineConfig>) =>
+    updateProject({ machines: updateMachineList(project.machines, id, p) });
 
   return (
     <FormCard className="">
@@ -38,14 +40,14 @@ export function DryersConfigCard({ project, onUpdate }: SimulatorMachinesFormPro
             onCountChange={(v) => patch(d.id, { count: v })}
             onPriceChange={(v) => patch(d.id, { price: v })}
             onCyclesChange={(v) => patch(d.id, { cycles_day: v })}
-            onRemove={() => onUpdate({ machines: removeMachine(project.machines, d.id) })}
+            onRemove={() => updateProject({ machines: removeMachine(project.machines, d.id) })}
           />
         ))}
         <Button
           variant="outline"
           size="sm"
           className="gap-2"
-          onClick={() => onUpdate({ machines: addMachine(project.machines, "dryer") })}
+          onClick={() => updateProject({ machines: addMachine(project.machines, "dryer") })}
         >
           <Plus className="h-4 w-4" />
           Ajouter un sèche-linge
