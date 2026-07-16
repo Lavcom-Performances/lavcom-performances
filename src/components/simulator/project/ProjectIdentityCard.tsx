@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Store, ClipboardPenLine } from "lucide-react";
 import { FormField } from "./FormField";
 import type { SimulatorProjectFormProps } from "@/types/simulator.types";
+import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
 
 export function ProjectIdentityCard({ project, onUpdate }: SimulatorProjectFormProps) {
   return (
@@ -12,7 +13,7 @@ export function ProjectIdentityCard({ project, onUpdate }: SimulatorProjectFormP
           placeholder="Ex. : Laverie Bastille"
           className="bg-white shadow-form"
           required
-          value={project.projectName ?? ""}
+          value={project.projectName ?? defaultSimulationProject.projectName}
           onChange={(e) => onUpdate({ projectName: e.target.value })}
         />
       </FormField>
@@ -21,7 +22,7 @@ export function ProjectIdentityCard({ project, onUpdate }: SimulatorProjectFormP
           id="scenario-name"
           className="bg-white shadow-form"
           required
-          value={project.scenarioName ?? ""}
+          value={project.scenarioName ?? defaultSimulationProject.scenarioName}
           onChange={(e) => onUpdate({ scenarioName: e.target.value })}
         />
       </FormField>
