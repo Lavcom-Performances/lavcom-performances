@@ -1,62 +1,84 @@
 ## Objectif
 
-Remplacer le "props drilling" (`project`/`onUpdate` passés de page → tabs → forms → cards) par un `SimulatorProjectContext` unique qui expose l'état du hook `useSimulatorProject`, tout en préservant les refactorisations réalisées dans `src/components/simulator/` (fichiers `types.ts` par domaine, helpers `updateMachineList`, `addFixedCost`, etc.).
+Refactoriser `useSimulatorValidation` avec des schémas Zod couvrant l'ensemble des champs saisis dans `src/components/simulator/`, et supprimer le type `SimulatorProjectFormProps` (non utilisé après la migration vers le contexte).
 
-## Portée
+## 1. Suppression du type inutilisé
 
-Ajout d'un provider monté au niveau `SimulatorLayout` (une seule instance partagée entre les 3 pages du simulateur payant : Projet, Machines, Charges). Les composants consomment le contexte via un hook dédié. Aucune modification de la logique métier ni des helpers dans les `types.ts` de domaine.
+`src/types/simulator.types.ts` : supprimer `SimulatorProjectFormProps` (aucun consommateur — vérifié par recherche globale).
 
-## Fichiers créés
+## 2. Nouveau fichier `src/lib/validation/simulatorProjectSchema.ts`
 
-**`src/contexts/SimulatorProjectContext.tsx`**
-- `SimulatorProjectContext` (React Context) typé sur la valeur de retour de `useSimulatorProject`.
-- `SimulatorProjectProvider` : instancie `useSimulatorProject()` une seule fois et fournit `{ project, updateProject, resetProject, clearStorage, setProject, isLoaded }`.
-- `useSimulatorProjectContext()` : hook consommateur qui `throw` si utilisé hors provider (garde-fou).
-- Optionnel : sélecteurs pratiques exportés (`useSimulatorProjectValue()`, `useSimulatorProjectUpdate()`) — retenu si tu veux limiter les re-rendus, sinon on garde un seul hook.
+Regrouper la logique Zod dans un fichier dédié pour la garder lisible et réutilisable (par ex. futures étapes de submit). Un schéma par section, plus un schéma global.
 
-## Fichiers modifiés
+### Schémas par section
 
-1. **`src/components/layout/SimulatorLayout.tsx`**  
-   Envelopper `<Outlet />` avec `<SimulatorProjectProvider>` pour que les 3 pages partagent le même état (utile si l'utilisateur navigue entre les onglets sans recharger la page).
+**`projectInfoSchema`** (onglet Projet — `ProjectIdentityCard`, `LocationCard`, `OpeningHoursCard`)
+- `projectName` : `string().trim().min(3, "Le nom du projet est requis (min. 3 caractères)").max(100)`
+- `scenarioName` : `string().trim().min(1, "Le nom du scénario est requis").max(100)`
+- `country` : `string().min(1, "Le pays est requis")`
+- `address` : `string().trim().min(1, "L'adresse est requise").max(200)`
+- `city` : `string().trim().min(1, "La ville est requise")`
+- `postalCode` : `string().trim().min(1, "Le code postal est requis")`
+- `zoneType` : `enum([...ZONE_TYPES.map(z => z.value)], { message: "Le type de zone est requis" })`
+- `openingHours` : objet `{ value: enum(OPENING_HOURS_OPTIONS.value), openAt: string(regex HH:MM), closeAt: string(regex HH:MM) }` + `.refine` pour `value === "custom"` → `closeAt !== openAt` (message "Les horaires personnalisés sont invalides")
+- `openingDays` : objet `{ value: enum(OPENING_DAYS_OPTIONS.value), days: array(WeekDay).min(1, "Sélectionnez au moins un jour") }`
 
-2. **Pages** — suppression de l'appel local à `useSimulatorProject` et des props passées aux composants :
-   - `src/pages/simulator/SimulatorProjectPage.tsx` → `<ProjectTabs />` sans props
-   - `src/pages/simulator/SimulatorMachinesPage.tsx` → `<WashersConfigCard />`, `<DryersConfigCard />`, `<MachineMixSummary />` sans props
-   - `src/pages/simulator/SimulatorChargesPage.tsx` → `<FixedCostsCard />`, `<VariableCostsCard />` sans props
+**`localConstraintsSchema`** (onglet Projet — `SurfaceCard`, `LocalConstraintsForm`)
+- `surface` : `number({ message: "La surface est requise" }).min(10, "Surface minimum 10 m²").max(500, "Surface maximum 500 m²")`
+- `localShape`, `structuralObstacles`, `canModifyFacade`, `technicalConstraints` : `enum` construit à partir des options correspondantes (valeur `"unknown"` autorisée puisqu'elle fait partie des choix — seule l'absence de valeur déclenche une erreur)
+- `doorWidth` : `number().min(60, "Largeur de porte minimum 60 cm").max(300)`
 
-3. **Composants simulator** — chaque composant consomme `useSimulatorProjectContext()` au lieu de recevoir `project` / `onUpdate` en props. Les signatures deviennent `export function X()` sans props liées au projet (les props purement UI comme `children` sont conservées).
-   - `project/ProjectTabs.tsx`
-   - `project/ProjectInfoForm.tsx`
-   - `project/LocalConstraintsForm.tsx`
-   - `project/ProjectDetailsCard.tsx`
-   - `project/ProjectIdentityCard.tsx`
-   - `project/LocationCard.tsx`
-   - `project/OpeningHoursCard.tsx`
-   - `project/SurfaceCard.tsx`
-   - `machines/WashersConfigCard.tsx`
-   - `machines/DryersConfigCard.tsx`
-   - `machines/MachineMixSummary.tsx`
-   - `charges/FixedCostsCard.tsx`
-   - `charges/VariableCostsCard.tsx`
+**`machinesSchema`** (onglet Machines — `WashersConfigCard`, `DryersConfigCard`)
+- `machines` : `array(machineConfigSchema).min(1, "Ajoutez au moins une machine")`
+  - avec `.refine` : au moins une machine dont `count > 0` ("Configurez au moins une machine active")
+- `machineConfigSchema` : `{ id: string, type: enum(['washer','dryer']), capacity_kg: number.min(1), count: number.int().min(0), price: number.min(0), cycles_day: number.min(0) }`
 
-## Ce qu'on NE touche PAS
+**`chargesSchema`** (onglet Charges — `FixedCostsCard`, `VariableCostsCard`)
+- `fixedCosts` : `array({ id, label: string.trim().min(1, "Libellé requis"), amount: number.min(0, "Montant invalide"), category: enum([...]) })`
+- `variableCosts` : `array({ id, label: string.trim().min(1), percent: number.min(0).max(100, "0–100 %"), category: enum([...]) })`
+- `.refine` global : somme des `percent` ≤ 100 ("Total des charges variables > 100 %")
 
-- Les helpers purs (`updateMachineList`, `addFixedCost`, `removeVariableCost`, `machineMonthlyRevenue`, …) dans `charges/types.ts`, `machines/types.ts`, `project/types.ts` — ils restent utilisés tels quels dans les cards.
-- Les composants de présentation "feuilles" (`CostRow`, `MachineCounter`, `RadioCard`, `FormField`, `AddressAutocomplete`, `TabSectionHeading`, `PricingHintBanner`, `ChargesTotalsBanner`) — ils gardent leurs props locales `value`/`onChange` car ils sont réutilisables et n'ont pas à connaître le projet.
-- Le hook `useSimulatorProject` lui-même (aucune modification).
-- Le type `SimulatorProjectFormProps` dans `src/types/simulator.types.ts` — laissé en place le temps de la migration, à supprimer une fois tous les consommateurs migrés (dernier commit du chantier).
+### Schéma global
 
-## Points techniques
+`simulatorProjectSchema = projectInfoSchema.merge(localConstraintsSchema).merge(machinesSchema).merge(chargesSchema)`
 
-- Le provider est monté dans `SimulatorLayout`, pas dans `App.tsx`, pour garder l'état isolé au sous-arbre `/simulator/*` et permettre un `resetProject` en quittant le layout si souhaité plus tard.
-- Les pages de l'ancien parcours `/simulation/*` (SaaS intégré) restent sur `useSimulationProject` — aucun changement là-bas.
-- Le hook `useSimulatorProject` doit être appelé **une seule fois** par arbre (dans le provider). Sinon chaque page instancierait son propre state avec un `isLoaded` séparé et des writes concurrents dans `localStorage`. Le montage dans `SimulatorLayout` garantit cette unicité.
-- Compatible avec la future validation Zod : `useSimulatorValidation` consommera aussi le contexte au lieu de recevoir `project` en argument (à faire dans un second chantier).
+Export d'un type inféré : `export type SimulatorProjectInput = z.infer<typeof simulatorProjectSchema>`.
 
-## Ordre d'implémentation
+## 3. Refactor de `src/hooks/useSimulatorValidation.ts`
 
-1. Créer `SimulatorProjectContext.tsx` + provider + hook.
-2. Wrapper `SimulatorLayout`.
-3. Migrer les cards (feuilles du drilling) → puis les forms → puis les tabs → puis les pages.
-4. Supprimer `SimulatorProjectFormProps` de `src/types/simulator.types.ts` et les imports orphelins.
-5. Vérification build.
+- Renommer l'export en `useSimulatorValidation` (aujourd'hui incohérent : le fichier s'appelle `useSimulatorValidation.ts` mais exporte `useSimulationValidation`).
+- Consommer `useSimulatorProjectContext()` directement — plus besoin de passer `project` en argument, puisque tous les composants sont dans le Provider. Signature :
+  ```ts
+  useSimulatorValidation(): ValidationResult
+  ```
+- Types :
+  ```ts
+  type ValidationErrors = Partial<Record<keyof SimulatorProjectInput, string>>;
+  type SectionKey = 'projectInfo' | 'localConstraints' | 'machines' | 'charges';
+  interface ValidationResult {
+    isValid: boolean;
+    errors: ValidationErrors;         // { field: firstMessage }
+    errorCount: number;
+    sections: Record<SectionKey, { isValid: boolean; errorCount: number }>; // pour badges par onglet
+  }
+  ```
+- Implémentation : `useMemo` → `simulatorProjectSchema.safeParse(project)`, aplatir via `error.flatten().fieldErrors` (premier message par champ). Calculer `sections` en re-parsant chaque sous-schéma sur `project` (léger, tout est mémoïsé).
+- Supprimer les `console.log('[DEBUG] …')`.
+
+## 4. Vérifications
+
+- `bunx tsgo --noEmit` doit rester vert.
+- Aucun composant ne consomme aujourd'hui `useSimulationValidation` (grep) — le renommage est safe. Si le grep révèle un consommateur, adapter l'import dans le même passage.
+
+## Fichiers touchés
+
+- ✏️ `src/types/simulator.types.ts` — retire `SimulatorProjectFormProps`
+- 🆕 `src/lib/validation/simulatorProjectSchema.ts` — schémas Zod
+- ✏️ `src/hooks/useSimulatorValidation.ts` — refactor complet, consomme le contexte
+
+## Détails techniques
+
+- Zod est déjà présent dans le projet (utilisé ailleurs pour la validation formulaires) — pas d'ajout de dépendance.
+- Les enums Zod sont construits dynamiquement à partir des constantes de `src/config/simulatorFormOptions.ts` pour rester la source unique de vérité (pas de duplication des valeurs).
+- `safeParse` seulement, jamais `parse` — la validation est utilisée pour afficher des erreurs, pas pour interrompre l'exécution.
+- Le hook reste pur : pas d'effet de bord, pas d'appel réseau, `useMemo` sur `project`.
