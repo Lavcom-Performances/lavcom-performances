@@ -38,7 +38,7 @@ export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectForm
           description="La forme du local influence l'agencement optimal des machines"
           options={LOCAL_SHAPES}
           value={project.localShape ?? "unknown"}
-          onValueChange={(v) => onUpdate({ localShape: v as LocalShapeValue })}
+          onValueChange={(value) => onUpdate({ localShape: value as LocalShapeValue })}
           name="shape"
           required={false}
         />
@@ -49,7 +49,7 @@ export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectForm
           description="Poteaux, gaines techniques ou murs porteurs impactant l'espace utilisable"
           options={STRUCTURAL_OBSTACLES}
           value={project.structuralObstacles ?? "unknown"}
-          onValueChange={(v) => onUpdate({ structuralObstacles: v as StructuralObstacleValue })}
+          onValueChange={(value) => onUpdate({ structuralObstacles: value as StructuralObstacleValue })}
           name="obstacles"
           required={false}
         />
@@ -83,17 +83,17 @@ export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectForm
                 <Label className="text-sm font-medium">Façade modifiable ?</Label>
                 <RadioGroup
                   value={project.canModifyFacade ?? "unknown"}
-                  onValueChange={(v) => onUpdate({ canModifyFacade: v as FacadeOptionValue })}
+                  onValueChange={(value) => onUpdate({ canModifyFacade: value as FacadeOptionValue })}
                   className="space-y-2"
                 >
-                  {FACADE_OPTIONS.map((opt) => (
+                  {FACADE_OPTIONS.map((option) => (
                     <div
-                      key={opt.value}
+                      key={option.value}
                       className="flex items-center gap-3 rounded-lg border p-2 transition hover:bg-muted/40 shadow-form"
                     >
-                      <RadioGroupItem value={opt.value} id={`facade-${opt.value}`} />
-                      <Label htmlFor={`facade-${opt.value}`} className="flex-1 cursor-pointer text-sm">
-                        {opt.label}
+                      <RadioGroupItem value={option.value} id={`facade-${option.value}`} />
+                      <Label htmlFor={`facade-${option.value}`} className="flex-1 cursor-pointer text-sm">
+                        {option.label}
                       </Label>
                     </div>
                   ))}
@@ -108,7 +108,7 @@ export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectForm
             description="État des raccordements (eau, électricité, évacuation, ventilation)"
             options={TECHNICAL_CONSTRAINTS}
             value={project.technicalConstraints ?? "unknown"}
-            onValueChange={(v) => onUpdate({ technicalConstraints: v as TechnicalConstraintValue })}
+            onValueChange={(value) => onUpdate({ technicalConstraints: value as TechnicalConstraintValue })}
             name="tech"
             required={false}
           />
