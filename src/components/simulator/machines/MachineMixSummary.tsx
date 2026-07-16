@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
-import type { SimulatorMachinesFormProps } from "./types";
 import { machineMonthlyRevenue } from "./types";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
-export function MachineMixSummary({ project }: Pick<SimulatorMachinesFormProps, "project">) {
+export function MachineMixSummary() {
+  const { project } = useSimulatorProjectContext();
   const machines = project.machines ?? [];
   const washing = Math.round(
     machines.filter((m) => m.type === "washer").reduce((s, m) => s + machineMonthlyRevenue(m), 0),
