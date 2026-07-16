@@ -43,14 +43,14 @@ export const OPENING_HOURS_OPTIONS: readonly OpeningHoursOption[] = [
   { value: "7h-21h", label: "7h - 21h (standard)", openAt: "07:00", closeAt: "21:00" },
   { value: "7h-22h", label: "7h - 22h (étendu)", openAt: "07:00", closeAt: "22:00" },
   { value: "6h-22h", label: "6h - 22h (matinal)", openAt: "06:00", closeAt: "22:00" },
-  { value: "24h/24", label: "24h/24 (accès libre)", openAt: "00:00", closeAt: "24:00" },
-  { value: "custom", label: "Horaires personnalisés...", openAt: "", closeAt: "" },
+  { value: "24h/24", label: "24h/24 (accès libre)", openAt: "00:00", closeAt: "00:00" },
+  { value: "custom", label: "Horaires personnalisés...", openAt: "07:00", closeAt: "21:00" },
 ];
 
 export const OPENING_DAYS_OPTIONS: readonly OpeningDaysOption[] = [
   { value: "7/7", label: "7 / 7 jours", days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] },
   { value: "6/7", label: "6 / 7 jours (fermé le dimanche)", days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] },
-  { value: "custom", label: "Jours personnalisés...", days: [] },
+  { value: "custom", label: "Jours personnalisés...", days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] },
 ];
 
 export const WEEK_DAYS = [
@@ -62,8 +62,6 @@ export const WEEK_DAYS = [
   { value: "saturday", label: "Sam", isWeekend: true },
   { value: "sunday", label: "Dim", isWeekend: true },
 ] as const;
-
-export type WeekDayValue = typeof WEEK_DAYS[number]["value"];
 
 export const LOCAL_SHAPES: readonly LocalShapeOption[] = [
   { value: "rectangular", label: "Rectangulaire, murs plutôt pleins", shape: rectangleShape },

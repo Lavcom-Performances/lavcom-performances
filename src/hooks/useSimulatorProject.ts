@@ -4,7 +4,7 @@ import { SimulationProject, defaultMachines, defaultFixedCosts, defaultVariableC
 const STORAGE_KEY = "simulationProject";
 
 // Default values for a new simulator project (pre-filled with indicative values)
-const defaultSimulationProject: Partial<SimulationProject> = {
+export const defaultSimulationProject: Partial<SimulationProject> = {
   projectName: "",
   scenarioName: "Scénario 1",
   country: "fr",
