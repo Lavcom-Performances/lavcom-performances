@@ -1,10 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Store, ClipboardPenLine } from "lucide-react";
 import { FormField } from "./FormField";
-import type { SimulatorProjectFormProps } from "@/types/simulator.types";
-import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
+import { defaultSimulationProject, useSimulatorProject } from "@/hooks/useSimulatorProject";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
-export function ProjectIdentityCard({ project, onUpdate }: SimulatorProjectFormProps) {
+export function ProjectIdentityCard() {
+  const { project, updateProject } = useSimulatorProjectContext();
   return (
     <div className="grid gap-5 md:grid-cols-2">
       <FormField label="Nom du projet" htmlFor="project-name" icon={Store} required>
@@ -14,7 +15,7 @@ export function ProjectIdentityCard({ project, onUpdate }: SimulatorProjectFormP
           className="bg-white shadow-form"
           required
           value={project.projectName ?? defaultSimulationProject.projectName}
-          onChange={(e) => onUpdate({ projectName: e.target.value })}
+          onChange={(e) => updateProject({ projectName: e.target.value })}
         />
       </FormField>
       <FormField label="Nom du scénario" htmlFor="scenario-name" icon={ClipboardPenLine} required>
@@ -23,7 +24,7 @@ export function ProjectIdentityCard({ project, onUpdate }: SimulatorProjectFormP
           className="bg-white shadow-form"
           required
           value={project.scenarioName ?? defaultSimulationProject.scenarioName}
-          onChange={(e) => onUpdate({ scenarioName: e.target.value })}
+          onChange={(e) => updateProject({ scenarioName: e.target.value })}
         />
       </FormField>
     </div>
