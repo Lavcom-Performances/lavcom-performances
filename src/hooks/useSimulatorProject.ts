@@ -17,7 +17,7 @@ const defaultSimulationProject: Partial<SimulationProject> = {
   zoneType: "",
   openingHours: {},
   openingDays: {},
-  surface: 40,
+  surface: 0,
   localShape: "unknown",
   structuralObstacles: "unknown",
   doorWidth: 90,
