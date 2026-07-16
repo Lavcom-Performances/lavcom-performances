@@ -4,11 +4,8 @@ import { PricingHintBanner } from "@/components/simulator/machines/PricingHintBa
 import { WashersConfigCard } from "@/components/simulator/machines/WashersConfigCard";
 import { DryersConfigCard } from "@/components/simulator/machines/DryersConfigCard";
 import { MachineMixSummary } from "@/components/simulator/machines/MachineMixSummary";
-import { useSimulatorProject } from "@/hooks/useSimulatorProject";
 
 export default function SimulatorMachinesPage() {
-  const { project, updateProject } = useSimulatorProject();
-
   return (
     <>
       <SimulatorPageHeader
@@ -19,9 +16,9 @@ export default function SimulatorMachinesPage() {
         <PricingHintBanner>
           Configuration pré-remplie avec une laverie type – ajustez selon votre projet
         </PricingHintBanner>
-        <WashersConfigCard project={project} onUpdate={updateProject} />
-        <DryersConfigCard project={project} onUpdate={updateProject} />
-        <MachineMixSummary project={project} />
+        <WashersConfigCard />
+        <DryersConfigCard />
+        <MachineMixSummary />
       </div>
       <SimulatorFooterNav
         previousPath="/simulator/project"
