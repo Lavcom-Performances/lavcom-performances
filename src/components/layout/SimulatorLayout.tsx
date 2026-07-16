@@ -34,7 +34,9 @@ export default function SimulatorLayout() {
       <SimulatorStepper currentStep={currentStep} />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
-        <Outlet />
+        <SimulatorProjectProvider>
+          <Outlet />
+        </SimulatorProjectProvider>
       </main>
 
       <footer className="border-t bg-muted/30 py-6">
