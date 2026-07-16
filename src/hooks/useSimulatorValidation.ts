@@ -1,52 +1,70 @@
 import { useMemo } from "react";
-import { SimulationProject } from "@/types/simulator.types";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import {
+  sectionSchemas,
+  simulatorProjectSchema,
+  type SimulatorProjectInput,
+  type SimulatorValidationSection,
+} from "@/lib/validation/simulatorProjectSchema";
 
-export interface ValidationErrors {
-  projectName?: string;
-  city?: string;
-  zoneType?: string;
-  surface?: string;
-  openingHours?: string;
+export type ValidationErrors = Partial<Record<keyof SimulatorProjectInput, string>>;
+
+export interface ValidationSectionResult {
+  isValid: boolean;
+  errorCount: number;
 }
 
 export interface ValidationResult {
   isValid: boolean;
   errors: ValidationErrors;
   errorCount: number;
+  sections: Record<SimulatorValidationSection, ValidationSectionResult>;
 }
 
-export function useSimulationValidation(project: SimulationProject): ValidationResult {
+function firstMessages(
+  fieldErrors: Record<string, string[] | undefined>,
+): ValidationErrors {
+  const out: ValidationErrors = {};
+  for (const [key, messages] of Object.entries(fieldErrors)) {
+    if (messages && messages.length > 0) {
+      out[key as keyof SimulatorProjectInput] = messages[0];
+    }
+  }
+  return out;
+}
+
+export function useSimulatorValidation(): ValidationResult {
+  const { project } = useSimulatorProjectContext();
+
   return useMemo(() => {
-    const errors: ValidationErrors = {};
-
-    if (!project.projectName || project.projectName.trim().length < 3) {
-      errors.projectName = "Le nom du projet est requis (min. 3 caractères)";
-    }
-
-    if (!project.city || project.city.trim().length === 0) {
-      errors.city = "La ville est requise";
-    }
-
-    if (!project.zoneType) {
-      errors.zoneType = "Le type de zone est requis";
-    }
-
-    if (!project.surface || project.surface < 10) {
-      errors.surface = "La surface est requise (min. 10 m²)";
-    }
-
-    if (!project.openingHours) {
-      errors.openingHours = "Les horaires d'ouverture sont requis";
-    }
-
+    const result = simulatorProjectSchema.safeParse(project);
+    const errors: ValidationErrors = result.success
+      ? {}
+      : firstMessages(result.error.flatten().fieldErrors);
     const errorCount = Object.keys(errors).length;
 
-    console.log('[DEBUG] Validation - errors:', errors);
+    const sections = (Object.keys(sectionSchemas) as SimulatorValidationSection[]).reduce(
+      (acc, key) => {
+        const sectionResult = sectionSchemas[key].safeParse(project);
+        if (sectionResult.success) {
+          acc[key] = { isValid: true, errorCount: 0 };
+        } else {
+          const fieldErrors = sectionResult.error.flatten().fieldErrors;
+          const count = Object.values(fieldErrors).filter(
+            (msgs) => msgs && msgs.length > 0,
+          ).length;
+          acc[key] = { isValid: count === 0, errorCount: count };
+        }
+        return acc;
+      },
+      {} as Record<SimulatorValidationSection, ValidationSectionResult>,
+    );
 
     return {
-      isValid: errorCount === 0,
+      isValid: result.success,
       errors,
       errorCount,
+      sections,
     };
   }, [project]);
 }

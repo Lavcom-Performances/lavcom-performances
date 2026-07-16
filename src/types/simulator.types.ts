@@ -59,10 +59,6 @@ export interface SimulationProject {
   updatedAt?: Date;
 }
 
-export interface SimulatorProjectFormProps {
-  project: Partial<SimulationProject>;
-  onUpdate: (updates: Partial<SimulationProject>) => void;
-}
 
 // Indicative values ​​for fixed costs (based on market averages)
 export const defaultFixedCosts: FixedCostItem[] = [
