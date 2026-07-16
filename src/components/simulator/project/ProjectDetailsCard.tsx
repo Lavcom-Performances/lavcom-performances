@@ -3,9 +3,8 @@ import { Building2 } from "lucide-react";
 import { ProjectIdentityCard } from "./ProjectIdentityCard";
 import { LocationCard } from "./LocationCard";
 import { OpeningHoursCard } from "./OpeningHoursCard";
-import type { SimulatorProjectFormProps } from "@/types/simulator.types";
 
-export function ProjectDetailsCard({ project, onUpdate }: SimulatorProjectFormProps) {
+export function ProjectDetailsCard() {
   return (
     <FormCard>
       <CardHeader>
@@ -16,9 +15,9 @@ export function ProjectDetailsCard({ project, onUpdate }: SimulatorProjectFormPr
         <CardDescription>Ces informations nous aideront à personnaliser votre simulation</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <ProjectIdentityCard project={project} onUpdate={onUpdate} />
-        <LocationCard project={project} onUpdate={onUpdate} />
-        <OpeningHoursCard project={project} onUpdate={onUpdate} />
+        <ProjectIdentityCard />
+        <LocationCard />
+        <OpeningHoursCard />
       </CardContent>
     </FormCard>
   );
