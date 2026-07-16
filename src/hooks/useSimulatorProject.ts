@@ -7,7 +7,7 @@ const STORAGE_KEY = "simulationProject";
 export const defaultSimulationProject: Partial<SimulationProject> = {
   projectName: "",
   scenarioName: "Scénario 1",
-  country: "fr",
+  country: "France",
   address: "",
   city: "",
   postalCode: "",

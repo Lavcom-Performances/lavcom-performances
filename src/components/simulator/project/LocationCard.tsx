@@ -6,13 +6,21 @@ import { AddressAutocomplete } from "./AddressAutocomplete";
 import { ZONE_TYPES, COUNTRIES } from "@/config/simulatorFormOptions";
 import type { AddressSearchResult } from "@/hooks/useAddressSearch";
 import type { SimulatorProjectFormProps } from "@/types/simulator.types";
+import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
+import { CountryValue } from "@/types/simulatorFormOptions.types";
 
 export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
-  const country = (project.country ?? "fr").toString();
+  const projectCountry = COUNTRIES.find(
+    (country) => country.label === (project.country || defaultSimulationProject.country)
+  );
 
-  const handleCountryChange = (value: string) => {
+  const getCountryLabel = (countryValue: CountryValue): string => COUNTRIES.find(
+    (country) => country.value === countryValue 
+  ).label;
+
+  const handleCountryChange = (value: CountryValue) => {
     onUpdate({
-      country: value,
+      country: getCountryLabel(value),
       address: "",
       city: "",
       postalCode: "",
@@ -22,14 +30,14 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
     });
   };
 
-  const handleAddressSelect = (r: AddressSearchResult) => {
+  const handleAddressSelect = (selectedAddress: AddressSearchResult) => {
     onUpdate({
-      address: r.address,
-      city: r.city,
-      postalCode: r.postalCode,
-      departmentCode: r.departmentCode ?? "",
-      departmentName: r.departmentName ?? "",
-      region: r.region ?? "",
+      address: selectedAddress.address,
+      city: selectedAddress.city,
+      postalCode: selectedAddress.postalCode,
+      departmentCode: selectedAddress.departmentCode ?? "",
+      departmentName: selectedAddress.departmentName ?? "",
+      region: selectedAddress.region ?? "",
     });
   };
 
@@ -47,16 +55,16 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
   return (
     <div className="space-y-6">
       <FormField label="Pays" htmlFor="country" icon={Globe} required>
-        <Select value={country.toLowerCase()} onValueChange={handleCountryChange}>
+        <Select value={projectCountry.value} onValueChange={(value) => handleCountryChange(value as CountryValue)}>
           <SelectTrigger id="country" className="bg-white shadow-form">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {COUNTRIES.map((c) => (
-                <SelectItem key={c.code} value={c.value}>
-                  <span className="mr-2">{c.flag}</span>
-                  {c.label}
+              {COUNTRIES.map((country) => (
+                <SelectItem key={country.code} value={country.value}>
+                  <span className="mr-2">{country.flag}</span>
+                  {country.label}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -73,8 +81,8 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
       >
         <AddressAutocomplete
           id="address"
-          value={project.address ?? ""}
-          country={country.toUpperCase()}
+          value={project.address ?? defaultSimulationProject.address}
+          country={projectCountry.code}
           onSelect={handleAddressSelect}
           onInputChange={handleAddressInputChange}
         />
@@ -84,7 +92,7 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
         <FormField label="Ville" htmlFor="city" icon={MapPin} required hint="Rempli automatiquement">
           <Input
             id="city"
-            value={project.city ?? ""}
+            value={project.city ?? defaultSimulationProject.city}
             readOnly
             placeholder="Ex. : Paris"
             className="bg-white shadow-form opacity-70"
@@ -93,7 +101,7 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
         <FormField label="Code postal" htmlFor="zip" icon={Mailbox} required hint="Rempli automatiquement">
           <Input
             id="zip"
-            value={project.postalCode ?? ""}
+            value={project.postalCode ?? defaultSimulationProject.postalCode}
             readOnly
             placeholder="Ex. : 75004"
             className="bg-white shadow-form opacity-70"
@@ -102,14 +110,17 @@ export function LocationCard({ project, onUpdate }: SimulatorProjectFormProps) {
       </div>
 
       <FormField label="Type de zone" htmlFor="zone" icon={Map} required>
-        <Select value={project.zoneType ?? ""} onValueChange={(v) => onUpdate({ zoneType: v })}>
+        <Select
+          value={project.zoneType ?? defaultSimulationProject.zoneType}
+          onValueChange={(value) => onUpdate({ zoneType: value })}
+        >
           <SelectTrigger id="zone" className="bg-white shadow-form">
             <SelectValue placeholder="Sélectionnez un type de zone" />
           </SelectTrigger>
           <SelectContent>
-            {ZONE_TYPES.map((z) => (
-              <SelectItem key={z.value} value={z.value}>
-                {z.label}
+            {ZONE_TYPES.map((zoneType) => (
+              <SelectItem key={zoneType.value} value={zoneType.value}>
+                {zoneType.label}
               </SelectItem>
             ))}
           </SelectContent>
