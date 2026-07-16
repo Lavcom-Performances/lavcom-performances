@@ -6,10 +6,11 @@ import {
   addFixedCost,
   removeFixedCost,
   updateFixedCost,
-  type SimulatorChargesFormProps,
 } from "./types";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
-export function FixedCostsCard({ project, onUpdate }: SimulatorChargesFormProps) {
+export function FixedCostsCard() {
+  const { project, updateProject } = useSimulatorProjectContext();
   const items = project.fixedCosts ?? [];
   const total = items.reduce((s, c) => s + (c.amount || 0), 0);
 
@@ -29,15 +30,15 @@ export function FixedCostsCard({ project, onUpdate }: SimulatorChargesFormProps)
             label={c.label}
             value={c.amount}
             placeholder="0"
-            onChange={(v) => onUpdate({ fixedCosts: updateFixedCost(project.fixedCosts, c.id, v) })}
-            onRemove={() => onUpdate({ fixedCosts: removeFixedCost(project.fixedCosts, c.id) })}
+            onChange={(v) => updateProject({ fixedCosts: updateFixedCost(project.fixedCosts, c.id, v) })}
+            onRemove={() => updateProject({ fixedCosts: removeFixedCost(project.fixedCosts, c.id) })}
           />
         ))}
         <Button
           variant="outline"
           size="sm"
           className="gap-2"
-          onClick={() => onUpdate({ fixedCosts: addFixedCost(project.fixedCosts) })}
+          onClick={() => updateProject({ fixedCosts: addFixedCost(project.fixedCosts) })}
         >
           <Plus className="h-4 w-4" />
           Ajouter une charge fixe
