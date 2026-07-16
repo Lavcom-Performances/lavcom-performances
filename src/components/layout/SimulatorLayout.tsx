@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Home } from "lucide-react";
 import { SimulatorStepper } from "@/components/simulator/layout/SimulatorStepper";
+import { SimulatorProjectProvider } from "@/contexts/SimulatorProjectContext";
 
 const STEP_BY_PATH: Record<string, 1 | 2 | 3 | 4> = {
   "/simulator/project": 1,
