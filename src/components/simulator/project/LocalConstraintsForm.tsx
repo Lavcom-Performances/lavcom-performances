@@ -20,6 +20,7 @@ import type {
   TechnicalConstraintValue,
 } from "@/types/simulatorFormOptions.types";
 import type { SimulatorProjectFormProps } from "@/types/simulator.types";
+import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
 
 export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectFormProps) {
   return (
@@ -37,7 +38,7 @@ export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectForm
           title="Forme du local"
           description="La forme du local influence l'agencement optimal des machines"
           options={LOCAL_SHAPES}
-          value={project.localShape ?? "unknown"}
+          value={project.localShape ?? defaultSimulationProject.localShape}
           onValueChange={(value) => onUpdate({ localShape: value as LocalShapeValue })}
           name="shape"
           required={false}
@@ -48,7 +49,7 @@ export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectForm
           title="Obstacles structurels"
           description="Poteaux, gaines techniques ou murs porteurs impactant l'espace utilisable"
           options={STRUCTURAL_OBSTACLES}
-          value={project.structuralObstacles ?? "unknown"}
+          value={project.structuralObstacles ?? defaultSimulationProject.structuralObstacles}
           onValueChange={(value) => onUpdate({ structuralObstacles: value as StructuralObstacleValue })}
           name="obstacles"
           required={false}
@@ -74,7 +75,7 @@ export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectForm
                 <Input
                   id="door-width"
                   type="number"
-                  value={project.doorWidth ?? 90}
+                  value={project.doorWidth ?? defaultSimulationProject.doorWidth}
                   onChange={(e) => onUpdate({ doorWidth: Number(e.target.value) })}
                   className="bg-white shadow-form"
                 />
@@ -82,7 +83,7 @@ export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectForm
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Façade modifiable ?</Label>
                 <RadioGroup
-                  value={project.canModifyFacade ?? "unknown"}
+                  value={project.canModifyFacade ?? defaultSimulationProject.canModifyFacade}
                   onValueChange={(value) => onUpdate({ canModifyFacade: value as FacadeOptionValue })}
                   className="space-y-2"
                 >
@@ -107,7 +108,7 @@ export function LocalConstraintsForm({ project, onUpdate }: SimulatorProjectForm
             title="Contraintes techniques"
             description="État des raccordements (eau, électricité, évacuation, ventilation)"
             options={TECHNICAL_CONSTRAINTS}
-            value={project.technicalConstraints ?? "unknown"}
+            value={project.technicalConstraints ?? defaultSimulationProject.technicalConstraints}
             onValueChange={(value) => onUpdate({ technicalConstraints: value as TechnicalConstraintValue })}
             name="tech"
             required={false}
