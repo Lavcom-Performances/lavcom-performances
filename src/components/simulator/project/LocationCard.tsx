@@ -8,9 +8,11 @@ import type { AddressSearchResult } from "@/hooks/useAddressSearch";
 import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
 import { CountryValue } from "@/types/simulatorFormOptions.types";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { useSimulatorStepErrors } from "@/contexts/SimulatorStepContext";
 
 export function LocationCard() {
   const { project, updateProject } = useSimulatorProjectContext();
+  const { fieldError } = useSimulatorStepErrors();
   const projectCountry =
     COUNTRIES.find(
       (country) => country.label === (project.country || defaultSimulationProject.country)
@@ -55,9 +57,9 @@ export function LocationCard() {
 
   return (
     <div className="space-y-6">
-      <FormField label="Pays" htmlFor="country" icon={Globe} required>
+      <FormField label="Pays" htmlFor="country" icon={Globe} required error={fieldError("country")}>
         <Select value={projectCountry.value} onValueChange={(value) => handleCountryChange(value as CountryValue)}>
-          <SelectTrigger id="country" className="bg-white shadow-form">
+          <SelectTrigger id="country" className="bg-white shadow-form" aria-invalid={Boolean(fieldError("country"))}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -79,6 +81,7 @@ export function LocationCard() {
         icon={Home}
         required
         hint="💡 Sélectionnez une adresse dans la liste pour remplir automatiquement la ville et le code postal"
+        error={fieldError("address")}
       >
         <AddressAutocomplete
           id="address"
@@ -90,32 +93,48 @@ export function LocationCard() {
       </FormField>
 
       <div className="grid gap-5 md:grid-cols-2">
-        <FormField label="Ville" htmlFor="city" icon={MapPin} required hint="Rempli automatiquement">
+        <FormField
+          label="Ville"
+          htmlFor="city"
+          icon={MapPin}
+          required
+          hint="Rempli automatiquement"
+          error={fieldError("city")}
+        >
           <Input
             id="city"
             value={project.city ?? defaultSimulationProject.city}
             readOnly
+            aria-invalid={Boolean(fieldError("city"))}
             placeholder="Ex. : Paris"
             className="bg-white shadow-form opacity-70"
           />
         </FormField>
-        <FormField label="Code postal" htmlFor="zip" icon={Mailbox} required hint="Rempli automatiquement">
+        <FormField
+          label="Code postal"
+          htmlFor="zip"
+          icon={Mailbox}
+          required
+          hint="Rempli automatiquement"
+          error={fieldError("postalCode")}
+        >
           <Input
             id="zip"
             value={project.postalCode ?? defaultSimulationProject.postalCode}
             readOnly
+            aria-invalid={Boolean(fieldError("postalCode"))}
             placeholder="Ex. : 75004"
             className="bg-white shadow-form opacity-70"
           />
         </FormField>
       </div>
 
-      <FormField label="Type de zone" htmlFor="zone" icon={Map} required>
+      <FormField label="Type de zone" htmlFor="zone" icon={Map} required error={fieldError("zoneType")}>
         <Select
           value={project.zoneType ?? defaultSimulationProject.zoneType}
           onValueChange={(value) => updateProject({ zoneType: value })}
         >
-          <SelectTrigger id="zone" className="bg-white shadow-form">
+          <SelectTrigger id="zone" className="bg-white shadow-form" aria-invalid={Boolean(fieldError("zoneType"))}>
             <SelectValue placeholder="Sélectionnez un type de zone" />
           </SelectTrigger>
           <SelectContent>

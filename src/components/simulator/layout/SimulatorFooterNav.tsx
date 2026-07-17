@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -7,6 +7,8 @@ interface Props {
   nextPath?: string;
   nextLabel?: string;
   previousLabel?: string;
+  onNext?: () => boolean | void;
+  nextDisabled?: boolean;
 }
 
 export function SimulatorFooterNav({
@@ -14,7 +16,20 @@ export function SimulatorFooterNav({
   nextPath,
   nextLabel = "Continuer",
   previousLabel = "Retour",
+  onNext,
+  nextDisabled,
 }: Props) {
+  const navigate = useNavigate();
+
+  const handleNext = () => {
+    if (!nextPath) return;
+    if (onNext) {
+      const ok = onNext();
+      if (ok === false) return;
+    }
+    navigate(nextPath);
+  };
+
   return (
     <div className="mt-10 flex items-center justify-between border-t pt-6">
       {previousPath ? (
@@ -27,14 +42,27 @@ export function SimulatorFooterNav({
       ) : (
         <span />
       )}
-      {nextPath && (
-        <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-          <Link to={nextPath}>
+      {nextPath &&
+        (onNext ? (
+          <Button
+            onClick={handleNext}
+            disabled={nextDisabled}
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+          >
             {nextLabel}
             <ChevronRight className="h-4 w-4" />
-          </Link>
-        </Button>
-      )}
+          </Button>
+        ) : (
+          <Button
+            asChild
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            <Link to={nextPath}>
+              {nextLabel}
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        ))}
     </div>
   );
 }

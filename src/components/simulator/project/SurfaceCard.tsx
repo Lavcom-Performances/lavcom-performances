@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Ruler } from "lucide-react";
 import { FormField } from "./FormField";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { useSimulatorStepErrors } from "@/contexts/SimulatorStepContext";
 
 function getSurfaceHint(num: number): string | undefined {
   if (Number.isNaN(num) || num <= 0) return undefined;
@@ -18,6 +19,7 @@ function getSurfaceHint(num: number): string | undefined {
 
 export function SurfaceCard() {
   const { project, updateProject } = useSimulatorProjectContext();
+  const { fieldError } = useSimulatorStepErrors();
   const surface = project.surface ?? 0;
   const hint = getSurfaceHint(surface);
 
@@ -30,7 +32,7 @@ export function SurfaceCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <FormField label="Surface totale du local en m²" htmlFor="surface" required hint={hint}>
+        <FormField label="Surface totale du local en m²" htmlFor="surface" required hint={hint} error={fieldError("surface")}>
           <div className="flex items-center gap-2">
             <Input
               id="surface"

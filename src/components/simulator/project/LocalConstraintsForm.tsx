@@ -21,9 +21,11 @@ import type {
 } from "@/types/simulatorFormOptions.types";
 import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { useSimulatorStepErrors } from "@/contexts/SimulatorStepContext";
 
 export function LocalConstraintsForm() {
   const { project, updateProject } = useSimulatorProjectContext();
+  const { fieldError } = useSimulatorStepErrors();
   return (
     <div className="space-y-8">
       <TabSectionHeading
@@ -72,6 +74,7 @@ export function LocalConstraintsForm() {
                 label="Largeur de la porte (cm)"
                 htmlFor="door-width"
                 hint="Une largeur inférieure à 90 cm peut compliquer l'installation de gros équipements"
+                error={fieldError("doorWidth")}
               >
                 <Input
                   id="door-width"
