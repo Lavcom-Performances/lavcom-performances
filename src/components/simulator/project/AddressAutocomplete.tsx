@@ -5,14 +5,9 @@ import { cn } from "@/lib/utils";
 import { useAddressSearch, type AddressSearchResult } from "@/hooks/useAddressSearch";
 
 interface Props {
-  // Valeur affichée dans l'input (contrôlée par le parent).
   value: string;
-  // Code pays ISO ("FR", "BE", ...). Pilote le choix de l'API (BAN vs Nominatim).
-  country: string;
-  // Callback déclenché quand l'utilisateur clique une suggestion.
+  countryCode: string;
   onSelect: (result: AddressSearchResult) => void;
-  // Callback optionnel pour suivre la frappe libre — permet au parent
-  // d'invalider city/postalCode tant que rien n'est sélectionné.
   onInputChange?: (value: string) => void;
   placeholder?: string;
   className?: string;
@@ -20,14 +15,9 @@ interface Props {
   id?: string;
 }
 
-/**
- * Autocomplétion d'adresse dédiée au simulateur (`/simulator/project`).
- * Isolée du composant legacy `src/components/simulation/AddressAutocomplete.tsx`.
- * Utilise le hook unifié `useAddressSearch` (BAN en FR, Nominatim ailleurs).
- */
 export function AddressAutocomplete({
   value,
-  country,
+  countryCode,
   onSelect,
   onInputChange,
   placeholder = "Tapez et sélectionnez une adresse...",
@@ -37,29 +27,20 @@ export function AddressAutocomplete({
 }: Props) {
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
-  // Empêche la ré-ouverture de la liste juste après une sélection.
   const [justSelected, setJustSelected] = useState(false);
-  // Évite de relancer une recherche lorsque la valeur vient des props (reset pays, etc.).
   const [isUserTyping, setIsUserTyping] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Un seul hook — un seul routage FR / international.
   const { results, isLoading } = useAddressSearch(
     justSelected || !isUserTyping ? "" : inputValue,
     3,
-    country,
+    countryCode,
   );
 
-  // Sync uniquement quand la prop diffère réellement de l'état interne
-  // (reset pays, hydratation initiale, sélection). On NE touche PAS à
-  // isUserTyping ici : sinon chaque keystroke, qui remonte via
-  // onInputChange -> parent -> value, effacerait l'intention de recherche
-  // et empêcherait le hook useAddressSearch de fetch.
   useEffect(() => {
     setInputValue((prev) => (prev === value ? prev : value));
   }, [value]);
 
-  // Fermeture au clic à l'extérieur.
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -71,26 +52,24 @@ export function AddressAutocomplete({
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = e.target.value;
-    setInputValue(v);
+    const value = e.target.value;
+    setInputValue(value);
     setJustSelected(false);
     setIsUserTyping(true);
     setIsOpen(true);
-    onInputChange?.(v);
+    onInputChange?.(value);
   };
 
-  const handleSelect = (r: AddressSearchResult) => {
-    setInputValue(r.address);
+  const handleSelect = (result: AddressSearchResult) => {
+    setInputValue(result.address);
     setJustSelected(true);
     setIsUserTyping(false);
     setIsOpen(false);
-    onSelect(r);
+    onSelect(result);
   };
 
   return (
     <div ref={containerRef} className={cn("relative", className)}>
-      <div className="relative">
-        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
           id={id}
           value={inputValue}
@@ -99,26 +78,25 @@ export function AddressAutocomplete({
           placeholder={placeholder}
           autoComplete="off"
           className={cn(
-            "pl-10 bg-white shadow-form",
+            "bg-white shadow-form",
             hasError && "border-destructive focus-visible:ring-destructive",
           )}
         />
         {isLoading && (
           <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
         )}
-      </div>
 
       {isOpen && results.length > 0 && (
         <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-auto">
-          {results.map((r, i) => (
+          {results.map((result, index) => (
             <button
-              key={`${r.postalCode}-${r.address}-${i}`}
+              key={`${result.postalCode}-${result.address}-${index}`}
               type="button"
-              onClick={() => handleSelect(r)}
+              onClick={() => handleSelect(result)}
               className="w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground flex items-center gap-2"
             >
               <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
-              <span>{r.label}</span>
+              <span>{result.label}</span>
             </button>
           ))}
         </div>

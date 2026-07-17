@@ -86,7 +86,7 @@ export function LocationCard() {
         <AddressAutocomplete
           id="address"
           value={project.address ?? defaultSimulationProject.address}
-          country={projectCountry.code}
+          countryCode={projectCountry.code}
           onSelect={handleAddressSelect}
           onInputChange={handleAddressInputChange}
         />
@@ -104,27 +104,32 @@ export function LocationCard() {
           <Input
             id="city"
             value={project.city ?? defaultSimulationProject.city}
-            readOnly
+            disabled
+            aria-disabled
             aria-invalid={Boolean(fieldError("city"))}
             placeholder="Ex. : Paris"
-            className="bg-white shadow-form opacity-70"
+            className={project.city
+              ? "bg-white shadow-form disabled:opacity-100"
+              : "bg-white shadow-form disabled:opacity-50"
+            }
           />
         </FormField>
         <FormField
           label="Code postal"
           htmlFor="zip"
           icon={Mailbox}
-          required
           hint="Rempli automatiquement"
-          error={fieldError("postalCode")}
         >
           <Input
             id="zip"
             value={project.postalCode ?? defaultSimulationProject.postalCode}
-            readOnly
-            aria-invalid={Boolean(fieldError("postalCode"))}
+            disabled
+            aria-disabled
             placeholder="Ex. : 75004"
-            className="bg-white shadow-form opacity-70"
+            className={project.city
+              ? "bg-white shadow-form disabled:opacity-100"
+              : "bg-white shadow-form disabled:opacity-50"
+            }
           />
         </FormField>
       </div>

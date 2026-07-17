@@ -36,11 +36,10 @@ export function FormField({
         {required && <span className="text-destructive">*</span>}
       </FieldLabel>
       {children}
-      {invalid ? (
-        <FieldError>{error}</FieldError>
-      ) : (
-        hint && <FieldDescription>{hint}</FieldDescription>
-      )}
+      <div>
+        {invalid && <FieldError>{error}</FieldError> }
+        { hint && <FieldDescription>{hint}</FieldDescription> }
+      </div>
     </Field>
   );
 }
