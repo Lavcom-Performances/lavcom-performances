@@ -558,10 +558,7 @@ const LandingPage = () => {
                   <div className="w-14 h-14 md:w-20 md:h-20 rounded-full bg-lavcom-orange/20 flex items-center justify-center mx-auto">
                     <Calculator className="h-7 w-7 md:h-10 md:w-10 text-lavcom-orange" />
                   </div>
-                <div>
-                    <p className="text-2xl md:text-3xl font-bold text-foreground">{t("landing:futursExploitants.simulator")}</p>
-                    <p className="text-sm md:text-base text-muted-foreground">{t("landing:futursExploitants.profitability")}</p>
-                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-foreground">{t("landing:futursExploitants.simulator")}</h3>
                   
                   {/* Mini-aperçu des fonctionnalités */}
                   <div className="grid grid-cols-2 gap-2 md:gap-3 pt-3 md:pt-4 border-t border-border">
@@ -609,8 +606,8 @@ const LandingPage = () => {
             </ScrollReveal>
             
             {/* Contenu texte */}
-            <ScrollReveal direction="right" delay={0.15} className="order-1 lg:order-2 text-left">
-              <div className="inline-flex items-center gap-2 bg-lavcom-orange/20 text-lavcom-orange-dark dark:text-lavcom-orange px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium mb-3 md:mb-4">
+            <ScrollReveal direction="right" delay={0.15} className="flex flex-col items-center lg:items-start order-1 lg:order-2 text-left">
+              <div className="inline-flex w-fit items-center gap-2 bg-lavcom-orange/20 text-lavcom-orange-dark dark:text-lavcom-orange px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium mb-3 md:mb-4">
                 <Rocket className="h-3 w-3 md:h-4 md:w-4" />
                 {t("landing:futursExploitants.badge")}
               </div>
@@ -643,16 +640,26 @@ const LandingPage = () => {
               </p>
               
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row gap-2 md:gap-3 justify-start">
-                <Link to="/simulateur">
-                  <Button size="default" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-sm md:text-base w-full sm:w-auto">
-                    <Calculator className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                    {t("landing:futursExploitants.trySimulator")}
-                  </Button>
-                </Link>
-                <Link to="/subscribe-simulator">
+              <div className="flex flex-col gap-2 md:gap-3 w-full items-center">
+                <div>
+                  <Link to="/simulateur" className="flex justify-center">
+                    <Button size="default" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-sm md:text-base w-full sm:w-auto">
+                      <Calculator className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                      {t("landing:futursExploitants.tryPaidSimulator")}
+                      <span>*</span>
+                    </Button>
+                  </Link>
+                  <div>
+                    <span className="text-muted-foreground italic text-xs">*</span>
+                    <em className="text-muted-foreground italic text-xs">
+                      Obtenez une estimation complète en moins de 10 minutes
+                    </em>
+                  </div>
+                </div>
+                <p className="text-center">OU</p>
+                <Link to="/subscribe-simulator" className="flex justify-center">
                   <Button size="default" variant="outline" className="btn-bounce border-lavcom-orange/50 text-lavcom-orange-dark dark:text-lavcom-orange hover:bg-lavcom-orange/10 text-sm md:text-base w-full sm:w-auto">
-                    {t("landing:futursExploitants.discoverPacks")}
+                    {t("landing:futursExploitants.tryFreeSimulator")}
                   </Button>
                 </Link>
               </div>
