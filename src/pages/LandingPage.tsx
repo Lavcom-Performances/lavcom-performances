@@ -642,7 +642,7 @@ const LandingPage = () => {
               {/* CTAs */}
               <div className="flex flex-col gap-2 md:gap-3 w-full items-center">
                 <div>
-                  <Link to="/simulateur" className="flex justify-center">
+                  <Link to="/simulator/project" className="flex justify-center">
                     <Button size="default" className="btn-bounce bg-lavcom-orange hover:bg-lavcom-orange-dark text-white text-sm md:text-base w-full sm:w-auto">
                       <Calculator className="mr-2 h-4 w-4 md:h-5 md:w-5" />
                       {t("landing:futursExploitants.tryPaidSimulator")}
@@ -652,12 +652,12 @@ const LandingPage = () => {
                   <div>
                     <span className="text-muted-foreground italic text-xs">*</span>
                     <em className="text-muted-foreground italic text-xs">
-                      Obtenez une estimation complète en moins de 10 minutes
+                      {t("landing:futursExploitants.timeEstimate")}
                     </em>
                   </div>
                 </div>
                 <p className="text-center">OU</p>
-                <Link to="/subscribe-simulator" className="flex justify-center">
+                <Link to="/simulateur" className="flex justify-center">
                   <Button size="default" variant="outline" className="btn-bounce border-lavcom-orange/50 text-lavcom-orange-dark dark:text-lavcom-orange hover:bg-lavcom-orange/10 text-sm md:text-base w-full sm:w-auto">
                     {t("landing:futursExploitants.tryFreeSimulator")}
                   </Button>
