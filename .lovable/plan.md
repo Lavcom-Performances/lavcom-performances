@@ -1,84 +1,112 @@
 ## Objectif
 
-Refactoriser `useSimulatorValidation` avec des schémas Zod couvrant l'ensemble des champs saisis dans `src/components/simulator/`, et supprimer le type `SimulatorProjectFormProps` (non utilisé après la migration vers le contexte).
+Ajouter une validation par étape au clic sur « Continuer » dans le tunnel `/simulator/*`, en s'appuyant sur `useSimulatorValidation` (Zod, sections déjà définies : `projectInfo`, `localConstraints`, `machines`, `charges`), et afficher les erreurs directement dans les champs via les primitives `Field` de shadcn.
 
-## 1. Suppression du type inutilisé
+## Comportement attendu
 
-`src/types/simulator.types.ts` : supprimer `SimulatorProjectFormProps` (aucun consommateur — vérifié par recherche globale).
+- **Étape 1 — `/simulator/project`** : valider **projectInfo ET localConstraints** (les deux onglets) avant de passer à `/simulator/machines`.
+- **Étape 2 — `/simulator/machines`** : valider `machines`.
+- **Étape 3 — `/simulator/charges`** : valider `charges`.
+- **Étape 4 — `/simulator/results`** : pas de bouton suivant.
+- En cas d'échec :
+  - toast d'erreur (sonner) indiquant le nombre de champs à corriger,
+  - pas de navigation,
+  - sur la page projet, bascule automatique vers l'onglet contenant la première erreur,
+  - les champs invalides passent en état d'erreur (bordure destructive + message) via `Field` shadcn.
 
-## 2. Nouveau fichier `src/lib/validation/simulatorProjectSchema.ts`
+## Changements
 
-Regrouper la logique Zod dans un fichier dédié pour la garder lisible et réutilisable (par ex. futures étapes de submit). Un schéma par section, plus un schéma global.
+### 1. `SimulatorFooterNav` — devenir contrôlable
+`src/components/simulator/layout/SimulatorFooterNav.tsx`
 
-### Schémas par section
+- Ajouter `onNext?: () => boolean | void` (retour `false` = bloque la navigation) et `nextDisabled?: boolean`.
+- Si `onNext` est fourni : bouton `<Button onClick>` qui appelle `onNext()`, puis `navigate(nextPath)` via `useNavigate()` si le retour ≠ `false`.
+- Sinon, garder le comportement `<Link>` actuel (rétrocompatible).
 
-**`projectInfoSchema`** (onglet Projet — `ProjectIdentityCard`, `LocationCard`, `OpeningHoursCard`)
-- `projectName` : `string().trim().min(3, "Le nom du projet est requis (min. 3 caractères)").max(100)`
-- `scenarioName` : `string().trim().min(1, "Le nom du scénario est requis").max(100)`
-- `country` : `string().min(1, "Le pays est requis")`
-- `address` : `string().trim().min(1, "L'adresse est requise").max(200)`
-- `city` : `string().trim().min(1, "La ville est requise")`
-- `postalCode` : `string().trim().min(1, "Le code postal est requis")`
-- `zoneType` : `enum([...ZONE_TYPES.map(z => z.value)], { message: "Le type de zone est requis" })`
-- `openingHours` : objet `{ value: enum(OPENING_HOURS_OPTIONS.value), openAt: string(regex HH:MM), closeAt: string(regex HH:MM) }` + `.refine` pour `value === "custom"` → `closeAt !== openAt` (message "Les horaires personnalisés sont invalides")
-- `openingDays` : objet `{ value: enum(OPENING_DAYS_OPTIONS.value), days: array(WeekDay).min(1, "Sélectionnez au moins un jour") }`
+### 2. Hook utilitaire de garde d'étape : `useSimulatorStep`
+Nouveau fichier `src/hooks/useSimulatorStep.ts`
 
-**`localConstraintsSchema`** (onglet Projet — `SurfaceCard`, `LocalConstraintsForm`)
-- `surface` : `number({ message: "La surface est requise" }).min(10, "Surface minimum 10 m²").max(500, "Surface maximum 500 m²")`
-- `localShape`, `structuralObstacles`, `canModifyFacade`, `technicalConstraints` : `enum` construit à partir des options correspondantes (valeur `"unknown"` autorisée puisqu'elle fait partie des choix — seule l'absence de valeur déclenche une erreur)
-- `doorWidth` : `number().min(60, "Largeur de porte minimum 60 cm").max(300)`
-
-**`machinesSchema`** (onglet Machines — `WashersConfigCard`, `DryersConfigCard`)
-- `machines` : `array(machineConfigSchema).min(1, "Ajoutez au moins une machine")`
-  - avec `.refine` : au moins une machine dont `count > 0` ("Configurez au moins une machine active")
-- `machineConfigSchema` : `{ id: string, type: enum(['washer','dryer']), capacity_kg: number.min(1), count: number.int().min(0), price: number.min(0), cycles_day: number.min(0) }`
-
-**`chargesSchema`** (onglet Charges — `FixedCostsCard`, `VariableCostsCard`)
-- `fixedCosts` : `array({ id, label: string.trim().min(1, "Libellé requis"), amount: number.min(0, "Montant invalide"), category: enum([...]) })`
-- `variableCosts` : `array({ id, label: string.trim().min(1), percent: number.min(0).max(100, "0–100 %"), category: enum([...]) })`
-- `.refine` global : somme des `percent` ≤ 100 ("Total des charges variables > 100 %")
-
-### Schéma global
-
-`simulatorProjectSchema = projectInfoSchema.merge(localConstraintsSchema).merge(machinesSchema).merge(chargesSchema)`
-
-Export d'un type inféré : `export type SimulatorProjectInput = z.infer<typeof simulatorProjectSchema>`.
-
-## 3. Refactor de `src/hooks/useSimulatorValidation.ts`
-
-- Renommer l'export en `useSimulatorValidation` (aujourd'hui incohérent : le fichier s'appelle `useSimulatorValidation.ts` mais exporte `useSimulationValidation`).
-- Consommer `useSimulatorProjectContext()` directement — plus besoin de passer `project` en argument, puisque tous les composants sont dans le Provider. Signature :
+- Signature :
   ```ts
-  useSimulatorValidation(): ValidationResult
-  ```
-- Types :
-  ```ts
-  type ValidationErrors = Partial<Record<keyof SimulatorProjectInput, string>>;
-  type SectionKey = 'projectInfo' | 'localConstraints' | 'machines' | 'charges';
-  interface ValidationResult {
-    isValid: boolean;
-    errors: ValidationErrors;         // { field: firstMessage }
-    errorCount: number;
-    sections: Record<SectionKey, { isValid: boolean; errorCount: number }>; // pour badges par onglet
+  useSimulatorStep(
+    sections: SimulatorValidationSection[],
+    options?: { onInvalid?: (firstInvalid: SimulatorValidationSection) => void }
+  ): {
+    guardNext: () => boolean;
+    attempted: boolean;              // true après un premier clic « Continuer »
+    errors: ValidationErrors;        // depuis useSimulatorValidation
+    sections: ValidationResult["sections"];
+    fieldError: (name: keyof SimulatorProjectInput) => string | undefined;
   }
   ```
-- Implémentation : `useMemo` → `simulatorProjectSchema.safeParse(project)`, aplatir via `error.flatten().fieldErrors` (premier message par champ). Calculer `sections` en re-parsant chaque sous-schéma sur `project` (léger, tout est mémoïsé).
-- Supprimer les `console.log('[DEBUG] …')`.
+- `guardNext()` :
+  - lit `useSimulatorValidation()` (déjà branché sur le contexte),
+  - si toutes les sections listées sont valides → `attempted` reste inchangé, retourne `true`,
+  - sinon → passe `attempted = true`, toast erreur (`toast.error("N champ(s) à corriger avant de continuer")`), appelle `onInvalid(firstInvalidSection)`, retourne `false`.
+- `fieldError(name)` retourne l'erreur seulement si `attempted === true` (les erreurs n'apparaissent pas avant la première tentative), afin d'être branché directement sur `Field`.
 
-## 4. Vérifications
+### 3. Affichage des erreurs via `Field` shadcn
+Référence : https://ui.shadcn.com/docs/components/base/field#validation-and-errors
 
-- `bunx tsgo --noEmit` doit rester vert.
-- Aucun composant ne consomme aujourd'hui `useSimulationValidation` (grep) — le renommage est safe. Si le grep révèle un consommateur, adapter l'import dans le même passage.
+Le composant utilitaire existant `src/components/simulator/project/FormField.tsx` (wrapper de `Field` / `FieldLabel` / `FieldDescription`) est étendu :
+
+- Ajouter `error?: string` :
+  - quand présent : ajouter `data-invalid` sur le `Field`, remplacer/compléter la `FieldDescription` par `<FieldError>{error}</FieldError>` (primitive shadcn),
+  - passer `aria-invalid` et `aria-describedby` sur le contrôle (via `id` déjà géré par `htmlFor`).
+- Aucun changement de signature côté champs valides (rétrocompatible).
+
+Chaque carte de saisie du simulateur (`ProjectIdentityCard`, `LocationCard`, `OpeningHoursCard`, `SurfaceCard`, `LocalConstraintsForm`, `WashersConfigCard`, `DryersConfigCard`, `FixedCostsCard`, `VariableCostsCard`) :
+
+- récupère `fieldError` depuis `useSimulatorStep(...)` de sa page parente via un petit contexte de page, ou plus simplement via un hook local `useSimulatorStepErrors()` qui expose uniquement `fieldError` (les cartes n'ont pas besoin de `guardNext`),
+- passe `error={fieldError("projectName")}` (etc.) au `FormField` correspondant.
+
+Pour éviter du prop drilling, ajouter un **`SimulatorStepContext`** minimal :
+- `src/contexts/SimulatorStepContext.tsx` — fournit `{ fieldError }` ; alimenté par chaque page via `<SimulatorStepProvider value={{ fieldError }}>`.
+- Les cartes consomment `useSimulatorStepErrors()` qui lit ce contexte (retourne un `fieldError` no-op si aucun provider — cartes réutilisables ailleurs sans casse).
+
+### 4. Page projet — valider les 2 onglets
+`src/pages/simulator/SimulatorProjectPage.tsx` + `ProjectTabs.tsx`
+
+- Rendre `ProjectTabs` contrôlé : `value` / `onValueChange` remontés à la page.
+- Page :
+  ```ts
+  const { guardNext, fieldError } = useSimulatorStep(
+    ["projectInfo", "localConstraints"],
+    { onInvalid: (s) => setActiveTab(s === "projectInfo" ? "project" : "local") }
+  );
+  ```
+- Wrapper `<SimulatorStepProvider value={{ fieldError }}>` autour de `<ProjectTabs />`.
+- `<SimulatorFooterNav nextPath="/simulator/machines" onNext={guardNext} />`.
+
+### 5. Page machines
+`src/pages/simulator/SimulatorMachinesPage.tsx`
+
+- `const { guardNext, fieldError } = useSimulatorStep(["machines"]);`
+- Wrapper `<SimulatorStepProvider value={{ fieldError }}>`.
+- `<SimulatorFooterNav previousPath="/simulator/project" nextPath="/simulator/charges" onNext={guardNext} />`.
+
+### 6. Page charges
+`src/pages/simulator/SimulatorChargesPage.tsx`
+
+- Idem avec `["charges"]` et `nextPath="/simulator/results"`.
+
+### 7. (UX) Badges d'erreur sur les onglets
+`ProjectTabs.tsx` : afficher `sections.projectInfo.errorCount` / `sections.localConstraints.errorCount` sur les triggers uniquement quand `attempted === true` (exposé aussi par `useSimulatorStep`).
+
+## Hors périmètre
+
+- Aucune modification de `useSimulatorValidation.ts` ni du schéma Zod.
+- Aucune modification des règles métier ou du modèle.
+- `/simulation` (SaaS) n'est pas touché.
 
 ## Fichiers touchés
 
-- ✏️ `src/types/simulator.types.ts` — retire `SimulatorProjectFormProps`
-- 🆕 `src/lib/validation/simulatorProjectSchema.ts` — schémas Zod
-- ✏️ `src/hooks/useSimulatorValidation.ts` — refactor complet, consomme le contexte
-
-## Détails techniques
-
-- Zod est déjà présent dans le projet (utilisé ailleurs pour la validation formulaires) — pas d'ajout de dépendance.
-- Les enums Zod sont construits dynamiquement à partir des constantes de `src/config/simulatorFormOptions.ts` pour rester la source unique de vérité (pas de duplication des valeurs).
-- `safeParse` seulement, jamais `parse` — la validation est utilisée pour afficher des erreurs, pas pour interrompre l'exécution.
-- Le hook reste pur : pas d'effet de bord, pas d'appel réseau, `useMemo` sur `project`.
+- ✏️ `src/components/simulator/layout/SimulatorFooterNav.tsx` — support `onNext`
+- 🆕 `src/hooks/useSimulatorStep.ts` — garde d'étape + accès erreurs
+- 🆕 `src/contexts/SimulatorStepContext.tsx` — provider + `useSimulatorStepErrors`
+- ✏️ `src/components/simulator/project/FormField.tsx` — prop `error`, `FieldError`, `data-invalid`, `aria-invalid`
+- ✏️ `src/components/simulator/project/ProjectTabs.tsx` — contrôlé + badges d'erreurs
+- ✏️ `src/pages/simulator/SimulatorProjectPage.tsx` — `useSimulatorStep(["projectInfo","localConstraints"])` + provider
+- ✏️ `src/pages/simulator/SimulatorMachinesPage.tsx` — `useSimulatorStep(["machines"])` + provider
+- ✏️ `src/pages/simulator/SimulatorChargesPage.tsx` — `useSimulatorStep(["charges"])` + provider
+- ✏️ Cartes de saisie (`ProjectIdentityCard`, `LocationCard`, `OpeningHoursCard`, `SurfaceCard`, `LocalConstraintsForm`, `WashersConfigCard`, `DryersConfigCard`, `FixedCostsCard`, `VariableCostsCard`) — branchement `error={fieldError("...")}` sur chaque `FormField`.
