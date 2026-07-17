@@ -11,13 +11,13 @@ import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
 export function LocationCard() {
   const { project, updateProject } = useSimulatorProjectContext();
-  const projectCountry = COUNTRIES.find(
-    (country) => country.label === (project.country || defaultSimulationProject.country)
-  );
+  const projectCountry =
+    COUNTRIES.find(
+      (country) => country.label === (project.country || defaultSimulationProject.country)
+    ) ?? COUNTRIES[0];
 
-  const getCountryLabel = (countryValue: CountryValue): string => COUNTRIES.find(
-    (country) => country.value === countryValue 
-  ).label;
+  const getCountryLabel = (countryValue: CountryValue): string =>
+    COUNTRIES.find((country) => country.value === countryValue)?.label ?? COUNTRIES[0].label;
 
   const handleCountryChange = (value: CountryValue) => {
     updateProject({
