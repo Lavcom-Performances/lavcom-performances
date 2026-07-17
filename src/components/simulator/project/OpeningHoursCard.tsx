@@ -13,9 +13,11 @@ import {
 import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
 import type { OpeningHoursValue, OpeningDaysValue, OpeningHoursOption, OpeningDaysOption, WeekDay } from "@/types/simulatorFormOptions.types";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { useSimulatorStepErrors } from "@/contexts/SimulatorStepContext";
 
 export function OpeningHoursCard() {
   const { project, updateProject: onUpdate } = useSimulatorProjectContext();
+  const { fieldError } = useSimulatorStepErrors();
   const getPresetHoursOption = (value: OpeningHoursValue): OpeningHoursOption => OPENING_HOURS_OPTIONS.find((option) => option.value === value)
   const getPresetDaysOption = (value: OpeningDaysValue): OpeningDaysOption => OPENING_DAYS_OPTIONS.find((option) => option.value === value)
   
@@ -73,7 +75,7 @@ export function OpeningHoursCard() {
 
   return (
     <div className="space-y-6">
-      <FormField label="Horaires d'ouverture envisagés" htmlFor="hours" icon={Clock} required>
+      <FormField label="Horaires d'ouverture envisagés" htmlFor="hours" icon={Clock} required error={fieldError("openingHours")}>
         <Select value={openingHoursValue} onValueChange={(value) => setHoursPreset(value as OpeningHoursValue)}>
           <SelectTrigger id="hours" className="bg-white shadow-form">
             <SelectValue placeholder="Sélectionnez un horaire" />
@@ -113,7 +115,7 @@ export function OpeningHoursCard() {
         )}
       </FormField>
 
-      <FormField label="Jours d'ouverture envisagés" htmlFor="days" icon={CalendarDays} required>
+      <FormField label="Jours d'ouverture envisagés" htmlFor="days" icon={CalendarDays} required error={fieldError("openingDays")}>
         <Select value={openingDaysValue} onValueChange={(value) => setDaysPreset(value as OpeningDaysValue)}>
           <SelectTrigger id="days" className="bg-white shadow-form">
             <SelectValue placeholder="Sélectionnez les jours" />
