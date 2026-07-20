@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { SimulationProject, defaultMachines, defaultFixedCosts, defaultVariableCosts } from "@/types/simulator.types";
+import { SimulationProject } from "@/types/simulator.types";
+import { defaultMachines, defaultFixedCosts, defaultVariableCosts } from "@/config/simulatorFormOptions";
 
 const STORAGE_KEY = "simulationProject";
 

@@ -1,6 +1,3 @@
-// Static option lists used by the simulator forms (selects and radio groups).
-// Values here drive the UI options;
-
 import type {
   CountryOption,
   FacadeOption,
@@ -12,6 +9,7 @@ import type {
   TechnicalConstraintOption,
   ZoneTypeOption,
 } from "@/types/simulatorFormOptions.types";
+import { MachineConfig, FixedCostItem, VariableCostItem } from "@/types/simulator.types";
 import rectangleShape from "@/assets/rectangle-shape.svg";
 import lShape from "@/assets/l-shape.svg";
 import longRectShape from "@/assets/long-rect-shape.svg";
@@ -100,3 +98,31 @@ export const FIXED_COST_CATEGORIES: readonly FixedCostCategory[] = [
   "Ménage / Entretien",
   "Autre",
 ];
+
+// Indicative values ​​for fixed costs (based on market averages)
+export const defaultFixedCosts: FixedCostItem[] = [
+  { id: 'rent', label: 'Loyer', amount: 1200, category: 'rent' },
+  { id: 'charges', label: 'Charges locatives', amount: 150, category: 'rent' },
+  { id: 'lease', label: 'Prêt / leasing machines', amount: 800, category: 'lease' },
+  { id: 'insurance', label: 'Assurance', amount: 120, category: 'insurance' },
+  { id: 'cfe', label: 'CFE (Cotisation Foncière)', amount: 80, category: 'tax' },
+  { id: 'cleaning', label: 'Ménage / entretien', amount: 250, category: 'cleaning' },
+];
+
+// Indicative values ​​for variable costs (average % of revenue)
+export const defaultVariableCosts: VariableCostItem[] = [
+  { id: 'electricity', label: 'Électricité', percent: 10, category: 'electricity' },
+  { id: 'water', label: 'Eau', percent: 4, category: 'water' },
+  { id: 'gas', label: 'Gaz', percent: 0, category: 'gas' },
+  { id: 'detergent', label: 'Lessive / produits', percent: 4, category: 'detergent' },
+];
+
+// Default machine configuration (standard small laundromat configuration)
+export const defaultMachines: MachineConfig[] = [
+  { id: 'wash_7kg_default', type: 'washer', capacityKg: 7, count: 2, price: 5.5, cyclesPerDay: 4 },
+  { id: 'wash_10kg_default', type: 'washer', capacityKg: 10, count: 2, price: 7, cyclesPerDay: 3 },
+  { id: 'wash_18kg_default', type: 'washer', capacityKg: 18, count: 1, price: 10, cyclesPerDay: 2 },
+  { id: 'dry_14kg_default', type: 'dryer', capacityKg: 14, count: 2, price: 2, cyclesPerDay: 5 },
+  { id: 'dry_18kg_default', type: 'dryer', capacityKg: 18, count: 1, price: 3, cyclesPerDay: 4 },
+];
+

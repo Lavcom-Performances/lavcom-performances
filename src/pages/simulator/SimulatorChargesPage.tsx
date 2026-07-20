@@ -1,6 +1,6 @@
 import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
 import { SimulatorFooterNav } from "@/components/simulator/layout/SimulatorFooterNav";
-import { PricingHintBanner } from "@/components/simulator/machines/PricingHintBanner";
+import { ConfigHintBanner } from "@/components/simulator/ConfigHintBanner";
 import { FixedCostsCard } from "@/components/simulator/charges/FixedCostsCard";
 import { VariableCostsCard } from "@/components/simulator/charges/VariableCostsCard";
 import { ChargesTotalsBanner } from "@/components/simulator/charges/ChargesTotalsBanner";
@@ -17,9 +17,9 @@ export default function SimulatorChargesPage() {
       />
       <SimulatorStepProvider value={{ fieldError }}>
         <div className="space-y-6">
-          <PricingHintBanner>
+          <ConfigHintBanner>
             Valeurs indicatives pré-remplies – ajustez selon votre situation
-          </PricingHintBanner>
+          </ConfigHintBanner>
           <FixedCostsCard />
           <VariableCostsCard />
           <ChargesTotalsBanner />

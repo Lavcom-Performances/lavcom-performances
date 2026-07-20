@@ -1,11 +1,11 @@
+import { WashingMachine, Wind } from "lucide-react";
 import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
 import { SimulatorFooterNav } from "@/components/simulator/layout/SimulatorFooterNav";
-import { PricingHintBanner } from "@/components/simulator/machines/PricingHintBanner";
-import { WashersConfigCard } from "@/components/simulator/machines/WashersConfigCard";
-import { DryersConfigCard } from "@/components/simulator/machines/DryersConfigCard";
-import { MachineMixSummary } from "@/components/simulator/machines/MachineMixSummary";
+import { ConfigHintBanner } from "@/components/simulator/ConfigHintBanner";
+import { MachineRevenueSummary } from "@/components/simulator/machines/MachineRevenueSummary";
 import { useSimulatorStep } from "@/hooks/useSimulatorStep";
 import { SimulatorStepProvider } from "@/contexts/SimulatorStepContext";
+import { MachinesConfigCard } from "@/components/simulator/machines/MachinesConfigCard";
 
 export default function SimulatorMachinesPage() {
   const { guardNext, fieldError } = useSimulatorStep(["machines"]);
@@ -17,12 +17,28 @@ export default function SimulatorMachinesPage() {
       />
       <SimulatorStepProvider value={{ fieldError }}>
         <div className="space-y-6">
-          <PricingHintBanner>
+          <ConfigHintBanner>
             Configuration pré-remplie avec une laverie type – ajustez selon votre projet
-          </PricingHintBanner>
-          <WashersConfigCard />
-          <DryersConfigCard />
-          <MachineMixSummary />
+          </ConfigHintBanner>
+          <div className="flex gap-4">
+            <MachinesConfigCard
+              icon={WashingMachine}
+              cardTitle="Lave-linge"
+              cardDescription="Configurez vos machines à laver"
+              machineName="lave-linge"
+              machineCat="lavage"
+              machineType="washer"
+            />
+            <MachinesConfigCard
+              icon={Wind}
+              cardTitle="Sèche-linge"
+              cardDescription="Configurez vos sèche-linge"
+              machineName="sèche-linge"
+              machineCat="séchage"
+              machineType="dryer"
+            />
+          </div>   
+          <MachineRevenueSummary />
         </div>
       </SimulatorStepProvider>
       <SimulatorFooterNav
