@@ -1,0 +1,64 @@
+# Plan de tests — Simulateur de rentabilité (`/simulator/*`)
+
+## Préambule
+
+- **Portée** : tests frontend du parcours simulateur payant sur les routes `/simulator/project`, `/simulator/machines`, `/simulator/charges`, `/simulator/results`.
+- **Types de tests** :
+  - **Fonctionnel** : parcours utilisateur bout-en-bout (interactions UI, navigation, toasts, badges, messages d'erreur).
+  - **Unitaire** : tests automatisés Vitest ciblant hooks, schémas Zod, composants isolés.
+- **Environnement** :
+  - Fonctionnel : navigateur (Playwright ou manuel) contre l'app en local (`http://localhost:8080`).
+  - Unitaire : Vitest + `@testing-library/react` + `jsdom`.
+- **Statuts possibles** : `OK` · `KO` · `À exécuter` · `Bloqué`.
+- Les colonnes **Résultats obtenus** et **Statut** sont pré-remplies à `À exécuter` et seront complétées lors de la campagne de tests.
+
+---
+
+## Tableau des cas de test
+
+| # | Fonctionnalité | Type de test | Données en entrées | Résultats attendus | Résultats obtenus | Statut | Commentaire |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Garde-fou étape 1 — onglet "Mon projet" totalement vide | Fonctionnel | Depuis `/simulator/project`, vider tous les champs de l'onglet "Mon projet" puis cliquer sur "Continuer". | Toast d'erreur `"x champ(s) à corriger avant de continuer"`. Aucun changement de route. Badge rouge avec compteur sur l'onglet "Mon projet". Message `FieldError` rouge sous chaque champ obligatoire (nom du projet, nom du scénario, adresse, ville, code postal, type de zone, horaires, jours). | À exécuter | À exécuter | Valide le blocage global de l'étape 1 tant que l'onglet "Mon projet" est incomplet. |
+| 2 | Garde-fou étape 1 — bascule automatique vers l'onglet en erreur | Fonctionnel | Remplir intégralement l'onglet "Mon projet". Laisser l'onglet "Contraintes du local" invalide (surface = 0). Cliquer sur "Continuer" depuis l'onglet "Mon projet". | Toast d'erreur. Bascule automatique sur l'onglet "Contraintes du local". Badge rouge sur "Contraintes du local" avec le bon compteur d'erreurs. Aucun badge sur "Mon projet". | À exécuter | À exécuter | Vérifie le comportement de `onInvalid(firstInvalid)` dans `useSimulatorStep`. |
+| 3 | Validation champ — nom du projet trop court | Fonctionnel | Saisir `"AB"` (2 caractères) dans "Nom du projet". Cliquer sur "Continuer". | Message d'erreur `"Le nom du projet est requis (min. 3 caractères)"` sous le champ. Bouton bloqué. | À exécuter | À exécuter | Couvre le `min(3)` du schéma Zod `projectInfoSchema.projectName`. |
+| 4 | Validation champ — surface manquante | Fonctionnel | Onglet "Contraintes du local", laisser la surface vide ou à 0. Cliquer "Continuer". | Message `"La surface est requise (min. 10 m²)"`. Le hint dynamique (Micro/Petite/Moyenne laverie) reste masqué tant que la valeur est nulle. | À exécuter | À exécuter | Vérifie `localConstraintsSchema.surface` + masquage du `hint` dans `SurfaceCard`. |
+| 5 | Autocomplétion adresse — France (BAN) | Fonctionnel | Pays = "France". Taper `"5 avenue Charles de Gaulle"` dans le champ adresse. Sélectionner la première suggestion. | Champs `address`, `city`, `postalCode` remplis. **Pas de duplication** du n° de rue (l'adresse doit contenir `5 avenue…` et non `5 5 avenue…`). | À exécuter | À exécuter | Régression `useAddressSearch` (concat `housenumber + street`). |
+| 6 | Autocomplétion adresse — International (Nominatim) | Fonctionnel | Changer le pays vers "Belgique". Taper `"Rue Neuve 1 Bruxelles"`. Sélectionner une suggestion. | Requête vers `nominatim.openstreetmap.org` (autorisée par la CSP). Champs remplis. Aucune erreur console. | À exécuter | À exécuter | Vérifie la bascule d'API selon le pays et l'autorisation CSP. |
+| 7 | Horaires personnalisés invalides | Fonctionnel | Sélectionner "Horaires personnalisés". Saisir `openAt = 09:00` et `closeAt = 09:00`. | Erreur `"Les horaires personnalisés sont invalides"` sous le champ heure de fermeture. | À exécuter | À exécuter | Couvre le `refine` sur `openingHours` dans le schéma. |
+| 8 | Jours d'ouverture personnalisés — aucun jour coché | Fonctionnel | Sélectionner "Jours personnalisés". Décocher tous les jours. Cliquer "Continuer". | Erreur `"Sélectionnez au moins un jour"`. | À exécuter | À exécuter | Couvre `openingDays.days.min(1)`. |
+| 9 | Parcours nominal étape 1 → étape 2 | Fonctionnel | Remplir intégralement les 2 onglets avec des valeurs valides. Cliquer "Continuer". | Navigation vers `/simulator/machines`. Aucun toast d'erreur. | À exécuter | À exécuter | Chemin heureux étape 1. |
+| 10 | Garde-fou étape 2 — aucune machine active | Fonctionnel | Sur `/simulator/machines`, mettre à 0 le `count` de toutes les machines. Cliquer "Continuer". | Toast d'erreur. Navigation bloquée. Message `"Configurez au moins une machine active"`. | À exécuter | À exécuter | Couvre `machinesSchema.refine(some count > 0)`. |
+| 11 | Étape 2 — navigation "Retour" | Fonctionnel | Cliquer sur "Retour" depuis `/simulator/machines`. | Navigation vers `/simulator/project`. État du projet conservé (contexte + localStorage). | À exécuter | À exécuter | Vérifie persistance du `SimulatorProjectContext`. |
+| 12 | Parcours nominal étape 2 → étape 3 | Fonctionnel | Configuration machines valide (au moins un `count > 0`). Cliquer "Continuer". | Navigation vers `/simulator/charges`. | À exécuter | À exécuter | Chemin heureux étape 2. |
+| 13 | Étape 3 — charge fixe sans libellé | Fonctionnel | Ajouter une charge fixe avec `label = ""`. Cliquer "Continuer". | Erreur `"Libellé requis"` sous la ligne. Navigation bloquée. | À exécuter | À exécuter | Couvre `fixedCostSchema.label.min(1)`. |
+| 14 | Étape 3 — charge fixe montant négatif | Fonctionnel | Charge fixe avec `amount = -10`. | Erreur `"Montant invalide"`. | À exécuter | À exécuter | Couvre `fixedCostSchema.amount.min(0)`. |
+| 15 | Étape 3 — somme charges variables > 100 % | Fonctionnel | Charges variables : électricité 60 % + eau 50 % = 110 %. Cliquer "Continuer". | Erreur `"Total des charges variables > 100 %"`. Navigation bloquée. | À exécuter | À exécuter | Couvre le `refine` de `chargesSchema`. |
+| 16 | Parcours nominal étape 3 → résultats | Fonctionnel | Charges fixes et variables valides. Cliquer "Voir les résultats". | Navigation vers `/simulator/results`. Affichage des KPI cohérents avec le projet. | À exécuter | À exécuter | Chemin heureux étape 3. |
+| 17 | Accès direct `/simulator/results` sans données | Fonctionnel | Purger le `localStorage`. Ouvrir directement `/simulator/results`. | Comportement défensif : valeurs par défaut affichées OU redirection vers l'étape 1 (à confirmer selon l'implémentation). | À exécuter | À exécuter | Édge case d'accès direct sans avoir complété le tunnel. |
+| 18 | Persistance — rechargement de page | Fonctionnel | Remplir l'étape 1. Recharger la page (`F5`). | Les valeurs saisies sont restaurées depuis `localStorage` via `SimulatorProjectContext`. | À exécuter | À exécuter | Vérifie la persistance du contexte. |
+| 19 | Reset du projet | Fonctionnel | Déclencher `resetProject()` (bouton reset). | Valeurs du projet réinitialisées à `defaultSimulationProject`. | À exécuter | À exécuter | Vérifie l'action `resetProject` du contexte. |
+| 20 | `simulatorProjectSchema` — parse OK sur projet par défaut valide | Unitaire | Projet minimal valide construit à partir de `defaultSimulationProject` complété (adresse, ville, CP, machines actives). Appel `simulatorProjectSchema.safeParse(project)`. | `success === true`. | À exécuter | À exécuter | Sanity check du schéma global. |
+| 21 | `simulatorProjectSchema` — erreurs ciblées par champ requis | Unitaire | Un test par champ obligatoire manquant : `projectName`, `scenarioName`, `address`, `city`, `postalCode`, `zoneType`, `openingHours.value`, `openingDays.days`, `surface`, `doorWidth`. | `safeParse` renvoie `success === false` avec le message précis attendu pour le champ. | À exécuter | À exécuter | Couvre chaque règle de validation Zod isolément. |
+| 22 | `sectionSchemas` — validation par section | Unitaire | Pour chaque clé (`projectInfo`, `localConstraints`, `machines`, `charges`), fournir un objet valide puis invalide. | Retour `success` conforme et `flatten().fieldErrors` correct. | À exécuter | À exécuter | Vérifie que les sections sont indépendantes. |
+| 23 | `useSimulatorValidation` — agrégation d'erreurs | Unitaire | Monter le hook via `SimulatorProjectProvider` avec un projet partiellement invalide. | `errorCount` correct. `sections.projectInfo.errorCount` cohérent. `isValid === false`. | À exécuter | À exécuter | Vérifie l'agrégation par section. |
+| 24 | `useSimulatorStep.guardNext` — cas invalide | Unitaire | Monter le hook avec un projet invalide + spy sur `sonner.toast.error` et sur `options.onInvalid`. Appeler `guardNext()`. | Retour `false`. `toast.error` appelé une fois avec message `"x champ(s) à corriger…"`. `onInvalid(firstInvalidSection)` appelé. `attempted` passe à `true`. | À exécuter | À exécuter | Cœur de la logique de garde. |
+| 25 | `useSimulatorStep.guardNext` — cas valide | Unitaire | Projet complet et valide. Appeler `guardNext()`. | Retour `true`. Aucun toast. `onInvalid` non appelé. | À exécuter | À exécuter | Chemin heureux. |
+| 26 | `useSimulatorStep.fieldError` — gate sur `attempted` | Unitaire | Avant appel à `guardNext`, lire `fieldError("projectName")` sur projet invalide. | Retour `undefined`. Après appel à `guardNext`, retour du message d'erreur. | À exécuter | À exécuter | Empêche l'affichage des erreurs avant la 1ʳᵉ tentative. |
+| 27 | `FormField` — rendu de l'erreur | Unitaire | Monter `<FormField label="X" error="Champ requis"><input/></FormField>`. | Le `FieldError` "Champ requis" est rendu. L'attribut `data-invalid` est présent sur le `Field`. | À exécuter | À exécuter | Vérifie le contrat visuel du wrapper. |
+| 28 | `FormField` — pas d'erreur si `error` absent | Unitaire | Monter sans prop `error`. | Aucun `FieldError` rendu. Pas d'attribut `data-invalid`. | À exécuter | À exécuter | Cas négatif. |
+| 29 | `ProjectTabs` — badges d'erreur conditionnels | Unitaire | Rendre `<ProjectTabs showErrorBadges={false} projectErrorCount={3} localErrorCount={2} />`. Puis avec `showErrorBadges={true}`. | Sans `showErrorBadges` : aucun badge. Avec : badges "3" et "2" visibles avec icône AlertCircle. | À exécuter | À exécuter | Vérifie l'affichage conditionnel des badges. |
+| 30 | `SimulatorFooterNav` — `onNext` retournant `false` bloque la navigation | Unitaire | Rendre `<SimulatorFooterNav nextPath="/next" onNext={() => false} />` dans un `MemoryRouter`. Cliquer sur "Continuer". | Aucun changement de route. `onNext` appelé. | À exécuter | À exécuter | Vérifie le contrat `onNext`. |
+| 31 | `SimulatorFooterNav` — `nextDisabled` désactive le bouton | Unitaire | `<SimulatorFooterNav nextPath="/next" nextDisabled />`. | Bouton "Continuer" avec attribut `disabled`. Clic sans effet. | À exécuter | À exécuter | Vérifie la prop `nextDisabled`. |
+| 32 | `useAddressSearch` — pas de duplication du n° de rue (BAN) | Unitaire | Mock fetch BAN retournant `{ housenumber: "5", street: "avenue Charles de Gaulle", name: "5 avenue Charles de Gaulle", ... }`. | Le résultat formaté renvoie `"5 avenue Charles de Gaulle"` (une seule fois). | À exécuter | À exécuter | Régression corrigée précédemment. |
+| 33 | `useAddressSearch` — bascule FR ↔ Nominatim | Unitaire | Appeler `search("test", { country: "France" })` puis `search("test", { country: "Belgique" })`. Spy sur `fetch`. | Premier appel → `api-adresse.data.gouv.fr`. Second → `nominatim.openstreetmap.org`. | À exécuter | À exécuter | Vérifie l'aiguillage d'API. |
+| 34 | `SimulatorProjectContext` — `updateProject` fait un merge partiel | Unitaire | Provider monté avec projet initial. Appeler `updateProject({ projectName: "Foo" })`. | Seul `projectName` change ; les autres champs sont intacts. | À exécuter | À exécuter | Sanity du merge. |
+| 35 | `SimulatorProjectContext` — persistance localStorage | Unitaire | Monter le provider, `updateProject`, démonter, remonter. | Les valeurs sont restaurées depuis `localStorage`. | À exécuter | À exécuter | Vérifie l'hydratation. |
+| 36 | `SimulatorProjectContext` — `resetProject` | Unitaire | Modifier le projet, appeler `resetProject()`. | État égal à `defaultSimulationProject`. Entrée `localStorage` nettoyée ou remise à défaut. | À exécuter | À exécuter | Vérifie le reset. |
+
+---
+
+## Notes d'exécution
+
+- Les cas fonctionnels 1-19 peuvent être automatisés via Playwright (fichier `.spec.ts` à créer ultérieurement) ou exécutés manuellement.
+- Les cas unitaires 20-36 seront écrits dans des fichiers `*.test.ts(x)` colocalisés avec la source (ex. `src/lib/validation/simulatorProjectSchema.test.ts`, `src/hooks/useSimulatorStep.test.tsx`, etc.).
+- La colonne **Commentaire** documente l'intention métier — utile pour la revue et pour référencer la règle validée.
