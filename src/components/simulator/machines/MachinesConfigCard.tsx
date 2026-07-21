@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { LucideIcon, Plus } from "lucide-react";
 import { MachineInfosCard } from "./MachineInfosCard";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { machineMonthlyRevenue, updateMachineList, removeMachine, addMachine } from "@/utils/machineRevenueCalculations";
 import type { MachineConfig } from "@/types/simulator.types";
 
 interface ConfigProps {
@@ -22,41 +23,12 @@ export function MachinesConfigCard({
   machineCat,
   machineType,
 }: ConfigProps) {
-  const DAYS_PER_MONTH = 30;
   const { project, updateProject } = useSimulatorProjectContext();
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
 
   const patch = (id: string, p: Partial<MachineConfig>) =>
     updateProject({ machines: updateMachineList(project.machines, id, p) });
-
-
-  function machineMonthlyRevenue(m: MachineConfig): number {
-    return m.count * m.cyclesPerDay * m.price * DAYS_PER_MONTH;
-  }
-
-  function updateMachineList(
-    machines: MachineConfig[] | undefined,
-    id: string,
-    patch: Partial<MachineConfig>,
-  ): MachineConfig[] {
-    return (machines ?? []).map((m) => (m.id === id ? { ...m, ...patch } : m));
-  }
-
-  function removeMachine(machines: MachineConfig[] | undefined, id: string): MachineConfig[] {
-    return (machines ?? []).filter((m) => m.id !== id);
-  }
-
-  function addMachine(
-    machines: MachineConfig[] | undefined,
-    type: "washer" | "dryer",
-  ): MachineConfig[] {
-    const defaults: MachineConfig =
-      type === "washer"
-        ? { id: crypto.randomUUID(), type, capacityKg: 10, count: 1, price: 7, cyclesPerDay: 3 }
-        : { id: crypto.randomUUID(), type, capacityKg: 14, count: 1, price: 2, cyclesPerDay: 5 };
-    return [...(machines ?? []), defaults];
-  }
 
   return (
     <FormCard className="w-full">

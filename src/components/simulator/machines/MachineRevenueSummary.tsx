@@ -1,18 +1,12 @@
 import { Plus, Equal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { machineMonthlyRevenue } from "./types";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
 export function MachineRevenueSummary() {
   const { project } = useSimulatorProjectContext();
-  const machines = project.machines ?? [];
-  const washing = Math.round(
-    machines.filter((m) => m.type === "washer").reduce((s, m) => s + machineMonthlyRevenue(m), 0),
-  );
-  const drying = Math.round(
-    machines.filter((m) => m.type === "dryer").reduce((s, m) => s + machineMonthlyRevenue(m), 0),
-  );
-  const total = washing + drying;
+  const washing = Math.round(project.washingRevenue ?? 0);
+  const drying = Math.round(project.dryingRevenue ?? 0);
+  const total = Math.round(project.totalRevenue ?? 0);
 
   return (
     <Card className="border-primary/40 bg-primary/5">

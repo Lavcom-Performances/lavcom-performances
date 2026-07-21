@@ -54,6 +54,11 @@ export interface SimulationProject {
   fixedCosts: FixedCostItem[];
   variableCosts: VariableCostItem[];
   
+  // Revenues
+  washingRevenue: number;
+  dryingRevenue: number;
+  totalRevenue: number;
+  
   // Metadata
   createdAt?: Date;
   updatedAt?: Date;
