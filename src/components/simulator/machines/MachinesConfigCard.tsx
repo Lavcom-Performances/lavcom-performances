@@ -27,8 +27,8 @@ export function MachinesConfigCard({
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
 
-  const patch = (id: string, p: Partial<MachineConfig>) =>
-    updateProject({ machines: updateMachineList(project.machines, id, p) });
+  const patchMachineConfig = (id: string, patchedConfig: Partial<MachineConfig>) =>
+    updateProject({ machines: updateMachineList(project.machines, id, patchedConfig) });
 
   return (
     <FormCard className="w-full">
@@ -40,19 +40,19 @@ export function MachinesConfigCard({
         <CardDescription>{cardDescription}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {machines.map((d) => (
+        {machines.map((machine) => (
           <MachineInfosCard
-            key={d.id}
-            capacity={d.capacityKg}
-            count={d.count}
-            price={d.price}
-            cyclesPerDay={d.cyclesPerDay}
-            monthlyRevenue={machineMonthlyRevenue(d)}
-            onCapacityChange={(v) => patch(d.id, { capacityKg: v })}
-            onCountChange={(v) => patch(d.id, { count: v })}
-            onPriceChange={(v) => patch(d.id, { price: v })}
-            onCyclesChange={(v) => patch(d.id, { cyclesPerDay: v })}
-            onRemove={() => updateProject({ machines: removeMachine(project.machines, d.id) })}
+            key={machine.id}
+            capacity={machine.capacityKg}
+            count={machine.count}
+            price={machine.price}
+            cyclesPerDay={machine.cyclesPerDay}
+            monthlyRevenue={machineMonthlyRevenue(machine)}
+            onCapacityChange={(value) => patchMachineConfig(machine.id, { capacityKg: value })}
+            onCountChange={(value) => patchMachineConfig(machine.id, { count: value })}
+            onPriceChange={(value) => patchMachineConfig(machine.id, { price: value })}
+            onCyclesChange={(value) => patchMachineConfig(machine.id, { cyclesPerDay: value })}
+            onRemove={() => updateProject({ machines: removeMachine(project.machines, machine.id) })}
           />
         ))}
         <Button

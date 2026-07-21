@@ -52,9 +52,9 @@ export function calculateRevenueBreakdown(machines: MachineConfig[] | undefined)
 export function updateMachineList(
   machines: MachineConfig[] | undefined,
   id: string,
-  patch: Partial<MachineConfig>,
+  patchedConfig: Partial<MachineConfig>,
 ): MachineConfig[] {
-  return (machines ?? []).map((machine) => (machine.id === id ? { ...machine, ...patch } : machine));
+  return (machines ?? []).map((machine) => (machine.id === id ? { ...machine, ...patchedConfig } : machine));
 }
 
 /**
