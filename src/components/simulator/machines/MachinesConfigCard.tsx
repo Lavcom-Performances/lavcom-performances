@@ -1,7 +1,7 @@
 import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
 import { Button } from "@/components/ui/button";
 import { LucideIcon, Plus } from "lucide-react";
-import { MachineCounter } from "./MachineCounter";
+import { MachineInfosCard } from "./MachineInfosCard";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import type { MachineConfig } from "@/types/simulator.types";
 
@@ -69,13 +69,14 @@ export function MachinesConfigCard({
       </CardHeader>
       <CardContent className="space-y-4">
         {machines.map((d) => (
-          <MachineCounter
+          <MachineInfosCard
             key={d.id}
             capacity={d.capacityKg}
             count={d.count}
             price={d.price}
             cyclesPerDay={d.cyclesPerDay}
             monthlyRevenue={machineMonthlyRevenue(d)}
+            onCapacityChange={(v) => patch(d.id, { capacityKg: v })}
             onCountChange={(v) => patch(d.id, { count: v })}
             onPriceChange={(v) => patch(d.id, { price: v })}
             onCyclesChange={(v) => patch(d.id, { cyclesPerDay: v })}

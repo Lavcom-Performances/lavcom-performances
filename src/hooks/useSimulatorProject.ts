@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { SimulationProject } from "@/types/simulator.types";
-import { defaultMachines, defaultFixedCosts, defaultVariableCosts } from "@/config/simulatorFormOptions";
+import { DEFAULT_MACHINES, DEFAULT_FIXED_COSTS, DEFAULT_VARIABLE_COSTS } from "@/config/simulatorFormOptions";
 
 const STORAGE_KEY = "simulationProject";
 
@@ -24,9 +24,9 @@ export const defaultSimulationProject: Partial<SimulationProject> = {
   doorWidth: 90,
   canModifyFacade: "unknown",
   technicalConstraints: "unknown",
-  machines: [...defaultMachines],
-  fixedCosts: [...defaultFixedCosts],
-  variableCosts: [...defaultVariableCosts],
+  machines: [...DEFAULT_MACHINES],
+  fixedCosts: [...DEFAULT_FIXED_COSTS],
+  variableCosts: [...DEFAULT_VARIABLE_COSTS],
 };
 
 export function useSimulatorProject() {

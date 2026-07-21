@@ -100,7 +100,7 @@ export const FIXED_COST_CATEGORIES: readonly FixedCostCategory[] = [
 ];
 
 // Indicative values ​​for fixed costs (based on market averages)
-export const defaultFixedCosts: FixedCostItem[] = [
+export const DEFAULT_FIXED_COSTS: FixedCostItem[] = [
   { id: 'rent', label: 'Loyer', amount: 1200, category: 'rent' },
   { id: 'charges', label: 'Charges locatives', amount: 150, category: 'rent' },
   { id: 'lease', label: 'Prêt / leasing machines', amount: 800, category: 'lease' },
@@ -110,15 +110,51 @@ export const defaultFixedCosts: FixedCostItem[] = [
 ];
 
 // Indicative values ​​for variable costs (average % of revenue)
-export const defaultVariableCosts: VariableCostItem[] = [
+export const DEFAULT_VARIABLE_COSTS: VariableCostItem[] = [
   { id: 'electricity', label: 'Électricité', percent: 10, category: 'electricity' },
   { id: 'water', label: 'Eau', percent: 4, category: 'water' },
   { id: 'gas', label: 'Gaz', percent: 0, category: 'gas' },
   { id: 'detergent', label: 'Lessive / produits', percent: 4, category: 'detergent' },
 ];
 
+export const MACHINES_CAPACITIES = [
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+] as const;
+
 // Default machine configuration (standard small laundromat configuration)
-export const defaultMachines: MachineConfig[] = [
+export const DEFAULT_MACHINES: MachineConfig[] = [
   { id: 'wash_7kg_default', type: 'washer', capacityKg: 7, count: 2, price: 5.5, cyclesPerDay: 4 },
   { id: 'wash_10kg_default', type: 'washer', capacityKg: 10, count: 2, price: 7, cyclesPerDay: 3 },
   { id: 'wash_18kg_default', type: 'washer', capacityKg: 18, count: 1, price: 10, cyclesPerDay: 2 },
