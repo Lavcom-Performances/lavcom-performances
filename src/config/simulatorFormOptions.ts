@@ -155,10 +155,10 @@ export const MACHINES_CAPACITIES = [
 
 // Default machine configuration (standard small laundromat configuration)
 export const DEFAULT_MACHINES: MachineConfig[] = [
-  { id: 'wash_7kg_default', type: 'washer', capacityKg: 7, count: 2, price: 5.5, cyclesPerDay: 4 },
-  { id: 'wash_10kg_default', type: 'washer', capacityKg: 10, count: 2, price: 7, cyclesPerDay: 3 },
-  { id: 'wash_18kg_default', type: 'washer', capacityKg: 18, count: 1, price: 10, cyclesPerDay: 2 },
-  { id: 'dry_14kg_default', type: 'dryer', capacityKg: 14, count: 2, price: 2, cyclesPerDay: 5 },
-  { id: 'dry_18kg_default', type: 'dryer', capacityKg: 18, count: 1, price: 3, cyclesPerDay: 4 },
+  { id: crypto.randomUUID(), type: 'washer', capacityKg: 7, count: 2, price: 5.5, cyclesPerDay: 4 },
+  { id: crypto.randomUUID(), type: 'washer', capacityKg: 10, count: 2, price: 7, cyclesPerDay: 3 },
+  { id: crypto.randomUUID(), type: 'washer', capacityKg: 18, count: 1, price: 10, cyclesPerDay: 2 },
+  { id: crypto.randomUUID(), type: 'dryer', capacityKg: 14, count: 2, price: 2, cyclesPerDay: 5 },
+  { id: crypto.randomUUID(), type: 'dryer', capacityKg: 18, count: 1, price: 3, cyclesPerDay: 4 },
 ];
 
