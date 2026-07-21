@@ -90,10 +90,10 @@ export const localConstraintsSchema = z.object({
 const machineConfigSchema = z.object({
   id: z.string().min(1),
   type: z.enum(["washer", "dryer"]),
-  capacity_kg: z.number().min(1, "Capacité invalide"),
-  count: z.number().int().min(0, "Nombre invalide"),
-  price: z.number().min(0, "Prix invalide"),
-  cycles_day: z.number().min(0, "Cycles/jour invalide"),
+  capacityKg: z.number().min(3, "Capacité invalide"),
+  count: z.number().int().min(1, "Nombre invalide"),
+  price: z.number().min(0.5, "Prix invalide"),
+  cyclesPerDay: z.number().min(0, "Cycles/jour invalide"),
 });
 
 export const machinesSchema = z.object({
