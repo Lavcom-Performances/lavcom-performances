@@ -11,7 +11,7 @@ import {
 } from "@/config/simulatorFormOptions";
 
 const valuesOf = <T extends { value: string }>(options: readonly T[]): [string, ...string[]] => {
-  const values = options.map((o) => o.value);
+  const values = options.map((option) => option.value);
   return [values[0], ...values.slice(1)];
 };
 
@@ -21,6 +21,7 @@ const weekDayEnum = z.enum(valuesOf(WEEK_DAYS) as [string, ...string[]]);
 
 // ============ Project info ============
 export const projectInfoSchema = z.object({
+  id: z.string().trim().optional(),
   projectName: z
     .string({ message: "Le nom du projet est requis" })
     .trim()
@@ -38,7 +39,10 @@ export const projectInfoSchema = z.object({
     .min(1, "L'adresse est requise")
     .max(200, "L'adresse est trop longue (max. 200)"),
   city: z.string().trim().min(1, "La ville est requise"),
-  postalCode: z.string().trim().min(1, "Le code postal est requis"),
+  postalCode: z.string().trim().optional(),
+  departmentCode: z.string().trim().optional(),
+  departmentName: z.string().trim().optional(),
+  region: z.string().trim().optional(),
   zoneType: z.enum(valuesOf(ZONE_TYPES), {
     message: "Le type de zone est requis",
   }),
@@ -99,10 +103,14 @@ const machineConfigSchema = z.object({
 export const machinesSchema = z.object({
   machines: z
     .array(machineConfigSchema)
-    .min(1, "Ajoutez au moins une machine")
-    .refine((m) => m.some((x) => x.count > 0), {
-      message: "Configurez au moins une machine active",
-    }),
+    .min(1, "Ajoutez au moins une machine"),
+});
+
+// ============ Revenues ============
+export const revenuesSchema = z.object({
+  washingRevenue: z.number().optional(),
+  dryingRevenue: z.number().optional(),
+  totalRevenue: z.number().optional(),
 });
 
 // ============ Charges ============
@@ -139,26 +147,20 @@ const variableCostSchema = z.object({
   category: variableCostCategoryEnum,
 });
 
-export const chargesSchema = z
-  .object({
-    fixedCosts: z.array(fixedCostSchema),
-    variableCosts: z.array(variableCostSchema),
-  })
-  .refine(
-    (v) => v.variableCosts.reduce((sum, c) => sum + (c.percent ?? 0), 0) <= 100,
+export const chargesSchema = z.object({
+  fixedCosts: z.array(fixedCostSchema),
+  variableCosts: z.array(variableCostSchema).refine(
+    (vCosts) => vCosts.reduce((sum, cost) => sum + (cost.percent ?? 0), 0) <= 100,
     { message: "Total des charges variables > 100 %", path: ["variableCosts"] },
-  );
+  ),
+});
 
 // ============ Global ============
 export const simulatorProjectSchema = projectInfoSchema
   .merge(localConstraintsSchema)
   .merge(machinesSchema)
-  .merge(
-    z.object({
-      fixedCosts: z.array(fixedCostSchema),
-      variableCosts: z.array(variableCostSchema),
-    }),
-  );
+  .merge(chargesSchema)
+  .merge(revenuesSchema);
 
 export type SimulatorProjectInput = z.infer<typeof simulatorProjectSchema>;
 
@@ -167,6 +169,7 @@ export const sectionSchemas = {
   localConstraints: localConstraintsSchema,
   machines: machinesSchema,
   charges: chargesSchema,
+  revenues: revenuesSchema,
 } as const;
 
 export type SimulatorValidationSection = keyof typeof sectionSchemas;

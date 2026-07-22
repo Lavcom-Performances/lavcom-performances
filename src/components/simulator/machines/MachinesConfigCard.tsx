@@ -5,6 +5,7 @@ import { MachineInfosCard } from "./MachineInfosCard";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { machineMonthlyRevenue, updateMachineList, removeMachine, addMachine } from "@/utils/machineRevenueCalculations";
 import type { MachineConfig } from "@/types/simulator.types";
+import { useSimulatorStepErrors } from "@/contexts/SimulatorStepContext";
 
 interface ConfigProps {
   icon: LucideIcon;
@@ -26,6 +27,10 @@ export function MachinesConfigCard({
   const { project, updateProject } = useSimulatorProjectContext();
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
+  const { fieldError } = useSimulatorStepErrors();
+  const machineError = fieldError("machines");
+  console.log(machineError);
+  
 
   const patchMachineConfig = (id: string, patchedConfig: Partial<MachineConfig>) =>
     updateProject({ machines: updateMachineList(project.machines, id, patchedConfig) });
@@ -55,6 +60,7 @@ export function MachinesConfigCard({
             onRemove={() => updateProject({ machines: removeMachine(project.machines, machine.id) })}
           />
         ))}
+        { machineError && <span className="text-destructive">{machineError}</span>}
         <Button
           variant="ghost"
           size="sm"
