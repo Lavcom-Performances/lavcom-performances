@@ -1,7 +1,6 @@
 import type {
   CountryOption,
   FacadeOption,
-  FixedCostCategory,
   LocalShapeOption,
   OpeningHoursOption,
   OpeningDaysOption,
@@ -9,7 +8,13 @@ import type {
   TechnicalConstraintOption,
   ZoneTypeOption,
 } from "@/types/simulatorFormOptions.types";
-import { MachineConfig, FixedCostItem, VariableCostItem } from "@/types/simulator.types";
+import {
+  MachineConfig,
+  FixedCostItem,
+  VariableCostItem,
+  FixedCostCategory,
+  VariableCostCategory,
+} from "@/types/simulator.types";
 import rectangleShape from "@/assets/rectangle-shape.svg";
 import lShape from "@/assets/l-shape.svg";
 import longRectShape from "@/assets/long-rect-shape.svg";
@@ -89,32 +94,91 @@ export const TECHNICAL_CONSTRAINTS: readonly TechnicalConstraintOption[] = [
   { value: "unknown", label: "Je ne sais pas encore" },
 ];
 
-export const FIXED_COST_CATEGORIES: readonly FixedCostCategory[] = [
-  "Loyer / Charges locatives",
-  "Prêt / Leasing",
-  "Assurance",
-  "Impôt / Taxe",
-  "Salaire / Charges sociales",
-  "Ménage / Entretien",
-  "Autre",
-];
+export const FIXED_COST_CATEGORIES: FixedCostCategory = {
+  rent: "Loyer",
+  rentalCharges: "Charges locatives", 
+  lease: "Prêt / Leasing machines",
+  insurance: "Assurance",
+  cfe: "CFE (Cotisation Foncière)",
+  taxes: "Impôt / Taxe",
+  salary: "Salaire / Charges sociales",
+  cleaning: "Ménage / Entretien",
+  other: "Autre",
+};
+
+export const VARIABLE_COST_CATEGORIES: VariableCostCategory = {
+  electricity: "Électricité",
+  water: "Eau",
+  gas: "Gaz",
+  detergent: "Lessive / produits",
+  other: "Autre",
+};
+
+const getKeyname = (object: {}, value: string): string => {
+  const keyValPairs = Object.entries(object);
+  const keyValPair = keyValPairs.find((pair) => pair[1] === value);
+  return keyValPair[0];
+}
 
 // Indicative values ​​for fixed costs (based on market averages)
 export const DEFAULT_FIXED_COSTS: FixedCostItem[] = [
-  { id: 'rent', label: 'Loyer', amount: 1200, category: 'rent' },
-  { id: 'charges', label: 'Charges locatives', amount: 150, category: 'rent' },
-  { id: 'lease', label: 'Prêt / leasing machines', amount: 800, category: 'lease' },
-  { id: 'insurance', label: 'Assurance', amount: 120, category: 'insurance' },
-  { id: 'cfe', label: 'CFE (Cotisation Foncière)', amount: 80, category: 'tax' },
-  { id: 'cleaning', label: 'Ménage / entretien', amount: 250, category: 'cleaning' },
+  {
+    id: crypto.randomUUID(),
+    label: FIXED_COST_CATEGORIES.rent,
+    amount: 1200,
+    category: 'rent'
+  },
+  {
+    id: crypto.randomUUID(),
+    label: FIXED_COST_CATEGORIES.rentalCharges,
+    amount: 150,
+    category: 'rent',
+  },
+  { 
+    id: crypto.randomUUID(),
+    label: FIXED_COST_CATEGORIES.lease,
+    amount: 800,
+    category: 'lease',
+  },
+  {
+    id: crypto.randomUUID(),
+    label: FIXED_COST_CATEGORIES.insurance,
+    amount: 120,
+    category: 'insurance',
+  },
+  {
+    id: crypto.randomUUID(),
+    label: FIXED_COST_CATEGORIES.taxes,
+    amount: 80, category: 'tax',
+  },
+  {
+    id: crypto.randomUUID(),
+    label: FIXED_COST_CATEGORIES.cleaning,
+    amount: 250,
+    category: 'cleaning',
+  },
 ];
 
 // Indicative values ​​for variable costs (average % of revenue)
 export const DEFAULT_VARIABLE_COSTS: VariableCostItem[] = [
-  { id: 'electricity', label: 'Électricité', percent: 10, category: 'electricity' },
-  { id: 'water', label: 'Eau', percent: 4, category: 'water' },
-  { id: 'gas', label: 'Gaz', percent: 0, category: 'gas' },
-  { id: 'detergent', label: 'Lessive / produits', percent: 4, category: 'detergent' },
+  {
+    id: crypto.randomUUID(),
+    label: VARIABLE_COST_CATEGORIES.electricity,
+    percent: 10,
+    category: 'electricity',
+  },
+  {
+    id: crypto.randomUUID(),
+    label: VARIABLE_COST_CATEGORIES.water,
+    percent: 4,
+    category: 'water',
+  },
+  {
+    id: crypto.randomUUID(),
+    label: VARIABLE_COST_CATEGORIES.detergent,
+    percent: 4,
+    category: 'detergent',
+  },
 ];
 
 export const MACHINES_CAPACITIES = [

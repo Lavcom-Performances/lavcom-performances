@@ -1,7 +1,7 @@
 import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
-import { Button } from "@/components/ui/button";
-import { LucideIcon, Plus, Info } from "lucide-react";
+import { LucideIcon, Info } from "lucide-react";
 import { CostRow } from "./CostRow";
+import { AddCostCard } from "./AddCostCard";
 import {
   addFixedCost,
   removeFixedCost,
@@ -40,11 +40,11 @@ export function CostsCard({
 
   const total = getTotal();
 
-  const handleAdd = () => {
+  const handleAdd = (newCost: string) => {
     if (costType === "fixed") {
-      updateProject({ fixedCosts: addFixedCost(project.fixedCosts) });
+      updateProject({ fixedCosts: addFixedCost(project.fixedCosts, newCost) });
     } else {
-      updateProject({ variableCosts: addVariableCost(project.variableCosts) });
+      updateProject({ variableCosts: addVariableCost(project.variableCosts, newCost) });
     }
   };
 
@@ -74,26 +74,24 @@ export function CostsCard({
         <CardDescription>{cardDescription}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {items.map((cost: any) => (
-          <CostRow
-            key={cost.id}
-            label={cost.label}
-            value={cost.amount ?? cost.percent ?? 0}
-            suffix={costType === "fixed" ? "€/mois" : "% du CA"}
-            placeholder="0"
-            onChange={(value) => handleUpdate(cost.id, value)}
-            onRemove={() => handleRemove(cost.id)}
-          />
-        ))}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-2"
-          onClick={handleAdd}
-        >
-          <Plus className="h-4 w-4" />
-          Ajouter une charge {costType === "fixed" ? "fixe" : "variable"}
-        </Button>
+        <div className="space-y-4">
+          <h4 className="text-base font-bold text-foreground">Charges</h4>
+          {items.map((cost: any) => (
+            <CostRow
+              key={cost.id}
+              label={cost.label}
+              value={cost.amount ?? cost.percent ?? 0}
+              suffix={costType === "fixed" ? "€/mois" : "% du CA"}
+              placeholder="0"
+              onChange={(value) => handleUpdate(cost.id, value)}
+              onRemove={() => handleRemove(cost.id)}
+            />
+          ))}
+        </div>
+        <AddCostCard
+          costType={costType}
+          onCLick={(newCost) => handleAdd(newCost)}        
+        />
         <div className="flex flex-col items-center rounded-lg border border-lavcom-orange/40 bg-lavcom-orange/20 px-4 py-3">
           <span className="text-xs font-medium text-muted-foreground">
             Total charges {costType === "fixed" ? "fixes" : "variables"}

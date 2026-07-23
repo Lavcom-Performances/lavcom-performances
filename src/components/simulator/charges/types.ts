@@ -17,10 +17,10 @@ export function removeFixedCost(items: FixedCostItem[] | undefined, id: string):
   return (items ?? []).filter((c) => c.id !== id);
 }
 
-export function addFixedCost(items: FixedCostItem[] | undefined): FixedCostItem[] {
+export function addFixedCost(items: FixedCostItem[] | undefined, itemLabel: string): FixedCostItem[] {
   return [
     ...(items ?? []),
-    { id: crypto.randomUUID(), label: "Nouvelle charge", amount: 0, category: "other" },
+    { id: crypto.randomUUID(), label: itemLabel, amount: 0, category: "other" },
   ];
 }
 
@@ -36,9 +36,9 @@ export function removeVariableCost(items: VariableCostItem[] | undefined, id: st
   return (items ?? []).filter((c) => c.id !== id);
 }
 
-export function addVariableCost(items: VariableCostItem[] | undefined): VariableCostItem[] {
+export function addVariableCost(items: VariableCostItem[] | undefined, itemLabel: string): VariableCostItem[] {
   return [
     ...(items ?? []),
-    { id: crypto.randomUUID(), label: "Nouvelle charge", percent: 0, category: "other" },
+    { id: crypto.randomUUID(), label: itemLabel, percent: 0, category: "other" },
   ];
 }

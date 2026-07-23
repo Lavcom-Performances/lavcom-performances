@@ -28,9 +28,7 @@ export function MachinesConfigCard({
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
   const { fieldError } = useSimulatorStepErrors();
-  const machineError = fieldError("machines");
-  console.log(machineError);
-  
+  const machineError = fieldError("machines");  
 
   const patchMachineConfig = (id: string, patchedConfig: Partial<MachineConfig>) =>
     updateProject({ machines: updateMachineList(project.machines, id, patchedConfig) });

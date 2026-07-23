@@ -37,15 +37,6 @@ export type StructuralObstacleValue = "none" | "few" | "many" | "unknown";
 export type FacadeOptionValue = "yes" | "no" | "unknown";
 export type TechnicalConstraintValue = "ok" | "check_with_installer" | "heavy_work" | "unknown";
 
-export type FixedCostCategory =
-  | "Loyer / Charges locatives"
-  | "Prêt / Leasing"
-  | "Assurance"
-  | "Impôt / Taxe"
-  | "Salaire / Charges sociales"
-  | "Ménage / Entretien"
-  | "Autre";
-
 export type CountryOption = CountrySelectOption;
 export type ZoneTypeOption = SimulatorSelectOption<ZoneTypeValue>;
 export type OpeningHoursOption = OpeningHoursSelectOption;

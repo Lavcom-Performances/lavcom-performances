@@ -23,6 +23,26 @@ export interface VariableCostItem {
   category: 'electricity' | 'water' | 'gas' | 'detergent' | 'other';
 }
 
+export interface FixedCostCategory {
+  rent: string;
+  rentalCharges: string; 
+  lease: string;
+  insurance: string;
+  cfe: string;
+  taxes: string;
+  salary: string;
+  cleaning: string;
+  other: string;
+}
+
+export interface VariableCostCategory {
+  electricity: string;
+  water: string;
+  gas: string;
+  detergent: string;
+  other: string;
+}
+
 export interface SimulationProject {
   // Project infos
   id?: string;
