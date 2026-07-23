@@ -1,0 +1,126 @@
+import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
+import { Button } from "@/components/ui/button";
+import { LucideIcon, Plus, Info } from "lucide-react";
+import { CostRow } from "./CostRow";
+import {
+  addFixedCost,
+  removeFixedCost,
+  updateFixedCost,
+  addVariableCost,
+  removeVariableCost,
+  updateVariableCost,
+} from "./types";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+
+interface CostsCardProps {
+  icon: LucideIcon;
+  cardTitle: string;
+  cardDescription: string;
+  costType: "fixed" | "variable";
+  showHint?: boolean;
+}
+
+export function CostsCard({
+  icon: Icon,
+  cardTitle,
+  cardDescription,
+  costType,
+  showHint = false,
+}: CostsCardProps) {
+  const { project, updateProject } = useSimulatorProjectContext();
+  const items = costType === "fixed" ? project.fixedCosts ?? [] : project.variableCosts ?? [];
+  
+  const getTotal = () => {
+    if (costType === "fixed") {
+      return items.reduce((s: number, cost: any) => s + (cost.amount || 0), 0);
+    } else {
+      return items.reduce((s: number, cost: any) => s + (cost.percent || 0), 0);
+    }
+  };
+
+  const total = getTotal();
+
+  const handleAdd = () => {
+    if (costType === "fixed") {
+      updateProject({ fixedCosts: addFixedCost(project.fixedCosts) });
+    } else {
+      updateProject({ variableCosts: addVariableCost(project.variableCosts) });
+    }
+  };
+
+  const handleUpdate = (id: string, value: number) => {
+    if (costType === "fixed") {
+      updateProject({ fixedCosts: updateFixedCost(project.fixedCosts, id, value) });
+    } else {
+      updateProject({ variableCosts: updateVariableCost(project.variableCosts, id, value) });
+    }
+  };
+
+  const handleRemove = (id: string) => {
+    if (costType === "fixed") {
+      updateProject({ fixedCosts: removeFixedCost(project.fixedCosts, id) });
+    } else {
+      updateProject({ variableCosts: removeVariableCost(project.variableCosts, id) });
+    }
+  };
+
+  return (
+    <FormCard className="w-full">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Icon className="h-5 w-5 text-lavcom-orange" />
+          {cardTitle}
+        </CardTitle>
+        <CardDescription>{cardDescription}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {items.map((cost: any) => (
+          <CostRow
+            key={cost.id}
+            label={cost.label}
+            value={cost.amount ?? cost.percent ?? 0}
+            suffix={costType === "fixed" ? "€/mois" : "% du CA"}
+            placeholder="0"
+            onChange={(value) => handleUpdate(cost.id, value)}
+            onRemove={() => handleRemove(cost.id)}
+          />
+        ))}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-2"
+          onClick={handleAdd}
+        >
+          <Plus className="h-4 w-4" />
+          Ajouter une charge {costType === "fixed" ? "fixe" : "variable"}
+        </Button>
+        <div className="flex flex-col items-center rounded-lg border border-lavcom-orange/40 bg-lavcom-orange/20 px-4 py-3">
+          <span className="text-xs font-medium text-muted-foreground">
+            Total charges {costType === "fixed" ? "fixes" : "variables"}
+          </span>
+          <span className="text-lg font-bold text-lavcom-orange">
+            {costType === "fixed" 
+              ? `${total.toLocaleString("fr-FR")} €` 
+              : `${total.toFixed(1)} %`
+            }
+            {costType === "fixed" && (
+              <span className="ml-1 text-xs font-normal text-muted-foreground">/ mois</span>
+            )}
+            {costType === "variable" && (
+              <span className="ml-1 text-xs font-normal text-muted-foreground">du CA</span>
+            )}
+          </span>
+        </div>
+        {showHint && costType === "variable" && (
+          <div className="inline-flex items-start justify-start gap-1 rounded-md border border-input bg-background p-3">
+            <Info className="mt-0.5 h-3 w-3s shrink-0 text-muted-foreground"/>
+            <p className="text-xs text-muted-foreground">
+              Ordre de grandeur : électricité ~8-12%, eau ~3-5%, lessive ~3-5% du CA selon les
+              équipements.
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </FormCard>
+  );
+}
