@@ -4,11 +4,15 @@ import {
   FIXED_COST_CATEGORIES,
   VARIABLE_COST_CATEGORIES
 } from "@/config/simulatorFormOptions";
+import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
 import { Plus } from "lucide-react";
 
 interface AddCostCardProps {
   costType: "fixed" | "variable";
-  onCLick?: (cost: string) => void;
+  onCLick?: (
+    cost: string,
+    category: FixedCostItem["category"] | VariableCostItem["category"]
+  ) => void;
 }
 
 export function AddCostCard({ costType, onCLick }: AddCostCardProps) {
@@ -28,10 +32,14 @@ export function AddCostCard({ costType, onCLick }: AddCostCardProps) {
               variant="outline"
               size="sm"
               className="gap-2"
-              onClick={() => onCLick(cost[1])}
+              onClick={() => (
+                onCLick(
+                  cost[1]["category"] !== "other" ? cost[1]["label"] : "",
+                  cost[1]["category"]
+                ))}
             >
               <Plus className="h-4 w-4" />
-              {cost[1]}
+              {cost[1]["label"]}
             </Button>
           ))
           : variableCosts.map((cost) => (
@@ -40,10 +48,14 @@ export function AddCostCard({ costType, onCLick }: AddCostCardProps) {
               variant="outline"
               size="sm"
               className="gap-2"
-              onClick={() => onCLick(cost[1])}
+              onClick={() => (
+                onCLick(
+                  cost[1]["category"] !== "other" ? cost[1]["label"] : "",
+                  cost[1]["category"]
+                ))}
             >
               <Plus className="h-4 w-4" />
-              {cost[1]}
+              {cost[1]["label"]}
             </Button>
           ))
         }

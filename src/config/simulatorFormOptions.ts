@@ -95,23 +95,23 @@ export const TECHNICAL_CONSTRAINTS: readonly TechnicalConstraintOption[] = [
 ];
 
 export const FIXED_COST_CATEGORIES: FixedCostCategory = {
-  rent: "Loyer",
-  rentalCharges: "Charges locatives", 
-  lease: "Prêt / Leasing machines",
-  insurance: "Assurance",
-  cfe: "CFE (Cotisation Foncière)",
-  taxes: "Impôt / Taxe",
-  salary: "Salaire / Charges sociales",
-  cleaning: "Ménage / Entretien",
-  other: "Autre",
+  rent: { label: "Loyer", category: "rent"},
+  rentalCharges: { label: "Charges locatives", category: "rent"},
+  lease: { label: "Prêt / Leasing machines", category: "lease"},
+  insurance: { label: "Assurance", category: "insurance"},
+  cfe: { label: "CFE (Cotisation Foncière)", category: "tax"},
+  taxes: { label: "Impôt / Taxe", category: "tax"},
+  salary: { label: "Salaire / Charges sociales", category: "salary"},
+  cleaning: { label: "Ménage / Entretien", category: "cleaning"},
+  other: { label: "Autre", category: "other"},
 };
 
 export const VARIABLE_COST_CATEGORIES: VariableCostCategory = {
-  electricity: "Électricité",
-  water: "Eau",
-  gas: "Gaz",
-  detergent: "Lessive / produits",
-  other: "Autre",
+  electricity: { label: "Électricité", category: "electricity"},
+  water: { label: "Eau", category: "water"},
+  gas: { label: "Gaz", category: "gas"},
+  detergent: { label: "Lessive / produits", category:"detergent"},
+  other: { label: "Autre", category: "other"},
 };
 
 const getKeyname = (object: {}, value: string): string => {
@@ -124,38 +124,39 @@ const getKeyname = (object: {}, value: string): string => {
 export const DEFAULT_FIXED_COSTS: FixedCostItem[] = [
   {
     id: crypto.randomUUID(),
-    label: FIXED_COST_CATEGORIES.rent,
+    label: FIXED_COST_CATEGORIES.rent.label,
     amount: 1200,
-    category: 'rent'
+    category: FIXED_COST_CATEGORIES.rent.category,
   },
   {
     id: crypto.randomUUID(),
-    label: FIXED_COST_CATEGORIES.rentalCharges,
+    label: FIXED_COST_CATEGORIES.rentalCharges.label,
     amount: 150,
-    category: 'rent',
+    category: FIXED_COST_CATEGORIES.rentalCharges.category,
   },
   { 
     id: crypto.randomUUID(),
-    label: FIXED_COST_CATEGORIES.lease,
+    label: FIXED_COST_CATEGORIES.lease.label,
     amount: 800,
-    category: 'lease',
+    category: FIXED_COST_CATEGORIES.lease.category,
   },
   {
     id: crypto.randomUUID(),
-    label: FIXED_COST_CATEGORIES.insurance,
+    label: FIXED_COST_CATEGORIES.insurance.label,
     amount: 120,
-    category: 'insurance',
+    category: FIXED_COST_CATEGORIES.insurance.category,
   },
   {
     id: crypto.randomUUID(),
-    label: FIXED_COST_CATEGORIES.taxes,
-    amount: 80, category: 'tax',
+    label: FIXED_COST_CATEGORIES.cfe.label,
+    amount: 80,
+    category: FIXED_COST_CATEGORIES.cfe.category,
   },
   {
     id: crypto.randomUUID(),
-    label: FIXED_COST_CATEGORIES.cleaning,
+    label: FIXED_COST_CATEGORIES.cleaning.label,
     amount: 250,
-    category: 'cleaning',
+    category: FIXED_COST_CATEGORIES.cleaning.category,
   },
 ];
 
@@ -163,21 +164,21 @@ export const DEFAULT_FIXED_COSTS: FixedCostItem[] = [
 export const DEFAULT_VARIABLE_COSTS: VariableCostItem[] = [
   {
     id: crypto.randomUUID(),
-    label: VARIABLE_COST_CATEGORIES.electricity,
+    label: VARIABLE_COST_CATEGORIES.electricity.label,
     percent: 10,
-    category: 'electricity',
+    category: VARIABLE_COST_CATEGORIES.electricity.category,
   },
   {
     id: crypto.randomUUID(),
-    label: VARIABLE_COST_CATEGORIES.water,
+    label: VARIABLE_COST_CATEGORIES.water.label,
     percent: 4,
-    category: 'water',
+    category: VARIABLE_COST_CATEGORIES.water.category,
   },
   {
     id: crypto.randomUUID(),
-    label: VARIABLE_COST_CATEGORIES.detergent,
+    label: VARIABLE_COST_CATEGORIES.detergent.label,
     percent: 4,
-    category: 'detergent',
+    category: VARIABLE_COST_CATEGORIES.detergent.category,
   },
 ];
 

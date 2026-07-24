@@ -1,4 +1,5 @@
 import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
+import { Separator } from "@/components/ui/separator";
 import { LucideIcon, Info } from "lucide-react";
 import { CostRow } from "./CostRow";
 import { AddCostCard } from "./AddCostCard";
@@ -11,6 +12,7 @@ import {
   updateVariableCost,
 } from "./types";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
 
 interface CostsCardProps {
   icon: LucideIcon;
@@ -40,19 +42,19 @@ export function CostsCard({
 
   const total = getTotal();
 
-  const handleAdd = (newCost: string) => {
+  const handleAdd = (newCost: string, category: FixedCostItem["category"] | VariableCostItem["category"]) => {
     if (costType === "fixed") {
-      updateProject({ fixedCosts: addFixedCost(project.fixedCosts, newCost) });
+      updateProject({ fixedCosts: addFixedCost(project.fixedCosts, newCost, category as FixedCostItem["category"]) });
     } else {
-      updateProject({ variableCosts: addVariableCost(project.variableCosts, newCost) });
+      updateProject({ variableCosts: addVariableCost(project.variableCosts, newCost, category as VariableCostItem["category"]) });
     }
   };
 
-  const handleUpdate = (id: string, value: number) => {
+  const handleUpdate = (id: string, label?: string, value?: number,) => {
     if (costType === "fixed") {
-      updateProject({ fixedCosts: updateFixedCost(project.fixedCosts, id, value) });
+      updateProject({ fixedCosts: updateFixedCost(project.fixedCosts, id, label, value) });
     } else {
-      updateProject({ variableCosts: updateVariableCost(project.variableCosts, id, value) });
+      updateProject({ variableCosts: updateVariableCost(project.variableCosts, id, label, value) });
     }
   };
 
@@ -80,17 +82,20 @@ export function CostsCard({
             <CostRow
               key={cost.id}
               label={cost.label}
+              other={cost.category === "other"}
               value={cost.amount ?? cost.percent ?? 0}
               suffix={costType === "fixed" ? "€/mois" : "% du CA"}
               placeholder="0"
-              onChange={(value) => handleUpdate(cost.id, value)}
+              onChangeLabel={(label) => handleUpdate(cost.id, label, cost.value)}
+              onChangeAmount={(value) => handleUpdate(cost.id, cost.label, value)}
               onRemove={() => handleRemove(cost.id)}
             />
           ))}
         </div>
+        <Separator />
         <AddCostCard
           costType={costType}
-          onCLick={(newCost) => handleAdd(newCost)}        
+          onCLick={(newCost, category) => handleAdd(newCost, category)}        
         />
         <div className="flex flex-col items-center rounded-lg border border-lavcom-orange/40 bg-lavcom-orange/20 px-4 py-3">
           <span className="text-xs font-medium text-muted-foreground">

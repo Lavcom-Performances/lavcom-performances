@@ -24,23 +24,23 @@ export interface VariableCostItem {
 }
 
 export interface FixedCostCategory {
-  rent: string;
-  rentalCharges: string; 
-  lease: string;
-  insurance: string;
-  cfe: string;
-  taxes: string;
-  salary: string;
-  cleaning: string;
-  other: string;
+  rent: { label: string; category: FixedCostItem['category'] };
+  rentalCharges: { label: string; category: FixedCostItem['category'] }; 
+  lease: { label: string; category: FixedCostItem['category'] };
+  insurance: { label: string; category: FixedCostItem['category'] };
+  cfe: { label: string; category: FixedCostItem['category'] };
+  taxes: { label: string; category: FixedCostItem['category'] };
+  salary: { label: string; category: FixedCostItem['category'] };
+  cleaning: { label: string; category: FixedCostItem['category'] };
+  other: { label: string; category: FixedCostItem['category'] };
 }
 
 export interface VariableCostCategory {
-  electricity: string;
-  water: string;
-  gas: string;
-  detergent: string;
-  other: string;
+  electricity: { label: string; category: VariableCostItem['category'] };
+  water: { label: string; category: VariableCostItem['category'] };
+  gas: { label: string; category: VariableCostItem['category'] };
+  detergent: { label: string; category: VariableCostItem['category'] };
+  other: { label: string; category: VariableCostItem['category'] };
 }
 
 export interface SimulationProject {
