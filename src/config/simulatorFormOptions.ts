@@ -14,6 +14,7 @@ import {
   VariableCostItem,
   FixedCostCategory,
   VariableCostCategory,
+  SubscriptionCategory,
 } from "@/types/simulator.types";
 import rectangleShape from "@/assets/rectangle-shape.svg";
 import lShape from "@/assets/l-shape.svg";
@@ -93,6 +94,17 @@ export const TECHNICAL_CONSTRAINTS: readonly TechnicalConstraintOption[] = [
   { value: "heavy_work", label: "Gros travaux à prévoir" },
   { value: "unknown", label: "Je ne sais pas encore" },
 ];
+
+export const SUBSCRIPTION_CATEGORIES: SubscriptionCategory = {
+  paymentTerminal: { label: "Centrale de paiement", category: "subscription"},
+  remoteManagement: { label: "Télégestion", category: "subscription"},
+  internet: { label: "Internet", category: "subscription"},
+  phone: { label: "Téléphone", category: "subscription"},
+  alarm: { label: "Alarme / vidéosurveillance", category: "subscription"},
+  managementSoftware: { label: "Logiciel de gestion", category: "subscription"},
+  maintenanceContract: { label: "Contrat de maintenance", category: "subscription"},
+  otherSubscription: { label: "Autre abonnement", category: "subscription"},
+}
 
 export const FIXED_COST_CATEGORIES: FixedCostCategory = {
   rent: { label: "Loyer", category: "rent"},

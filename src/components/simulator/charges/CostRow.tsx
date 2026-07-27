@@ -1,40 +1,67 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
+import { SUBSCRIPTION_CATEGORIES } from "@/config/simulatorFormOptions";
 
 interface Props {
   label?: string;
-  other?: Boolean;
+  subscription?: boolean;
+  other?: boolean;
   value: number;
   suffix?: string;
   placeholder?: string;
   onChangeLabel?: (value: string) => void;
-  onChangeAmount: (value: number) => void;
+  onChangeValue: (value: number) => void;
   onRemove?: () => void;
 }
 
 export function CostRow({
   label,
+  subscription,
   other,
   value,
   suffix = "€/mois",
-  placeholder = "Montant",
+  placeholder = "0",
   onChangeLabel,
-  onChangeAmount,
+  onChangeValue,
   onRemove
 }: Props) {
-  
+  const items: [string, {label: string; category:string}][] = Object.entries(SUBSCRIPTION_CATEGORIES);
   return (
     <div className="flex gap-3 items-center">
-      { label && !other && (
+      { label && !other && !subscription && (
         <span className="text-sm text-foreground grow">{label}</span>
+      )}
+      { subscription && (
+        <Select defaultValue={label}>
+          <SelectTrigger className="grow w-min bg-white shadow-form text-left">
+            <SelectValue placeholder="Abonnement..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {items.map((item) => (
+                <SelectItem key={item[0]} value={item[1].label}>
+                  {item[1].label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       )}
       { other && (
         <Input
           type="text"
           value={label || ""}
           placeholder="Libellé"
-          onChange={(e) => onChangeLabel(e.target.value)}
+          onChange={(e) => onChangeLabel?.(e.target.value)}
           className="bg-white shadow-form w-min"
         />
       )}
@@ -43,7 +70,7 @@ export function CostRow({
           type="number"
           value={value || ""}
           placeholder={placeholder}
-          onChange={(e) => onChangeAmount(Number(e.target.value))}
+          onChange={(e) => onChangeValue(Number(e.target.value))}
           className="bg-white shadow-form text-right w-24"
         />
         <span className="whitespace-nowrap text-xs text-muted-foreground">{suffix}</span>

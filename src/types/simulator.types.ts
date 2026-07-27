@@ -43,6 +43,17 @@ export interface VariableCostCategory {
   other: { label: string; category: VariableCostItem['category'] };
 }
 
+export interface SubscriptionCategory {
+  paymentTerminal: { label: string; category: FixedCostItem['category'] };
+  remoteManagement: { label: string; category: FixedCostItem['category'] };
+  internet: { label: string; category: FixedCostItem['category'] };
+  phone: { label: string; category: FixedCostItem['category'] };
+  alarm: { label: string; category: FixedCostItem['category'] };
+  managementSoftware: { label: string; category: FixedCostItem['category'] };
+  maintenanceContract: { label: string; category: FixedCostItem['category'] };
+  otherSubscription: { label: string; category: FixedCostItem['category'] };
+}
+
 export interface SimulationProject {
   // Project infos
   id?: string;

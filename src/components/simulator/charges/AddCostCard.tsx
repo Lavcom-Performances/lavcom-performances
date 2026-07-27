@@ -7,17 +7,25 @@ import {
 import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
 import { Plus } from "lucide-react";
 
-interface AddCostCardProps {
-  costType: "fixed" | "variable";
-  onCLick?: (
-    cost: string,
-    category: FixedCostItem["category"] | VariableCostItem["category"]
-  ) => void;
-}
+type AddCostCardProps =
+  | {
+      costType: "fixed";
+      onClick: (newCost: string, category: FixedCostItem["category"]) => void;
+    }
+  | {
+      costType: "variable";
+      onClick: (newCost: string, category: VariableCostItem["category"]) => void;
+    };
 
-export function AddCostCard({ costType, onCLick }: AddCostCardProps) {
-  const fixedCosts: [string, string][] = Object.entries(FIXED_COST_CATEGORIES);
-  const variableCosts: [string, string][] = Object.entries(VARIABLE_COST_CATEGORIES);
+export function AddCostCard({ costType, onClick }: AddCostCardProps) {
+  const fixedCosts = Object.entries(FIXED_COST_CATEGORIES) as [
+    string,
+    { label: string; category: FixedCostItem["category"] }
+  ][];
+  const variableCosts = Object.entries(VARIABLE_COST_CATEGORIES) as [
+    string,
+    { label: string; category: VariableCostItem["category"] }
+  ][];
 
   return (
     <div className="space-y-4">
@@ -27,37 +35,39 @@ export function AddCostCard({ costType, onCLick }: AddCostCardProps) {
       <div className="flex gap-1 flex-wrap">
         {costType === "fixed"
           ? fixedCosts.map((cost) => (
-            <Button
-              key={cost[0]}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => (
-                onCLick(
-                  cost[1]["category"] !== "other" ? cost[1]["label"] : "",
-                  cost[1]["category"]
-                ))}
-            >
-              <Plus className="h-4 w-4" />
-              {cost[1]["label"]}
-            </Button>
-          ))
+              <Button
+                key={cost[0]}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => {
+                  onClick(
+                    cost[1].category !== "other" ? cost[1].label : "",
+                    cost[1].category
+                  );
+                }}
+              >
+                <Plus className="h-4 w-4" />
+                {cost[1].label}
+              </Button>
+            ))
           : variableCosts.map((cost) => (
-            <Button
-              key={cost[0]}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => (
-                onCLick(
-                  cost[1]["category"] !== "other" ? cost[1]["label"] : "",
-                  cost[1]["category"]
-                ))}
-            >
-              <Plus className="h-4 w-4" />
-              {cost[1]["label"]}
-            </Button>
-          ))
+              <Button
+                key={cost[0]}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => {
+                  onClick(
+                    cost[1].category !== "other" ? cost[1].label : "",
+                    cost[1].category
+                  );
+                }}
+              >
+                <Plus className="h-4 w-4" />
+                {cost[1].label}
+              </Button>
+            ))
         }
       </div>
     </div>

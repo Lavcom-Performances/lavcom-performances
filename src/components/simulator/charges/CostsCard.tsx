@@ -3,6 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { LucideIcon, Info } from "lucide-react";
 import { CostRow } from "./CostRow";
 import { AddCostCard } from "./AddCostCard";
+import { SubscriptionCard } from "./SubscriptionCard"
 import {
   addFixedCost,
   removeFixedCost,
@@ -30,15 +31,23 @@ export function CostsCard({
   showHint = false,
 }: CostsCardProps) {
   const { project, updateProject } = useSimulatorProjectContext();
-  const items = costType === "fixed" ? project.fixedCosts ?? [] : project.variableCosts ?? [];
+  const items: FixedCostItem[] | VariableCostItem[] = costType === "fixed" ? project.fixedCosts ?? [] : project.variableCosts ?? [];
   
   const getTotal = () => {
     if (costType === "fixed") {
-      return items.reduce((s: number, cost: any) => s + (cost.amount || 0), 0);
+      return items.reduce((sum: number, cost: FixedCostItem) => sum + (cost.amount || 0), 0);
     } else {
-      return items.reduce((s: number, cost: any) => s + (cost.percent || 0), 0);
+      return items.reduce((sum: number, cost: VariableCostItem) => sum + (cost.percent || 0), 0);
     }
   };
+
+  const getSubscriptions = () => {
+    return costType === "fixed"
+      ? (items as FixedCostItem[]).filter((item) => item.category === "subscription")
+      : [];
+  };
+
+  const subscriptions = getSubscriptions();
 
   const total = getTotal();
 
@@ -78,24 +87,47 @@ export function CostsCard({
       <CardContent className="space-y-4">
         <div className="space-y-4">
           <h4 className="text-base font-bold text-foreground">Charges</h4>
-          {items.map((cost: any) => (
-            <CostRow
-              key={cost.id}
-              label={cost.label}
-              other={cost.category === "other"}
-              value={cost.amount ?? cost.percent ?? 0}
-              suffix={costType === "fixed" ? "€/mois" : "% du CA"}
-              placeholder="0"
-              onChangeLabel={(label) => handleUpdate(cost.id, label, cost.value)}
-              onChangeAmount={(value) => handleUpdate(cost.id, cost.label, value)}
-              onRemove={() => handleRemove(cost.id)}
-            />
-          ))}
+          {costType === "fixed"
+            ? (items as FixedCostItem[])
+              .filter((cost) => cost.category !== "subscription")
+              .map((cost) => (
+                <CostRow
+                  key={cost.id}
+                  label={cost.label}
+                  other={cost.category === "other"}
+                  value={cost.amount ?? 0}
+                  suffix="€/mois"
+                  placeholder="0"
+                  onChangeLabel={(label) => handleUpdate(cost.id, label, cost.amount)}
+                  onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
+                  onRemove={() => handleRemove(cost.id)}
+                />))
+            : (items as VariableCostItem[]).map((cost) => (
+              <CostRow
+                key={cost.id}
+                label={cost.label}
+                other={cost.category === "other"}
+                value={cost.percent ?? 0}
+                suffix="% du CA"
+                placeholder="0"
+                onChangeLabel={(label) => handleUpdate(cost.id, label, cost.percent)}
+                onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
+                onRemove={() => handleRemove(cost.id)}
+              />))
+          }
         </div>
+        {costType === "fixed" && (
+          <>
+            <Separator />
+            <SubscriptionCard
+              subscriptions={subscriptions as FixedCostItem[]}
+            />
+          </>
+        )}
         <Separator />
         <AddCostCard
           costType={costType}
-          onCLick={(newCost, category) => handleAdd(newCost, category)}        
+          onClick={(newCost, category) => handleAdd(newCost, category)}        
         />
         <div className="flex flex-col items-center rounded-lg border border-lavcom-orange/40 bg-lavcom-orange/20 px-4 py-3">
           <span className="text-xs font-medium text-muted-foreground">
