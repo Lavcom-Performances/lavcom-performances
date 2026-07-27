@@ -41,7 +41,7 @@ export function CostRow({
         <span className="text-sm text-foreground grow">{label}</span>
       )}
       { subscription && (
-        <Select defaultValue={label}>
+        <Select defaultValue={label} onValueChange={(value) => onChangeLabel?.(value)}>
           <SelectTrigger className="grow w-min bg-white shadow-form text-left">
             <SelectValue placeholder="Abonnement..." />
           </SelectTrigger>

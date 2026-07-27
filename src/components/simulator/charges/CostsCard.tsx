@@ -120,7 +120,11 @@ export function CostsCard({
           <>
             <Separator />
             <SubscriptionCard
-              subscriptions={subscriptions as FixedCostItem[]}
+              subscriptions={subscriptions}
+              onAdd={() => handleAdd("", "subscription")}
+              onChangeLabel={(id, label, value) => handleUpdate(id, label, value)}
+              onChangeValue={(id, label, value) => handleUpdate(id, label, value)}
+              onRemove={(id) => handleRemove(id)}
             />
           </>
         )}
