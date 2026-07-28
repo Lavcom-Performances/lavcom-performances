@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeltaPill } from "@/components/dashboard-simulator/shared/DeltaPill";
-import { KPI_STRINGS } from "@/constants/dashboard-simulator/common.strings";
+
 import { COMPARISON_STRINGS } from "@/constants/dashboard-simulator/comparison.strings";
 import { fillTemplate, formatEuro } from "@/components/dashboard-simulator/shared/format";
 import type { DashboardKpiSet } from "@/types/dashboard-simulator";
@@ -57,7 +57,6 @@ export function ComparisonDeltaCard({ nameA, nameB, kpisA, kpisB }: ComparisonDe
             </div>
           );
         })}
-        <p className="col-span-full text-xs text-muted-foreground">{KPI_STRINGS.breakEvenShort}</p>
 
       </CardContent>
     </Card>
