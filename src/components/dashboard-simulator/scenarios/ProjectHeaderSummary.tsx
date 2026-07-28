@@ -91,9 +91,8 @@ export function ProjectHeaderSummary({ project, scenarioCount }: Props) {
             <KpiTile label={KPI_STRINGS.breakEven} value={formatEuro(project.kpis.breakEven)} />
             <KpiTile label={KPI_STRINGS.roi} value={formatMonths(project.kpis.roiMonths)} />
           </div>
-
-          <p className="text-xs text-muted-foreground">{COMMON_STRINGS.notAvailable === "–" ? "" : ""}</p>
         </CardContent>
+
       </Card>
     </div>
   );
