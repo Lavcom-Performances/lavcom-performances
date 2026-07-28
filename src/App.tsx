@@ -214,6 +214,42 @@ const App = () => (
             <Route path="/simulator/results" element={<SimulatorResultsPage />} />
           </Route>
 
+          {/* Project-holder dashboard (mock data, isolated routes) */}
+          <Route
+            element={
+              <DashboardRouteGuard>
+                <DashboardSimulatorLayout />
+              </DashboardRouteGuard>
+            }
+          >
+            <Route path="/dashboard-simulator" element={<SimDashboardPage />} />
+            <Route path="/dashboard-simulator/projects" element={<SimProjectsPage />} />
+            <Route
+              path="/dashboard-simulator/projects/comparator"
+              element={<SimProjectComparisonPage />}
+            />
+            <Route
+              path="/dashboard-simulator/projects/:projectId"
+              element={<SimProjectDetailPage />}
+            />
+            <Route
+              path="/dashboard-simulator/projects/:projectId/scenarios"
+              element={<SimScenariosPage />}
+            />
+            <Route
+              path="/dashboard-simulator/projects/:projectId/scenarios/:scenarioId"
+              element={<SimScenarioDetailPage />}
+            />
+            <Route
+              path="/dashboard-simulator/projects/:projectId/scenario-comparator"
+              element={<SimScenarioComparisonPage />}
+            />
+            <Route path="/dashboard-simulator/reports" element={<SimReportsPage />} />
+            <Route path="/dashboard-simulator/purchases" element={<SimPurchasesPage />} />
+            <Route path="/dashboard-simulator/account" element={<SimMyAccountPage />} />
+          </Route>
+
+
           {/* Financial Projections routes with dedicated layout */}
           <Route element={
             <ProtectedRoute>
