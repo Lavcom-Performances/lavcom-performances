@@ -27,9 +27,10 @@ export function PaywallCallout() {
           ))}
         </div>
 
-        <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-          Découvrir les formules
+        <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Link to="/simulator-payment-success">Découvrir les formules</Link>
         </Button>
+
       </CardContent>
     </Card>
   );
