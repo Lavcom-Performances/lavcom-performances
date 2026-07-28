@@ -132,6 +132,21 @@ import AuditLogsPage from "./pages/AuditLogsPage";
 import BetaRulesPage from "./pages/BetaRulesPage";
 import DataHistoryPage from "./pages/app/DataHistoryPage";
 
+// Project-holder dashboard (isolated from the operator dashboard)
+import { DashboardRouteGuard } from "@/components/auth/DashboardRouteGuard";
+import DashboardSimulatorLayout from "@/components/dashboard-simulator/layout/DashboardLayout";
+import SimDashboardPage from "./pages/dashboard-simulator/DashboardPage";
+import SimProjectsPage from "./pages/dashboard-simulator/ProjectsPage";
+import SimProjectDetailPage from "./pages/dashboard-simulator/ProjectDetailPage";
+import SimScenariosPage from "./pages/dashboard-simulator/ScenariosPage";
+import SimScenarioDetailPage from "./pages/dashboard-simulator/ScenarioDetailPage";
+import SimProjectComparisonPage from "./pages/dashboard-simulator/ProjectComparisonPage";
+import SimScenarioComparisonPage from "./pages/dashboard-simulator/ScenarioComparisonPage";
+import SimReportsPage from "./pages/dashboard-simulator/ReportsPage";
+import SimPurchasesPage from "./pages/dashboard-simulator/PurchasesPage";
+import SimMyAccountPage from "./pages/dashboard-simulator/MyAccountPage";
+
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
