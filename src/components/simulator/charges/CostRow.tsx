@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,26 +36,57 @@ export function CostRow({
   onRemove
 }: Props) {
   const items: [string, {label: string; category:string}][] = Object.entries(SUBSCRIPTION_CATEGORIES);
+  const itemsLabels: string[] = items.map(item => item[1].label);
+  
+  const [isOtherSelected, setIsOtherSelected] = useState(
+    (subscription
+      && (!(itemsLabels.some(itemsLabel => itemsLabel === label)) && label !== "")
+    ) ? true
+    : false
+  );
+
   return (
     <div className="flex gap-3 items-center">
       { label && !other && !subscription && (
         <span className="text-sm text-foreground grow">{label}</span>
       )}
       { subscription && (
-        <Select defaultValue={label} onValueChange={(value) => onChangeLabel?.(value)}>
-          <SelectTrigger className="grow w-min bg-white shadow-form text-left">
-            <SelectValue placeholder="Abonnement..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {items.map((item) => (
-                <SelectItem key={item[0]} value={item[1].label}>
-                  {item[1].label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <>
+          <Select 
+            value={isOtherSelected ? "Autre abonnement" : label}
+            onValueChange={(value) => {
+              if (value === "Autre abonnement") {
+                setIsOtherSelected(true);
+                onChangeLabel?.("");
+              } else {
+                setIsOtherSelected(false);
+                onChangeLabel?.(value);
+              }
+            }}
+          >
+            <SelectTrigger className="grow w-min bg-white shadow-form text-left">
+              <SelectValue placeholder="Abonnement..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {items.map((item) => (
+                  <SelectItem key={item[0]} value={item[1].label}>
+                    {item[1].label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {isOtherSelected && (
+            <Input
+              type="text"
+              value={label || ""}
+              onChange={(e) => onChangeLabel?.(e.target.value)}
+              placeholder="Libellé"
+              className="bg-white shadow-form w-min"
+            />
+          )}
+        </>
       )}
       { other && (
         <Input
