@@ -36,18 +36,29 @@ export function ComparisonDeltaCard({ nameA, nameB, kpisA, kpisB }: ComparisonDe
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {rows.map((row) => (
-          <div key={row.label} className="rounded-lg border p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{row.label}</p>
-            <div className="mt-1.5 flex items-center gap-2">
-              <span className="text-sm font-semibold tabular-nums">
-                {row.value === null ? "–" : formatEuro(Math.abs(row.value))}
-              </span>
-              <DeltaPill value={row.value} invert={row.invert} />
+        {rows.map((row) => {
+          const positive = row.value === null ? null : row.invert ? row.value < 0 : row.value > 0;
+          return (
+            <div key={row.label} className="rounded-lg border p-3">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">{row.label}</p>
+              <div className="mt-1.5">
+                <DeltaPill
+                  label={row.value === null ? "–" : formatEuro(Math.abs(row.value))}
+                  hint={
+                    row.value === null
+                      ? undefined
+                      : positive
+                        ? COMPARISON_STRINGS.advantage
+                        : COMPARISON_STRINGS.loss
+                  }
+                  direction={positive === null ? "neutral" : positive ? "up" : "down"}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <p className="col-span-full text-xs text-muted-foreground">{KPI_STRINGS.breakEvenShort}</p>
+
       </CardContent>
     </Card>
   );
