@@ -1,0 +1,63 @@
+export const COMMON_STRINGS = {
+  appName: "Lavcom Analytics",
+  nav: {
+    overview: "Tableau de bord",
+    projects: "Mes projets",
+    purchases: "Mes achats",
+    reports: "Mes rapports",
+    account: "Compte",
+    appearance: "Apparence",
+  },
+  breadcrumb: {
+    simulator: "Simulateur",
+    projects: "Mes projets",
+    scenarios: "Scénarios",
+    comparator: "Comparateur",
+    scenarioComparison: "Comparaison scénarios",
+  },
+  pack: {
+    title: "Pack projet",
+    activeBadge: "Abonnement actif",
+    daysUsed: "/ {total} jours utilisés",
+    projectsUsed: "/ {total} projets utilisés",
+    addOption: "Ajouter une option",
+    goToPack: "Accéder à mon Pack",
+  },
+  status: {
+    validated: "Validé",
+    in_progress: "En cours",
+  },
+  filters: {
+    all: "Tous",
+    validated: "Validés",
+    inProgress: "En cours",
+    sortBy: "Trier par",
+    sortDate: "Date",
+    sortName: "Nom",
+    sortStatus: "Statut",
+  },
+  actions: {
+    open: "Ouvrir",
+    duplicate: "Dupliquer",
+    compare: "Comparer",
+    compareNow: "Comparer maintenant",
+    cancel: "Annuler",
+    save: "Enregistrer les modifications",
+    download: "Télécharger le comparatif",
+    fullAnalysis: "Voir l'analyse complète",
+  },
+  loading: "Chargement…",
+  errorTitle: "Une erreur est survenue",
+  notAvailable: "–",
+} as const;
+
+export const KPI_STRINGS = {
+  estimatedRevenue: "CA estimé",
+  monthlyResult: "Résultats / mois",
+  breakEven: "Seuil de rentabilité",
+  breakEvenShort: "Seuil/mois",
+  roi: "ROI",
+  fixedCosts: "Charges fixes",
+  variableRate: "Taux variable",
+  cyclesPerDay: "Cycles/jour requis",
+} as const;
