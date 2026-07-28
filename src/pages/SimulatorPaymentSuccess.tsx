@@ -191,11 +191,12 @@ export default function SimulatorPaymentSuccess() {
                   size="lg" 
                   className={`w-full gap-2 text-base font-semibold bg-gradient-to-r ${packColor} hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] border-0`}
                 >
-                  <Link to="/simulation">
+                  <Link to="/dashboard-simulator">
                     <Rocket className="h-5 w-5" />
-                    Commencer ma simulation
+                    Accéder à mon tableau de bord
                     <ArrowRight className="h-5 w-5" />
                   </Link>
+
                 </Button>
                 
                 <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">

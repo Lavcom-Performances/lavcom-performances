@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { PackChoiceCard } from "./PackChoiceCard";
@@ -27,9 +29,10 @@ export function PaywallCallout() {
           ))}
         </div>
 
-        <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-          Découvrir les formules
+        <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Link to="/simulator-payment-success">Découvrir les formules</Link>
         </Button>
+
       </CardContent>
     </Card>
   );

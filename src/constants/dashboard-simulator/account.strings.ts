@@ -1,0 +1,32 @@
+export const ACCOUNT_STRINGS = {
+  greeting: "Bonjour {firstName} 👋",
+  title: "Mon compte",
+  subtitle: "Gérez vos informations personnelles",
+  memberSince: "Membre depuis {date}",
+  emailVerified: "Email vérifié",
+  emailNotVerified: "Email non vérifié",
+  deleteTitle: "Supprimer mon compte",
+  deleteDescription:
+    "Cette action est définitive. Vos projets, scénarios et l'historique des factures seront supprimés sous 30 jours.",
+  deleteConfirmTitle: "Confirmer la suppression du compte",
+  deleteConfirmDescription:
+    "Cette action est irréversible. Toutes vos données seront définitivement supprimées.",
+  deleteConfirmCta: "Oui, supprimer mon compte",
+  personalInfoTitle: "Informations personnelles",
+  fields: {
+    firstName: "Prénom",
+    lastName: "Nom",
+    email: "Email",
+    phone: "Téléphone",
+    companyName: "Raison sociale",
+    siret: "SIRET",
+    newPassword: "Nouveau mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
+    language: "Langue de l'interface",
+  },
+  companyTitle: "Entreprise",
+  passwordTitle: "Mot de passe",
+  updatePassword: "Mettre à jour le mot de passe",
+  preferencesTitle: "Préférences",
+  emailNotifications: "Recevoir les notifications par email",
+} as const;
