@@ -1,31 +1,27 @@
-import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
-import { SimulatorFooterNav } from "@/components/simulator/layout/SimulatorFooterNav";
 import { ResultsSummaryCard } from "@/components/simulator/results/ResultsSummaryCard";
 import { ResultsHeroKpis } from "@/components/simulator/results/ResultsHeroKpis";
-import { PartialInsightsList } from "@/components/simulator/results/PartialInsightsList";
+import { ProfitabilityCard } from "@/components/simulator/results/ProfitabilityCard";
 import { PaywallCallout } from "@/components/simulator/results/PaywallCallout";
 import { GuideCallout } from "@/components/simulator/results/GuideCallout";
+import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
 
 export default function SimulatorResultsPage() {
   return (
     <>
-      <SimulatorPageHeader
-        title="Résultats de votre simulation"
-        description="Synthèse complète de votre projet de laverie"
-      />
-      <div className="space-y-6">
-        <ResultsSummaryCard />
-        <div className="grid gap-6 md:grid-cols-2">
+      <div className="flex flex-col gap-6 w-fit">
+        <SimulatorPageHeader
+          title="Résultats de votre simulation"
+          description="Synthèse complète de votre projet de laverie"
+          isFinalStep={true}
+        />
+        <div className="flex justify-start items-center gap-4 w-full">
+          <ResultsSummaryCard />
           <ResultsHeroKpis />
-          <PartialInsightsList />
+          <ProfitabilityCard />
         </div>
         <PaywallCallout />
         <GuideCallout />
       </div>
-      <SimulatorFooterNav
-        previousPath="/simulator/charges"
-        previousLabel="Retour à l'étape précédente"
-      />
     </>
   );
 }

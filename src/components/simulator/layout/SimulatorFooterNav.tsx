@@ -9,6 +9,7 @@ interface Props {
   previousLabel?: string;
   onNext?: () => boolean | void;
   nextDisabled?: boolean;
+  isFinalStep?: boolean;
 }
 
 export function SimulatorFooterNav({
@@ -18,6 +19,7 @@ export function SimulatorFooterNav({
   previousLabel = "Retour",
   onNext,
   nextDisabled,
+  isFinalStep,
 }: Props) {
   const navigate = useNavigate();
 
@@ -31,7 +33,10 @@ export function SimulatorFooterNav({
   };
 
   return (
-    <div className="mt-10 flex items-center justify-between border-t pt-6">
+    <div className={isFinalStep
+      ? "flex items-center justify-between"
+      : "mt-10 flex items-center justify-between border-t pt-6"
+    }>
       {previousPath ? (
         <Button variant="outline" asChild className="gap-2">
           <Link to={previousPath}>

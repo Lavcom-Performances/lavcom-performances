@@ -1,42 +1,57 @@
-import { FormCard, CardContent, CardHeader, CardTitle } from "@/components/ui/form-card";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MapPin, Pencil } from "lucide-react";
-import { MOCK_PROJECT } from "@/components/simulator/mockData";
+import { Button } from "@/components/ui/button";
+import { Building2, MapPin, WashingMachine, Wind, Ruler, Pen, LucideIcon } from "lucide-react";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { ProjectInfos } from "./ProjectInfos";
 
 export function ResultsSummaryCard() {
+  const { project } = useSimulatorProjectContext();
+  
+  const washerCount: number = project.machines?.filter(
+        machine => machine.type === "washer"
+      ).length || 0;
+  const dryerCount: number = project.machines?.filter(
+        machine => machine.type === "dryer"
+      ).length || 0;
+
+  const projectInfos: {icon: LucideIcon, info: string}[] = [
+    { icon: Building2, info: project.city },
+    { icon: MapPin, info: `${project.city} (${project.postalCode})`},
+    {
+      icon: WashingMachine,
+      info: `${washerCount} lave-linge, ${dryerCount} sèche-linge`,
+    },
+    {icon: Ruler, info: `${project.surface} m²`},
+  ];
+
   return (
-    <FormCard className="">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <MapPin className="h-5 w-5 text-primary" />
+    <div className="flex flex-col justify-start border border-solid border-border rounded-xl bg-background/20 shadow-form gap-6 items-start p-6">
+      <div className="flex items-center justify-start w-full gap-2">
+        <Building2 className="w-4 h-4 text-primary" />
+        <h2 className="font-bold text-left text-md text-foreground">
           Résumé du projet
-        </CardTitle>
-        <Button variant="ghost" size="sm" asChild className="gap-2 text-xs">
-          <Link to="/simulator/project">
-            <Pencil className="h-3.5 w-3.5" />
-            Modifier les infos
-          </Link>
-        </Button>
-      </CardHeader>
-      <CardContent className="grid gap-3 text-sm md:grid-cols-2">
-        <div>
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">Ville</div>
-          <div className="font-medium text-foreground">
-            {MOCK_PROJECT.city} ({MOCK_PROJECT.zip})
-          </div>
-        </div>
-        <div>
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">Surface</div>
-          <div className="font-medium text-foreground">{MOCK_PROJECT.surfaceM2} m²</div>
-        </div>
-        <div className="md:col-span-2">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">
-            Équipements
-          </div>
-          <div className="font-medium text-foreground">5 lave-linge, 3 sèche-linge</div>
-        </div>
-      </CardContent>
-    </FormCard>
+        </h2>
+      </div>
+      <div className="flex flex-col justify-start gap-3 items-start grow w-full">
+        {projectInfos.map((info, index) => (
+          <ProjectInfos
+            key={index}
+            icon={info.icon}
+            info={info.info}
+          />
+        ))}
+      </div>
+      <Button 
+        variant="outline" 
+        size="sm"
+        asChild 
+        className="text-xs"
+      >
+        <Link to="/simulator/project">
+          <Pen />
+          Modifier les infos
+        </Link>
+      </Button>
+    </div>
   );
 }

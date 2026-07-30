@@ -1,68 +1,77 @@
-import { FormCard, CardContent, CardHeader, CardTitle } from "@/components/ui/form-card";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Euro, Pencil } from "lucide-react";
-import { MOCK_REVENUE } from "@/components/simulator/mockData";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Pen, TrendingUp, WashingMachine, Wind } from "lucide-react";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { ProgressBarWithValue } from "../ProgressBarWithValue";
 
 export function ResultsHeroKpis() {
+  const { project } = useSimulatorProjectContext();
+  
+  const totalRevenue = project.totalRevenue || 4140;
+  const washingRevenue = project.washingRevenue || 3180;
+  const dryingRevenue = project.dryingRevenue || 960;
+  
+  const washingShare = Math.round((washingRevenue / totalRevenue) * 100);
+
   return (
-    <FormCard className="">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Euro className="h-5 w-5 text-primary" />
+    <div className="flex flex-col justify-start border border-solid border-lavcom-orange rounded-xl bg-muted/40 shadow-form gap-6 items-start px-8 py-6">
+      <div className="flex items-center justify-start w-full gap-2">
+        <TrendingUp className="w-6 h-6 text-primary" />
+        <h2 className="font-bold text-left w-max text-lg text-foreground">
           Recettes estimées
-        </CardTitle>
-        <Button variant="ghost" size="sm" asChild className="gap-2 text-xs">
-          <Link to="/simulator/machines">
-            <Pencil className="h-3.5 w-3.5" />
-            Modifier les machines
-          </Link>
-        </Button>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="text-center">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">
+        </h2>
+      </div>
+      <div className="flex flex-col justify-start items-start gap-4 grow">
+        <div className="flex flex-col justify-start items-start w-full gap-1">
+          <span className="text-left w-max text-sm text-foreground">
             CA total estimé
+          </span>
+          <span className="font-bold text-left w-max text-lg text-foreground">
+            {totalRevenue.toLocaleString('fr-FR')} €
+          </span>
+        </div>
+        <Separator />
+        <ProgressBarWithValue 
+          value={washingShare}
+          double={true}
+        />
+        <div className="flex justify-center items-center gap-12 w-fit">
+          <div className="flex flex-col justify-start items-center relative w-min shrink-0 gap-y-0 items-start">
+            <div className="flex justify-center items-center gap-2">
+              <WashingMachine className="h-4 w-4 text-primary"/>   
+              <span className="text-left w-max text-sm text-foreground">
+                CA lavage
+              </span>
+            </div>
+            <span className="font-semibold text-left w-max text-md text-foreground">
+              {washingRevenue.toLocaleString('fr-FR')} €
+            </span>
           </div>
-          <div className="mt-1 font-display text-4xl font-bold text-primary">
-            {MOCK_REVENUE.total.toLocaleString("fr-FR")} €
+          <div className="flex flex-col justify-start items-center relative w-min shrink-0 gap-y-0 items-start">
+            <div className="flex justify-center items-center gap-2">
+              <Wind className="h-4 w-4 text-lavcom-orange"/>   
+              <span className="text-left w-max text-sm text-foreground">
+                CA séchage
+              </span>
+            </div>
+            <span className="font-semibold text-left w-max text-md text-foreground">
+              {dryingRevenue.toLocaleString('fr-FR')} €
+            </span>
           </div>
         </div>
-
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
-          <div
-            className="bg-primary"
-            style={{ width: `${MOCK_REVENUE.washingShare}%` }}
-            aria-label={`Lavage ${MOCK_REVENUE.washingShare}%`}
-          />
-          <div
-            className="bg-primary/50"
-            style={{ width: `${MOCK_REVENUE.dryingShare}%` }}
-            aria-label={`Séchage ${MOCK_REVENUE.dryingShare}%`}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-lg border p-3">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="h-2 w-2 rounded-full bg-primary" />
-              CA lavage ({MOCK_REVENUE.washingShare}%)
-            </div>
-            <div className="mt-1 text-lg font-bold text-foreground">
-              {MOCK_REVENUE.washing.toLocaleString("fr-FR")} €
-            </div>
-          </div>
-          <div className="rounded-lg border p-3">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="h-2 w-2 rounded-full bg-primary/50" />
-              CA séchage ({MOCK_REVENUE.dryingShare}%)
-            </div>
-            <div className="mt-1 text-lg font-bold text-foreground">
-              {MOCK_REVENUE.drying.toLocaleString("fr-FR")} €
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </FormCard>
+      </div>
+      <Button 
+        variant="outline" 
+        size="sm" 
+        asChild 
+        className="text-xs"
+      >
+        <Link to="/simulator/machines">
+          <Pen />
+          Modifier les machines
+        </Link>
+      </Button>
+    </div>
   );
 }

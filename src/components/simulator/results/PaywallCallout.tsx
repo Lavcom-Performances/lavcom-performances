@@ -1,39 +1,33 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
-import { PackChoiceCard } from "./PackChoiceCard";
-import { MOCK_PACKS } from "@/components/simulator/mockData";
+import { ArrowRight, TrendingUp } from "lucide-react";
+
+const devMode = import.meta.env.VITE_DEV_MODE !== "false";
 
 export function PaywallCallout() {
   return (
-    <Card className="border-primary/40 bg-gradient-to-br from-primary/10 via-background to-background">
-      <CardContent className="space-y-6 p-8 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-          <Sparkles className="h-6 w-6 text-primary" />
-        </div>
-        <div className="space-y-2">
-          <h3 className="font-display text-2xl font-bold text-foreground">
-            Débloquez l'analyse complète de votre projet
-          </h3>
-          <p className="mx-auto max-w-xl text-sm text-muted-foreground">
-            Pour avoir accès à l'analyse complète de votre projet, choisissez la formule qui vous
-            correspond.
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {MOCK_PACKS.map((p) => (
-            <PackChoiceCard key={p.id} {...p} />
-          ))}
-        </div>
-
-        <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-          <Link to="/simulator-payment-success">Découvrir les formules</Link>
-        </Button>
-
-      </CardContent>
-    </Card>
+    <div className="flex justify-start items-center w-full gap-4 bg-lavcom-green-spring/10 border border-solid border-lavcom-green-accent/30 rounded-xl px-12 py-6">
+      <div className="flex flex-col self-stretch justify-start">
+        <TrendingUp className="text-lavcom-green-accent"/>
+      </div>
+      <div className="flex flex-col justify-start gap-2 items-start">
+        <h3 className="font-bold text-left text-md text-lavcom-green-accent">
+          Projet au-dessus du seuil de rentabilité
+        </h3>
+        <p className="text-left text-md text-muted-foreground">
+          Pour avoir accès à l'analyse complète de votre projet, vous devez choisir une formule.
+        </p>
+      </div>
+      <Button 
+        size="lg" 
+        asChild
+        className="gap-2 py-6 bg-primary text-primary-foreground hover:bg-primary/90 ml-16"
+      >
+        <Link to={devMode ? "/simulator-payment-success" : "/subscribe-simulator"}>
+          <span className="font-semi-bold text-lg text-white">Découvrir les formules</span>
+          <ArrowRight />
+        </Link>
+      </Button>
+    </div>
   );
 }
