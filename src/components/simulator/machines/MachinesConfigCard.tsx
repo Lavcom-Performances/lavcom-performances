@@ -55,7 +55,10 @@ export function MachinesConfigCard({
             onCountChange={(value) => patchMachineConfig(machine.id, { count: value })}
             onPriceChange={(value) => patchMachineConfig(machine.id, { price: value })}
             onCyclesChange={(value) => patchMachineConfig(machine.id, { cyclesPerDay: value })}
-            onRemove={() => updateProject({ machines: removeMachine(project.machines, machine.id) })}
+            onRemove={machines.length > 1
+              ? () => updateProject({ machines: removeMachine(project.machines, machine.id) })
+              : undefined
+            }
           />
         ))}
         { machineError && <span className="block text-destructive">{machineError}</span>}
