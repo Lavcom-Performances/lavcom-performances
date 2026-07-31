@@ -8,7 +8,7 @@ import { SimulatorStepProvider } from "@/contexts/SimulatorStepContext";
 import { MachinesConfigCard } from "@/components/simulator/machines/MachinesConfigCard";
 
 export default function SimulatorMachinesPage() {
-  const { guardNext, fieldError } = useSimulatorStep(["machines"]);
+  const { guardNext, fieldError } = useSimulatorStep(["washers", "dryers"]);
   return (
     <>
       <SimulatorPageHeader

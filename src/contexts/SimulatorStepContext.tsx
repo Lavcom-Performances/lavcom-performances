@@ -1,7 +1,7 @@
 import { createContext, useContext, type ReactNode } from "react";
-import type { SimulatorProjectInput } from "@/lib/validation/simulatorProjectSchema";
+import type { SimulatorProjectInput, SimulatorValidationSection } from "@/lib/validation/simulatorProjectSchema";
 
-type FieldError = (name: keyof SimulatorProjectInput) => string | undefined;
+type FieldError = (name: keyof SimulatorProjectInput | SimulatorValidationSection) => string | undefined;
 
 interface SimulatorStepContextValue {
   fieldError: FieldError;

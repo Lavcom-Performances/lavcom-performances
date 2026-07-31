@@ -100,10 +100,33 @@ const machineConfigSchema = z.object({
   cyclesPerDay: z.number().min(0, "Cycles/jour invalide"),
 });
 
+const dryersSchema = z.object({
+  machines: z
+    .array(machineConfigSchema)
+    .refine(
+      (machines) => machines.some(machine => machine.type === "dryer"),
+      { message: "Veuillez ajouter au moins un sèche-linge", path: ["machines"] }
+    )
+});
+
+const washersSchema = z.object({
+  machines: z
+    .array(machineConfigSchema)
+    .refine(
+      (machines) => machines.some(machine => machine.type === "washer"),
+      { message: "Veuillez ajouter au moins une machine à laver", path: ["machines"] }
+    )
+});
+
 export const machinesSchema = z.object({
   machines: z
     .array(machineConfigSchema)
-    .min(1, "Ajoutez au moins une machine"),
+    .refine(
+      (machines) => (
+        machines.some(machine => machine.type === "washer")
+        && machines.some(machine => machine.type === "dryer")
+      ),
+    )
 });
 
 // ============ Revenues ============
@@ -167,7 +190,8 @@ export type SimulatorProjectInput = z.infer<typeof simulatorProjectSchema>;
 export const sectionSchemas = {
   projectInfo: projectInfoSchema,
   localConstraints: localConstraintsSchema,
-  machines: machinesSchema,
+  dryers: dryersSchema,
+  washers: washersSchema,
   charges: chargesSchema,
   revenues: revenuesSchema,
 } as const;

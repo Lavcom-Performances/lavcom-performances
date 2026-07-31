@@ -28,7 +28,7 @@ export function MachinesConfigCard({
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
   const { fieldError } = useSimulatorStepErrors();
-  const machineError = fieldError("machines");  
+  const machineError = fieldError(machineType + "s" as "washers" | "dryers");  
 
   const patchMachineConfig = (id: string, patchedConfig: Partial<MachineConfig>) =>
     updateProject({ machines: updateMachineList(project.machines, id, patchedConfig) });
@@ -58,7 +58,7 @@ export function MachinesConfigCard({
             onRemove={() => updateProject({ machines: removeMachine(project.machines, machine.id) })}
           />
         ))}
-        { machineError && <span className="text-destructive">{machineError}</span>}
+        { machineError && <span className="block text-destructive">{machineError}</span>}
         <Button
           variant="ghost"
           size="sm"

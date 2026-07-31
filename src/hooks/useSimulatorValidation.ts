@@ -7,7 +7,7 @@ import {
   type SimulatorValidationSection,
 } from "@/lib/validation/simulatorProjectSchema";
 
-export type ValidationErrors = Partial<Record<keyof SimulatorProjectInput, string>>;
+export type ValidationErrors = Partial<Record<keyof SimulatorProjectInput | SimulatorValidationSection, string>>;
 
 export interface ValidationSectionResult {
   isValid: boolean;
@@ -27,7 +27,7 @@ function firstMessages(
   const out: ValidationErrors = {};
   for (const [key, messages] of Object.entries(fieldErrors)) {
     if (messages && messages.length > 0) {
-      out[key as keyof SimulatorProjectInput] = messages[0];
+      out[key as keyof SimulatorProjectInput | SimulatorValidationSection] = messages[0];
     }
   }
   return out;
@@ -41,8 +41,7 @@ export function useSimulatorValidation(): ValidationResult {
     const errors: ValidationErrors = result.success
       ? {}
       : firstMessages(result.error.flatten().fieldErrors);
-    const errorCount = Object.keys(errors).length;
-
+    
     const sections = (Object.keys(sectionSchemas) as SimulatorValidationSection[]).reduce(
       (acc, key) => {
         const sectionResult = sectionSchemas[key].safeParse(project);
@@ -54,14 +53,21 @@ export function useSimulatorValidation(): ValidationResult {
             (msgs) => msgs && msgs.length > 0,
           ).length;
           acc[key] = { isValid: count === 0, errorCount: count };
+          
+          const sectionError = fieldErrors[Object.keys(fieldErrors)[0]]?.[0];
+          if (sectionError) {
+            errors[key] = sectionError;
+          }
         }
         return acc;
       },
       {} as Record<SimulatorValidationSection, ValidationSectionResult>,
     );
+    
+    const errorCount = Object.keys(errors).length;
 
     return {
-      isValid: result.success,
+      isValid: result.success && errorCount === 0,
       errors,
       errorCount,
       sections,

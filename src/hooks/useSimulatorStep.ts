@@ -15,7 +15,7 @@ export interface UseSimulatorStepResult {
   attempted: boolean;
   errors: ValidationErrors;
   sections: ReturnType<typeof useSimulatorValidation>["sections"];
-  fieldError: (name: keyof SimulatorProjectInput) => string | undefined;
+  fieldError: (name: keyof SimulatorProjectInput | SimulatorValidationSection) => string | undefined;
 }
 
 export function useSimulatorStep(
