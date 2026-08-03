@@ -21,7 +21,7 @@ export function ProfitabilityCard() {
           </span>
         </div>
         <div>
-          <span className="font-bold w-max text-4xl text-lavcom-green-accent blur-[6px]">
+          <span className="font-bold w-max text-4xl text-lavcom-green-accent blur-[7px]">
             1 234 € 
           </span>
           <span className="font-normal text-sm text-foreground ml-2">/ mois</span>
