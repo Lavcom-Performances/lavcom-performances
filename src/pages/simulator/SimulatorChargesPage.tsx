@@ -8,14 +8,14 @@ import { useSimulatorStep } from "@/hooks/useSimulatorStep";
 import { SimulatorStepProvider } from "@/contexts/SimulatorStepContext";
 
 export default function SimulatorChargesPage() {
-  const { guardNext, fieldError } = useSimulatorStep(["charges"]);
+  const { guardNext, fieldError, sections, errors } = useSimulatorStep(["charges"]);
   return (
     <>
       <SimulatorPageHeader
         title="Charges"
         description="Détaillez vos charges fixes et variables"
       />
-      <SimulatorStepProvider value={{ fieldError }}>
+      <SimulatorStepProvider value={{ fieldError, sections, errors }}>
         <div className="space-y-6">
           <ConfigHintBanner>
             Valeurs indicatives pré-remplies – ajustez selon votre situation

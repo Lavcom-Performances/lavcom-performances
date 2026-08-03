@@ -43,20 +43,36 @@ export function useSimulatorValidation(): ValidationResult {
       : firstMessages(result.error.flatten().fieldErrors);
     
     const sections = (Object.keys(sectionSchemas) as SimulatorValidationSection[]).reduce(
-      (acc, key) => {
-        const sectionResult = sectionSchemas[key].safeParse(project);
+      (acc, section) => {
+        const validationData = (() => {
+          if (section === "washers") {
+            return {
+              ...project,
+              machines: project.machines?.filter(machine => machine.type === "washer") ?? []
+            };
+          }
+          if (section === "dryers") {
+            return {
+              ...project,
+              machines: project.machines?.filter(machine => machine.type === "dryer") ?? []
+            };
+          }
+          return project;
+        })();
+
+        const sectionResult = sectionSchemas[section].safeParse(validationData);
         if (sectionResult.success) {
-          acc[key] = { isValid: true, errorCount: 0 };
+          acc[section] = { isValid: true, errorCount: 0 };
         } else {
           const fieldErrors = sectionResult.error.flatten().fieldErrors;
           const count = Object.values(fieldErrors).filter(
-            (msgs) => msgs && msgs.length > 0,
+            (messages) => messages && messages.length > 0,
           ).length;
-          acc[key] = { isValid: count === 0, errorCount: count };
+          acc[section] = { isValid: count === 0, errorCount: count };
           
           const sectionError = fieldErrors[Object.keys(fieldErrors)[0]]?.[0];
           if (sectionError) {
-            errors[key] = sectionError;
+            errors[section] = sectionError;
           }
         }
         return acc;

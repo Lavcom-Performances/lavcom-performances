@@ -46,7 +46,7 @@ export function useSimulatorStep(
   }, [sections, validation, options]);
 
   const fieldError = useCallback(
-    (name: keyof SimulatorProjectInput) =>
+    (name: keyof SimulatorProjectInput | SimulatorValidationSection) =>
       attempted ? validation.errors[name] : undefined,
     [attempted, validation.errors],
   );

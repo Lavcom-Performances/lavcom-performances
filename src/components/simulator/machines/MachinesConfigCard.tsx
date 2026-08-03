@@ -27,8 +27,14 @@ export function MachinesConfigCard({
   const { project, updateProject } = useSimulatorProjectContext();
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
-  const { fieldError } = useSimulatorStepErrors();
-  const machineError = fieldError(machineType + "s" as "washers" | "dryers");  
+  const { sections, errors } = useSimulatorStepErrors();
+  const sectionName = `${machineType}s` as "washers" | "dryers";
+  const section = sections[sectionName];
+  const hasError = section && !section.isValid;
+  const machineError = hasError ? errors[sectionName] : undefined;
+
+  // Log optionnel pour vérification
+  console.log(`[MachinesConfigCard] ${machineType}:`, { hasError, machineError });
 
   const patchMachineConfig = (id: string, patchedConfig: Partial<MachineConfig>) =>
     updateProject({ machines: updateMachineList(project.machines, id, patchedConfig) });

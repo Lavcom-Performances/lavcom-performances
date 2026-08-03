@@ -8,14 +8,15 @@ import { SimulatorStepProvider } from "@/contexts/SimulatorStepContext";
 import { MachinesConfigCard } from "@/components/simulator/machines/MachinesConfigCard";
 
 export default function SimulatorMachinesPage() {
-  const { guardNext, fieldError } = useSimulatorStep(["washers", "dryers"]);
+  const { guardNext, fieldError, sections, errors } = useSimulatorStep(["washers", "dryers"]);
+  
   return (
     <>
       <SimulatorPageHeader
         title="Configuration des machines"
         description="Configurez les machines et leur répartition dans votre local"
       />
-      <SimulatorStepProvider value={{ fieldError }}>
+      <SimulatorStepProvider value={{ fieldError, sections, errors }}>
         <div className="space-y-6">
           <ConfigHintBanner>
             Configuration pré-remplie avec une laverie type – ajustez selon votre projet

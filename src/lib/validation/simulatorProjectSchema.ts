@@ -94,28 +94,22 @@ export const localConstraintsSchema = z.object({
 const machineConfigSchema = z.object({
   id: z.string().min(1),
   type: z.enum(["washer", "dryer"]),
-  capacityKg: z.number().min(3, "Capacité invalide"),
-  count: z.number().int().min(1, "Nombre invalide"),
-  price: z.number().min(0.5, "Prix invalide"),
-  cyclesPerDay: z.number().min(0, "Cycles/jour invalide"),
+  capacityKg: z.number().min(3, "Capacité invalide, veuillez indiquer entre 3 et 35 kg"),
+  count: z.number().int().min(1, "Nombre de machine invalide, min. 1"),
+  price: z.number().min(0.5, "Prix invalide, min. 0,50 €"),
+  cyclesPerDay: z.number().min(1, "Nombre de cycles/jour invalide, min. 1"),
 });
 
-const dryersSchema = z.object({
+export const washersSchema = z.object({
   machines: z
     .array(machineConfigSchema)
-    .refine(
-      (machines) => machines.some(machine => machine.type === "dryer"),
-      { message: "Veuillez ajouter au moins un sèche-linge", path: ["machines"] }
-    )
+    .min(1, "Veuillez ajouter au moins une machine à laver")
 });
 
-const washersSchema = z.object({
+export const dryersSchema = z.object({
   machines: z
     .array(machineConfigSchema)
-    .refine(
-      (machines) => machines.some(machine => machine.type === "washer"),
-      { message: "Veuillez ajouter au moins une machine à laver", path: ["machines"] }
-    )
+    .min(1, "Veuillez ajouter au moins un sèche-linge")
 });
 
 export const machinesSchema = z.object({
@@ -126,6 +120,9 @@ export const machinesSchema = z.object({
         machines.some(machine => machine.type === "washer")
         && machines.some(machine => machine.type === "dryer")
       ),
+      {
+        message: "Veuillez ajouter au moins une machine à laver et un sèche-linge"
+      }
     )
 });
 
