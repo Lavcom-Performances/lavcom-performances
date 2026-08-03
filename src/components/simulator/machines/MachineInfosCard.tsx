@@ -7,40 +7,51 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Trash2 } from "lucide-react";
+import { InputFieldsInfos } from "./InputFieldsInfos";
 import { MACHINES_CAPACITIES } from "@/config/simulatorFormOptions";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { updateMachineList } from "@/utils/machineRevenueCalculations";
+import { MachineConfig } from "@/types/simulator.types";
+import { machineConfigSchema } from "@/lib/validation/simulatorProjectSchema";
+import { z } from "zod";
 
 interface Props {
+  machineId: string;
   capacity: number;
   count: number;
   price: number;
   cyclesPerDay: number;
   monthlyRevenue: number;
   onCapacityChange?: (value: number) => void;
-  onCountChange?: (value: number) => void;
-  onPriceChange?: (value: number) => void;
-  onCyclesChange?: (value: number) => void;
   onRemove?: () => void;
 }
 
 export function MachineInfosCard({
+  machineId,
   capacity,
   count,
   price,
   cyclesPerDay,
   monthlyRevenue,
   onCapacityChange,
-  onCountChange,
-  onPriceChange,
-  onCyclesChange,
   onRemove,
 }: Props) {
+  const { project, updateProject } = useSimulatorProjectContext();
+  const patchMachineConfig = (id: string, patchedConfig: Partial<MachineConfig>) =>
+      updateProject({ machines: updateMachineList(project.machines, id, patchedConfig) });
+
+  const machineValidation = machineConfigSchema.safeParse(
+    project.machines.find(machine => machine.id === machineId)
+  );
+
+  const errors = !machineValidation.success ? machineValidation.error : undefined;
+  const formattedErrors = errors?.format() || undefined;
+
   return (
     <FormCard className="border-border bg-muted/20">
-      <CardContent className="flex flex-col gap-3 p-4">
+      <CardContent className="flex flex-col gap-4 p-4">
         <div className="flex justify-start gap-2 w-full">
           <Select defaultValue={capacity.toString()} onValueChange={(e) => onCapacityChange?.(Number(e))}>
             <SelectTrigger
@@ -69,37 +80,15 @@ export function MachineInfosCard({
             </Button>
           )}
         </div>
-        <div className="flex gap-3">
-          <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Nombre</Label>
-            <Input
-              className="bg-white"
-              type="number"
-              value={count}
-              min={0}
-              onChange={(e) => onCountChange?.(Number(e.target.value))}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Prix (€)</Label>
-            <Input
-              className="bg-white"
-              type="number"
-              step="0.5"
-              value={price}
-              onChange={(e) => onPriceChange?.(Number(e.target.value))}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Cycles/jour</Label>
-            <Input
-              className="bg-white"
-              type="number"
-              value={cyclesPerDay}
-              onChange={(e) => onCyclesChange?.(Number(e.target.value))}
-            />
-          </div>
-        </div>
+        <InputFieldsInfos
+          count={count}
+          price={price}
+          cyclesPerDay={cyclesPerDay}
+          errors={formattedErrors}
+          onCountChange={(value) => patchMachineConfig(machineId, { count: value })}
+          onPriceChange={(value) => patchMachineConfig(machineId, { price: value })}
+          onCyclesChange={(value) => patchMachineConfig(machineId, { cyclesPerDay: value })}
+        />
       </CardContent>
     </FormCard>
   );

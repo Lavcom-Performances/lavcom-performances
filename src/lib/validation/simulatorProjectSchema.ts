@@ -91,7 +91,7 @@ export const localConstraintsSchema = z.object({
 });
 
 // ============ Machines ============
-const machineConfigSchema = z.object({
+export const machineConfigSchema = z.object({
   id: z.string().min(1),
   type: z.enum(["washer", "dryer"]),
   capacityKg: z.number().min(3, "Capacité invalide, veuillez indiquer entre 3 et 35 kg"),

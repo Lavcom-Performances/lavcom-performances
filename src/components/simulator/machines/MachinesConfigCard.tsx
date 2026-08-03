@@ -27,14 +27,10 @@ export function MachinesConfigCard({
   const { project, updateProject } = useSimulatorProjectContext();
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
-  const { sections, errors } = useSimulatorStepErrors();
+  const { sections } = useSimulatorStepErrors();
   const sectionName = `${machineType}s` as "washers" | "dryers";
   const section = sections[sectionName];
   const hasError = section && !section.isValid;
-  const machineError = hasError ? errors[sectionName] : undefined;
-
-  // Log optionnel pour vérification
-  console.log(`[MachinesConfigCard] ${machineType}:`, { hasError, machineError });
 
   const patchMachineConfig = (id: string, patchedConfig: Partial<MachineConfig>) =>
     updateProject({ machines: updateMachineList(project.machines, id, patchedConfig) });
@@ -52,22 +48,20 @@ export function MachinesConfigCard({
         {machines.map((machine) => (
           <MachineInfosCard
             key={machine.id}
+            machineId={machine.id}
             capacity={machine.capacityKg}
             count={machine.count}
             price={machine.price}
             cyclesPerDay={machine.cyclesPerDay}
             monthlyRevenue={machineMonthlyRevenue(machine)}
             onCapacityChange={(value) => patchMachineConfig(machine.id, { capacityKg: value })}
-            onCountChange={(value) => patchMachineConfig(machine.id, { count: value })}
-            onPriceChange={(value) => patchMachineConfig(machine.id, { price: value })}
-            onCyclesChange={(value) => patchMachineConfig(machine.id, { cyclesPerDay: value })}
             onRemove={machines.length > 1
               ? () => updateProject({ machines: removeMachine(project.machines, machine.id) })
               : undefined
             }
           />
         ))}
-        { machineError && <span className="block text-destructive">{machineError}</span>}
+        { hasError && <span className="block text-destructive">Au moins un {machineName} possède un ou plusieurs champs invalides</span>}
         <Button
           variant="ghost"
           size="sm"
