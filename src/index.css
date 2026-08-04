@@ -277,6 +277,12 @@ html {
     }
   }
 
+  @keyframes gentle-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+
+
   /* Dark mode ripple */
   .dark .ripple-effect {
     background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 70%, transparent 100%);
@@ -466,5 +472,8 @@ html {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .animate-gentle-pulse {
+    animation: gentle-pulse 3s ease-in-out infinite;
   }
 }

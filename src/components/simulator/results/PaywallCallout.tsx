@@ -21,7 +21,7 @@ export function PaywallCallout() {
       <Button 
         size="lg" 
         asChild
-        className="gap-2 py-6 bg-primary text-primary-foreground hover:bg-primary/90 ml-16"
+        className="gap-2 py-6 bg-primary text-primary-foreground hover:bg-primary/90 ml-16 animate-gentle-pulse"
       >
         <Link to={devMode ? "/simulator-payment-success" : "/subscribe-simulator"}>
           <span className="font-semi-bold text-lg text-white">Découvrir les formules</span>
