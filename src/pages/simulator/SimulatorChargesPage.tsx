@@ -26,6 +26,7 @@ export default function SimulatorChargesPage() {
               cardTitle="Charges fixes mensuelles"
               cardDescription="Montants fixes à payer chaque mois"
               costType="fixed"
+              width="w-3/5"
             />
             <CostsCard
               icon={BadgePercent}
@@ -33,6 +34,7 @@ export default function SimulatorChargesPage() {
               cardDescription="Estimées en pourcentage du chiffre d'affaires"
               costType="variable"
               showHint={true}
+              width="w-2/5"
             />
           </div>
           <TotalCostsSummary />

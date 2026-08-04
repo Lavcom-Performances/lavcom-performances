@@ -21,6 +21,7 @@ interface CostsCardProps {
   cardDescription: string;
   costType: "fixed" | "variable";
   showHint?: boolean;
+  width: string;
 }
 
 export function CostsCard({
@@ -29,6 +30,7 @@ export function CostsCard({
   cardDescription,
   costType,
   showHint = false,
+  width,
 }: CostsCardProps) {
   const { project, updateProject } = useSimulatorProjectContext();
   const items: FixedCostItem[] | VariableCostItem[] = costType === "fixed" ? project.fixedCosts ?? [] : project.variableCosts ?? [];
@@ -76,7 +78,7 @@ export function CostsCard({
   };
 
   return (
-    <FormCard className="w-full">
+    <FormCard className={width}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Icon className="h-5 w-5 text-lavcom-orange" />

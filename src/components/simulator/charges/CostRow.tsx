@@ -46,7 +46,7 @@ export function CostRow({
   );
 
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex gap-2 items-center">
       { label && !other && !subscription && (
         <span className="text-sm text-foreground grow">{label}</span>
       )}
@@ -64,7 +64,7 @@ export function CostRow({
               }
             }}
           >
-            <SelectTrigger className="grow w-min bg-white shadow-form text-left">
+            <SelectTrigger className="w-max bg-white shadow-form text-left">
               <SelectValue placeholder="Abonnement..." />
             </SelectTrigger>
             <SelectContent>
@@ -83,7 +83,7 @@ export function CostRow({
               value={label || ""}
               onChange={(e) => onChangeLabel?.(e.target.value)}
               placeholder="Libellé"
-              className="bg-white shadow-form w-min"
+              className="bg-white shadow-form grow"
             />
           )}
         </>
@@ -94,21 +94,21 @@ export function CostRow({
           value={label || ""}
           placeholder="Libellé"
           onChange={(e) => onChangeLabel?.(e.target.value)}
-          className="bg-white shadow-form w-min"
+          className="bg-white shadow-form grow w-min"
         />
       )}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 ml-auto">
         <Input
           type="number"
           value={value || ""}
           placeholder={placeholder}
           onChange={(e) => onChangeValue(Number(e.target.value))}
-          className="bg-white shadow-form text-right w-24"
+          className="bg-white shadow-form text-right w-[96px]"
         />
         <span className="whitespace-nowrap text-xs text-muted-foreground">{suffix}</span>
       </div>
       {onRemove ? (
-        <Button variant="ghost" size="icon" onClick={onRemove}>
+        <Button variant="ghost" size="icon" onClick={onRemove} className="shrink-0">
           <Trash2 className="h-4 w-4 text-destructive" />
         </Button>
       ) : (
