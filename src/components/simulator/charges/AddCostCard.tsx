@@ -29,9 +29,9 @@ export function AddCostCard({ costType, onClick }: AddCostCardProps) {
 
   return (
     <div className="space-y-4">
-      <h4 className="text-base font-bold text-foreground">
+      <span className="text-sm text-foreground">
         Ajouter une charge {costType === "fixed" ? "fixe" : "variable"}
-      </h4>
+      </span>
       <div className="flex gap-1 flex-wrap">
         {costType === "fixed"
           ? fixedCosts.map((cost) => (

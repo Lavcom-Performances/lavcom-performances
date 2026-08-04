@@ -87,54 +87,60 @@ export function CostsCard({
         <CardDescription>{cardDescription}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-4">
-          <h4 className="text-base font-bold text-foreground">Charges</h4>
-          {costType === "fixed"
-            ? (items as FixedCostItem[])
-              .filter((cost) => cost.category !== "subscription")
-              .map((cost) => (
+        <FormCard className="border-border bg-muted/20">
+          <CardContent className="flex flex-col gap-4 p-4">
+            <h4 className="text-base font-bold text-foreground">Charges</h4>
+            {costType === "fixed"
+              ? (items as FixedCostItem[])
+                .filter((cost) => cost.category !== "subscription")
+                .map((cost) => (
+                  <CostRow
+                    key={cost.id}
+                    label={cost.label}
+                    other={cost.category === "other"}
+                    value={cost.amount ?? 0}
+                    suffix="€/mois"
+                    placeholder="0"
+                    onChangeLabel={(label) => handleUpdate(cost.id, label, cost.amount)}
+                    onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
+                    onRemove={() => handleRemove(cost.id)}
+                  />))
+              : (items as VariableCostItem[]).map((cost) => (
                 <CostRow
                   key={cost.id}
                   label={cost.label}
                   other={cost.category === "other"}
-                  value={cost.amount ?? 0}
-                  suffix="€/mois"
+                  value={cost.percent ?? 0}
+                  suffix="% du CA"
                   placeholder="0"
-                  onChangeLabel={(label) => handleUpdate(cost.id, label, cost.amount)}
+                  onChangeLabel={(label) => handleUpdate(cost.id, label, cost.percent)}
                   onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
                   onRemove={() => handleRemove(cost.id)}
                 />))
-            : (items as VariableCostItem[]).map((cost) => (
-              <CostRow
-                key={cost.id}
-                label={cost.label}
-                other={cost.category === "other"}
-                value={cost.percent ?? 0}
-                suffix="% du CA"
-                placeholder="0"
-                onChangeLabel={(label) => handleUpdate(cost.id, label, cost.percent)}
-                onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
-                onRemove={() => handleRemove(cost.id)}
-              />))
-          }
-        </div>
-        {costType === "fixed" && (
-          <>
+            }
             <Separator />
-            <SubscriptionCard
-              subscriptions={subscriptions}
-              onAdd={() => handleAdd("", "subscription")}
-              onChangeLabel={(id, label, value) => handleUpdate(id, label, value)}
-              onChangeValue={(id, label, value) => handleUpdate(id, label, value)}
-              onRemove={(id) => handleRemove(id)}
+            <AddCostCard
+              costType={costType}
+              onClick={(
+                newCost: string,
+                category: FixedCostItem["category"] | VariableCostItem["category"]
+              ) => handleAdd(newCost, category)}        
             />
-          </>
+          </CardContent>
+        </FormCard>
+        {costType === "fixed" && (
+          <FormCard className="border-border bg-muted/20">
+            <CardContent className="flex flex-col gap-4 p-4">
+              <SubscriptionCard
+                subscriptions={subscriptions}
+                onAdd={() => handleAdd("", "subscription")}
+                onChangeLabel={(id, label, value) => handleUpdate(id, label, value)}
+                onChangeValue={(id, label, value) => handleUpdate(id, label, value)}
+                onRemove={(id) => handleRemove(id)}
+              />
+            </CardContent>
+          </FormCard>
         )}
-        <Separator />
-        <AddCostCard
-          costType={costType}
-          onClick={(newCost, category) => handleAdd(newCost, category)}        
-        />
         <div className="flex flex-col items-center rounded-lg border border-lavcom-orange/40 bg-lavcom-orange/20 px-4 py-3">
           <span className="text-xs font-medium text-muted-foreground">
             Total charges {costType === "fixed" ? "fixes" : "variables"}
