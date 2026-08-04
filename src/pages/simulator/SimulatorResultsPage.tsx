@@ -4,8 +4,12 @@ import { ProfitabilityCard } from "@/components/simulator/results/ProfitabilityC
 import { PaywallCallout } from "@/components/simulator/results/PaywallCallout";
 import { GuideCallout } from "@/components/simulator/results/GuideCallout";
 import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
+import { ProjectWarnings } from "@/components/simulator/ProjectWarnings";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
 export default function SimulatorResultsPage() {
+  const { project } = useSimulatorProjectContext();
+
   return (
     <>
       <div className="flex flex-col gap-6 w-fit">
@@ -20,6 +24,7 @@ export default function SimulatorResultsPage() {
           <ProfitabilityCard />
         </div>
         <PaywallCallout />
+        <ProjectWarnings project={project} />
         <GuideCallout />
       </div>
     </>

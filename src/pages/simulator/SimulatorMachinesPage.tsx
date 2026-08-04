@@ -6,9 +6,12 @@ import { MachineRevenueSummary } from "@/components/simulator/machines/MachineRe
 import { useSimulatorStep } from "@/hooks/useSimulatorStep";
 import { SimulatorStepProvider } from "@/contexts/SimulatorStepContext";
 import { MachinesConfigCard } from "@/components/simulator/machines/MachinesConfigCard";
+import { ProjectWarnings } from "@/components/simulator/ProjectWarnings";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
 export default function SimulatorMachinesPage() {
   const { guardNext, fieldError, sections, errors } = useSimulatorStep(["washers", "dryers"]);
+  const { project } = useSimulatorProjectContext();
   
   return (
     <>
@@ -38,7 +41,10 @@ export default function SimulatorMachinesPage() {
               machineCat="séchage"
               machineType="dryer"
             />
-          </div>   
+          </div>
+          
+          <ProjectWarnings project={project} />
+          
           <MachineRevenueSummary />
         </div>
       </SimulatorStepProvider>
