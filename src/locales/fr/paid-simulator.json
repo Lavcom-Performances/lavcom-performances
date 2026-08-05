@@ -1,0 +1,354 @@
+{
+  "common": {
+    "reset": "Réinitialiser",
+    "back": "Retour",
+    "backToPreviousStep": "Retour à l'étape précédente",
+    "continue": "Continuer",
+    "seeResults": "Voir les résultats",
+    "perMonth": "/ mois",
+    "euroPerMonth": "€/mois",
+    "percentOfRevenue": "% du CA",
+    "ofRevenue": "du CA",
+    "squareMeters": "m²",
+    "kg": "kg",
+    "label": "Libellé"
+  },
+  "stepper": {
+    "ariaLabel": "Étapes de la simulation",
+    "steps": {
+      "project": "Projet & localisation",
+      "machines": "Configuration des machines",
+      "charges": "Charges & financement",
+      "results": "Résultats"
+    }
+  },
+  "project": {
+    "pageTitle": "Projet & localisation",
+    "pageDescription": "Définissez les informations de base de votre projet de laverie",
+    "tabs": {
+      "project": "Mon projet",
+      "local": "Contraintes du local"
+    },
+    "infoSection": {
+      "title": "Informations sur votre projet",
+      "description": "Décrivez les caractéristiques principales de votre future laverie"
+    },
+    "detailsCard": {
+      "title": "Détails du projet",
+      "description": "Ces informations nous aideront à personnaliser votre simulation"
+    },
+    "identity": {
+      "projectName": "Nom du projet",
+      "projectNamePlaceholder": "Ex. : Laverie Bastille",
+      "scenarioName": "Nom du scénario"
+    },
+    "location": {
+      "country": "Pays",
+      "address": "Adresse du local",
+      "addressHint": "💡 Sélectionnez une adresse dans la liste pour remplir automatiquement la ville et le code postal",
+      "addressPlaceholder": "Tapez et sélectionnez une adresse...",
+      "addressNoResult": "Aucune adresse trouvée. Essayez avec le nom de la ville.",
+      "city": "Ville",
+      "cityPlaceholder": "Ex. : Paris",
+      "postalCode": "Code postal",
+      "postalCodePlaceholder": "Ex. : 75004",
+      "autoFilled": "Rempli automatiquement",
+      "zoneType": "Type de zone",
+      "zoneTypePlaceholder": "Sélectionnez un type de zone"
+    },
+    "openingHours": {
+      "hoursLabel": "Horaires d'ouverture envisagés",
+      "hoursPlaceholder": "Sélectionnez un horaire",
+      "daysLabel": "Jours d'ouverture envisagés",
+      "daysPlaceholder": "Sélectionnez les jours",
+      "customOpenAt": "Horaire d'ouverture",
+      "customCloseAt": "Horaire de fermeture"
+    },
+    "local": {
+      "sectionTitle": "Votre local",
+      "sectionDescription": "Décrivez la configuration et les contraintes de votre futur emplacement",
+      "surfaceCardTitle": "Surface du local",
+      "surfaceLabel": "Surface totale du local en m²",
+      "surfacePlaceholder": "Ex: 40",
+      "shapeTitle": "Forme du local",
+      "shapeDescription": "La forme du local influence l'agencement optimal des machines",
+      "obstaclesTitle": "Obstacles structurels",
+      "obstaclesDescription": "Poteaux, gaines techniques ou murs porteurs impactant l'espace utilisable",
+      "accessTitle": "Accès au local",
+      "accessDescription": "Largeur de la porte principale pour le passage des machines",
+      "doorWidthLabel": "Largeur de la porte (cm)",
+      "doorWidthHint": "Une largeur inférieure à 90 cm peut compliquer l'installation de gros équipements",
+      "facadeLabel": "Façade modifiable ?",
+      "technicalTitle": "Contraintes techniques",
+      "technicalDescription": "État des raccordements (eau, électricité, évacuation, ventilation)"
+    },
+    "surfaceHint": {
+      "tooSmall": "Surface très petite pour une laverie",
+      "micro": "{{surface}} m² — Micro laverie",
+      "small": "{{surface}} m² — Petite laverie",
+      "standard": "{{surface}} m² — Laverie standard",
+      "medium": "{{surface}} m² — Laverie moyenne",
+      "large": "{{surface}} m² — Grande laverie",
+      "veryLarge": "{{surface}} m² — Très grande laverie",
+      "xxl": "{{surface}} m² — Laverie XXL"
+    }
+  },
+  "machines": {
+    "pageTitle": "Configuration des machines",
+    "pageDescription": "Configurez les machines et leur répartition dans votre local",
+    "configHint": "Configuration pré-remplie avec une laverie type – ajustez selon votre projet",
+    "washer": {
+      "cardTitle": "Lave-linge",
+      "cardDescription": "Configurez vos machines à laver",
+      "name": "lave-linge",
+      "category": "lavage"
+    },
+    "dryer": {
+      "cardTitle": "Sèche-linge",
+      "cardDescription": "Configurez vos sèche-linge",
+      "name": "sèche-linge",
+      "category": "séchage"
+    },
+    "fields": {
+      "count": "Nombre",
+      "price": "Prix (€)",
+      "cyclesPerDay": "Cycles/jour"
+    },
+    "invalidMachine": "Au moins un {{machineName}} possède un ou plusieurs champs invalides",
+    "addMachine": "Ajouter un {{machineName}}",
+    "categoryRevenue": "CA {{category}} estimé",
+    "summary": {
+      "washingRevenue": "CA lavage",
+      "dryingRevenue": "CA séchage",
+      "totalRevenue": "CA total estimé"
+    }
+  },
+  "charges": {
+    "pageTitle": "Charges",
+    "pageDescription": "Détaillez vos charges fixes et variables",
+    "configHint": "Valeurs indicatives pré-remplies – ajustez selon votre situation",
+    "fixed": {
+      "cardTitle": "Charges fixes mensuelles",
+      "cardDescription": "Montants fixes à payer chaque mois",
+      "addTitle": "Ajouter une charge fixe",
+      "total": "Total charges fixes"
+    },
+    "variable": {
+      "cardTitle": "Charges variables",
+      "cardDescription": "Estimées en pourcentage du chiffre d'affaires",
+      "addTitle": "Ajouter une charge variable",
+      "total": "Total charges variables",
+      "hint": "Ordre de grandeur : électricité ~8-12%, eau ~3-5%, lessive ~3-5% du CA selon les équipements."
+    },
+    "sectionTitle": "Charges",
+    "subscriptions": {
+      "title": "Abonnements",
+      "add": "Ajouter un abonnement",
+      "placeholder": "Abonnement...",
+      "other": "Autre abonnement"
+    },
+    "summary": {
+      "fixed": "Charges fixes",
+      "variable": "Charges variables",
+      "total": "Total charges"
+    }
+  },
+  "results": {
+    "pageTitle": "Résultats de votre simulation",
+    "pageDescription": "Synthèse complète de votre projet de laverie",
+    "summary": {
+      "title": "Résumé du projet",
+      "cityWithPostalCode": "{{city}} ({{postalCode}})",
+      "machines": "{{washerCount}} lave-linge, {{dryerCount}} sèche-linge",
+      "surface": "{{surface}} m²",
+      "editInfos": "Modifier les infos"
+    },
+    "kpis": {
+      "title": "Recettes estimées",
+      "totalRevenue": "CA total estimé",
+      "washingRevenue": "CA lavage",
+      "dryingRevenue": "CA séchage",
+      "editMachines": "Modifier les machines"
+    },
+    "profitability": {
+      "title": "Rentabilité",
+      "estimatedResult": "Résultat estimé",
+      "disclaimer": "* Estimation indicative",
+      "breakEven": "Seuil de rentabilité",
+      "cyclesPerDay": "Cycles/jour nécessaires",
+      "editCharges": "Modifier les charges"
+    },
+    "paywall": {
+      "title": "Projet au-dessus du seuil de rentabilité",
+      "description": "Pour avoir accès à l'analyse complète de votre projet, vous devez choisir une formule.",
+      "cta": "Découvrir les formules"
+    },
+    "guide": {
+      "badge": "Ressource indispensable",
+      "title": "Avant d'ouvrir : le guide du futur exploitant",
+      "imageAlt": "Guide Avant d'ouvrir - Le guide du futur exploitant de laverie",
+      "description": "Ne lancez pas votre projet sans ce guide. Étude de zone en 6 points, grilles d'audit local, budget CAPEX/OPEX détaillé, check-list \"Prêt à ouvrir\"… Tout ce que les banques et installateurs attendent de vous.",
+      "cta": "Découvrir le guide",
+      "collection": "Collection Laverie Pro by Lavcom"
+    }
+  },
+  "warnings": {
+    "sectionTitle": "Points à prendre en compte",
+    "capacity": {
+      "title": "Capacité du local à vérifier",
+      "intro": "Selon la surface et la configuration indiquées, nous estimons qu'il sera difficile d'installer plus de",
+      "maxMachines": "{{count}} machines",
+      "youEntered": "Vous avez saisi",
+      "userMachines": "{{count}} machines",
+      "advice": "Utilisez cette simulation comme un ordre de grandeur et faites valider le dimensionnement par un installateur."
+    },
+    "door": {
+      "title": "Attention aux gros lave-linge",
+      "intro": "Avec une porte inférieure à 90 cm et une façade non modifiable, l'installation de gros lave-linge (18–20 kg) peut être complexe ou impossible.",
+      "advice": "Parlez-en avec votre installateur et prévoyez que le coût réel d'installation peut être plus élevé."
+    },
+    "technical": {
+      "title": "Travaux techniques importants à prévoir",
+      "intro": "Vous indiquez que des travaux significatifs sont nécessaires (électricité, évacuation, ventilation…).",
+      "advice": "Les montants réels d'investissement peuvent être nettement supérieurs à ceux de cette simulation. Faites valider ces points par un installateur et un artisan avant toute décision."
+    }
+  },
+  "options": {
+    "countries": {
+      "fr": "France",
+      "be": "Belgique",
+      "ch": "Suisse",
+      "lu": "Luxembourg",
+      "mc": "Monaco",
+      "de": "Allemagne",
+      "nl": "Pays-Bas",
+      "es": "Espagne",
+      "it": "Italie"
+    },
+    "zoneTypes": {
+      "centre-ville": "Centre-ville",
+      "quartier-residentiel": "Quartier résidentiel",
+      "zone-commerciale": "Zone commerciale",
+      "zone-universitaire": "Zone universitaire / étudiante",
+      "zone-touristique": "Zone touristique",
+      "banlieue": "Banlieue / Périphérie"
+    },
+    "openingHours": {
+      "7h-21h": "7h - 21h (standard)",
+      "7h-22h": "7h - 22h (étendu)",
+      "6h-22h": "6h - 22h (matinal)",
+      "24h/24": "24h/24 (accès libre)",
+      "custom": "Horaires personnalisés..."
+    },
+    "openingDays": {
+      "7/7": "7 / 7 jours",
+      "6/7": "6 / 7 jours (fermé le dimanche)",
+      "custom": "Jours personnalisés..."
+    },
+    "weekDays": {
+      "monday": "Lun",
+      "tuesday": "Mar",
+      "wednesday": "Mer",
+      "thursday": "Jeu",
+      "friday": "Ven",
+      "saturday": "Sam",
+      "sunday": "Dim"
+    },
+    "localShapes": {
+      "rectangular": "Rectangulaire, murs plutôt pleins",
+      "narrow": "Long et étroit",
+      "l-shape": "En L / découpé",
+      "corner": "Angle avec beaucoup de vitrines",
+      "unknown": "Je ne sais pas encore"
+    },
+    "structuralObstacles": {
+      "none": "Aucun obstacle particulier",
+      "few": "Quelques poteaux / gaines le long des murs",
+      "many": "Plusieurs poteaux / murs porteurs gênants",
+      "unknown": "Je ne sais pas encore"
+    },
+    "facade": {
+      "yes": "Oui, il est possible de déposer une vitrine",
+      "no": "Non, façade non modifiable",
+      "unknown": "Je ne sais pas encore"
+    },
+    "technicalConstraints": {
+      "ok": "A priori OK (eau, évacuation, puissance, ventilation)",
+      "check_with_installer": "À vérifier avec un installateur",
+      "heavy_work": "Gros travaux à prévoir",
+      "unknown": "Je ne sais pas encore"
+    }
+  },
+  "validation": {
+    "projectName": {
+      "required": "Le nom du projet est requis",
+      "min": "Le nom du projet est requis (min. 3 caractères)",
+      "max": "Le nom du projet est trop long (max. 100)"
+    },
+    "scenarioName": {
+      "required": "Le nom du scénario est requis",
+      "max": "Le nom du scénario est trop long (max. 100)"
+    },
+    "country": {
+      "required": "Le pays est requis"
+    },
+    "address": {
+      "required": "L'adresse est requise",
+      "max": "L'adresse est trop longue (max. 200)"
+    },
+    "city": {
+      "required": "La ville est requise"
+    },
+    "zoneType": {
+      "required": "Le type de zone est requis"
+    },
+    "openingHours": {
+      "required": "Les horaires d'ouverture sont requis",
+      "invalidOpenAt": "Horaire d'ouverture invalide",
+      "invalidCloseAt": "Horaire de fermeture invalide",
+      "invalidCustom": "Les horaires personnalisés sont invalides"
+    },
+    "openingDays": {
+      "required": "Les jours d'ouverture sont requis",
+      "minOne": "Sélectionnez au moins un jour"
+    },
+    "surface": {
+      "required": "La surface est requise",
+      "min": "La surface est requise (min. 10 m²)",
+      "max": "Surface maximum 500 m²"
+    },
+    "localShape": {
+      "required": "La forme du local est requise"
+    },
+    "structuralObstacles": {
+      "required": "Précisez les obstacles structurels"
+    },
+    "doorWidth": {
+      "required": "La largeur de porte est requise",
+      "min": "Largeur de porte minimum 60 cm",
+      "max": "Largeur de porte maximum 300 cm"
+    },
+    "facade": {
+      "required": "Précisez la possibilité de modifier la façade"
+    },
+    "technicalConstraints": {
+      "required": "Précisez les contraintes techniques"
+    },
+    "machines": {
+      "capacity": "Capacité invalide, veuillez indiquer entre 3 et 35 kg",
+      "count": "Nombre de machine invalide, min. 1",
+      "price": "Prix invalide, min. 0,50 €",
+      "cyclesPerDay": "Nombre de cycles/jour invalide, min. 1",
+      "minWasher": "Veuillez ajouter au moins une machine à laver",
+      "minDryer": "Veuillez ajouter au moins un sèche-linge",
+      "minBoth": "Veuillez ajouter au moins une machine à laver et un sèche-linge"
+    },
+    "costs": {
+      "labelRequired": "Libellé requis",
+      "invalidAmount": "Montant invalide",
+      "invalidPercent": "Valeur invalide",
+      "percentRange": "0–100 %",
+      "variableOverflow": "Total des charges variables > 100 %"
+    }
+  }
+}
