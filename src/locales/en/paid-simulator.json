@@ -1,0 +1,354 @@
+{
+  "common": {
+    "reset": "Reset",
+    "back": "Back",
+    "backToPreviousStep": "Back to previous step",
+    "continue": "Continue",
+    "seeResults": "See results",
+    "perMonth": "/ month",
+    "euroPerMonth": "€/month",
+    "percentOfRevenue": "% of revenue",
+    "ofRevenue": "of revenue",
+    "squareMeters": "sqm",
+    "kg": "kg",
+    "label": "Label"
+  },
+  "stepper": {
+    "ariaLabel": "Simulation steps",
+    "steps": {
+      "project": "Project & location",
+      "machines": "Machine setup",
+      "charges": "Costs & financing",
+      "results": "Results"
+    }
+  },
+  "project": {
+    "pageTitle": "Project & location",
+    "pageDescription": "Define the basic information about your laundromat project",
+    "tabs": {
+      "project": "My project",
+      "local": "Premises constraints"
+    },
+    "infoSection": {
+      "title": "About your project",
+      "description": "Describe the main characteristics of your future laundromat"
+    },
+    "detailsCard": {
+      "title": "Project details",
+      "description": "This information will help us tailor your simulation"
+    },
+    "identity": {
+      "projectName": "Project name",
+      "projectNamePlaceholder": "E.g. Bastille Laundromat",
+      "scenarioName": "Scenario name"
+    },
+    "location": {
+      "country": "Country",
+      "address": "Premises address",
+      "addressHint": "💡 Select an address from the list to fill in the city and postcode automatically",
+      "addressPlaceholder": "Type and select an address...",
+      "addressNoResult": "No address found. Try using the city name.",
+      "city": "City",
+      "cityPlaceholder": "E.g. Paris",
+      "postalCode": "Postcode",
+      "postalCodePlaceholder": "E.g. 75004",
+      "autoFilled": "Filled automatically",
+      "zoneType": "Area type",
+      "zoneTypePlaceholder": "Select an area type"
+    },
+    "openingHours": {
+      "hoursLabel": "Planned opening hours",
+      "hoursPlaceholder": "Select opening hours",
+      "daysLabel": "Planned opening days",
+      "daysPlaceholder": "Select the days",
+      "customOpenAt": "Opening time",
+      "customCloseAt": "Closing time"
+    },
+    "local": {
+      "sectionTitle": "Your premises",
+      "sectionDescription": "Describe the layout and constraints of your future location",
+      "surfaceCardTitle": "Floor area",
+      "surfaceLabel": "Total floor area in sqm",
+      "surfacePlaceholder": "E.g. 40",
+      "shapeTitle": "Shape of the premises",
+      "shapeDescription": "The shape of the premises affects the optimal machine layout",
+      "obstaclesTitle": "Structural obstacles",
+      "obstaclesDescription": "Pillars, service ducts or load-bearing walls reducing usable space",
+      "accessTitle": "Access to the premises",
+      "accessDescription": "Width of the main door for moving machines in",
+      "doorWidthLabel": "Door width (cm)",
+      "doorWidthHint": "A width below 90 cm can make installing large equipment difficult",
+      "facadeLabel": "Can the shopfront be modified?",
+      "technicalTitle": "Technical constraints",
+      "technicalDescription": "Status of connections (water, electricity, drainage, ventilation)"
+    },
+    "surfaceHint": {
+      "tooSmall": "Very small area for a laundromat",
+      "micro": "{{surface}} sqm — Micro laundromat",
+      "small": "{{surface}} sqm — Small laundromat",
+      "standard": "{{surface}} sqm — Standard laundromat",
+      "medium": "{{surface}} sqm — Medium laundromat",
+      "large": "{{surface}} sqm — Large laundromat",
+      "veryLarge": "{{surface}} sqm — Very large laundromat",
+      "xxl": "{{surface}} sqm — XXL laundromat"
+    }
+  },
+  "machines": {
+    "pageTitle": "Machine setup",
+    "pageDescription": "Configure your machines and how they are distributed across the premises",
+    "configHint": "Pre-filled with a typical laundromat setup – adjust to match your project",
+    "washer": {
+      "cardTitle": "Washers",
+      "cardDescription": "Configure your washing machines",
+      "name": "washer",
+      "category": "washing"
+    },
+    "dryer": {
+      "cardTitle": "Dryers",
+      "cardDescription": "Configure your tumble dryers",
+      "name": "dryer",
+      "category": "drying"
+    },
+    "fields": {
+      "count": "Quantity",
+      "price": "Price (€)",
+      "cyclesPerDay": "Cycles/day"
+    },
+    "invalidMachine": "At least one {{machineName}} has one or more invalid fields",
+    "addMachine": "Add a {{machineName}}",
+    "categoryRevenue": "Estimated {{category}} revenue",
+    "summary": {
+      "washingRevenue": "Washing revenue",
+      "dryingRevenue": "Drying revenue",
+      "totalRevenue": "Total estimated revenue"
+    }
+  },
+  "charges": {
+    "pageTitle": "Costs",
+    "pageDescription": "Detail your fixed and variable costs",
+    "configHint": "Indicative values pre-filled – adjust them to your situation",
+    "fixed": {
+      "cardTitle": "Monthly fixed costs",
+      "cardDescription": "Fixed amounts payable every month",
+      "addTitle": "Add a fixed cost",
+      "total": "Total fixed costs"
+    },
+    "variable": {
+      "cardTitle": "Variable costs",
+      "cardDescription": "Estimated as a percentage of revenue",
+      "addTitle": "Add a variable cost",
+      "total": "Total variable costs",
+      "hint": "Typical ranges: electricity ~8-12%, water ~3-5%, detergent ~3-5% of revenue depending on equipment."
+    },
+    "sectionTitle": "Costs",
+    "subscriptions": {
+      "title": "Subscriptions",
+      "add": "Add a subscription",
+      "placeholder": "Subscription...",
+      "other": "Other subscription"
+    },
+    "summary": {
+      "fixed": "Fixed costs",
+      "variable": "Variable costs",
+      "total": "Total costs"
+    }
+  },
+  "results": {
+    "pageTitle": "Your simulation results",
+    "pageDescription": "Full overview of your laundromat project",
+    "summary": {
+      "title": "Project summary",
+      "cityWithPostalCode": "{{city}} ({{postalCode}})",
+      "machines": "{{washerCount}} washers, {{dryerCount}} dryers",
+      "surface": "{{surface}} sqm",
+      "editInfos": "Edit details"
+    },
+    "kpis": {
+      "title": "Estimated income",
+      "totalRevenue": "Total estimated revenue",
+      "washingRevenue": "Washing revenue",
+      "dryingRevenue": "Drying revenue",
+      "editMachines": "Edit machines"
+    },
+    "profitability": {
+      "title": "Profitability",
+      "estimatedResult": "Estimated result",
+      "disclaimer": "* Indicative estimate",
+      "breakEven": "Break-even point",
+      "cyclesPerDay": "Cycles/day required",
+      "editCharges": "Edit costs"
+    },
+    "paywall": {
+      "title": "Project above the break-even point",
+      "description": "To access the full analysis of your project, you need to choose a plan.",
+      "cta": "Discover the plans"
+    },
+    "guide": {
+      "badge": "Essential resource",
+      "title": "Before you open: the future operator's guide",
+      "imageAlt": "Before you open - The future laundromat operator's guide",
+      "description": "Don't launch your project without this guide. A 6-point area study, premises audit checklists, a detailed CAPEX/OPEX budget, a \"Ready to open\" checklist… Everything banks and installers expect from you.",
+      "cta": "Discover the guide",
+      "collection": "Laverie Pro collection by Lavcom"
+    }
+  },
+  "warnings": {
+    "sectionTitle": "Points to consider",
+    "capacity": {
+      "title": "Premises capacity to be checked",
+      "intro": "Based on the area and layout provided, we estimate it will be difficult to install more than",
+      "maxMachines": "{{count}} machines",
+      "youEntered": "You entered",
+      "userMachines": "{{count}} machines",
+      "advice": "Use this simulation as an order of magnitude and have the sizing validated by an installer."
+    },
+    "door": {
+      "title": "Watch out for large washers",
+      "intro": "With a door narrower than 90 cm and a shopfront that cannot be modified, installing large washers (18–20 kg) may be complex or impossible.",
+      "advice": "Discuss this with your installer and expect the actual installation cost to be higher."
+    },
+    "technical": {
+      "title": "Significant technical work to be expected",
+      "intro": "You indicated that significant work is required (electricity, drainage, ventilation…).",
+      "advice": "Actual investment amounts may be considerably higher than in this simulation. Have these points validated by an installer and a contractor before making any decision."
+    }
+  },
+  "options": {
+    "countries": {
+      "fr": "France",
+      "be": "Belgium",
+      "ch": "Switzerland",
+      "lu": "Luxembourg",
+      "mc": "Monaco",
+      "de": "Germany",
+      "nl": "Netherlands",
+      "es": "Spain",
+      "it": "Italy"
+    },
+    "zoneTypes": {
+      "centre-ville": "City centre",
+      "quartier-residentiel": "Residential area",
+      "zone-commerciale": "Retail area",
+      "zone-universitaire": "University / student area",
+      "zone-touristique": "Tourist area",
+      "banlieue": "Suburbs / outskirts"
+    },
+    "openingHours": {
+      "7h-21h": "7am - 9pm (standard)",
+      "7h-22h": "7am - 10pm (extended)",
+      "6h-22h": "6am - 10pm (early)",
+      "24h/24": "24/7 (open access)",
+      "custom": "Custom hours..."
+    },
+    "openingDays": {
+      "7/7": "7 / 7 days",
+      "6/7": "6 / 7 days (closed on Sunday)",
+      "custom": "Custom days..."
+    },
+    "weekDays": {
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat",
+      "sunday": "Sun"
+    },
+    "localShapes": {
+      "rectangular": "Rectangular, mostly solid walls",
+      "narrow": "Long and narrow",
+      "l-shape": "L-shaped / irregular",
+      "corner": "Corner unit with large windows",
+      "unknown": "I don't know yet"
+    },
+    "structuralObstacles": {
+      "none": "No particular obstacles",
+      "few": "A few pillars / ducts along the walls",
+      "many": "Several pillars / load-bearing walls in the way",
+      "unknown": "I don't know yet"
+    },
+    "facade": {
+      "yes": "Yes, a window section can be removed",
+      "no": "No, the shopfront cannot be modified",
+      "unknown": "I don't know yet"
+    },
+    "technicalConstraints": {
+      "ok": "Looks fine (water, drainage, power, ventilation)",
+      "check_with_installer": "To be checked with an installer",
+      "heavy_work": "Major work required",
+      "unknown": "I don't know yet"
+    }
+  },
+  "validation": {
+    "projectName": {
+      "required": "Project name is required",
+      "min": "Project name is required (min. 3 characters)",
+      "max": "Project name is too long (max. 100)"
+    },
+    "scenarioName": {
+      "required": "Scenario name is required",
+      "max": "Scenario name is too long (max. 100)"
+    },
+    "country": {
+      "required": "Country is required"
+    },
+    "address": {
+      "required": "Address is required",
+      "max": "Address is too long (max. 200)"
+    },
+    "city": {
+      "required": "City is required"
+    },
+    "zoneType": {
+      "required": "Area type is required"
+    },
+    "openingHours": {
+      "required": "Opening hours are required",
+      "invalidOpenAt": "Invalid opening time",
+      "invalidCloseAt": "Invalid closing time",
+      "invalidCustom": "Custom hours are invalid"
+    },
+    "openingDays": {
+      "required": "Opening days are required",
+      "minOne": "Select at least one day"
+    },
+    "surface": {
+      "required": "Floor area is required",
+      "min": "Floor area is required (min. 10 sqm)",
+      "max": "Maximum floor area 500 sqm"
+    },
+    "localShape": {
+      "required": "Shape of the premises is required"
+    },
+    "structuralObstacles": {
+      "required": "Please specify the structural obstacles"
+    },
+    "doorWidth": {
+      "required": "Door width is required",
+      "min": "Minimum door width 60 cm",
+      "max": "Maximum door width 300 cm"
+    },
+    "facade": {
+      "required": "Please specify whether the shopfront can be modified"
+    },
+    "technicalConstraints": {
+      "required": "Please specify the technical constraints"
+    },
+    "machines": {
+      "capacity": "Invalid capacity, please enter between 3 and 35 kg",
+      "count": "Invalid machine quantity, min. 1",
+      "price": "Invalid price, min. €0.50",
+      "cyclesPerDay": "Invalid number of cycles/day, min. 1",
+      "minWasher": "Please add at least one washing machine",
+      "minDryer": "Please add at least one dryer",
+      "minBoth": "Please add at least one washing machine and one dryer"
+    },
+    "costs": {
+      "labelRequired": "Label required",
+      "invalidAmount": "Invalid amount",
+      "invalidPercent": "Invalid value",
+      "percentRange": "0–100 %",
+      "variableOverflow": "Total variable costs > 100 %"
+    }
+  }
+}
