@@ -3,6 +3,7 @@ import { MapPin, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAddressSearch, type AddressSearchResult } from "@/hooks/useAddressSearch";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   value: string;
@@ -20,11 +21,12 @@ export function AddressAutocomplete({
   countryCode,
   onSelect,
   onInputChange,
-  placeholder = "Tapez et sélectionnez une adresse...",
+  placeholder,
   className,
   hasError,
   id,
 }: Props) {
+  const { t } = useTranslation("paid-simulator");
   const [inputValue, setInputValue] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
   const [justSelected, setJustSelected] = useState(false);
@@ -75,7 +77,7 @@ export function AddressAutocomplete({
           value={inputValue}
           onChange={handleChange}
           onFocus={() => inputValue.length >= 3 && setIsOpen(true)}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t("project.location.addressPlaceholder")}
           autoComplete="off"
           className={cn(
             "bg-white shadow-form",
@@ -109,7 +111,7 @@ export function AddressAutocomplete({
         isUserTyping &&
         !justSelected && (
           <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg p-3 text-sm text-muted-foreground">
-            Aucune adresse trouvée. Essayez avec le nom de la ville.
+            {t("project.location.addressNoResult")}
           </div>
         )}
     </div>

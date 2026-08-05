@@ -22,15 +22,17 @@ import type {
 import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { useSimulatorStepErrors } from "@/contexts/SimulatorStepContext";
+import { useTranslation } from "react-i18next";
 
 export function LocalConstraintsForm() {
+  const { t } = useTranslation("paid-simulator");
   const { project, updateProject } = useSimulatorProjectContext();
   const { fieldError } = useSimulatorStepErrors();
   return (
     <div className="space-y-8">
       <TabSectionHeading
-        title="Votre local"
-        description="Décrivez la configuration et les contraintes de votre futur emplacement"
+        title={t("project.local.sectionTitle")}
+        description={t("project.local.sectionDescription")}
       />
 
       <div className="space-y-6">
@@ -38,9 +40,10 @@ export function LocalConstraintsForm() {
 
         <RadioCard
           icon={LayoutGrid}
-          title="Forme du local"
-          description="La forme du local influence l'agencement optimal des machines"
+          title={t("project.local.shapeTitle")}
+          description={t("project.local.shapeDescription")}
           options={LOCAL_SHAPES}
+          optionKeyPrefix="options.localShapes"
           value={project.localShape ?? defaultSimulationProject.localShape}
           onValueChange={(value) => updateProject({ localShape: value as LocalShapeValue })}
           name="shape"
@@ -49,9 +52,10 @@ export function LocalConstraintsForm() {
 
         <RadioCard
           icon={Construction}
-          title="Obstacles structurels"
-          description="Poteaux, gaines techniques ou murs porteurs impactant l'espace utilisable"
+          title={t("project.local.obstaclesTitle")}
+          description={t("project.local.obstaclesDescription")}
           options={STRUCTURAL_OBSTACLES}
+          optionKeyPrefix="options.structuralObstacles"
           value={project.structuralObstacles ?? defaultSimulationProject.structuralObstacles}
           onValueChange={(value) => updateProject({ structuralObstacles: value as StructuralObstacleValue })}
           name="obstacles"
@@ -63,17 +67,17 @@ export function LocalConstraintsForm() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <DoorOpen className="h-5 w-5 text-primary" />
-                Accès au local
+                {t("project.local.accessTitle")}
               </CardTitle>
               <CardDescription>
-                Largeur de la porte principale pour le passage des machines
+                {t("project.local.accessDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
-                label="Largeur de la porte (cm)"
+                label={t("project.local.doorWidthLabel")}
                 htmlFor="door-width"
-                hint="Une largeur inférieure à 90 cm peut compliquer l'installation de gros équipements"
+                hint={t("project.local.doorWidthHint")}
                 error={fieldError("doorWidth")}
               >
                 <Input
@@ -85,7 +89,7 @@ export function LocalConstraintsForm() {
                 />
               </FormField>
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Façade modifiable ?</Label>
+                <Label className="text-sm font-medium">{t("project.local.facadeLabel")}</Label>
                 <RadioGroup
                   value={project.canModifyFacade ?? defaultSimulationProject.canModifyFacade}
                   onValueChange={(value) => updateProject({ canModifyFacade: value as FacadeOptionValue })}
@@ -98,7 +102,7 @@ export function LocalConstraintsForm() {
                     >
                       <RadioGroupItem value={option.value} id={`facade-${option.value}`} />
                       <Label htmlFor={`facade-${option.value}`} className="flex-1 cursor-pointer text-sm">
-                        {option.label}
+                        {t(`options.facade.${option.value}`)}
                       </Label>
                     </div>
                   ))}
@@ -109,9 +113,10 @@ export function LocalConstraintsForm() {
 
           <RadioCard
             icon={Wrench}
-            title="Contraintes techniques"
-            description="État des raccordements (eau, électricité, évacuation, ventilation)"
+            title={t("project.local.technicalTitle")}
+            description={t("project.local.technicalDescription")}
             options={TECHNICAL_CONSTRAINTS}
+            optionKeyPrefix="options.technicalConstraints"
             value={project.technicalConstraints ?? defaultSimulationProject.technicalConstraints}
             onValueChange={(value) => updateProject({ technicalConstraints: value as TechnicalConstraintValue })}
             name="tech"
