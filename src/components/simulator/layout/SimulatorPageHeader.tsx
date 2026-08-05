@@ -52,7 +52,7 @@ export function SimulatorPageHeader({
         className="gap-2 text-muted-foreground hover:text-orange-600"
       >
         <RotateCcw className="h-4 w-4" />
-        Réinitialiser
+        {t("common.reset")}
       </Button>
     </div>)
   );

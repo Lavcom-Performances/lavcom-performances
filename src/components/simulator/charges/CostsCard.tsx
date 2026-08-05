@@ -1,4 +1,10 @@
-import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/form-card";
+import {
+  FormCard,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/form-card";
 import { Separator } from "@/components/ui/separator";
 import { LucideIcon, Info } from "lucide-react";
 import { CostRow } from "./CostRow";
@@ -13,7 +19,13 @@ import {
   updateVariableCost,
 } from "./types";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
-import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
+import {
+  FixedCostCategory,
+  FixedCostItem,
+  VariableCostCategory,
+  VariableCostItem
+} from "@/types/simulator.types";
+import { FIXED_COST_CATEGORIES, VARIABLE_COST_CATEGORIES } from "@/config/simulatorFormOptions";
 import { useTranslation } from "react-i18next";
 
 interface CostsCardProps {
@@ -94,6 +106,17 @@ export function CostsCard({
     }
   };
 
+  const getCategoryLabel = (
+    costCategories: FixedCostCategory | VariableCostCategory,
+    costLabel: string
+  ): string => {
+    for (let cat in costCategories) {
+      if (costCategories[cat].label === costLabel) return cat
+    };
+    if (costLabel !== "") return costLabel;
+    return "";
+  };
+
   return (
     <FormCard className={width}>
       <CardHeader>
@@ -113,11 +136,12 @@ export function CostsCard({
                 .map((cost) => (
                   <CostRow
                     key={cost.id}
-                    label={cost.label}
+                    label={getCategoryLabel(FIXED_COST_CATEGORIES, cost.label)}
                     other={cost.category === "other"}
                     value={cost.amount ?? 0}
                     suffix={t("common.euroPerMonth")}
                     placeholder="0"
+                    costType={costType}
                     onChangeLabel={(label) => handleUpdate(cost.id, label, cost.amount)}
                     onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
                     onRemove={() => handleRemove(cost.id)}
@@ -125,11 +149,12 @@ export function CostsCard({
               : (items as VariableCostItem[]).map((cost) => (
                 <CostRow
                   key={cost.id}
-                  label={cost.label}
+                  label={getCategoryLabel(VARIABLE_COST_CATEGORIES, cost.label)}
                   other={cost.category === "other"}
                   value={cost.percent ?? 0}
                   suffix={t("common.percentOfRevenue")}
                   placeholder="0"
+                  costType={costType}
                   onChangeLabel={(label) => handleUpdate(cost.id, label, cost.percent)}
                   onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
                   onRemove={() => handleRemove(cost.id)}

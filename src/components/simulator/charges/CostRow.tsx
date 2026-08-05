@@ -20,6 +20,7 @@ interface Props {
   value: number;
   suffix?: string;
   placeholder?: string;
+  costType: "fixed" | "variable";
   onChangeLabel?: (value: string) => void;
   onChangeValue: (value: number) => void;
   onRemove?: () => void;
@@ -32,6 +33,7 @@ export function CostRow({
   value,
   suffix,
   placeholder = "0",
+  costType,
   onChangeLabel,
   onChangeValue,
   onRemove
@@ -39,7 +41,7 @@ export function CostRow({
   const { t } = useTranslation("paid-simulator");
   const suffixLabel = suffix ?? t("common.euroPerMonth");
   const items: [string, {label: string; category:string}][] = Object.entries(SUBSCRIPTION_CATEGORIES);
-  const itemsLabels: string[] = items.map(item => item[1].label);
+  const itemsLabels: string[] = items.map(item => item[0]);
   
   const [isOtherSelected, setIsOtherSelected] = useState(
     (subscription
@@ -51,12 +53,19 @@ export function CostRow({
   return (
     <div className="flex gap-2 items-center">
       { label && !other && !subscription && (
-        <span className="text-sm text-foreground grow">{label}</span>
+        <span className="text-sm text-foreground grow">
+          {t(`options.${costType}CostCategories.${label}`)}
+        </span>
       )}
       { subscription && (
         <>
           <Select 
-            value={isOtherSelected ? "Autre abonnement" : label}
+            value={isOtherSelected
+              ? "Autre abonnement" 
+              : label !== ""
+                ? SUBSCRIPTION_CATEGORIES[label].label
+                : ""
+            }
             onValueChange={(value) => {
               if (value === "Autre abonnement") {
                 setIsOtherSelected(true);
@@ -76,7 +85,7 @@ export function CostRow({
               <SelectGroup>
                 {items.map((item) => (
                   <SelectItem key={item[0]} value={item[1].label}>
-                    {item[1].label}
+                    {t(`options.subscriptionCategories.${item[0]}`)}
                   </SelectItem>
                 ))}
               </SelectGroup>

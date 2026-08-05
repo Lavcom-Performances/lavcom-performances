@@ -277,6 +277,34 @@
       "check_with_installer": "To be checked with an installer",
       "heavy_work": "Major work required",
       "unknown": "I don't know yet"
+    },
+    "subscriptionCategories": {
+      "paymentTerminal": "Payment terminal",
+      "remoteManagement": "Remote management",
+      "internet": "Internet",
+      "phone": "Phone",
+      "alarm": "Alarm / video surveillance",
+      "managementSoftware": "Management software",
+      "maintenanceContract": "Maintenance contract",
+      "otherSubscription": "Other subscription"
+    },
+    "fixedCostCategories": {
+      "rent": "Rent",
+      "rentalCharges": "Rental charges",
+      "lease": "Loan / Leasing for machines",
+      "insurance": "Insurance",
+      "cfe": "CFE (Business property tax)",
+      "taxes": "Tax",
+      "salary": "Salary / Social charges",
+      "cleaning": "Cleaning / Maintenance",
+      "other": "Other"
+    },
+    "variableCostCategories": {
+      "electricity": "Electricity",
+      "water": "Water",
+      "gas": "Gas",
+      "detergent": "Detergent / products",
+      "other": "Other"
     }
   },
   "validation": {

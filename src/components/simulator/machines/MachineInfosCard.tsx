@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { InputFieldsInfos } from "./InputFieldsInfos";
 import { MACHINES_CAPACITIES } from "@/config/simulatorFormOptions";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { updateMachineList } from "@/utils/machineRevenueCalculations";
 import { MachineConfig } from "@/types/simulator.types";
 import { machineConfigSchema } from "@/lib/validation/simulatorProjectSchema";
-import { z } from "zod";
 
 interface Props {
   machineId: string;
@@ -38,6 +38,7 @@ export function MachineInfosCard({
   onCapacityChange,
   onRemove,
 }: Props) {
+  const { t } = useTranslation("paid-simulator");
   const { project, updateProject } = useSimulatorProjectContext();
   const patchMachineConfig = (id: string, patchedConfig: Partial<MachineConfig>) =>
       updateProject({ machines: updateMachineList(project.machines, id, patchedConfig) });
@@ -72,7 +73,7 @@ export function MachineInfosCard({
           </Select>
           <div className="flex items-center gap-1 text-xs text-primary w-full">
             <ArrowRight className="h-3 w-3" />
-            {monthlyRevenue.toLocaleString("fr-FR")} €/mois
+            {`${monthlyRevenue.toLocaleString("fr-FR")} ${t("common.euroPerMonth")}`}
           </div>
           {onRemove && (
             <Button variant="ghost" className="min-w-[40px]" size="icon" onClick={onRemove}>

@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CostRow } from "./CostRow";
-import { FixedCostItem } from "@/types/simulator.types";
+import { FixedCostItem, SubscriptionCategory } from "@/types/simulator.types";
 import { useTranslation } from "react-i18next";
+import { SUBSCRIPTION_CATEGORIES } from "@/config/simulatorFormOptions";
 
 interface SubscriptionProps {
-  subscriptions: FixedCostItem[];
+  subscriptions?: FixedCostItem[];
   onAdd: () => void;
   onChangeLabel: (id: string, label: string, value: number) => void;
   onChangeValue: (id: string, label: string, value: number) => void;
@@ -20,19 +21,32 @@ export function SubscriptionCard({
   onRemove
 }: SubscriptionProps) {
   const { t } = useTranslation("paid-simulator");
+
+  const getSubscriptionLabel = (
+      costCategories: SubscriptionCategory,
+      costLabel: string
+    ): string => {
+      for (let cat in costCategories) {
+        if (costCategories[cat].label === costLabel) return cat
+      };
+      if (costLabel !== "") return costLabel;
+      return "";
+    };
+
   return (
     <div className="space-y-4">
       <h4 className="text-base font-bold text-foreground">
         {t("charges.subscriptions.title")}
       </h4>
-        {subscriptions.map((subscription) => (
+        {subscriptions && subscriptions.map((subscription) => (
           <CostRow
             key={subscription.id}
-            label={subscription.label}
+            label={getSubscriptionLabel(SUBSCRIPTION_CATEGORIES, subscription.label)}
             subscription={true}
             value={subscription.amount}
             suffix={t("common.euroPerMonth")}
             placeholder="0"
+            costType="fixed"
             onChangeLabel={(label) => onChangeLabel(subscription.id, label, subscription.amount)}
             onChangeValue={(value) => onChangeValue(subscription.id, subscription.label, value)}
             onRemove={() => onRemove(subscription.id)}

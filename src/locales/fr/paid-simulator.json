@@ -277,6 +277,34 @@
       "check_with_installer": "À vérifier avec un installateur",
       "heavy_work": "Gros travaux à prévoir",
       "unknown": "Je ne sais pas encore"
+    },
+    "subscriptionCategories": {
+      "paymentTerminal": "Centrale de paiement",
+      "remoteManagement": "Télégestion",
+      "internet": "Internet",
+      "phone": "Téléphone",
+      "alarm": "Alarme / vidéosurveillance",
+      "managementSoftware": "Logiciel de gestion",
+      "maintenanceContract": "Contrat de maintenance",
+      "otherSubscription": "Autre abonnement"
+    },
+    "fixedCostCategories": {
+      "rent": "Loyer",
+      "rentalCharges": "Charges locatives",
+      "lease": "Prêt / Leasing machines",
+      "insurance": "Assurance",
+      "cfe": "CFE (Cotisation Foncière)",
+      "taxes": "Impôt / Taxe",
+      "salary": "Salaire / Charges sociales",
+      "cleaning": "Ménage / Entretien",
+      "other": "Autre"
+    },
+    "variableCostCategories": {
+      "electricity": "Électricité",
+      "water": "Eau",
+      "gas": "Gaz",
+      "detergent": "Lessive / produits",
+      "other": "Autre"
     }
   },
   "validation": {

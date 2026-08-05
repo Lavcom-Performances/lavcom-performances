@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
 import { Plus } from "lucide-react";
@@ -16,6 +17,7 @@ interface AddCostButtonProps {
 };
 
 export function AddCostButton({ cost, costType }: AddCostButtonProps) {
+  const { t } = useTranslation("paid-simulator");
   const { project, updateProject } = useSimulatorProjectContext();
   const handleAdd = (
     newCost: string,
@@ -55,7 +57,7 @@ export function AddCostButton({ cost, costType }: AddCostButtonProps) {
         }}
       >
         <Plus className="h-4 w-4" />
-        {cost[1].label}
+        {t(`options.${costType}CostCategories.${cost[0]}`)}
       </Button>
     </>
   );
