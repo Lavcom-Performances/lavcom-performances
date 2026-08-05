@@ -74,6 +74,7 @@ const resources = {
     landing: enLanding,
     app: enApp,
     errors: enErrors,
+    'paid-simulator': enPaidSimulator,
   },
   es: {
     common: esCommon,
