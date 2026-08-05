@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
-const STEPS: { id: 1 | 2 | 3 | 4; label: string; path: string }[] = [
-  { id: 1, label: "Projet & localisation", path: "/simulator/project" },
-  { id: 2, label: "Configuration des machines", path: "/simulator/machines" },
-  { id: 3, label: "Charges & financement", path: "/simulator/charges" },
-  { id: 4, label: "Résultats", path: "/simulator/results" },
+const STEPS: { id: 1 | 2 | 3 | 4; labelKey: string; path: string }[] = [
+  { id: 1, labelKey: "stepper.steps.project", path: "/simulator/project" },
+  { id: 2, labelKey: "stepper.steps.machines", path: "/simulator/machines" },
+  { id: 3, labelKey: "stepper.steps.charges", path: "/simulator/charges" },
+  { id: 4, labelKey: "stepper.steps.results", path: "/simulator/results" },
 ];
 
 interface Props {
@@ -14,9 +15,10 @@ interface Props {
 }
 
 export function SimulatorStepper({ currentStep }: Props) {
+  const { t } = useTranslation("paid-simulator");
   return (
     <nav
-      aria-label="Étapes de la simulation"
+      aria-label={t("stepper.ariaLabel")}
       className="w-full border-b bg-muted/30"
     >
       <ol className="mx-auto flex max-w-4xl items-start gap-2 overflow-x-auto px-6 py-6 md:gap-6">
@@ -61,7 +63,7 @@ export function SimulatorStepper({ currentStep }: Props) {
                   isActive ? "text-primary" : "text-muted-foreground"
                 )}
               >
-                {step.label}
+                {t(step.labelKey)}
               </span>
             </div>
           );
