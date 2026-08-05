@@ -6,13 +6,14 @@ import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { machineMonthlyRevenue, updateMachineList, removeMachine, addMachine } from "@/utils/machineRevenueCalculations";
 import type { MachineConfig } from "@/types/simulator.types";
 import { useSimulatorStepErrors } from "@/contexts/SimulatorStepContext";
+import { useTranslation } from "react-i18next";
 
 interface ConfigProps {
   icon: LucideIcon;
   cardTitle: string;
   cardDescription: string;
-  machineName: "lave-linge" | "sèche-linge";
-  machineCat: "lavage" | "séchage";
+  machineName: string;
+  machineCat: string;
   machineType: "washer" | "dryer";
 }
 
@@ -24,6 +25,7 @@ export function MachinesConfigCard({
   machineCat,
   machineType,
 }: ConfigProps) {
+  const { t } = useTranslation("paid-simulator");
   const { project, updateProject } = useSimulatorProjectContext();
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
@@ -61,7 +63,7 @@ export function MachinesConfigCard({
             }
           />
         ))}
-        { hasError && <span className="block text-destructive">Au moins un {machineName} possède un ou plusieurs champs invalides</span>}
+        { hasError && <span className="block text-destructive">{t("machines.invalidMachine", { machineName })}</span>}
         <Button
           variant="ghost"
           size="sm"
@@ -69,12 +71,12 @@ export function MachinesConfigCard({
           onClick={() => updateProject({ machines: addMachine(project.machines, machineType) })}
         >
           <Plus className="h-4 w-4" />
-          Ajouter un {machineName}
+          {t("machines.addMachine", { machineName })}
         </Button>
         <div className="flex flex-col w-full items-center border rounded-lg border-primary/40 bg-primary/10 px-4 py-3">
-          <span className="text-xs font-medium text-muted-foreground">CA {machineCat} estimé</span>
+          <span className="text-xs font-medium text-muted-foreground">{t("machines.categoryRevenue", { category: machineCat })}</span>
           <span className="text-lg font-bold text-primary">
-            {Math.round(total).toLocaleString("fr-FR")} € / mois
+            {Math.round(total).toLocaleString("fr-FR")} € {t("common.perMonth")}
           </span>
         </div>
       </CardContent>
