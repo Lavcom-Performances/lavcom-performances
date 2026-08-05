@@ -1,30 +1,45 @@
-# Sécurisation du fichier `.env` et rotation des clés
+# i18n FR du simulateur de rentabilité `/simulator/*`
 
-## Point important avant d'agir
+## Objectif
+Externaliser tous les textes en dur des pages et composants du simulateur payant dans un nouveau namespace i18n `paid-simulator`, et brancher les composants dessus via `useTranslation("paid-simulator")`.
 
-Les trois variables présentes dans `.env` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`) sont **publiques par conception** : elles sont compilées par Vite dans le bundle JavaScript envoyé au navigateur. N'importe quel visiteur de l'application peut déjà les lire. Ce ne sont pas des secrets ; la protection des données repose sur les politiques RLS, pas sur ces valeurs. La vraie clé sensible (`service_role`) n'est pas dans ce fichier et n'est jamais exposée au client.
+## Ce qui est couvert
 
-Deuxième point : `.env` est un fichier **généré automatiquement** par la plateforme. Le supprimer casse le build et l'application publiée (le client backend s'initialise avec `undefined`). Il est déjà listé dans `.gitignore` (ligne présente et vérifiée), donc il n'est plus suivi par Git pour les futurs commits.
+Fichier créé : `src/locales/fr/paid-simulator.json`, organisé par zone :
 
-## Ce que je propose de faire
+```text
+common        → boutons, actions, unités (m², €, /mois)
+stepper       → libellés des 4 étapes + navigation (précédent/suivant)
+project       → identité du projet, localisation, surface,
+                horaires d'ouverture, contraintes du local, onglets
+machines      → configuration machines, infos champs, résumé CA
+charges       → abonnement, lignes de coûts, ajout de coût, total
+results       → KPIs, rentabilité, synthèse, paywall, guide
+warnings      → messages de ProjectWarnings
+validation    → messages d'erreur des schémas Zod
+```
 
-1. **Ne pas supprimer `.env`** du projet : il reste nécessaire au fonctionnement local et au build. Il est déjà ignoré par Git.
-2. **Faire tourner les clés API** du backend : génération de nouvelles clés, invalidation des anciennes, mise à jour automatique du `.env` du projet et de la configuration interne.
-3. **Te communiquer les nouvelles valeurs** des trois variables pour que tu les copies dans ton `.env` local.
-4. **Vérifier** que l'application démarre toujours et que les requêtes backend passent après rotation.
+## Composants à brancher (37 fichiers)
 
-## Conséquences de la rotation
-
-- Toutes les sessions utilisateurs en cours seront invalidées (reconnexion nécessaire).
-- Tout service externe utilisant l'ancienne clé cessera de fonctionner tant qu'il n'est pas mis à jour.
-- L'URL et le `project_id` ne changent pas ; seule la clé publiable change.
+- Pages : `SimulatorProjectPage`, `SimulatorMachinesPage`, `SimulatorChargesPage`, `SimulatorResultsPage`
+- Layout : `SimulatorPageHeader`, `SimulatorStepper`, `SimulatorFooterNav`
+- Project : `ProjectIdentityCard`, `LocationCard`, `AddressAutocomplete`, `SurfaceCard`, `OpeningHoursCard`, `LocalConstraintsForm`, `ProjectTabs`, `ProjectDetailsCard`, `TabSectionHeading`, `RadioCard`, `FormField`, `ProjectInfoForm`
+- Machines : `MachinesConfigCard`, `MachineInfosCard`, `InputFieldsInfos`, `MachineRevenueSummary`
+- Charges : `CostsCard`, `CostRow`, `AddCostCard`, `AddCostButton`, `SubscriptionCard`, `TotalCostsSummary`
+- Results : `ResultsSummaryCard`, `ResultsHeroKpis`, `ProfitabilityCard`, `ProjectInfos`, `PaywallCallout`, `GuideCallout`
+- Transverses : `ProjectWarnings`, `ConfigHintBanner`, `ProgressBarWithValue`
 
 ## Détails techniques
 
-- Rotation via l'outil de rotation des clés API de la plateforme (met à jour `.env` et désactive les anciennes clés legacy).
-- `src/integrations/supabase/client.ts` lit `import.meta.env.VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` : aucun changement de code requis.
-- Vérification post-rotation : lecture du `.env` régénéré + appel de test sur une table publique.
+1. Ajout de `paid-simulator` dans `src/lib/i18n-config.ts` : import FR + entrée dans `resources.fr` + ajout au tableau `ns`.
+2. Pour les autres langues (en/es/it/de/nl), le namespace n'existe pas encore : `fallbackLng: 'fr'` s'applique déjà, donc aucune régression. Les fichiers de traduction des autres locales pourront être ajoutés plus tard.
+3. Les libellés d'options de formulaire dans `src/config/simulatorFormOptions.ts` (types de projet, zones, quartiers, etc.) sont convertis en clés i18n : le fichier exporte des clés, la traduction est résolue à l'affichage dans les composants. Aucune modification de la logique métier ni des valeurs (`value`) utilisées par les calculs.
+4. Les messages d'erreur Zod de `src/lib/validation/simulatorProjectSchema.ts` sont remplacés par des clés `validation.*`, traduites au moment de l'affichage.
+5. Interpolation utilisée pour les valeurs dynamiques (`{{count}}`, `{{amount}}`, `{{surface}}`), y compris le hint dynamique de `SurfaceCard` et les seuils de `ProjectWarnings`.
+6. Vérification finale : `bunx tsgo --noEmit` + contrôle visuel des 4 pages `/simulator/*` avec Playwright pour s'assurer qu'aucune clé brute (`paid-simulator.xxx`) ne s'affiche.
 
-## Alternative si tu veux vraiment supprimer `.env`
+## Hors périmètre
 
-Ce n'est possible qu'en cassant l'application, sauf à déconnecter puis reconnecter le backend, ce qui régénérerait de toute façon le même fichier. Je ne le recommande pas.
+- Aucune modification de logique de calcul, de routing, ou de style.
+- Pas de traduction des autres langues dans ce lot.
+- Le dashboard `/dashboard-simulator` (fichiers `src/constants/dashboard-simulator/*.strings.ts`) n'est pas touché.
