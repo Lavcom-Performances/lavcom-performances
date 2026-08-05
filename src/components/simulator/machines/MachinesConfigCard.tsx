@@ -26,7 +26,6 @@ export function MachinesConfigCard({
   machineType,
 }: ConfigProps) {
   const { t } = useTranslation("paid-simulator");
-  const { t } = useTranslation("paid-simulator");
   const { project, updateProject } = useSimulatorProjectContext();
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
