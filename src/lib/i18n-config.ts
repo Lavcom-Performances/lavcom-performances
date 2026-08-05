@@ -107,7 +107,7 @@ i18n
     resources,
     fallbackLng: 'fr',
     defaultNS: 'common',
-    ns: ['common', 'landing', 'app', 'errors'],
+    ns: ['common', 'landing', 'app', 'errors', 'paid-simulator'],
     
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
