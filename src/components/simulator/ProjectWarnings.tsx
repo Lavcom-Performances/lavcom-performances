@@ -5,6 +5,8 @@ import {
   hasLargeWashers,
   showCapacityWarning,
 } from "@/utils/machineWarningsCalculations";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 interface WarningItem {
   id: string;
@@ -17,7 +19,10 @@ interface ProjectWarningsProps {
   showTitle?: boolean;
 }
 
-function generateProjectWarnings(project: Partial<SimulationProject>): WarningItem[] {
+function generateProjectWarnings(
+  project: Partial<SimulationProject>,
+  t: TFunction,
+): WarningItem[] {
   const warnings: WarningItem[] = [];
 
   const {
@@ -29,15 +34,15 @@ function generateProjectWarnings(project: Partial<SimulationProject>): WarningIt
   if (isCapacityWarning) {
     warnings.push({
       id: "capacity",
-      title: "Capacité du local à vérifier",
+      title: t("warnings.capacity.title"),
       description: (
         <>
-          Selon la surface et la configuration indiquées, nous estimons qu'il sera difficile
-          d'installer plus de <strong>{maxMachinesEstimate} machines</strong>. Vous avez saisi
-          <strong> {userTotalMachines} machines</strong>.
+          {t("warnings.capacity.intro")}{" "}
+          <strong>{t("warnings.capacity.maxMachines", { count: maxMachinesEstimate })}</strong>.{" "}
+          {t("warnings.capacity.youEntered")}{" "}
+          <strong>{t("warnings.capacity.userMachines", { count: userTotalMachines })}</strong>.
           <br />
-          Utilisez cette simulation comme un ordre de grandeur et faites valider le
-          dimensionnement par un installateur.
+          {t("warnings.capacity.advice")}
         </>
       ),
     });
@@ -52,14 +57,12 @@ function generateProjectWarnings(project: Partial<SimulationProject>): WarningIt
   if (isDoorWarning) {
     warnings.push({
       id: "door",
-      title: "Attention aux gros lave-linge",
+      title: t("warnings.door.title"),
       description: (
         <>
-          Avec une porte inférieure à 90 cm et une façade non modifiable, l'installation de
-          gros lave-linge (18–20 kg) peut être complexe ou impossible.
+          {t("warnings.door.intro")}
           <br />
-          Parlez-en avec votre installateur et prévoyez que le coût réel d'installation peut
-          être plus élevé.
+          {t("warnings.door.advice")}
         </>
       ),
     });
@@ -70,15 +73,12 @@ function generateProjectWarnings(project: Partial<SimulationProject>): WarningIt
   if (isTechnicalWarning) {
     warnings.push({
       id: "technical",
-      title: "Travaux techniques importants à prévoir",
+      title: t("warnings.technical.title"),
       description: (
         <>
-          Vous indiquez que des travaux significatifs sont nécessaires (électricité, évacuation,
-          ventilation…).
+          {t("warnings.technical.intro")}
           <br />
-          Les montants réels d'investissement peuvent être nettement supérieurs à ceux de cette
-          simulation. Faites valider ces points par un installateur et un artisan avant toute
-          décision.
+          {t("warnings.technical.advice")}
         </>
       ),
     });
@@ -88,7 +88,8 @@ function generateProjectWarnings(project: Partial<SimulationProject>): WarningIt
 }
 
 export function ProjectWarnings({ project, showTitle = true }: ProjectWarningsProps) {
-  const warnings = generateProjectWarnings(project);
+  const { t } = useTranslation("paid-simulator");
+  const warnings = generateProjectWarnings(project, t);
 
   if (warnings.length === 0) return null;
 
@@ -97,7 +98,7 @@ export function ProjectWarnings({ project, showTitle = true }: ProjectWarningsPr
       {showTitle && (
         <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-lavcom-orange" />
-          Points à prendre en compte
+          {t("warnings.sectionTitle")}
         </h3>
       )}
       <div className="space-y-4">
