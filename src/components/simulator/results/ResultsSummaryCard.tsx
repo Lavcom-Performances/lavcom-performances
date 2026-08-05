@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Building2, MapPin, WashingMachine, Wind, Ruler, Pen, LucideIcon } from "lucide-react";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { ProjectInfos } from "./ProjectInfos";
+import { useTranslation } from "react-i18next";
 
 export function ResultsSummaryCard() {
+  const { t } = useTranslation("paid-simulator");
   const { project } = useSimulatorProjectContext();
   
   const washerCount: number = project.machines?.filter(
@@ -16,12 +18,12 @@ export function ResultsSummaryCard() {
 
   const projectInfos: {icon: LucideIcon, info: string}[] = [
     { icon: Building2, info: project.city },
-    { icon: MapPin, info: `${project.city} (${project.postalCode})`},
+    { icon: MapPin, info: t("results.summary.cityWithPostalCode", { city: project.city, postalCode: project.postalCode }) },
     {
       icon: WashingMachine,
-      info: `${washerCount} lave-linge, ${dryerCount} sèche-linge`,
+      info: t("results.summary.machines", { washerCount, dryerCount }),
     },
-    {icon: Ruler, info: `${project.surface} m²`},
+    { icon: Ruler, info: t("results.summary.surface", { surface: project.surface }) },
   ];
 
   return (
@@ -29,7 +31,7 @@ export function ResultsSummaryCard() {
       <div className="flex items-center justify-start w-full gap-2">
         <Building2 className="w-4 h-4 text-primary" />
         <h2 className="font-bold text-left text-md text-foreground">
-          Résumé du projet
+          {t("results.summary.title")}
         </h2>
       </div>
       <div className="flex flex-col justify-start gap-3 items-start grow w-full">
@@ -49,7 +51,7 @@ export function ResultsSummaryCard() {
       >
         <Link to="/simulator/project">
           <Pen />
-          Modifier les infos
+          {t("results.summary.editInfos")}
         </Link>
       </Button>
     </div>

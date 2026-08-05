@@ -4,8 +4,10 @@ import { Separator } from "@/components/ui/separator";
 import { Pen, TrendingUp, WashingMachine, Wind } from "lucide-react";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { ProgressBarWithValue } from "../ProgressBarWithValue";
+import { useTranslation } from "react-i18next";
 
 export function ResultsHeroKpis() {
+  const { t } = useTranslation("paid-simulator");
   const { project } = useSimulatorProjectContext();
   
   const totalRevenue = project.totalRevenue || 4140;
@@ -19,13 +21,13 @@ export function ResultsHeroKpis() {
       <div className="flex items-center justify-start w-full gap-2">
         <TrendingUp className="w-6 h-6 text-primary" />
         <h2 className="font-bold text-left w-max text-lg text-foreground">
-          Recettes estimées
+          {t("results.kpis.title")}
         </h2>
       </div>
       <div className="flex flex-col justify-start items-start gap-4 grow">
         <div className="flex flex-col justify-start items-start w-full gap-1">
           <span className="text-left w-max text-sm text-foreground">
-            CA total estimé
+            {t("results.kpis.totalRevenue")}
           </span>
           <span className="font-bold text-left w-max text-lg text-foreground">
             {totalRevenue.toLocaleString('fr-FR')} €
@@ -41,7 +43,7 @@ export function ResultsHeroKpis() {
             <div className="flex justify-center items-center gap-2">
               <WashingMachine className="h-4 w-4 text-primary"/>   
               <span className="text-left w-max text-sm text-foreground">
-                CA lavage
+                {t("results.kpis.washingRevenue")}
               </span>
             </div>
             <span className="font-semibold text-left w-max text-md text-foreground">
@@ -52,7 +54,7 @@ export function ResultsHeroKpis() {
             <div className="flex justify-center items-center gap-2">
               <Wind className="h-4 w-4 text-lavcom-orange"/>   
               <span className="text-left w-max text-sm text-foreground">
-                CA séchage
+                {t("results.kpis.dryingRevenue")}
               </span>
             </div>
             <span className="font-semibold text-left w-max text-md text-foreground">
@@ -69,7 +71,7 @@ export function ResultsHeroKpis() {
       >
         <Link to="/simulator/machines">
           <Pen />
-          Modifier les machines
+          {t("results.kpis.editMachines")}
         </Link>
       </Button>
     </div>
