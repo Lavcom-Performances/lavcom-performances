@@ -7,6 +7,7 @@ import frCommon from '@/locales/fr/common.json';
 import frLanding from '@/locales/fr/landing.json';
 import frApp from '@/locales/fr/app.json';
 import frErrors from '@/locales/fr/errors.json';
+import frPaidSimulator from '@/locales/fr/paid-simulator.json';
 
 // Import EN translations
 import enCommon from '@/locales/en/common.json';
