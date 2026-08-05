@@ -53,11 +53,26 @@ export function CostsCard({
 
   const total = getTotal();
 
-  const handleAdd = (newCost: string, category: FixedCostItem["category"] | VariableCostItem["category"]) => {
+  const handleAdd = (
+    newCost: string,
+    category: FixedCostItem["category"] | VariableCostItem["category"]
+  ) => {
     if (costType === "fixed") {
-      updateProject({ fixedCosts: addFixedCost(project.fixedCosts, newCost, category as FixedCostItem["category"]) });
+      updateProject({
+        fixedCosts: addFixedCost(
+          project.fixedCosts,
+          newCost,
+          category as FixedCostItem["category"]
+        )
+      });
     } else {
-      updateProject({ variableCosts: addVariableCost(project.variableCosts, newCost, category as VariableCostItem["category"]) });
+      updateProject({
+        variableCosts: addVariableCost(
+          project.variableCosts,
+          newCost,
+          category as VariableCostItem["category"]
+        )
+      });
     }
   };
 
@@ -120,11 +135,7 @@ export function CostsCard({
             }
             <Separator />
             <AddCostCard
-              costType={costType}
-              onClick={(
-                newCost: string,
-                category: FixedCostItem["category"] | VariableCostItem["category"]
-              ) => handleAdd(newCost, category)}        
+              costType={costType}     
             />
           </CardContent>
         </FormCard>

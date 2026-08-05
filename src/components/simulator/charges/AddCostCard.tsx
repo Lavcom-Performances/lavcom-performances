@@ -1,74 +1,70 @@
-
-import { Button } from "@/components/ui/button";
 import {
   FIXED_COST_CATEGORIES,
   VARIABLE_COST_CATEGORIES
 } from "@/config/simulatorFormOptions";
-import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
-import { Plus } from "lucide-react";
+import {
+  FixedCostItem,
+  VariableCostItem,
+  FixedCostCategory,
+  VariableCostCategory
+} from "@/types/simulator.types";
+import { AddCostButton } from "./AddCostButton";
+import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
-type AddCostCardProps =
-  | {
-      costType: "fixed";
-      onClick: (newCost: string, category: FixedCostItem["category"]) => void;
-    }
-  | {
-      costType: "variable";
-      onClick: (newCost: string, category: VariableCostItem["category"]) => void;
-    };
+interface AddCostCardProps {
+  costType: "fixed" | "variable";
+}
 
-export function AddCostCard({ costType, onClick }: AddCostCardProps) {
-  const fixedCosts = Object.entries(FIXED_COST_CATEGORIES) as [
+type FixedCostsEntry = [
     string,
     { label: string; category: FixedCostItem["category"] }
-  ][];
-  const variableCosts = Object.entries(VARIABLE_COST_CATEGORIES) as [
+  ];
+
+type VariablesCostsEntry = [
     string,
     { label: string; category: VariableCostItem["category"] }
-  ][];
+  ];
+
+type FixedCostsEntries = FixedCostsEntry[];
+
+type VariablesCostsEntries = VariablesCostsEntry[];
+
+export function AddCostCard({ costType }: AddCostCardProps) {
+  const { project } = useSimulatorProjectContext();
+
+  const addedCategories = costType === "fixed"
+    ? (project.fixedCosts ?? []).map(cost => cost.label)
+    : (project.variableCosts ?? []).map(cost => cost.label);
+
+  const getSelectableCosts = (
+    costCategory: FixedCostCategory | VariableCostCategory
+  ): Partial<FixedCostCategory> | Partial<VariableCostCategory> => {
+    const selectableCosts = {};
+    for (let cat in costCategory) {
+      if (!addedCategories.find(label => costCategory[cat].label === label)) {
+        selectableCosts[cat] = costCategory[cat]
+      };
+    }
+    return selectableCosts;
+  };
+
+  const availableCosts: FixedCostsEntries | VariablesCostsEntries = costType === "fixed"
+    ? Object.entries(getSelectableCosts(FIXED_COST_CATEGORIES))
+    : Object.entries(getSelectableCosts(VARIABLE_COST_CATEGORIES));
 
   return (
     <div className="space-y-4">
-      <span className="text-sm text-foreground">
+      <span className="text-sm font-bold text-foreground">
         Ajouter une charge {costType === "fixed" ? "fixe" : "variable"}
       </span>
       <div className="flex gap-1 flex-wrap">
-        {costType === "fixed"
-          ? fixedCosts.map((cost) => (
-              <Button
-                key={cost[0]}
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={() => {
-                  onClick(
-                    cost[1].category !== "other" ? cost[1].label : "",
-                    cost[1].category
-                  );
-                }}
-              >
-                <Plus className="h-4 w-4" />
-                {cost[1].label}
-              </Button>
-            ))
-          : variableCosts.map((cost) => (
-              <Button
-                key={cost[0]}
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={() => {
-                  onClick(
-                    cost[1].category !== "other" ? cost[1].label : "",
-                    cost[1].category
-                  );
-                }}
-              >
-                <Plus className="h-4 w-4" />
-                {cost[1].label}
-              </Button>
-            ))
-        }
+        {availableCosts.map((cost: FixedCostsEntry | VariablesCostsEntry, index: number) => (
+          <AddCostButton 
+            key={index}
+            cost={cost}
+            costType={costType}
+          />
+        ))}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,7 +64,9 @@ export function CostRow({
               }
             }}
           >
-            <SelectTrigger className="w-max bg-white shadow-form text-left">
+            <SelectTrigger 
+              className="bg-white shadow-form text-left w-max grow"
+            >
               <SelectValue placeholder="Abonnement..." />
             </SelectTrigger>
             <SelectContent>
@@ -94,7 +96,7 @@ export function CostRow({
           value={label || ""}
           placeholder="Libellé"
           onChange={(e) => onChangeLabel?.(e.target.value)}
-          className="bg-white shadow-form grow w-min"
+          className="bg-white shadow-form grow"
         />
       )}
       <div className="flex items-center gap-2 ml-auto">
@@ -103,7 +105,7 @@ export function CostRow({
           value={value || ""}
           placeholder={placeholder}
           onChange={(e) => onChangeValue(Number(e.target.value))}
-          className="bg-white shadow-form text-right w-[96px]"
+          className="bg-white shadow-form text-right w-[82px]"
         />
         <span className="whitespace-nowrap text-xs text-muted-foreground">{suffix}</span>
       </div>
