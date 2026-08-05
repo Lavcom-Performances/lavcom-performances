@@ -14,6 +14,7 @@ import enCommon from '@/locales/en/common.json';
 import enLanding from '@/locales/en/landing.json';
 import enApp from '@/locales/en/app.json';
 import enErrors from '@/locales/en/errors.json';
+import enPaidSimulator from '@/locales/en/paid-simulator.json';
 
 // Import ES translations (skeleton with FR fallback)
 import esCommon from '@/locales/es/common.json';
@@ -73,6 +74,7 @@ const resources = {
     landing: enLanding,
     app: enApp,
     errors: enErrors,
+    'paid-simulator': enPaidSimulator,
   },
   es: {
     common: esCommon,
