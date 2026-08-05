@@ -10,6 +10,7 @@ import {
 } from "@/types/simulator.types";
 import { AddCostButton } from "./AddCostButton";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
+import { useTranslation } from "react-i18next";
 
 interface AddCostCardProps {
   costType: "fixed" | "variable";
@@ -30,6 +31,7 @@ type FixedCostsEntries = FixedCostsEntry[];
 type VariablesCostsEntries = VariablesCostsEntry[];
 
 export function AddCostCard({ costType }: AddCostCardProps) {
+  const { t } = useTranslation("paid-simulator");
   const { project } = useSimulatorProjectContext();
 
   const addedCategories = costType === "fixed"
@@ -55,7 +57,7 @@ export function AddCostCard({ costType }: AddCostCardProps) {
   return (
     <div className="space-y-4">
       <span className="text-sm font-bold text-foreground">
-        Ajouter une charge {costType === "fixed" ? "fixe" : "variable"}
+        {costType === "fixed" ? t("charges.fixed.addTitle") : t("charges.variable.addTitle")}
       </span>
       <div className="flex gap-1 flex-wrap">
         {availableCosts.map((cost: FixedCostsEntry | VariablesCostsEntry, index: number) => (

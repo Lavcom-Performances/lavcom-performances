@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CostRow } from "./CostRow";
 import { FixedCostItem } from "@/types/simulator.types";
+import { useTranslation } from "react-i18next";
 
 interface SubscriptionProps {
   subscriptions: FixedCostItem[];
@@ -18,10 +19,11 @@ export function SubscriptionCard({
   onChangeValue,
   onRemove
 }: SubscriptionProps) {
+  const { t } = useTranslation("paid-simulator");
   return (
     <div className="space-y-4">
       <h4 className="text-base font-bold text-foreground">
-        Abonnements
+        {t("charges.subscriptions.title")}
       </h4>
         {subscriptions.map((subscription) => (
           <CostRow
@@ -29,7 +31,7 @@ export function SubscriptionCard({
             label={subscription.label}
             subscription={true}
             value={subscription.amount}
-            suffix="€/mois"
+            suffix={t("common.euroPerMonth")}
             placeholder="0"
             onChangeLabel={(label) => onChangeLabel(subscription.id, label, subscription.amount)}
             onChangeValue={(value) => onChangeValue(subscription.id, subscription.label, value)}
@@ -43,7 +45,7 @@ export function SubscriptionCard({
         onClick={onAdd}
       >
         <Plus className="h-4 w-4" />
-        Ajouter un abonnement
+        {t("charges.subscriptions.add")}
       </Button>
     </div>
   );

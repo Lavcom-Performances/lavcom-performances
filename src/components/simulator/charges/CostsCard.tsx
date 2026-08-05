@@ -14,6 +14,7 @@ import {
 } from "./types";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
+import { useTranslation } from "react-i18next";
 
 interface CostsCardProps {
   icon: LucideIcon;
@@ -32,6 +33,7 @@ export function CostsCard({
   showHint = false,
   width,
 }: CostsCardProps) {
+  const { t } = useTranslation("paid-simulator");
   const { project, updateProject } = useSimulatorProjectContext();
   const items: FixedCostItem[] | VariableCostItem[] = costType === "fixed" ? project.fixedCosts ?? [] : project.variableCosts ?? [];
   
@@ -104,7 +106,7 @@ export function CostsCard({
       <CardContent className="space-y-4">
         <FormCard className="border-border bg-muted/20">
           <CardContent className="flex flex-col gap-4 p-4">
-            <h4 className="text-base font-bold text-foreground">Charges</h4>
+            <h4 className="text-base font-bold text-foreground">{t("charges.sectionTitle")}</h4>
             {costType === "fixed"
               ? (items as FixedCostItem[])
                 .filter((cost) => cost.category !== "subscription")
@@ -114,7 +116,7 @@ export function CostsCard({
                     label={cost.label}
                     other={cost.category === "other"}
                     value={cost.amount ?? 0}
-                    suffix="€/mois"
+                    suffix={t("common.euroPerMonth")}
                     placeholder="0"
                     onChangeLabel={(label) => handleUpdate(cost.id, label, cost.amount)}
                     onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
@@ -126,7 +128,7 @@ export function CostsCard({
                   label={cost.label}
                   other={cost.category === "other"}
                   value={cost.percent ?? 0}
-                  suffix="% du CA"
+                  suffix={t("common.percentOfRevenue")}
                   placeholder="0"
                   onChangeLabel={(label) => handleUpdate(cost.id, label, cost.percent)}
                   onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
@@ -154,7 +156,7 @@ export function CostsCard({
         )}
         <div className="flex flex-col items-center rounded-lg border border-lavcom-orange/40 bg-lavcom-orange/20 px-4 py-3">
           <span className="text-xs font-medium text-muted-foreground">
-            Total charges {costType === "fixed" ? "fixes" : "variables"}
+            {costType === "fixed" ? t("charges.fixed.total") : t("charges.variable.total")}
           </span>
           <span className="text-lg font-bold text-lavcom-orange">
             {costType === "fixed" 
@@ -162,10 +164,10 @@ export function CostsCard({
               : `${total.toFixed(1)} %`
             }
             {costType === "fixed" && (
-              <span className="ml-1 text-xs font-normal text-muted-foreground">/ mois</span>
+              <span className="ml-1 text-xs font-normal text-muted-foreground">{t("common.perMonth")}</span>
             )}
             {costType === "variable" && (
-              <span className="ml-1 text-xs font-normal text-muted-foreground">du CA</span>
+              <span className="ml-1 text-xs font-normal text-muted-foreground">{t("common.ofRevenue")}</span>
             )}
           </span>
         </div>
@@ -173,8 +175,7 @@ export function CostsCard({
           <div className="inline-flex items-start justify-start gap-1 rounded-md border border-input bg-background p-3">
             <Info className="mt-0.5 h-3 w-3s shrink-0 text-muted-foreground"/>
             <p className="text-xs text-muted-foreground">
-              Ordre de grandeur : électricité ~8-12%, eau ~3-5%, lessive ~3-5% du CA selon les
-              équipements.
+              {t("charges.variable.hint")}
             </p>
           </div>
         )}

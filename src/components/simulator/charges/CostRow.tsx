@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
 import { SUBSCRIPTION_CATEGORIES } from "@/config/simulatorFormOptions";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   label?: string;
@@ -29,12 +30,14 @@ export function CostRow({
   subscription,
   other,
   value,
-  suffix = "€/mois",
+  suffix,
   placeholder = "0",
   onChangeLabel,
   onChangeValue,
   onRemove
 }: Props) {
+  const { t } = useTranslation("paid-simulator");
+  const suffixLabel = suffix ?? t("common.euroPerMonth");
   const items: [string, {label: string; category:string}][] = Object.entries(SUBSCRIPTION_CATEGORIES);
   const itemsLabels: string[] = items.map(item => item[1].label);
   
@@ -67,7 +70,7 @@ export function CostRow({
             <SelectTrigger 
               className="bg-white shadow-form text-left w-max grow"
             >
-              <SelectValue placeholder="Abonnement..." />
+              <SelectValue placeholder={t("charges.subscriptions.placeholder")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -84,7 +87,7 @@ export function CostRow({
               type="text"
               value={label || ""}
               onChange={(e) => onChangeLabel?.(e.target.value)}
-              placeholder="Libellé"
+              placeholder={t("common.label")}
               className="bg-white shadow-form grow"
             />
           )}
@@ -94,7 +97,7 @@ export function CostRow({
         <Input
           type="text"
           value={label || ""}
-          placeholder="Libellé"
+          placeholder={t("common.label")}
           onChange={(e) => onChangeLabel?.(e.target.value)}
           className="bg-white shadow-form grow"
         />
@@ -107,7 +110,7 @@ export function CostRow({
           onChange={(e) => onChangeValue(Number(e.target.value))}
           className="bg-white shadow-form text-right w-[82px]"
         />
-        <span className="whitespace-nowrap text-xs text-muted-foreground">{suffix}</span>
+        <span className="whitespace-nowrap text-xs text-muted-foreground">{suffixLabel}</span>
       </div>
       {onRemove ? (
         <Button variant="ghost" size="icon" onClick={onRemove} className="shrink-0">
