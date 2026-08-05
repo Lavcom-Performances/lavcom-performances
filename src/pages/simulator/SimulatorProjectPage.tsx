@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SimulatorPageHeader } from "@/components/simulator/layout/SimulatorPageHeader";
 import { SimulatorFooterNav } from "@/components/simulator/layout/SimulatorFooterNav";
 import { ProjectTabs } from "@/components/simulator/project/ProjectTabs";
@@ -6,6 +7,7 @@ import { useSimulatorStep } from "@/hooks/useSimulatorStep";
 import { SimulatorStepProvider } from "@/contexts/SimulatorStepContext";
 
 export default function SimulatorProjectPage() {
+  const { t } = useTranslation("paid-simulator");
   const [activeTab, setActiveTab] = useState<string>("project");
   const { guardNext, fieldError, attempted, sections, errors } = useSimulatorStep(
     ["projectInfo", "localConstraints"],
@@ -18,8 +20,8 @@ export default function SimulatorProjectPage() {
   return (
     <>
       <SimulatorPageHeader
-        title="Projet & localisation"
-        description="Définissez les informations de base de votre projet de laverie"
+        title={t("project.pageTitle")}
+        description={t("project.pageDescription")}
       />
       <SimulatorStepProvider value={{ fieldError, sections, errors }}>
         <ProjectTabs
