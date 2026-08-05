@@ -25,7 +25,12 @@ import {
   VariableCostCategory,
   VariableCostItem
 } from "@/types/simulator.types";
-import { FIXED_COST_CATEGORIES, VARIABLE_COST_CATEGORIES } from "@/config/simulatorFormOptions";
+import {
+  DEFAULT_FIXED_COSTS,
+  DEFAULT_VARIABLE_COSTS,
+  FIXED_COST_CATEGORIES,
+  VARIABLE_COST_CATEGORIES
+} from "@/config/simulatorFormOptions";
 import { useTranslation } from "react-i18next";
 
 interface CostsCardProps {
@@ -76,7 +81,8 @@ export function CostsCard({
         fixedCosts: addFixedCost(
           project.fixedCosts,
           newCost,
-          category as FixedCostItem["category"]
+          category as FixedCostItem["category"],
+          DEFAULT_FIXED_COSTS.find(cost => cost.label === newCost)?.amount ?? 0,
         )
       });
     } else {
@@ -84,7 +90,8 @@ export function CostsCard({
         variableCosts: addVariableCost(
           project.variableCosts,
           newCost,
-          category as VariableCostItem["category"]
+          category as VariableCostItem["category"],
+          DEFAULT_VARIABLE_COSTS.find(cost => cost.label === newCost)?.percent ?? 0,
         )
       });
     }

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
+import { DEFAULT_FIXED_COSTS, DEFAULT_VARIABLE_COSTS } from "@/config/simulatorFormOptions";
 import { Plus } from "lucide-react";
 import { addFixedCost, addVariableCost } from "./types";
 
@@ -28,7 +29,8 @@ export function AddCostButton({ cost, costType }: AddCostButtonProps) {
         fixedCosts: addFixedCost(
           project.fixedCosts,
           newCost,
-          category as FixedCostItem["category"]
+          category as FixedCostItem["category"],
+          DEFAULT_FIXED_COSTS.find(cost => cost.label === newCost)?.amount ?? 0,
         )
       });
     } else {
@@ -36,7 +38,8 @@ export function AddCostButton({ cost, costType }: AddCostButtonProps) {
         variableCosts: addVariableCost(
           project.variableCosts,
           newCost,
-          category as VariableCostItem["category"]
+          category as VariableCostItem["category"],
+          DEFAULT_VARIABLE_COSTS.find(cost => cost.label === newCost)?.percent ?? 0,
         )
       });
     }

@@ -22,10 +22,11 @@ export function addFixedCost(
   items: FixedCostItem[] | undefined,
   itemLabel: string,
   itemCategory: FixedCostItem["category"],
+  itemAmount: number
 ): FixedCostItem[] {
   return [
     ...(items ?? []),
-    { id: crypto.randomUUID(), label: itemLabel, amount: 0, category: itemCategory },
+    { id: crypto.randomUUID(), label: itemLabel, amount: itemAmount, category: itemCategory },
   ];
 }
 
@@ -46,9 +47,10 @@ export function addVariableCost(
   items: VariableCostItem[] | undefined,
   itemLabel: string,
   itemCategory: VariableCostItem["category"],
+  itemPercent: number
 ): VariableCostItem[] {
   return [
     ...(items ?? []),
-    { id: crypto.randomUUID(), label: itemLabel, percent: 0, category: itemCategory },
+    { id: crypto.randomUUID(), label: itemLabel, percent: itemPercent, category: itemCategory },
   ];
 }
