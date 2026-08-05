@@ -17,7 +17,7 @@ import {
   addVariableCost,
   removeVariableCost,
   updateVariableCost,
-} from "./types";
+} from "@/utils/chargesUtils";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import {
   FixedCostCategory,

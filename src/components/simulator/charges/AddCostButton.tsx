@@ -4,7 +4,7 @@ import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
 import { DEFAULT_FIXED_COSTS, DEFAULT_VARIABLE_COSTS } from "@/config/simulatorFormOptions";
 import { Plus } from "lucide-react";
-import { addFixedCost, addVariableCost } from "./types";
+import { addFixedCost, addVariableCost } from "@/utils/chargesUtils";
 
 interface AddCostButtonProps {
   cost: [

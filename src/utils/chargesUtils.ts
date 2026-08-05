@@ -1,10 +1,6 @@
-import type { SimulationProject, FixedCostItem, VariableCostItem } from "@/types/simulator.types";
+import type { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
 
-export interface SimulatorChargesFormProps {
-  project: Partial<SimulationProject>;
-  onUpdate: (updates: Partial<SimulationProject>) => void;
-}
-
+// Fonctions pour les coûts fixes
 export function updateFixedCost(
   items: FixedCostItem[] | undefined,
   id: string,
@@ -30,6 +26,7 @@ export function addFixedCost(
   ];
 }
 
+// Fonctions pour les coûts variables
 export function updateVariableCost(
   items: VariableCostItem[] | undefined,
   id: string,
