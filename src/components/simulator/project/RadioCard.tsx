@@ -2,6 +2,7 @@ import { FormCard, CardContent, CardDescription, CardHeader, CardTitle } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { LucideIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Option {
   value: string;
@@ -19,9 +20,11 @@ interface Props {
   defaultValue?: string;
   name: string;
   required: boolean;
+  optionKeyPrefix?: string;
 }
 
-export function RadioCard({ icon: Icon, title, description, options, value, onValueChange, defaultValue, name, required }: Props) {
+export function RadioCard({ icon: Icon, title, description, options, value, onValueChange, defaultValue, name, required, optionKeyPrefix }: Props) {
+  const { t } = useTranslation("paid-simulator");
   return (
     <FormCard className="">
       <CardHeader>
@@ -46,7 +49,7 @@ export function RadioCard({ icon: Icon, title, description, options, value, onVa
             >
               <RadioGroupItem value={opt.value} id={`${name}-${opt.value}`} />
               <Label htmlFor={`${name}-${opt.value}`} className="flex items-center cursor-pointer text-sm">
-                {opt.label}
+                {optionKeyPrefix ? t(`${optionKeyPrefix}.${opt.value}`) : opt.label}
                 {opt.shape && <span className="inline-block ml-3"><img src={opt.shape} alt="" /></span>}
               </Label>
             </div>

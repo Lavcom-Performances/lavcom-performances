@@ -14,8 +14,10 @@ import { defaultSimulationProject } from "@/hooks/useSimulatorProject";
 import type { OpeningHoursValue, OpeningDaysValue, OpeningHoursOption, OpeningDaysOption, WeekDay } from "@/types/simulatorFormOptions.types";
 import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 import { useSimulatorStepErrors } from "@/contexts/SimulatorStepContext";
+import { useTranslation } from "react-i18next";
 
 export function OpeningHoursCard() {
+  const { t } = useTranslation("paid-simulator");
   const { project, updateProject: onUpdate } = useSimulatorProjectContext();
   const { fieldError } = useSimulatorStepErrors();
   const getPresetHoursOption = (value: OpeningHoursValue): OpeningHoursOption => OPENING_HOURS_OPTIONS.find((option) => option.value === value)
@@ -75,15 +77,15 @@ export function OpeningHoursCard() {
 
   return (
     <div className="space-y-6">
-      <FormField label="Horaires d'ouverture envisagés" htmlFor="hours" icon={Clock} required error={fieldError("openingHours")}>
+      <FormField label={t("project.openingHours.hoursLabel")} htmlFor="hours" icon={Clock} required error={fieldError("openingHours")}>
         <Select value={openingHoursValue} onValueChange={(value) => setHoursPreset(value as OpeningHoursValue)}>
           <SelectTrigger id="hours" className="bg-white shadow-form">
-            <SelectValue placeholder="Sélectionnez un horaire" />
+            <SelectValue placeholder={t("project.openingHours.hoursPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
             {OPENING_HOURS_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                {t(`options.openingHours.${option.value}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -92,7 +94,7 @@ export function OpeningHoursCard() {
         {openingHoursValue === "custom" && (
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="custom-open-at" className="text-sm">Horaire d'ouverture</Label>
+              <Label htmlFor="custom-open-at" className="text-sm">{t("project.openingHours.customOpenAt")}</Label>
               <Input
                 id="custom-open-at"
                 type="time"
@@ -102,7 +104,7 @@ export function OpeningHoursCard() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="custom-close-at" className="text-sm">Horaire de fermeture</Label>
+              <Label htmlFor="custom-close-at" className="text-sm">{t("project.openingHours.customCloseAt")}</Label>
               <Input
                 id="custom-close-at"
                 type="time"
@@ -115,15 +117,15 @@ export function OpeningHoursCard() {
         )}
       </FormField>
 
-      <FormField label="Jours d'ouverture envisagés" htmlFor="days" icon={CalendarDays} required error={fieldError("openingDays")}>
+      <FormField label={t("project.openingHours.daysLabel")} htmlFor="days" icon={CalendarDays} required error={fieldError("openingDays")}>
         <Select value={openingDaysValue} onValueChange={(value) => setDaysPreset(value as OpeningDaysValue)}>
           <SelectTrigger id="days" className="bg-white shadow-form">
-            <SelectValue placeholder="Sélectionnez les jours" />
+            <SelectValue placeholder={t("project.openingHours.daysPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
             {OPENING_DAYS_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                {t(`options.openingDays.${option.value}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -144,7 +146,7 @@ export function OpeningHoursCard() {
                     checked={checked}
                     onCheckedChange={(isChecked) => toggleDay(day.value, isChecked as boolean)}
                   />
-                  <span>{day.label}</span>
+                  <span>{t(`options.weekDays.${day.value}`)}</span>
                 </label>
               );
             })}

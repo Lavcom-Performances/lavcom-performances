@@ -1,4 +1,7 @@
 import { z } from "zod";
+import i18n from "@/lib/i18n-config";
+
+const tv = (key: string): string => i18n.t(key, { ns: "paid-simulator" });
 import {
   ZONE_TYPES,
   OPENING_HOURS_OPTIONS,
@@ -23,70 +26,70 @@ const weekDayEnum = z.enum(valuesOf(WEEK_DAYS) as [string, ...string[]]);
 export const projectInfoSchema = z.object({
   id: z.string().trim().optional(),
   projectName: z
-    .string({ message: "Le nom du projet est requis" })
+    .string({ message: tv("validation.projectName.required") })
     .trim()
-    .min(3, "Le nom du projet est requis (min. 3 caractères)")
-    .max(100, "Le nom du projet est trop long (max. 100)"),
+    .min(3, tv("validation.projectName.min"))
+    .max(100, tv("validation.projectName.max")),
   scenarioName: z
-    .string({ message: "Le nom du scénario est requis" })
+    .string({ message: tv("validation.scenarioName.required") })
     .trim()
-    .min(1, "Le nom du scénario est requis")
-    .max(100, "Le nom du scénario est trop long (max. 100)"),
-  country: z.string().trim().min(1, "Le pays est requis"),
+    .min(1, tv("validation.scenarioName.required"))
+    .max(100, tv("validation.scenarioName.max")),
+  country: z.string().trim().min(1, tv("validation.country.required")),
   address: z
-    .string({ message: "L'adresse est requise" })
+    .string({ message: tv("validation.address.required") })
     .trim()
-    .min(1, "L'adresse est requise")
-    .max(200, "L'adresse est trop longue (max. 200)"),
-  city: z.string().trim().min(1, "La ville est requise"),
+    .min(1, tv("validation.address.required"))
+    .max(200, tv("validation.address.max")),
+  city: z.string().trim().min(1, tv("validation.city.required")),
   postalCode: z.string().trim().optional(),
   departmentCode: z.string().trim().optional(),
   departmentName: z.string().trim().optional(),
   region: z.string().trim().optional(),
   zoneType: z.enum(valuesOf(ZONE_TYPES), {
-    message: "Le type de zone est requis",
+    message: tv("validation.zoneType.required"),
   }),
   openingHours: z
     .object({
       value: z.enum(valuesOf(OPENING_HOURS_OPTIONS), {
-        message: "Les horaires d'ouverture sont requis",
+        message: tv("validation.openingHours.required"),
       }),
-      openAt: z.string().regex(TIME_REGEX, "Horaire d'ouverture invalide"),
-      closeAt: z.string().regex(TIME_REGEX, "Horaire de fermeture invalide"),
+      openAt: z.string().regex(TIME_REGEX, tv("validation.openingHours.invalidOpenAt")),
+      closeAt: z.string().regex(TIME_REGEX, tv("validation.openingHours.invalidCloseAt")),
     })
     .refine(
       (v) => v.value !== "custom" || v.openAt !== v.closeAt,
-      { message: "Les horaires personnalisés sont invalides", path: ["closeAt"] },
+      { message: tv("validation.openingHours.invalidCustom"), path: ["closeAt"] },
     ),
   openingDays: z.object({
     value: z.enum(valuesOf(OPENING_DAYS_OPTIONS), {
-      message: "Les jours d'ouverture sont requis",
+      message: tv("validation.openingDays.required"),
     }),
-    days: z.array(weekDayEnum).min(1, "Sélectionnez au moins un jour"),
+    days: z.array(weekDayEnum).min(1, tv("validation.openingDays.minOne")),
   }),
 });
 
 // ============ Local constraints ============
 export const localConstraintsSchema = z.object({
   surface: z
-    .number({ message: "La surface est requise" })
-    .min(10, "La surface est requise (min. 10 m²)")
-    .max(500, "Surface maximum 500 m²"),
+    .number({ message: tv("validation.surface.required") })
+    .min(10, tv("validation.surface.min"))
+    .max(500, tv("validation.surface.max")),
   localShape: z.enum(valuesOf(LOCAL_SHAPES), {
-    message: "La forme du local est requise",
+    message: tv("validation.localShape.required"),
   }),
   structuralObstacles: z.enum(valuesOf(STRUCTURAL_OBSTACLES), {
-    message: "Précisez les obstacles structurels",
+    message: tv("validation.structuralObstacles.required"),
   }),
   doorWidth: z
-    .number({ message: "La largeur de porte est requise" })
-    .min(60, "Largeur de porte minimum 60 cm")
-    .max(300, "Largeur de porte maximum 300 cm"),
+    .number({ message: tv("validation.doorWidth.required") })
+    .min(60, tv("validation.doorWidth.min"))
+    .max(300, tv("validation.doorWidth.max")),
   canModifyFacade: z.enum(valuesOf(FACADE_OPTIONS), {
-    message: "Précisez la possibilité de modifier la façade",
+    message: tv("validation.facade.required"),
   }),
   technicalConstraints: z.enum(valuesOf(TECHNICAL_CONSTRAINTS), {
-    message: "Précisez les contraintes techniques",
+    message: tv("validation.technicalConstraints.required"),
   }),
 });
 
@@ -94,22 +97,22 @@ export const localConstraintsSchema = z.object({
 export const machineConfigSchema = z.object({
   id: z.string().min(1),
   type: z.enum(["washer", "dryer"]),
-  capacityKg: z.number().min(3, "Capacité invalide, veuillez indiquer entre 3 et 35 kg"),
-  count: z.number().int().min(1, "Nombre de machine invalide, min. 1"),
-  price: z.number().min(0.5, "Prix invalide, min. 0,50 €"),
-  cyclesPerDay: z.number().min(1, "Nombre de cycles/jour invalide, min. 1"),
+  capacityKg: z.number().min(3, tv("validation.machines.capacity")),
+  count: z.number().int().min(1, tv("validation.machines.count")),
+  price: z.number().min(0.5, tv("validation.machines.price")),
+  cyclesPerDay: z.number().min(1, tv("validation.machines.cyclesPerDay")),
 });
 
 export const washersSchema = z.object({
   machines: z
     .array(machineConfigSchema)
-    .min(1, "Veuillez ajouter au moins une machine à laver")
+    .min(1, tv("validation.machines.minWasher"))
 });
 
 export const dryersSchema = z.object({
   machines: z
     .array(machineConfigSchema)
-    .min(1, "Veuillez ajouter au moins un sèche-linge")
+    .min(1, tv("validation.machines.minDryer"))
 });
 
 export const machinesSchema = z.object({
@@ -121,7 +124,7 @@ export const machinesSchema = z.object({
         && machines.some(machine => machine.type === "dryer")
       ),
       {
-        message: "Veuillez ajouter au moins une machine à laver et un sèche-linge"
+        message: tv("validation.machines.minBoth")
       }
     )
 });
@@ -155,15 +158,15 @@ const variableCostCategoryEnum = z.enum([
 
 const fixedCostSchema = z.object({
   id: z.string().min(1),
-  label: z.string().trim().min(1, "Libellé requis"),
-  amount: z.number().min(0, "Montant invalide"),
+  label: z.string().trim().min(1, tv("validation.costs.labelRequired")),
+  amount: z.number().min(0, tv("validation.costs.invalidAmount")),
   category: fixedCostCategoryEnum,
 });
 
 const variableCostSchema = z.object({
   id: z.string().min(1),
-  label: z.string().trim().min(1, "Libellé requis"),
-  percent: z.number().min(0, "Valeur invalide").max(100, "0–100 %"),
+  label: z.string().trim().min(1, tv("validation.costs.labelRequired")),
+  percent: z.number().min(0, tv("validation.costs.invalidPercent")).max(100, tv("validation.costs.percentRange")),
   category: variableCostCategoryEnum,
 });
 
@@ -171,7 +174,7 @@ export const chargesSchema = z.object({
   fixedCosts: z.array(fixedCostSchema),
   variableCosts: z.array(variableCostSchema).refine(
     (vCosts) => vCosts.reduce((sum, cost) => sum + (cost.percent ?? 0), 0) <= 100,
-    { message: "Total des charges variables > 100 %", path: ["variableCosts"] },
+    { message: tv("validation.costs.variableOverflow"), path: ["variableCosts"] },
   ),
 });
 

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   previousPath?: string;
@@ -15,13 +16,16 @@ interface Props {
 export function SimulatorFooterNav({
   previousPath,
   nextPath,
-  nextLabel = "Continuer",
-  previousLabel = "Retour",
+  nextLabel,
+  previousLabel,
   onNext,
   nextDisabled,
   isFinalStep,
 }: Props) {
+  const { t } = useTranslation("paid-simulator");
   const navigate = useNavigate();
+  const nextText = nextLabel ?? t("common.continue");
+  const previousText = previousLabel ?? t("common.back");
 
   const handleNext = () => {
     if (!nextPath) return;
@@ -41,7 +45,7 @@ export function SimulatorFooterNav({
         <Button variant="outline" asChild className="gap-2">
           <Link to={previousPath}>
             <ChevronLeft className="h-4 w-4" />
-            {previousLabel}
+            {previousText}
           </Link>
         </Button>
       ) : (
@@ -54,7 +58,7 @@ export function SimulatorFooterNav({
             disabled={nextDisabled}
             className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            {nextLabel}
+            {nextText}
             <ChevronRight className="h-4 w-4" />
           </Button>
         ) : (
@@ -63,7 +67,7 @@ export function SimulatorFooterNav({
             className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Link to={nextPath}>
-              {nextLabel}
+              {nextText}
               <ChevronRight className="h-4 w-4" />
             </Link>
           </Button>

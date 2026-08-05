@@ -6,32 +6,34 @@ import { CostsCard } from "@/components/simulator/charges/CostsCard";
 import { TotalCostsSummary } from "@/components/simulator/charges/TotalCostsSummary";
 import { useSimulatorStep } from "@/hooks/useSimulatorStep";
 import { SimulatorStepProvider } from "@/contexts/SimulatorStepContext";
+import { useTranslation } from "react-i18next";
 
 export default function SimulatorChargesPage() {
+  const { t } = useTranslation("paid-simulator");
   const { guardNext, fieldError, sections, errors } = useSimulatorStep(["charges"]);
   return (
     <>
       <SimulatorPageHeader
-        title="Charges"
-        description="Détaillez vos charges fixes et variables"
+        title={t("charges.pageTitle")}
+        description={t("charges.pageDescription")}
       />
       <SimulatorStepProvider value={{ fieldError, sections, errors }}>
         <div className="space-y-6">
           <ConfigHintBanner>
-            Valeurs indicatives pré-remplies – ajustez selon votre situation
+            {t("charges.configHint")}
           </ConfigHintBanner>
           <div className="flex gap-4">
             <CostsCard
               icon={BadgeEuro}
-              cardTitle="Charges fixes mensuelles"
-              cardDescription="Montants fixes à payer chaque mois"
+              cardTitle={t("charges.fixed.cardTitle")}
+              cardDescription={t("charges.fixed.cardDescription")}
               costType="fixed"
               width="w-3/5"
             />
             <CostsCard
               icon={BadgePercent}
-              cardTitle="Charges variables"
-              cardDescription="Estimées en pourcentage du chiffre d'affaires"
+              cardTitle={t("charges.variable.cardTitle")}
+              cardDescription={t("charges.variable.cardDescription")}
               costType="variable"
               showHint={true}
               width="w-2/5"
@@ -43,7 +45,7 @@ export default function SimulatorChargesPage() {
       <SimulatorFooterNav
         previousPath="/simulator/machines"
         nextPath="/simulator/results"
-        nextLabel="Voir les résultats"
+        nextLabel={t("common.seeResults")}
         onNext={guardNext}
       />
     </>

@@ -8,6 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ZodFormattedError } from "zod";
 import type { MachineConfig } from "@/types/simulator.types";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   count: number;
@@ -28,6 +29,7 @@ export function InputFieldsInfos({
   onPriceChange,
   onCyclesChange,
 }: Props) {
+  const { t } = useTranslation("paid-simulator");
 
   interface ErrorMessages {
     countError?: string;
@@ -44,7 +46,7 @@ export function InputFieldsInfos({
       <FieldGroup className="flex flex-row">
         <Field className="flex flex-col gap-1" data-invalid={Boolean(countError)}>
           <FieldLabel htmlFor="machine-number" className="text-xs text-muted-foreground">
-            Nombre
+            {t("machines.fields.count")}
           </FieldLabel>
           <Input 
             id="machine-number"
@@ -59,7 +61,7 @@ export function InputFieldsInfos({
         </Field>
         <Field className="flex flex-col gap-1" data-invalid={Boolean(priceError)}>
           <FieldLabel htmlFor="price" className="text-xs text-muted-foreground">
-            Prix (€)
+            {t("machines.fields.price")}
           </FieldLabel>
           <Input
             id="price"
@@ -75,7 +77,7 @@ export function InputFieldsInfos({
         </Field>
         <Field className="flex flex-col gap-1" data-invalid={Boolean(cyclesPerDayError)}>
           <FieldLabel htmlFor="cycles" className="text-xs text-muted-foreground">
-            Cycles/jour
+            {t("machines.fields.cyclesPerDay")}
           </FieldLabel>
           <Input
             id="cycles"

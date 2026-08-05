@@ -1,6 +1,7 @@
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SimulatorFooterNav } from "./SimulatorFooterNav";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   title: string;
@@ -15,12 +16,13 @@ export function SimulatorPageHeader({
   onReset,
   isFinalStep,
 }: Props) {
+  const { t } = useTranslation("paid-simulator");
   return (isFinalStep
     ? (<div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4 w-full">
         <SimulatorFooterNav
           previousPath="/simulator/charges"
-          previousLabel="Retour à l'étape précédente"
+          previousLabel={t("common.backToPreviousStep")}
           isFinalStep={isFinalStep}
         />
         <Button
@@ -30,7 +32,7 @@ export function SimulatorPageHeader({
           className="gap-2 text-muted-foreground hover:text-orange-600"
         >
           <RotateCcw className="h-4 w-4" />
-          Réinitialiser
+          {t("common.reset")}
         </Button>
       </div>
       <div className="flex flex-col items-center w-full mb-8">
