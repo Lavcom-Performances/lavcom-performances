@@ -66,6 +66,7 @@ const resources = {
     landing: frLanding,
     app: frApp,
     errors: frErrors,
+    'paid-simulator': frPaidSimulator,
   },
   en: {
     common: enCommon,
