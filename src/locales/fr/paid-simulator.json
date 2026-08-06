@@ -188,6 +188,15 @@
       "editCharges": "Modifier les charges"
     },
     "paywall": {
+      "profitable": {
+        "title": "Projet au-dessus du seuil de rentabilité",
+        "description": "Avec ces hypothèses, votre projet génère un bénéfice estimé de <0>{{profitMonth}}</0> par mois, soit <1>{{profitYear}}</1> par an."
+      },
+      "notProfitable": {
+        "title": "Projet en dessous du seuil de rentabilité",
+        "description": "Ajustez vos paramètres (loyer, prix des cycles, nombre de machines, fréquentation estimée...) pour améliorer la rentabilité de votre projet."
+      },
+      "cyclesNeeded": "Il vous faut environ <0>{{cycles}}</0> cycles/jour en moyenne pour couvrir vos charges.",
       "title": "Projet au-dessus du seuil de rentabilité",
       "description": "Pour avoir accès à l'analyse complète de votre projet, vous devez choisir une formule.",
       "cta": "Découvrir les formules"
