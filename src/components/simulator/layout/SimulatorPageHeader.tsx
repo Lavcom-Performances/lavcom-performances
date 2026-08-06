@@ -29,6 +29,7 @@ export function SimulatorPageHeader({
   isFinalStep,
 }: Props) {
   const { t } = useTranslation("paid-simulator");
+  const navigate = useNavigate();
   const { resetProject } = useSimulatorProjectContext();
   const [open, setOpen] = useState(false);
 
@@ -36,6 +37,7 @@ export function SimulatorPageHeader({
     resetProject();
     setOpen(false);
     toast.success(t("common.resetDialog.success"));
+    navigate("/simulator/project");
   }
 
   const resetButton = (
