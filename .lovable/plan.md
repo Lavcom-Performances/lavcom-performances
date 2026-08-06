@@ -26,3 +26,6 @@ FR (exemples) : « Réinitialiser la simulation ? », « Toutes les données sai
 ## Vérification
 - Typecheck.
 - Test navigateur : ouverture de la modale, annulation sans effet, confirmation qui remet les champs aux valeurs par défaut.
+
+## Correctif préalable (erreurs TS existantes)
+`SimulatorStepProvider` exige `attempted` dans son type, mais `SimulatorProjectPage` et `SimulatorMachinesPage` ne le passent pas (erreurs TS2741). Ajouter `attempted` à la valeur fournie dans ces deux pages (déjà disponible via `useSimulatorStep`).
