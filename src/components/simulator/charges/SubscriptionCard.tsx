@@ -11,6 +11,7 @@ interface SubscriptionProps {
   onChangeLabel: (id: string, label: string, value: number) => void;
   onChangeValue: (id: string, label: string, value: number) => void;
   onRemove: (id: string) => void;
+  attempted: boolean;
 }
 
 export function SubscriptionCard({
@@ -18,7 +19,8 @@ export function SubscriptionCard({
   onAdd,
   onChangeLabel,
   onChangeValue,
-  onRemove
+  onRemove,
+  attempted
 }: SubscriptionProps) {
   const { t } = useTranslation("paid-simulator");
 
@@ -41,12 +43,14 @@ export function SubscriptionCard({
         {subscriptions && subscriptions.map((subscription) => (
           <CostRow
             key={subscription.id}
+            cost={subscription}
             label={getSubscriptionLabel(SUBSCRIPTION_CATEGORIES, subscription.label)}
             subscription={true}
             value={subscription.amount}
             suffix={t("common.euroPerMonth")}
             placeholder="0"
             costType="fixed"
+            attempted={attempted}
             onChangeLabel={(label) => onChangeLabel(subscription.id, label, subscription.amount)}
             onChangeValue={(value) => onChangeValue(subscription.id, subscription.label, value)}
             onRemove={() => onRemove(subscription.id)}

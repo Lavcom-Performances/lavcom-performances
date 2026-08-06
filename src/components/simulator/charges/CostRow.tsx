@@ -9,11 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Field, FieldError } from "@/components/ui/field";
 import { Trash2 } from "lucide-react";
 import { SUBSCRIPTION_CATEGORIES } from "@/config/simulatorFormOptions";
 import { useTranslation } from "react-i18next";
+import { fixedCostSchema, variableCostSchema } from "@/lib/validation/simulatorProjectSchema";
+import { FixedCostItem, VariableCostItem } from "@/types/simulator.types";
 
 interface Props {
+  cost: FixedCostItem | VariableCostItem;
   label?: string;
   subscription?: boolean;
   other?: boolean;
@@ -21,12 +25,14 @@ interface Props {
   suffix?: string;
   placeholder?: string;
   costType: "fixed" | "variable";
+  attempted: boolean;
   onChangeLabel?: (value: string) => void;
   onChangeValue: (value: number) => void;
   onRemove?: () => void;
 }
 
 export function CostRow({
+  cost,
   label,
   subscription,
   other,
@@ -34,12 +40,26 @@ export function CostRow({
   suffix,
   placeholder = "0",
   costType,
+  attempted,
   onChangeLabel,
   onChangeValue,
-  onRemove
+  onRemove,
 }: Props) {
   const { t } = useTranslation("paid-simulator");
-  const suffixLabel = suffix ?? t("common.euroPerMonth");
+  const suffixLabel = suffix ?? (costType === "fixed" ? t("common.euroPerMonth") : t("common.percentOfRevenue"));
+  
+  const schema = costType === "fixed" ? fixedCostSchema : variableCostSchema;
+  const validation = schema.safeParse(cost);
+  const formattedErrors = validation.success ? undefined : validation.error.format();
+  
+  const amountField = costType === "fixed" ? "amount" : "percent";
+  const amountError = attempted ? formattedErrors?.[amountField]?._errors?.[0] : undefined;
+  const labelError = attempted 
+    ? (cost.category === "other" || cost.category === "subscription") 
+      ? formattedErrors?.label?._errors?.[0]
+      : undefined
+    : undefined;
+
   const items: [string, {label: string; category:string}][] = Object.entries(SUBSCRIPTION_CATEGORIES);
   const itemsLabels: string[] = items.map(item => item[0]);
   
@@ -50,8 +70,18 @@ export function CostRow({
     : false
   );
 
+  const handleSubscriptionChange = (value: string) => {
+    if (value === "Autre abonnement") {
+      setIsOtherSelected(true);
+      onChangeLabel?.("");
+    } else {
+      setIsOtherSelected(false);
+      onChangeLabel?.(value);
+    }
+  };
+
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex gap-2 items-baseline">
       { label && !other && !subscription && (
         <span className="text-sm text-foreground grow">
           {t(`options.${costType}CostCategories.${label}`)}
@@ -66,15 +96,7 @@ export function CostRow({
                 ? SUBSCRIPTION_CATEGORIES[label].label
                 : ""
             }
-            onValueChange={(value) => {
-              if (value === "Autre abonnement") {
-                setIsOtherSelected(true);
-                onChangeLabel?.("");
-              } else {
-                setIsOtherSelected(false);
-                onChangeLabel?.(value);
-              }
-            }}
+            onValueChange={(value) => handleSubscriptionChange(value)}
           >
             <SelectTrigger 
               className="bg-white shadow-form text-left w-max grow"
@@ -91,36 +113,51 @@ export function CostRow({
               </SelectGroup>
             </SelectContent>
           </Select>
+          
           {isOtherSelected && (
-            <Input
-              type="text"
-              value={label || ""}
-              onChange={(e) => onChangeLabel?.(e.target.value)}
-              placeholder={t("common.label")}
-              className="bg-white shadow-form grow"
-            />
+            <Field className="flex flex-col gap-1" data-invalid={Boolean(labelError)}>
+              <Input
+                type="text"
+                value={label || ""}
+                onChange={(e) => onChangeLabel?.(e.target.value)}
+                placeholder={t("common.label")}
+                className="bg-white shadow-form grow"
+                aria-invalid={Boolean(labelError)}
+              />
+              {labelError && <FieldError>{labelError}</FieldError>}
+            </Field>
           )}
         </>
       )}
       { other && (
-        <Input
-          type="text"
-          value={label || ""}
-          placeholder={t("common.label")}
-          onChange={(e) => onChangeLabel?.(e.target.value)}
-          className="bg-white shadow-form grow"
-        />
+        <Field className="flex flex-col gap-1" data-invalid={Boolean(labelError)}>
+          <Input
+            type="text"
+            value={label || ""}
+            placeholder={t("common.label")}
+            onChange={(e) => onChangeLabel?.(e.target.value)}
+            className="bg-white shadow-form grow"
+            aria-invalid={Boolean(labelError)}
+          />
+          {labelError && <FieldError>{labelError}</FieldError>}
+        </Field>
       )}
+      
       <div className="flex items-center gap-2 ml-auto">
-        <Input
-          type="number"
-          value={value || ""}
-          placeholder={placeholder}
-          onChange={(e) => onChangeValue(Number(e.target.value))}
-          className="bg-white shadow-form text-right w-[82px]"
-        />
-        <span className="whitespace-nowrap text-xs text-muted-foreground">{suffixLabel}</span>
+        <Field className="flex flex-col gap-1 w-[82px]" data-invalid={Boolean(amountError)}>
+          <Input
+            type="number"
+            value={value || ""}
+            placeholder={placeholder}
+            onChange={(e) => onChangeValue(Number(e.target.value))}
+            className="bg-white shadow-form text-right"
+            aria-invalid={Boolean(amountError)}
+          />
+          {amountError && <FieldError>{amountError}</FieldError>}
+        </Field>
       </div>
+      <span className="whitespace-nowrap text-xs text-muted-foreground">{suffixLabel}</span>
+      
       {onRemove ? (
         <Button variant="ghost" size="icon" onClick={onRemove} className="shrink-0">
           <Trash2 className="h-4 w-4 text-destructive" />

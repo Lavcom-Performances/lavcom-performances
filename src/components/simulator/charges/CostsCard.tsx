@@ -32,6 +32,7 @@ import {
   VARIABLE_COST_CATEGORIES
 } from "@/config/simulatorFormOptions";
 import { useTranslation } from "react-i18next";
+import { useSimulatorStepErrors } from "@/contexts/SimulatorStepContext";
 
 interface CostsCardProps {
   icon: LucideIcon;
@@ -52,8 +53,13 @@ export function CostsCard({
 }: CostsCardProps) {
   const { t } = useTranslation("paid-simulator");
   const { project, updateProject } = useSimulatorProjectContext();
-  const items: FixedCostItem[] | VariableCostItem[] = costType === "fixed" ? project.fixedCosts ?? [] : project.variableCosts ?? [];
+  const { sections, attempted } = useSimulatorStepErrors();
+  const sectionName = `${costType}Costs` as "fixedCosts" | "variableCosts";
+  const section = sections[sectionName];
+  const hasError = section && !section.isValid;
   
+  const items: FixedCostItem[] | VariableCostItem[] = costType === "fixed" ? project.fixedCosts ?? [] : project.variableCosts ?? [];
+
   const getTotal = () => {
     if (costType === "fixed") {
       return items.reduce((sum: number, cost: FixedCostItem) => sum + (cost.amount || 0), 0);
@@ -143,12 +149,14 @@ export function CostsCard({
                 .map((cost) => (
                   <CostRow
                     key={cost.id}
+                    cost={cost}
                     label={getCategoryLabel(FIXED_COST_CATEGORIES, cost.label)}
                     other={cost.category === "other"}
                     value={cost.amount ?? 0}
                     suffix={t("common.euroPerMonth")}
                     placeholder="0"
                     costType={costType}
+                    attempted={attempted}
                     onChangeLabel={(label) => handleUpdate(cost.id, label, cost.amount)}
                     onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
                     onRemove={() => handleRemove(cost.id)}
@@ -156,12 +164,14 @@ export function CostsCard({
               : (items as VariableCostItem[]).map((cost) => (
                 <CostRow
                   key={cost.id}
+                  cost={cost}
                   label={getCategoryLabel(VARIABLE_COST_CATEGORIES, cost.label)}
                   other={cost.category === "other"}
                   value={cost.percent ?? 0}
                   suffix={t("common.percentOfRevenue")}
                   placeholder="0"
                   costType={costType}
+                  attempted={attempted}
                   onChangeLabel={(label) => handleUpdate(cost.id, label, cost.percent)}
                   onChangeValue={(value) => handleUpdate(cost.id, cost.label, value)}
                   onRemove={() => handleRemove(cost.id)}
@@ -182,9 +192,15 @@ export function CostsCard({
                 onChangeLabel={(id, label, value) => handleUpdate(id, label, value)}
                 onChangeValue={(id, label, value) => handleUpdate(id, label, value)}
                 onRemove={(id) => handleRemove(id)}
+                attempted={attempted}
               />
             </CardContent>
           </FormCard>
+        )}
+        {hasError && attempted && (
+          <span className="block text-destructive">
+            {t(costType === "fixed" ? "charges.invalidFixedCost" : "charges.invalidVariableCost")}
+          </span>
         )}
         <div className="flex flex-col items-center rounded-lg border border-lavcom-orange/40 bg-lavcom-orange/20 px-4 py-3">
           <span className="text-xs font-medium text-muted-foreground">

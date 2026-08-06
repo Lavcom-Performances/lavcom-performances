@@ -156,17 +156,17 @@ const variableCostCategoryEnum = z.enum([
   "other",
 ]);
 
-const fixedCostSchema = z.object({
+export const fixedCostSchema = z.object({
   id: z.string().min(1),
   label: z.string().trim().min(1, tv("validation.costs.labelRequired")),
-  amount: z.number().min(0, tv("validation.costs.invalidAmount")),
+  amount: z.number().min(1, tv("validation.costs.invalidAmount")),
   category: fixedCostCategoryEnum,
 });
 
-const variableCostSchema = z.object({
+export const variableCostSchema = z.object({
   id: z.string().min(1),
   label: z.string().trim().min(1, tv("validation.costs.labelRequired")),
-  percent: z.number().min(0, tv("validation.costs.invalidPercent")).max(100, tv("validation.costs.percentRange")),
+  percent: z.number().min(0.5, tv("validation.costs.invalidPercent")).max(100, tv("validation.costs.percentRange")),
   category: variableCostCategoryEnum,
 });
 
@@ -192,6 +192,15 @@ export const sectionSchemas = {
   localConstraints: localConstraintsSchema,
   dryers: dryersSchema,
   washers: washersSchema,
+  fixedCosts: z.object({
+    fixedCosts: z.array(fixedCostSchema)
+  }),
+  variableCosts: z.object({
+    variableCosts: z.array(variableCostSchema).refine(
+      (vCosts) => vCosts.reduce((sum, cost) => sum + (cost.percent ?? 0), 0) <= 100,
+      { message: tv("validation.costs.variableOverflow"), path: ["variableCosts"] },
+    )
+  }),
   charges: chargesSchema,
   revenues: revenuesSchema,
 } as const;

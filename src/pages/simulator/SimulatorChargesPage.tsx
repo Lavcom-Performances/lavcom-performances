@@ -10,14 +10,14 @@ import { useTranslation } from "react-i18next";
 
 export default function SimulatorChargesPage() {
   const { t } = useTranslation("paid-simulator");
-  const { guardNext, fieldError, sections, errors } = useSimulatorStep(["charges"]);
+  const { guardNext, fieldError, sections, errors, attempted } = useSimulatorStep(["charges"]);
   return (
     <>
       <SimulatorPageHeader
         title={t("charges.pageTitle")}
         description={t("charges.pageDescription")}
       />
-      <SimulatorStepProvider value={{ fieldError, sections, errors }}>
+      <SimulatorStepProvider value={{ fieldError, sections, errors, attempted }}>
         <div className="space-y-6">
           <ConfigHintBanner>
             {t("charges.configHint")}

@@ -151,7 +151,9 @@
       "fixed": "Charges fixes",
       "variable": "Charges variables",
       "total": "Total charges"
-    }
+    },
+    "invalidFixedCost": "Au moins une charge fixe possède un ou plusieurs champs invalides",
+    "invalidVariableCost": "Au moins une charge variable possède un ou plusieurs champs invalides"
   },
   "results": {
     "pageTitle": "Résultats de votre simulation",

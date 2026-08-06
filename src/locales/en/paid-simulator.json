@@ -151,7 +151,9 @@
       "fixed": "Fixed costs",
       "variable": "Variable costs",
       "total": "Total costs"
-    }
+    },
+    "invalidFixedCost": "At least one fixed cost has one or more invalid fields",
+    "invalidVariableCost": "At least one variable cost has one or more invalid fields"
   },
   "results": {
     "pageTitle": "Your simulation results",

@@ -8,6 +8,7 @@ interface SimulatorStepContextValue {
   fieldError: FieldError;
   sections: ValidationResult["sections"];
   errors: ValidationResult["errors"];
+  attempted: boolean;
 }
 
 const SimulatorStepContext = createContext<SimulatorStepContextValue | null>(null);
@@ -23,8 +24,6 @@ export function SimulatorStepProvider({
     <SimulatorStepContext.Provider value={value}>{children}</SimulatorStepContext.Provider>
   );
 }
-
-const noopFieldError: FieldError = () => undefined;
 
 export function useSimulatorStepErrors(): SimulatorStepContextValue {
   const ctx = useContext(SimulatorStepContext);
