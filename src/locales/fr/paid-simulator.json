@@ -1,6 +1,13 @@
 {
   "common": {
     "reset": "Réinitialiser",
+    "resetDialog": {
+      "title": "Réinitialiser la simulation ?",
+      "description": "Toutes les données saisies (projet, local, machines, charges) seront définitivement perdues et remplacées par les valeurs par défaut. Cette action est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Oui, réinitialiser",
+      "success": "Simulation réinitialisée"
+    },
     "back": "Retour",
     "backToPreviousStep": "Retour à l'étape précédente",
     "continue": "Continuer",
