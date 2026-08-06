@@ -29,7 +29,7 @@ export function MachinesConfigCard({
   const { project, updateProject } = useSimulatorProjectContext();
   const machines = (project.machines ?? []).filter((machine) => machine.type === machineType);
   const total = machines.reduce((sum, machine) => sum + machineMonthlyRevenue(machine), 0);
-  const { sections } = useSimulatorStepErrors();
+  const { sections, attempted } = useSimulatorStepErrors();
   const sectionName = `${machineType}s` as "washers" | "dryers";
   const section = sections[sectionName];
   const hasError = section && !section.isValid;
@@ -61,9 +61,10 @@ export function MachinesConfigCard({
               ? () => updateProject({ machines: removeMachine(project.machines, machine.id) })
               : undefined
             }
+            attempted={attempted}
           />
         ))}
-        { hasError && <span className="block text-destructive">{t("machines.invalidMachine", { machineName })}</span>}
+        { hasError && attempted && <span className="block text-destructive">{t("machines.invalidMachine", { machineName })}</span>}
         <Button
           variant="ghost"
           size="sm"

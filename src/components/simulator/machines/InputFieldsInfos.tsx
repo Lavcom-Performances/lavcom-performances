@@ -15,6 +15,7 @@ interface Props {
   price: number;
   cyclesPerDay: number;
   errors?: ZodFormattedError<MachineConfig, string>;
+  attempted: boolean;
   onCountChange?: (value: number) => void;
   onPriceChange?: (value: number) => void;
   onCyclesChange?: (value: number) => void;
@@ -25,6 +26,7 @@ export function InputFieldsInfos({
   price,
   cyclesPerDay,
   errors,
+  attempted,
   onCountChange,
   onPriceChange,
   onCyclesChange,
@@ -44,7 +46,7 @@ export function InputFieldsInfos({
   return (
     <FieldSet>
       <FieldGroup className="flex flex-row">
-        <Field className="flex flex-col gap-1" data-invalid={Boolean(countError)}>
+        <Field className="flex flex-col gap-1" data-invalid={attempted && Boolean(countError)}>
           <FieldLabel htmlFor="machine-number" className="text-xs text-muted-foreground">
             {t("machines.fields.count")}
           </FieldLabel>
@@ -55,11 +57,11 @@ export function InputFieldsInfos({
             value={count}
             min={0}
             onChange={(e) => onCountChange?.(Number(e.target.value))}
-            aria-invalid={Boolean(countError)}
+            aria-invalid={attempted && Boolean(countError)}
           />
-          {countError && <FieldError>{countError}</FieldError>}
+          {attempted && countError && <FieldError>{countError}</FieldError>}
         </Field>
-        <Field className="flex flex-col gap-1" data-invalid={Boolean(priceError)}>
+        <Field className="flex flex-col gap-1" data-invalid={attempted && Boolean(priceError)}>
           <FieldLabel htmlFor="price" className="text-xs text-muted-foreground">
             {t("machines.fields.price")}
           </FieldLabel>
@@ -71,11 +73,11 @@ export function InputFieldsInfos({
             value={price}
             min={0}
             onChange={(e) => onPriceChange?.(Number(e.target.value))}
-            aria-invalid={Boolean(priceError)}
+            aria-invalid={attempted && Boolean(priceError)}
           />
-          {priceError && <FieldError>{priceError}</FieldError>}
+          {attempted && priceError && <FieldError>{priceError}</FieldError>}
         </Field>
-        <Field className="flex flex-col gap-1" data-invalid={Boolean(cyclesPerDayError)}>
+        <Field className="flex flex-col gap-1" data-invalid={attempted && Boolean(cyclesPerDayError)}>
           <FieldLabel htmlFor="cycles" className="text-xs text-muted-foreground">
             {t("machines.fields.cyclesPerDay")}
           </FieldLabel>
@@ -86,9 +88,9 @@ export function InputFieldsInfos({
             value={cyclesPerDay}
             min={0}
             onChange={(e) => onCyclesChange?.(Number(e.target.value))}
-            aria-invalid={Boolean(cyclesPerDayError)}
+            aria-invalid={attempted && Boolean(cyclesPerDayError)}
           />
-          {cyclesPerDayError && <FieldError>{cyclesPerDayError}</FieldError>}
+          {attempted && cyclesPerDayError && <FieldError>{cyclesPerDayError}</FieldError>}
         </Field>
       </FieldGroup>
     </FieldSet>

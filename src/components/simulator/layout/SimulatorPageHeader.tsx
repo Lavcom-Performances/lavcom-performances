@@ -45,7 +45,7 @@ export function SimulatorPageHeader({
       variant="outline"
       size="sm"
       onClick={() => setOpen(true)}
-      className="gap-2 text-muted-foreground hover:text-orange-600"
+      className="gap-2 text-muted-foreground"
     >
       <RotateCcw className="h-4 w-4" />
       {t("common.reset")}

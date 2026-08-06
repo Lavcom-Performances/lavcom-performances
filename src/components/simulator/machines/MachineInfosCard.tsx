@@ -26,6 +26,7 @@ interface Props {
   monthlyRevenue: number;
   onCapacityChange?: (value: number) => void;
   onRemove?: () => void;
+  attempted: boolean;
 }
 
 export function MachineInfosCard({
@@ -37,6 +38,7 @@ export function MachineInfosCard({
   monthlyRevenue,
   onCapacityChange,
   onRemove,
+  attempted,
 }: Props) {
   const { t } = useTranslation("paid-simulator");
   const { project, updateProject } = useSimulatorProjectContext();
@@ -86,6 +88,7 @@ export function MachineInfosCard({
           price={price}
           cyclesPerDay={cyclesPerDay}
           errors={formattedErrors}
+          attempted={attempted}
           onCountChange={(value) => patchMachineConfig(machineId, { count: value })}
           onPriceChange={(value) => patchMachineConfig(machineId, { price: value })}
           onCyclesChange={(value) => patchMachineConfig(machineId, { cyclesPerDay: value })}
