@@ -188,6 +188,15 @@
       "editCharges": "Edit costs"
     },
     "paywall": {
+      "profitable": {
+        "title": "Project above the break-even point",
+        "description": "With these assumptions, your project generates an estimated profit of <0>{{profitMonth}}</0> per month, i.e. <1>{{profitYear}}</1> per year."
+      },
+      "notProfitable": {
+        "title": "Project below the break-even point",
+        "description": "Adjust your parameters (rent, cycle prices, number of machines, estimated footfall...) to improve your project's profitability."
+      },
+      "cyclesNeeded": "You need about <0>{{cycles}}</0> cycles/day on average to cover your costs.",
       "title": "Project above the break-even point",
       "description": "To access the full analysis of your project, you need to choose a plan.",
       "cta": "Discover the plans"
