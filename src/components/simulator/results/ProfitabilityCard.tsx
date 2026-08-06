@@ -60,7 +60,7 @@ export function ProfitabilityCard() {
         asChild 
         className="text-xs"
       >
-        <Link to="/simulator/project">
+        <Link to="/simulator/charges">
           <Pen />
           {t("results.profitability.editCharges")}
         </Link>
