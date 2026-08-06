@@ -23,7 +23,7 @@ export default function SimulatorProjectPage() {
         title={t("project.pageTitle")}
         description={t("project.pageDescription")}
       />
-      <SimulatorStepProvider value={{ fieldError, sections, errors }}>
+      <SimulatorStepProvider value={{ fieldError, sections, errors, attempted }}>
         <ProjectTabs
           value={activeTab}
           onValueChange={setActiveTab}

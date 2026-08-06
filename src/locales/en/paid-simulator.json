@@ -1,6 +1,13 @@
 {
   "common": {
     "reset": "Reset",
+    "resetDialog": {
+      "title": "Reset the simulation?",
+      "description": "All the data you entered (project, premises, machines, costs) will be permanently lost and replaced with the default values. This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Yes, reset",
+      "success": "Simulation reset"
+    },
     "back": "Back",
     "backToPreviousStep": "Back to previous step",
     "continue": "Continue",

@@ -12,7 +12,7 @@ import { useSimulatorProjectContext } from "@/contexts/SimulatorProjectContext";
 
 export default function SimulatorMachinesPage() {
   const { t } = useTranslation("paid-simulator");
-  const { guardNext, fieldError, sections, errors } = useSimulatorStep(["washers", "dryers"]);
+  const { guardNext, fieldError, sections, errors, attempted } = useSimulatorStep(["washers", "dryers"]);
   const { project } = useSimulatorProjectContext();
 
   return (
@@ -21,7 +21,7 @@ export default function SimulatorMachinesPage() {
         title={t("machines.pageTitle")}
         description={t("machines.pageDescription")}
       />
-      <SimulatorStepProvider value={{ fieldError, sections, errors }}>
+      <SimulatorStepProvider value={{ fieldError, sections, errors, attempted }}>
         <div className="space-y-6">
           <ConfigHintBanner>
             {t("machines.configHint")}
