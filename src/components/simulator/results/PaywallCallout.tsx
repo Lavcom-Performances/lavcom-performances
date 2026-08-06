@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const devMode = import.meta.env.VITE_DEV_MODE !== "false";
 
 /** Blurred value: readable layout, unreadable figures before payment */
-function BlurredValue({ children }: { children: React.ReactNode }) {
+function BlurredValue({ children }: { children?: React.ReactNode }) {
   return (
     <strong className="font-bold blur-[4px] select-none" aria-hidden="true">
       {children}
