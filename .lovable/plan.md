@@ -23,7 +23,8 @@ Fichier unique : `src/components/simulator/results/ProfitabilityCard.tsx`.
    - Résultat estimé mensuel → `estimatedProfitMonth` formaté en EUR.
    - Seuil de rentabilité → `breakEvenRevenueMonthly` formaté en EUR (`—` si `null`).
    - Cycles/jour nécessaires → `breakEvenCyclesPerDay` avec 1 décimale, préfixé `≈` (`—` si `null`).
-3. Introduire un petit composant local `MaskedValue` (même principe que `BlurredValue`) qui prend
+3. Introduire un petit composant local `MaskedValue` et renommer `BlurredValue` en `MaskedValue`
+   dans `PaywallCallout.tsx` pour un nom unique dans tous les composants ; ce composant prend
    la valeur réelle, la valeur factice et l'intensité de flou, puis :
    - rend la valeur réelle sans classe de flou ni `aria-hidden` quand le pack est actif ;
    - rend la valeur factice avec `blur-[…]`, `select-none` et `aria-hidden="true"` sinon.
