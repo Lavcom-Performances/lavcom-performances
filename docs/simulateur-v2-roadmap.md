@@ -58,6 +58,8 @@ Règles projet à respecter sur l'ensemble de ces chantiers :
 | H2 | Tests | Plan de tests complet du dashboard | P2 | M | G2 |
 | H3 | Tests | Test du workflow complet de bout en bout | P1 | M | G3, H1 |
 | I1 | Intégration site | Rediriger « Essayer le simulateur gratuit » vers le nouveau simulateur | P2 | S | D2 |
+| J1 | Sécurité | Nettoyage des variables d'environnement exposées sur GitHub | P1 | S | — |
+| K1 | Administration | Dashboard administrateur du simulateur | P1 | L | E3, G2, F3 |
 
 ---
 
