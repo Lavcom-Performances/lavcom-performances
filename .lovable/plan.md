@@ -28,23 +28,18 @@ demande).
 ## Fichiers concernés
 
 1. **Nouveau** `src/utils/scrollToFirstError.ts`
-   - `scrollToFirstError(root?: HTMLElement)` : sélectionne
-     `[data-slot="field-error"], [data-error-message]`, ignore les éléments non visibles
-     (`offsetParent === null` / `getClientRects().length === 0`), scrolle vers le premier et met le
-     focus sur `input, select, textarea, [role="combobox"]` du conteneur `[data-slot="field"]`
-     parent, avec `preventScroll: true`.
+   - `scrollToFirstError(root?: HTMLElement)` : sélectionne `[data-slot="field-error"]`, ignore les
+     éléments non visibles (`offsetParent === null` / `getClientRects().length === 0`), scrolle vers
+     le premier et met le focus sur `input, select, textarea, [role="combobox"]` du conteneur
+     `[data-slot="field"]` parent, avec `preventScroll: true`.
 
 2. `src/hooks/useSimulatorStep.ts`
    - Dans `guardNext`, après `setAttempted(true)`, le toaster et `options.onInvalid?.()`,
      planifier `requestAnimationFrame(() => requestAnimationFrame(() => scrollToFirstError()))`
      avant de retourner `false`.
 
-3. `src/components/simulator/machines/MachinesConfigCard.tsx` et
-   `src/components/simulator/charges/CostsCard.tsx`
-   - Ajouter `data-error-message` (et `role="alert"`) sur les `<span className="text-destructive">`
-     de section, pour qu'ils soient également des cibles de scroll.
-
-Aucun changement dans `SimulatorFooterNav.tsx`, les schémas Zod ou les fichiers de traduction.
+Aucun changement dans `SimulatorFooterNav.tsx`, les cartes machines/charges, les schémas Zod ou les
+fichiers de traduction.
 
 ## Vérification
 
