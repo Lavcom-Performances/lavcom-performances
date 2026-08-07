@@ -1,12 +1,24 @@
+/** CSS selector for error message elements (ShadCN field errors). */
 const ERROR_SELECTOR = '[data-slot="field-error"]';
+/** CSS selector for focusable form control elements. */
 const FOCUSABLE_SELECTOR = 'input, select, textarea, [role="combobox"]';
 
+/**
+ * Checks if an HTML element is visible in the DOM.
+ * An element is considered visible if it has a layout (offsetParent) or renders content (client rects).
+ *
+ * @param element - The HTML element to check for visibility.
+ * @returns true if the element is visible, false otherwise.
+ */
 function isVisible(element: HTMLElement): boolean {
   return element.offsetParent !== null || element.getClientRects().length > 0;
 }
 
 /**
- * Scrolls to the first visible field error and focuses its related control.
+ * Scrolls to the first visible error message in the form and focuses the associated input.
+ * Respects the user's reduced motion preference for the scroll behavior.
+ *
+ * @param root - The root node to search for errors. Defaults to the entire document.
  */
 export function scrollToFirstError(root: ParentNode = document): void {
   if (typeof window === "undefined") return;
