@@ -165,7 +165,13 @@ const App = () => (
     <ViewModeProvider>
       <TooltipProvider>
         <Toaster />
-        <Sonner />
+        <Sonner
+          toastOptions={{
+            classNames: {
+              error: "bg-destructive/15 border border-destructive text-destructive"
+            }
+          }}
+        />
       <BrowserRouter>
         <LoginLoggerProvider>
         <ImpersonationProvider>

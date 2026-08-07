@@ -323,6 +323,10 @@
       "other": "Autre"
     }
   },
+  "errors": {
+    "fixOneFieldBeforeContinuing": "1 champ à corriger avant de continuer",
+    "fixMultipleFieldsBeforeContinuing": "{{count}} champs à corriger avant de continuer"
+  },
   "validation": {
     "projectName": {
       "required": "Le nom du projet est requis",

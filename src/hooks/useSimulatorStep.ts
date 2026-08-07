@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { useSimulatorValidation, type ValidationErrors } from "./useSimulatorValidation";
 import { scrollToFirstError } from "@/utils/scrollToFirstError";
 import type {
@@ -23,6 +24,7 @@ export function useSimulatorStep(
   sections: SimulatorValidationSection[],
   options: Options = {},
 ): UseSimulatorStepResult {
+  const { t } = useTranslation("paid-simulator");
   const validation = useSimulatorValidation();
   const [attempted, setAttempted] = useState(false);
 
@@ -38,8 +40,8 @@ export function useSimulatorStep(
     );
     toast.error(
       total <= 1
-        ? "1 champ à corriger avant de continuer"
-        : `${total} champs à corriger avant de continuer`,
+        ? t("errors.fixOneFieldBeforeContinuing")
+        : t("errors.fixMultipleFieldsBeforeContinuing", { count: total }),
     );
 
     options.onInvalid?.(firstInvalid);
@@ -47,7 +49,7 @@ export function useSimulatorStep(
     requestAnimationFrame(() => requestAnimationFrame(() => scrollToFirstError()));
 
     return false;
-  }, [sections, validation, options]);
+  }, [sections, validation, options, t]);
 
   const fieldError = useCallback(
     (name: keyof SimulatorProjectInput | SimulatorValidationSection) =>

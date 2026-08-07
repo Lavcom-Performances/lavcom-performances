@@ -323,6 +323,10 @@
       "other": "Other"
     }
   },
+  "errors": {
+    "fixOneFieldBeforeContinuing": "1 field to fix before continuing",
+    "fixMultipleFieldsBeforeContinuing": "{{count}} fields to fix before continuing"
+  },
   "validation": {
     "projectName": {
       "required": "Project name is required",
