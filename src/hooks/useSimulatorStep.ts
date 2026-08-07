@@ -42,6 +42,9 @@ export function useSimulatorStep(
     );
 
     options.onInvalid?.(firstInvalid);
+
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToFirstError()));
+
     return false;
   }, [sections, validation, options]);
 
