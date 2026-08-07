@@ -585,7 +585,7 @@ npm install
 
 # 4. Créer le fichier d'environnement local
 cp .env.example .env
-# puis renseigner les variables VITE_* (voir section 13)
+# puis renseigner les variables VITE_* (voir section 14)
 
 # 5. Lancer le serveur de développement
 npm run dev
@@ -612,9 +612,78 @@ npm audit          # audit de sécurité des dépendances
 
 ---
 
-## 13. Variables d'environnement
+## 13. Workflow de développement : Lovable, GitHub et local
 
-### 13.1 Deux régimes distincts
+Ce projet utilise un dépôt GitHub synchronisé avec Lovable. Il est important de comprendre les différences entre le développement via Lovable et le développement local classique, car chaque mode a des conséquences sur l'historique Git et la qualité du code poussé.
+
+### 13.1 Principe de synchronisation
+
+- L'application est connectée à un dépôt GitHub.
+- Lovable ne pousse que sur la branche **`develop`**.
+- Chaque prompt en mode **Build** génère un **commit automatique** sur `develop` avec un message générique.
+- La branche **`main`** est la branche de production : elle n'est jamais modifiée directement par Lovable.
+- Les règles de protection de branches et le workflow de release sont documentés dans `.github/backup00/SETUP_README.md` et `.github/backup00/BRANCH_PROTECTION.yml`.
+
+### 13.2 Développement local
+
+En local, le développeur conserve le contrôle complet :
+
+- Le dépôt est cloné et travaillé sur sa machine (voir section 12).
+- On peut créer des branches dédiées (`feature/...`, `fix/...`, `chore/...`) pour isoler les travaux.
+- Les commits sont rédigés manuellement avec des messages explicites.
+- On peut tester, itérer et expérimenter sans impacter le dépôt distant.
+- Les changements validés sont intégrés via **Pull Request** vers `develop`, puis promus vers `main` via le workflow GitHub Actions **Release**.
+
+### 13.3 Tableau comparatif
+
+| Aspect | Lovable (mode Build) | Développement local |
+|---|---|---|
+| Branche cible | `develop` uniquement | Branches dédiées possibles (`feature/*`, `fix/*`, etc.) |
+| Commits | Auto-générés à chaque prompt | Rédaction manuelle, messages clairs |
+| Itération rapide | Directe dans l'UI, mais chaque build pousse | Test local sans push, plus de contrôle |
+| Risque de versions intermédiaires | Élevé : chaque build peut créer un commit sur `develop` | Faible : on ne pousse que ce qui est validé |
+| Retour arrière | Possible via l'historique Lovable (crée un commit de revert sur GitHub) | `git revert`, `git reset`, rebase, etc. |
+
+### 13.4 Recommandations pour un développement efficace
+
+1. **Préparer ses prompts avant de builder**
+   - Avoir une idée claire du besoin, des fichiers concernés et du résultat attendu.
+   - Éviter les prompts vagues qui génèrent plusieurs itérations de commits.
+
+2. **Toujours passer par le mode Plan d'abord**
+   - Demander à Lovable de proposer un plan d'action.
+   - Relire le plan, le challenger, le faire modifier si besoin.
+   - Pour les fonctionnalités critiques ou complexes, tester le plan en local avant de passer en mode Build.
+
+3. **Connaître les fichiers impactés**
+   - Demander explicitement dans le plan la liste des fichiers modifiés.
+   - Cela permet de mieux relire le diff après build.
+
+4. **Relire systématiquement après un build Lovable**
+   - Vérifier le diff réel dans l'éditeur Lovable ou sur GitHub.
+   - Lancer le typecheck et les tests en local.
+   - Vérifier le rendu dans le preview Lovable.
+
+5. **Privilégier le local pour les modifications simples**
+   - Corrections de style, de texte, d'espacement, petits ajustements : les faire à la main en local.
+   - Cela évite de solliciter l'IA pour des micro-changements et de générer des commits inutiles sur `develop`.
+
+6. **Ne pas builder du code de test ou temporaire**
+   - Si une version n'est pas destinée à être partagée, ne pas la builder avec Lovable.
+   - Préférer les tests en local pour les explorations et les essais.
+
+### 13.5 Retour à une version antérieure
+
+- Lovable dispose d'un historique intégré permettant de revenir à une version précédente.
+- Cette action génère un nouveau commit sur `develop` (revert).
+- Il est donc normal de voir des commits de retour arrière dans l'historique GitHub.
+
+---
+
+## 14. Variables d'environnement
+
+
+### 14.1 Deux régimes distincts
 
 | Type | Préfixe | Lu par | Où le configurer | Secret ? |
 |---|---|---|---|---|
@@ -623,7 +692,7 @@ npm audit          # audit de sécurité des dépendances
 
 La liste complète, commentée et catégorisée, se trouve dans **`.env.example`** à la racine du dépôt. C'est la source de vérité : toute nouvelle variable doit y être ajoutée (avec une valeur vide et un commentaire), jamais avec sa vraie valeur.
 
-### 13.2 Variables nécessaires en local
+### 14.2 Variables nécessaires en local
 
 | Variable | Rôle | Où trouver la valeur |
 |---|---|---|
@@ -636,14 +705,14 @@ La liste complète, commentée et catégorisée, se trouve dans **`.env.example`
 
 Le parcours `/simulator/*` fonctionne sans backend (état en `localStorage`), mais le reste de l'application nécessite les variables backend pour démarrer correctement.
 
-### 13.3 Règles à respecter
+### 14.3 Règles à respecter
 
 - **Ne jamais committer `.env`** — il est ignoré par Git ; seul `.env.example` est versionné.
 - **Ne jamais préfixer un secret par `VITE_`** : clé de service, clé secrète Stripe, clés API tierces restent côté Edge Functions.
 - Les secrets backend (Resend, Stripe, cron, etc.) se configurent dans **Lovable Cloud → Secrets**, pas dans un fichier local.
 - Après modification de `.env`, **redémarrer le serveur de développement** : Vite ne recharge pas les variables à chaud.
 
-### 13.4 Symptômes d'une configuration manquante
+### 14.4 Symptômes d'une configuration manquante
 
 - Page blanche au démarrage ou erreurs réseau vers une URL `undefined` → variables `VITE_SUPABASE_*` absentes ou vides.
 - Erreurs d'authentification systématiques → clé publique incorrecte ou pointant vers un autre environnement.
@@ -651,17 +720,17 @@ Le parcours `/simulator/*` fonctionne sans backend (état en `localStorage`), ma
 
 ---
 
-## 14. De la maquette Figma au composant React
+## 15. De la maquette Figma au composant React
 
 Le nouveau simulateur et le prototype de dashboard ont été produits à partir de maquettes Figma validées, selon un workflow en quatre étapes. Ce workflow est la référence pour toute nouvelle page ou tout nouveau composant issu du design.
 
-### 14.1 Étape 1 — Export Figma → HTML + Tailwind
+### 15.1 Étape 1 — Export Figma → HTML + Tailwind
 
 Utiliser l'outil [**figma.to.code** de divRIOTS](https://divriots.com/figma.to.code) : à partir de la maquette Figma, il génère une transcription en **HTML + classes Tailwind CSS**.
 
 Cet export est un point de départ, pas un résultat final : la structure est souvent verbeuse, les valeurs sont en dur et la sémantique est absente.
 
-### 14.2 Étape 2 — Relecture et correction du HTML
+### 15.2 Étape 2 — Relecture et correction du HTML
 
 Relire intégralement le HTML généré et corriger les écarts avec la maquette validée :
 
@@ -672,7 +741,7 @@ Relire intégralement le HTML généré et corriger les écarts avec la maquette
 
 L'objectif est d'obtenir un HTML statique **le plus fidèle possible** à la maquette avant toute conversion en React.
 
-### 14.3 Étape 3 — Génération des composants React par Lovable AI
+### 15.3 Étape 3 — Génération des composants React par Lovable AI
 
 Fournir le HTML corrigé à Lovable AI en demandant explicitement des composants React **conformes à l'architecture de l'application** :
 
@@ -682,7 +751,7 @@ Fournir le HTML corrigé à Lovable AI en demandant explicitement des composants
 - textes passés par i18n (`useTranslation("paid-simulator")`), aucune chaîne en dur ;
 - découpage en composants petits et ciblés.
 
-### 14.4 Étape 4 — Revue et ajustements
+### 15.4 Étape 4 — Revue et ajustements
 
 Relire le code généré et corriger jusqu'à obtenir la fidélité visuelle attendue. Checklist de conformité :
 
@@ -694,13 +763,13 @@ Relire le code généré et corriger jusqu'à obtenir la fidélité visuelle att
 - [ ] Thème clair et thème sombre vérifiés.
 - [ ] `bunx tsgo --noEmit` vert.
 
-### 14.5 Alternative : MCP Figma en local
+### 15.5 Alternative : MCP Figma en local
 
 Il existe une intégration Figma en lecture directe via l'application **Lovable Desktop** (Figma Desktop en mode Dev, serveur MCP local activé, puis connexion dans Lovable → Settings → Connectors). Elle est **en lecture seule** : elle ne réécrit jamais dans Figma. Elle peut remplacer l'étape 1 lorsqu'un accès live à la maquette est nécessaire ; à défaut, des captures d'écran suffisent.
 
 ---
 
-## 15. Documents projet (Google Drive)
+## 16. Documents projet (Google Drive)
 
 Ressources complémentaires hébergées sur le Google Drive du projet. L'accès se demande au responsable projet.
 
@@ -717,9 +786,9 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 
 ---
 
-## 16. Guide du contributeur
+## 17. Guide du contributeur
 
-### 16.1 Ajouter un champ dans le simulateur
+### 17.1 Ajouter un champ dans le simulateur
 
 1. **Type** : ajouter la propriété dans `src/types/simulator.types.ts` (`SimulationProject`).
 2. **Valeur par défaut** : l'ajouter dans `defaultSimulationProject` (`src/hooks/useSimulatorProject.ts`).
@@ -729,7 +798,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 6. **Traductions** : ajouter les clés FR dans `src/locales/fr/paid-simulator.json` et EN dans `src/locales/en/paid-simulator.json`.
 7. **Vérification** : lancer `bunx tsgo --noEmit` pour le typecheck.
 
-### 16.2 Ajouter une étape
+### 17.2 Ajouter une étape
 
 1. Ajouter la route dans `src/App.tsx` sous `SimulatorLayout`.
 2. Créer la page dans `src/pages/simulator/`.
@@ -737,7 +806,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 4. Mettre à jour `STEP_BY_PATH` dans `SimulatorLayout.tsx`.
 5. Utiliser `useSimulatorStep` avec la ou les sections Zod concernées.
 
-### 16.3 Ajouter une carte de résultats
+### 17.3 Ajouter une carte de résultats
 
 1. Créer le composant dans `src/components/simulator/results/`.
 2. Lire le projet via `useSimulatorProjectContext`.
@@ -745,7 +814,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 4. Intégrer la carte dans `SimulatorResultsPage.tsx`.
 5. Ajouter les clés i18n FR/EN.
 
-### 16.4 Commandes de vérification
+### 17.4 Commandes de vérification
 
 ```bash
 # Typecheck
@@ -757,7 +826,7 @@ npm audit
 
 > **Note utilisateur** : les vérifications de vulnérabilités des dépendances doivent se faire avec `npm audit`, pas via un outil de sécurité abstrait.
 
-### 16.5 Pièges connus
+### 17.5 Pièges connus
 
 - **i18n Zod** : les messages de validation sont générés au moment de l'import du schéma. Si `i18n` n'est pas encore initialisé, la langue par défaut est utilisée. Cela ne pose pas de problème en pratique car le schéma est appelé après le montage de l'application.
 - **LocalStorage** : le projet est stocké sous forme JSON. Si la structure évolue, penser à gérer la compatibilité ascendante ou à incrémenter/versionner la clé de stockage.
@@ -766,11 +835,11 @@ npm audit
 
 ---
 
-## 17. Dette technique et suite
+## 18. Dette technique et suite
 
 > La liste exhaustive et priorisée des chantiers restants (simulateur **et** dashboard) est tenue à jour dans **`docs/simulateur-v2-roadmap.md`**. Les points ci-dessous en sont le résumé.
 
-### 17.1 À court terme
+### 18.1 À court terme
 
 - **Remplacer `IS_SIMULATOR_PACK_ACTIVE`** par un vrai contrôle d'accès (contexte ou edge function).
 - **Reprendre le prototype dashboard** : le code généré depuis Figma doit être revu, découpé et branché sur de vraies données.
@@ -779,14 +848,14 @@ npm audit
 - **Gérer l'authentification** : le dashboard est destiné aux utilisateurs connectés ; le simulateur visiteur doit rester accessible sans authentification.
 - **i18n, thème sombre et plan de tests** du dashboard, aujourd'hui inexistants.
 
-### 17.2 À moyen terme (décommissionnement)
+### 18.2 À moyen terme (décommissionnement)
 
 - Supprimer l'ancien simulateur `/simulateur` et `/simulation` une fois le nouveau validé.
 - Migrer les liens de l'application (landing, navigation, emails) vers `/simulator` et `/dashboard-simulator`.
 - Supprimer les composants obsolètes (`src/components/simulation/*`, `src/pages/SimulationPage.tsx`, etc.) et les edge functions inutilisées.
 - Mettre à jour `docs/simulateur-rentabilite.md` et `docs/simulateur-architecture.md` pour refléter le nouveau parcours unique.
 
-### 17.3 Ressources complémentaires
+### 18.3 Ressources complémentaires
 
 - **Feuille de route / reste à faire : `docs/simulateur-v2-roadmap.md`** (document complémentaire indispensable)
 - Plan de test frontend : `docs/testing/simulator-test-plan.md`
