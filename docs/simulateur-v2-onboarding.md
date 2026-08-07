@@ -585,7 +585,7 @@ npm install
 
 # 4. Créer le fichier d'environnement local
 cp .env.example .env
-# puis renseigner les variables VITE_* (voir section 13)
+# puis renseigner les variables VITE_* (voir section 14)
 
 # 5. Lancer le serveur de développement
 npm run dev
