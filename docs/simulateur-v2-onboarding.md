@@ -683,7 +683,7 @@ En local, le développeur conserve le contrôle complet :
 ## 14. Variables d'environnement
 
 
-### 13.1 Deux régimes distincts
+### 14.1 Deux régimes distincts
 
 | Type | Préfixe | Lu par | Où le configurer | Secret ? |
 |---|---|---|---|---|
@@ -692,7 +692,7 @@ En local, le développeur conserve le contrôle complet :
 
 La liste complète, commentée et catégorisée, se trouve dans **`.env.example`** à la racine du dépôt. C'est la source de vérité : toute nouvelle variable doit y être ajoutée (avec une valeur vide et un commentaire), jamais avec sa vraie valeur.
 
-### 13.2 Variables nécessaires en local
+### 14.2 Variables nécessaires en local
 
 | Variable | Rôle | Où trouver la valeur |
 |---|---|---|
@@ -705,14 +705,14 @@ La liste complète, commentée et catégorisée, se trouve dans **`.env.example`
 
 Le parcours `/simulator/*` fonctionne sans backend (état en `localStorage`), mais le reste de l'application nécessite les variables backend pour démarrer correctement.
 
-### 13.3 Règles à respecter
+### 14.3 Règles à respecter
 
 - **Ne jamais committer `.env`** — il est ignoré par Git ; seul `.env.example` est versionné.
 - **Ne jamais préfixer un secret par `VITE_`** : clé de service, clé secrète Stripe, clés API tierces restent côté Edge Functions.
 - Les secrets backend (Resend, Stripe, cron, etc.) se configurent dans **Lovable Cloud → Secrets**, pas dans un fichier local.
 - Après modification de `.env`, **redémarrer le serveur de développement** : Vite ne recharge pas les variables à chaud.
 
-### 13.4 Symptômes d'une configuration manquante
+### 14.4 Symptômes d'une configuration manquante
 
 - Page blanche au démarrage ou erreurs réseau vers une URL `undefined` → variables `VITE_SUPABASE_*` absentes ou vides.
 - Erreurs d'authentification systématiques → clé publique incorrecte ou pointant vers un autre environnement.
