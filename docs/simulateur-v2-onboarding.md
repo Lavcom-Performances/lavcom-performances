@@ -560,7 +560,7 @@ App
 
 ## 12. Démarrer en local
 
-### 16.1 Outils requis
+### 12.1 Outils requis
 
 | Outil | Version / remarque |
 |---|---|
@@ -570,7 +570,7 @@ App
 | VS Code | Extensions recommandées : ESLint, Prettier, Tailwind CSS IntelliSense, TypeScript |
 | Compte Lovable | Accès à l'espace projet (preview, backend, secrets) — à demander au responsable projet |
 
-### 16.2 Procédure d'installation
+### 12.2 Procédure d'installation
 
 ```bash
 # 1. Cloner le dépôt
@@ -593,7 +593,7 @@ npm run dev
 
 L'application est alors disponible sur `http://localhost:8080` (port défini dans `vite.config.ts`).
 
-### 16.3 Commandes utiles
+### 12.3 Commandes utiles
 
 ```bash
 npm run dev        # serveur de développement Vite
@@ -603,7 +603,7 @@ bunx tsgo --noEmit # typecheck TypeScript (rapide)
 npm audit          # audit de sécurité des dépendances
 ```
 
-### 16.4 Workflow Git
+### 12.4 Workflow Git
 
 - La branche synchronisée avec Lovable est `develop`.
 - Toute contribution passe par une branche `feature/*` ou `fix/*` puis une Pull Request vers `develop`.
@@ -614,7 +614,7 @@ npm audit          # audit de sécurité des dépendances
 
 ## 13. Variables d'environnement
 
-### 17.1 Deux régimes distincts
+### 13.1 Deux régimes distincts
 
 | Type | Préfixe | Lu par | Où le configurer | Secret ? |
 |---|---|---|---|---|
@@ -623,7 +623,7 @@ npm audit          # audit de sécurité des dépendances
 
 La liste complète, commentée et catégorisée, se trouve dans **`.env.example`** à la racine du dépôt. C'est la source de vérité : toute nouvelle variable doit y être ajoutée (avec une valeur vide et un commentaire), jamais avec sa vraie valeur.
 
-### 17.2 Variables nécessaires en local
+### 13.2 Variables nécessaires en local
 
 | Variable | Rôle | Où trouver la valeur |
 |---|---|---|
@@ -636,7 +636,7 @@ La liste complète, commentée et catégorisée, se trouve dans **`.env.example`
 
 Le parcours `/simulator/*` fonctionne sans backend (état en `localStorage`), mais le reste de l'application nécessite les variables backend pour démarrer correctement.
 
-### 17.3 Règles à respecter
+### 13.3 Règles à respecter
 
 - **Ne jamais committer `.env`** — il est ignoré par Git ; seul `.env.example` est versionné.
 - **Ne jamais préfixer un secret par `VITE_`** : clé de service, clé secrète Stripe, clés API tierces restent côté Edge Functions.
