@@ -1,5 +1,7 @@
 # Feuille de route — Nouveau simulateur de rentabilité
 
+> English version: [docs/en/simulateur-v2-roadmap.md](./en/simulateur-v2-roadmap.md)
+
 > Document destiné aux développeurs rejoignant le projet. Il recense **tout ce qui reste à faire** sur le nouveau simulateur (`/simulator/*`) et son tableau de bord (`/dashboard-simulator/*`).
 >
 > Pour comprendre **ce qui existe déjà** (architecture, contextes, validation, calculs, i18n), lire au préalable [`docs/simulateur-v2-onboarding.md`](./simulateur-v2-onboarding.md).
