@@ -8,10 +8,10 @@ met le focus sur le champ concerné.
 
 ## Fonctionnement
 
-Tous les messages d'erreur du simulateur passent par le composant `FieldError`, qui rend un
-élément portant `role="alert"` et `data-slot="field-error"`. Deux messages de section sont
-actuellement de simples `<span className="text-destructive">` (carte machines et carte charges) :
-ils recevront le même marqueur pour être pris en compte.
+Tous les messages d'erreur de champ du simulateur passent par le composant `FieldError`, qui rend
+un élément portant `role="alert"` et `data-slot="field-error"`. Les messages de section rendus en
+`<span className="text-destructive">` n'ont pas besoin d'être ciblés : dès qu'ils apparaissent, au
+moins une erreur de champ est présente et sert de cible au scroll.
 
 Le premier message d'erreur **présent dans le DOM et visible** (donc hors onglet inactif) est
 sélectionné dans l'ordre du document, puis :
@@ -28,23 +28,18 @@ demande).
 ## Fichiers concernés
 
 1. **Nouveau** `src/utils/scrollToFirstError.ts`
-   - `scrollToFirstError(root?: HTMLElement)` : sélectionne
-     `[data-slot="field-error"], [data-error-message]`, ignore les éléments non visibles
-     (`offsetParent === null` / `getClientRects().length === 0`), scrolle vers le premier et met le
-     focus sur `input, select, textarea, [role="combobox"]` du conteneur `[data-slot="field"]`
-     parent, avec `preventScroll: true`.
+   - `scrollToFirstError(root?: HTMLElement)` : sélectionne `[data-slot="field-error"]`, ignore les
+     éléments non visibles (`offsetParent === null` / `getClientRects().length === 0`), scrolle vers
+     le premier et met le focus sur `input, select, textarea, [role="combobox"]` du conteneur
+     `[data-slot="field"]` parent, avec `preventScroll: true`.
 
 2. `src/hooks/useSimulatorStep.ts`
    - Dans `guardNext`, après `setAttempted(true)`, le toaster et `options.onInvalid?.()`,
      planifier `requestAnimationFrame(() => requestAnimationFrame(() => scrollToFirstError()))`
      avant de retourner `false`.
 
-3. `src/components/simulator/machines/MachinesConfigCard.tsx` et
-   `src/components/simulator/charges/CostsCard.tsx`
-   - Ajouter `data-error-message` (et `role="alert"`) sur les `<span className="text-destructive">`
-     de section, pour qu'ils soient également des cibles de scroll.
-
-Aucun changement dans `SimulatorFooterNav.tsx`, les schémas Zod ou les fichiers de traduction.
+Aucun changement dans `SimulatorFooterNav.tsx`, les cartes machines/charges, les schémas Zod ou les
+fichiers de traduction.
 
 ## Vérification
 
