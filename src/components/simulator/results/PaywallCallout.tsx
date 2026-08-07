@@ -77,7 +77,7 @@ export function PaywallCallout() {
                 ? { profitMonth, profitYear }
                 : { profitMonth: "1 2345,00 €", profitYear: "123 456,00 €" }
               }
-              components={[<BlurredValue key="0" />, <BlurredValue key="1" />]}
+              components={[<MaskedValue key="0" />, <MaskedValue key="1" />]}
             />
           ) : (
             t("results.paywall.notProfitable.description")
@@ -91,7 +91,7 @@ export function PaywallCallout() {
               ? { cycles }
               : { cycles: "00" }
             }
-            components={[<BlurredValue key="0" />]}
+            components={[<MaskedValue key="0" />]}
           />
         </p>
       </div>
