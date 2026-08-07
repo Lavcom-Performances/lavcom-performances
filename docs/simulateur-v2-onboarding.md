@@ -390,9 +390,25 @@ Dans `ProfitabilityCard`, les valeurs de résultat estimé, seuil de rentabilit�
 
 ## 8. Dashboard simulateur
 
+> **Avertissement — prototype brouillon.** Le dashboard `/dashboard-simulator/*` **n'est pas encore fonctionnel**. Il s'agit d'un prototype généré par l'IA Lovable à partir des maquettes Figma, dont le seul objectif est de donner un **aperçu (preview) visuel** de ce que sera le dashboard définitif. Le code doit être considéré comme jetable ou fortement remaniable : ne pas s'appuyer dessus comme référence d'architecture, et ne pas le livrer en production en l'état.
+
 ### 8.1 État actuel
 
-Le dashboard `/dashboard-simulator/*` est **fonctionnel avec des données mockées**. Il n'est pas encore connecté à la base de données. Les données proviennent de `src/mocks/dashboard-simulator/*` et sont consommées via les hooks `use-dashboard-*` (`src/hooks/dashboard-simulator/*`), qui simulent un appel réseau avec latence.
+Ce qui existe : les écrans, la navigation, la sidebar et les primitives d'affichage. Les données proviennent de `src/mocks/dashboard-simulator/*` et sont consommées via les hooks `use-dashboard-*` (`src/hooks/dashboard-simulator/*`), qui simulent un appel réseau avec latence.
+
+Ce qui n'existe pas encore :
+
+| Manque | Détail |
+|---|---|
+| Données réelles | Aucune connexion à la base de données ; tout est mocké. |
+| Persistance | Les projets et scénarios ne sont ni créés, ni enregistrés, ni supprimés réellement. |
+| Authentification | Le guard de route est un placeholder ; aucun contrôle de session ni de pack. |
+| i18n | Les libellés sont dans `src/constants/dashboard-simulator/*.strings.ts`, hors du système i18n FR/EN. |
+| Thème sombre | Non traité, certaines couleurs ne sont pas encore des tokens sémantiques. |
+| Tests | Aucun plan de test ni test automatisé. |
+
+**Travail restant** : la liste complète et priorisée des chantiers du dashboard (branchement des données, authentification et packs, i18n, thème, tests, nettoyage du code généré) est détaillée dans le document complémentaire **`docs/simulateur-v2-roadmap.md`**. Ce document d'onboarding décrit *ce qui existe* ; la roadmap décrit *ce qu'il reste à faire*. Les deux se lisent ensemble.
+
 
 ### 8.2 Layout et navigation
 
