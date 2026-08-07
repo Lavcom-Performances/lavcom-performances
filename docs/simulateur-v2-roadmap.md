@@ -338,6 +338,7 @@ Phase 1 — Stabilisation du simulateur
   B1 → B2 → B3
   C1, C2, C3
   D1
+  J1
 
 Phase 2 — Base de données
   C1 → E1 → E2 → E3
@@ -347,6 +348,7 @@ Phase 3 — Paiement et tableau de bord
   E3 + F1 + F2 → F3
   E3 + G1 → G2 → G3
   G1 → G4
+  E3 + F3 + G2 → K1
 
 Phase 4 — Qualité, tests et ouverture
   D2 → D4
@@ -357,7 +359,7 @@ Phase 4 — Qualité, tests et ouverture
   Nettoyage final des anciens simulateurs
 ```
 
-Le chemin critique passe par `C1 → E1 → E2 → E3 → F3 / G2 → G3 → H3`. La validation de la base de données par Raul (E2) est la dépendance externe la plus susceptible de retarder l'ensemble : la lancer au plus tôt.
+Le chemin critique passe par `C1 → E1 → E2 → E3 → F3 / G2 → G3 → H3`. Le dashboard administrateur (K1) dépend du back-end du dashboard projet (G2) et de Stripe (F3) : il peut être démarré dès que ces deux chantiers sont stables. La validation de la base de données par Raul (E2) est la dépendance externe la plus susceptible de retarder l'ensemble : la lancer au plus tôt.
 
 ---
 
