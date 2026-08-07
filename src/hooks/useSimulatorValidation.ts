@@ -65,9 +65,10 @@ export function useSimulatorValidation(): ValidationResult {
           acc[section] = { isValid: true, errorCount: 0 };
         } else {
           const fieldErrors = sectionResult.error.flatten().fieldErrors;
-          const count = Object.values(fieldErrors).filter(
-            (messages) => messages && messages.length > 0,
-          ).length;
+          const issuePaths = new Set(
+            sectionResult.error.issues.map((issue) => issue.path.join(".")),
+          );
+          const count = issuePaths.size;
           acc[section] = { isValid: count === 0, errorCount: count };
           
           const sectionError = fieldErrors[Object.keys(fieldErrors)[0]]?.[0];
