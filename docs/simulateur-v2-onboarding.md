@@ -1,0 +1,616 @@
+# Onboarding — Nouveau Simulateur de Rentabilité
+
+> Document destiné aux développeurs rejoignant le projet. Il décrit ce qui a été implémenté depuis la création du nouveau simulateur de rentabilité, son architecture, ses principales conventions, et les points d'attention pour y contribuer sans casser les parcours existants.
+
+---
+
+## 1. Contexte et périmètre
+
+### 1.1 Pourquoi un nouveau simulateur ?
+
+L'application Lavcom Performances dispose de deux parcours simulateur historiques :
+
+- `/simulateur` — simulateur **public gratuit** de qualification, avec capture email.
+- `/simulation` — simulateur **payant intégré au SaaS**, avec authentification, packs Stripe et persistance base de données.
+
+Le **nouveau simulateur** (`/simulator/*`) est une refonte du parcours payant. Il a pour objectif à terme de **remplacer les deux anciens simulateurs** par une expérience plus moderne, unifiée et plus simple à maintenir. L'ancien code est conservé le temps du développement du nouveau pour ne pas impacter les utilisateurs en production.
+
+> **Attention** : une fois le nouveau simulateur livré, il faudra prévoir une phase de nettoyage pour supprimer les composants, pages, hooks et routes obsolètes (`/simulateur`, `/simulation`) et corriger les liens de l'application pour ne garder que le nouveau simulateur, sans casser le reste de l'application.
+
+### 1.2 Périmètre actuel du document
+
+| Parcours | URL | Statut |
+|---|---|---|
+| Nouveau simulateur visiteur | `/simulator/*` | En développement, fonctionnel sans authentification, localStorage uniquement. |
+| Dashboard porteur de projet | `/dashboard-simulator/*` | En développement, données mockées, isolé du reste de l'application. |
+| Ancien simulateur public | `/simulateur` | Conservé en production, non documenté ici. Voir `docs/simulateur-rentabilite.md`. |
+| Ancien simulateur SaaS | `/simulation` | Conservé en production, non documenté ici. Voir `docs/simulateur-architecture.md`. |
+
+---
+
+## 2. Cartographie des routes
+
+Les routes sont définies dans `src/App.tsx`. Deux groupes distincts sont déclarés :
+
+### 2.1 Simulateur visiteur
+
+```
+/simulator              → redirection vers /simulator/project
+/simulator/project      → Étape 1 : identité du projet + contraintes du local
+/simulator/machines     → Étape 2 : configuration des machines
+/simulator/charges      → Étape 3 : charges fixes et variables
+/simulator/results      → Étape 4 : résultats, paywall et CTA d'achat
+```
+
+Layout : `src/components/layout/SimulatorLayout.tsx`. Il fournit l'en-tête, le stepper et le `SimulatorProjectProvider` qui enveloppe l'ensemble des pages simulateur.
+
+### 2.2 Dashboard porteur de projet
+
+```
+/dashboard-simulator                                    → Vue d'ensemble
+/dashboard-simulator/projects                           → Liste des projets
+/dashboard-simulator/projects/comparator                → Comparaison de projets
+/dashboard-simulator/projects/:projectId                → Détail d'un projet
+/dashboard-simulator/projects/:projectId/scenarios      → Scénarios d'un projet
+/dashboard-simulator/projects/:projectId/scenarios/:id  → Détail d'un scénario
+/dashboard-simulator/projects/:projectId/scenario-comparator
+/dashboard-simulator/reports
+/dashboard-simulator/purchases
+/dashboard-simulator/account
+```
+
+Layout : `src/components/dashboard-simulator/layout/DashboardLayout.tsx`. Il est protégé par `DashboardRouteGuard` et utilise une sidebar dédiée (`AppSidebar`), indépendante de l'application opérateur principale.
+
+---
+
+## 3. Architecture applicative
+
+### 3.1 Vue d'ensemble du simulateur
+
+```text
+src/
+├── pages/simulator/
+│   ├── SimulatorProjectPage.tsx       # Étape 1 (onglets Projet / Local)
+│   ├── SimulatorMachinesPage.tsx      # Étape 2
+│   ├── SimulatorChargesPage.tsx       # Étape 3
+│   └── SimulatorResultsPage.tsx       # Étape 4
+│
+├── components/simulator/
+│   ├── layout/
+│   │   ├── SimulatorLayout.tsx        # Layout racine (déplacé dans src/components/layout/)
+│   │   ├── SimulatorStepper.tsx       # Barre de progression des étapes
+│   │   ├── SimulatorFooterNav.tsx     # Boutons Précédent / Continuer
+│   │   └── SimulatorPageHeader.tsx    # Titre, description, bouton Reset
+│   ├── project/
+│   │   ├── ProjectTabs.tsx            # Onglets Projet / Local
+│   │   ├── FormField.tsx              # Wrapper de champ de formulaire
+│   │   ├── AddressAutocomplete.tsx    # Autocomplétion d'adresse BAN / Nominatim
+│   │   ├── SurfaceCard.tsx            # Carte de saisie de la surface
+│   │   ├── OpeningHoursCard.tsx     # Carte des horaires d'ouverture
+│   │   ├── LocationCard.tsx           # Carte d'identification du lieu
+│   │   ├── ProjectIdentityCard.tsx    # Carte d'identité du projet
+│   │   ├── LocalConstraintsForm.tsx  # Formulaire des contraintes du local
+│   │   ├── ProjectInfoForm.tsx        # Formulaire principal infos projet
+│   │   ├── RadioCard.tsx              # Carte radio sélectionnable
+│   │   └── SimulatorTabsTrigger.tsx   # Variante active verte des onglets
+│   ├── machines/
+│   │   ├── MachinesConfigCard.tsx     # Configuration d'une catégorie de machines
+│   │   ├── MachineRevenueSummary.tsx  # Récapitulatif du CA machines
+│   │   ├── MachineInfosCard.tsx       # Informations liées aux machines
+│   │   └── InputFieldsInfos.tsx       # Aide à la saisie des champs
+│   ├── charges/
+│   │   ├── CostsCard.tsx              # Carte charges fixes ou variables
+│   │   ├── CostRow.tsx                # Ligne de charge
+│   │   ├── AddCostButton.tsx          # Bouton d'ajout de charge
+│   │   ├── AddCostCard.tsx            # Carte d'ajout rapide
+│   │   ├── TotalCostsSummary.tsx      # Récapitulatif des charges
+│   │   └── SubscriptionCard.tsx       # Carte des abonnements
+│   ├── results/
+│   │   ├── ResultsSummaryCard.tsx     # Résumé identité du projet
+│   │   ├── ResultsHeroKpis.tsx        # CA total, part lavage/séchage
+│   │   ├── ProfitabilityCard.tsx      # Résultat estimé et seuil de rentabilité
+│   │   ├── PaywallCallout.tsx         # Bandeau conditionnel + CTA achat
+│   │   ├── GuideCallout.tsx           # Appel à action guide
+│   │   └── ProjectInfos.tsx           # Ligne d'info du résumé
+│   ├── ConfigHintBanner.tsx           # Bandeau d'aide contextuelle
+│   ├── ProjectWarnings.tsx            # Alertes de cohérence du projet
+│   └── ProgressBarWithValue.tsx       # Barre de progression avec valeur
+│
+├── components/ui/
+│   ├── form-card.tsx                  # Carte avec ombre simulateur
+│   ├── field.tsx                      # Primitives de champ shadcn
+│   └── card.tsx                       # Primitives de carte shadcn
+│
+├── contexts/
+│   ├── SimulatorProjectContext.tsx    # Contexte du projet en cours
+│   └── SimulatorStepContext.tsx       # Contexte des erreurs d'étape
+│
+├── hooks/
+│   ├── useSimulatorProject.ts         # State + persistance localStorage
+│   ├── useSimulatorStep.ts            # Navigation et validation par étape
+│   ├── useSimulatorValidation.ts      # Validation Zod globale et par section
+│   └── useFormatters.ts               # Formatage monétaire / numérique
+│
+├── lib/validation/
+│   └── simulatorProjectSchema.ts      # Schémas Zod du simulateur
+│
+├── utils/
+│   ├── machineRevenueCalculations.ts  # Calculs du CA par machine
+│   ├── profitabilityCalculations.ts   # Calculs de rentabilité
+│   └── scrollToFirstError.ts          # Scroll vers la première erreur
+│
+├── types/
+│   ├── simulator.types.ts             # Types du projet et des machines
+│   └── simulatorFormOptions.types.ts  # Types des options de formulaire
+│
+├── config/
+│   ├── simulatorFormOptions.ts        # Valeurs des options (pays, zones, formes...)
+│   └── pricingConfig.ts / stripeConfig.ts  # Tarification et mapping Stripe
+│
+└── locales/
+    ├── fr/paid-simulator.json           # Traductions FR
+    └── en/paid-simulator.json           # Traductions EN
+```
+
+### 3.2 Dashboard porteur de projet
+
+```text
+src/
+├── pages/dashboard-simulator/
+│   ├── DashboardPage.tsx
+│   ├── ProjectsPage.tsx
+│   ├── ProjectDetailPage.tsx
+│   ├── ProjectComparisonPage.tsx
+│   ├── ScenariosPage.tsx
+│   ├── ScenarioDetailPage.tsx
+│   ├── ScenarioComparisonPage.tsx
+│   ├── ReportsPage.tsx
+│   ├── PurchasesPage.tsx
+│   └── MyAccountPage.tsx
+│
+├── components/dashboard-simulator/
+│   ├── layout/
+│   │   ├── DashboardLayout.tsx
+│   │   ├── AppSidebar.tsx
+│   │   ├── AppSidebarMainNav.tsx
+│   │   ├── AppSidebarProjectsNav.tsx
+│   │   ├── AppSidebarPackWidget.tsx
+│   │   ├── AppSidebarUserFooter.tsx
+│   │   ├── WelcomeHeader.tsx
+│   │   └── DashboardBreadcrumb.tsx
+│   ├── overview/
+│   │   ├── PackSummaryCard.tsx
+│   │   ├── ProjectsStatsCard.tsx
+│   │   ├── ProjectsPreviewList.tsx
+│   │   ├── RecentActivityCard.tsx
+│   │   └── SuggestionsCard.tsx
+│   ├── projects/
+│   │   ├── ProjectCard.tsx
+│   │   ├── ProjectsGrid.tsx
+│   │   ├── ProjectsToolbar.tsx
+│   │   ├── ProjectsEmptyState.tsx
+│   │   ├── ProjectCompareBar.tsx
+│   │   └── PackExpiryBanner.tsx
+│   ├── scenarios/
+│   │   ├── ScenarioCard.tsx
+│   │   ├── ScenariosGrid.tsx
+│   │   ├── ScenariosToolbar.tsx
+│   │   ├── ScenariosEmptyState.tsx
+│   │   ├── ScenarioReferenceCard.tsx
+│   │   └── ProjectHeaderSummary.tsx
+│   ├── comparison/
+│   │   ├── ComparisonDeltaCard.tsx
+│   │   ├── ComparisonRadarCard.tsx
+│   │   ├── ComparisonRoiCard.tsx
+│   │   ├── ComparisonSideCard.tsx
+│   │   └── ComparisonSynthesisCard.tsx
+│   └── shared/
+│       ├── KpiTile.tsx
+│       ├── DataTable.tsx
+│       ├── DeltaPill.tsx
+│       ├── StatusBadge.tsx
+│       └── format.ts
+│
+├── hooks/dashboard-simulator/
+│   ├── use-dashboard-pack.ts
+│   ├── use-dashboard-projects.ts
+│   ├── use-dashboard-project.ts
+│   ├── use-dashboard-scenarios.ts
+│   ├── use-dashboard-reports.ts
+│   ├── use-dashboard-invoices.ts
+│   └── use-mock-query.ts
+│
+├── mocks/dashboard-simulator/
+│   ├── mock-user.ts
+│   ├── mock-projects.ts
+│   ├── mock-scenarios.ts
+│   ├── mock-reports.ts
+│   ├── mock-invoices.ts
+│   └── mock-activity.ts
+│
+├── constants/dashboard-simulator/
+│   ├── common.strings.ts
+│   ├── projects.strings.ts
+│   ├── scenarios.strings.ts
+│   ├── comparison.strings.ts
+│   ├── reports.strings.ts
+│   ├── purchases.strings.ts
+│   └── account.strings.ts
+│
+└── types/dashboard-simulator.ts
+```
+
+---
+
+## 4. Gestion d'état
+
+### 4.1 Projet en cours (`SimulatorProjectContext`)
+
+Le projet est stocké dans le contexte `SimulatorProjectContext` (`src/contexts/SimulatorProjectContext.tsx`), fourni par le hook `useSimulatorProject` (`src/hooks/useSimulatorProject.ts`).
+
+- **Valeurs par défaut** : `defaultSimulationProject`, avec des valeurs pré-remplies (exemple : petite laverie standard avec 2 lave-linges 7 kg, 2 sèche-linges 14 kg, loyer 1 200 €, etc.).
+- **Persistance** : le projet est synchronisé dans `localStorage` sous la clé `simulationProject`.
+- **Hydratation** : au chargement, si une valeur existe dans `localStorage`, elle est fusionnée avec les valeurs par défaut. Cela permet de reprendre une simulation après fermeture de l'onglet.
+- **Recalcul automatique** : à chaque modification des machines, le hook recalcule `washingRevenue`, `dryingRevenue` et `totalRevenue` via `calculateRevenueBreakdown`.
+- **Reset** : `resetProject()` remet les valeurs par défaut et supprime l'entrée `localStorage`. Le bouton Reset dans `SimulatorPageHeader` ouvre une modale de confirmation puis redirige vers `/simulator/project`.
+
+### 4.2 Navigation par étape (`useSimulatorStep`)
+
+`useSimulatorStep` (`src/hooks/useSimulatorStep.ts`) gère la validation avant passage à l'étape suivante.
+
+- Il accepte une liste de sections à valider : `projectInfo`, `localConstraints`, `washers`, `dryers`, `charges`.
+- Lors du clic sur **Continuer** : `guardNext()` vérifie chaque section. Si une section est invalide, un toaster affiche le nombre total d'erreurs, puis la page défile automatiquement vers la première erreur visible (`scrollToFirstError`).
+- Pour la page projet, l'option `onInvalid` bascule l'onglet actif vers "project" ou "local" selon la section en erreur.
+
+### 4.3 Erreurs d'étape (`SimulatorStepContext`)
+
+`SimulatorStepContext` (`src/contexts/SimulatorStepContext.tsx`) transmet aux composants descendants :
+
+- `fieldError(name)` : message d'erreur d'un champ.
+- `sections` : état de validation par section.
+- `errors` : erreurs complètes.
+- `attempted` : indique si l'utilisateur a déjà tenté de continuer (pour afficher les erreurs).
+
+---
+
+## 5. Validation des formulaires
+
+### 5.1 Schéma Zod
+
+La validation est centralisée dans `src/lib/validation/simulatorProjectSchema.ts`.
+
+Les schémas sont découpés par domaine :
+
+- `projectInfoSchema` : nom du projet, scénario, pays, adresse, ville, code postal, zone, horaires, jours d'ouverture.
+- `localConstraintsSchema` : surface, forme du local, obstacles, largeur de porte, façade modifiable, contraintes techniques.
+- `machinesSchema` / `washersSchema` / `dryersSchema` : configuration des machines. Exige au moins un lave-linge et un sèche-linge dans le parc global.
+- `chargesSchema` / `fixedCostsSchema` / `variableCostsSchema` : charges fixes et variables. La somme des pourcentages de charges variables ne peut pas dépasser 100 %.
+- `revenuesSchema` : recettes calculées automatiquement.
+
+Le schéma global `simulatorProjectSchema` est l'union de tous ces schémas.
+
+### 5.2 Comptage des erreurs
+
+`useSimulatorValidation` (`src/hooks/useSimulatorValidation.ts`) valide le projet en mémoire :
+
+- Validation globale via `simulatorProjectSchema.safeParse(project)`.
+- Validation par section via `sectionSchemas[section].safeParse(...)`.
+- Le comptage d'erreurs par section s'appuie sur les chemins uniques des issues Zod (`issue.path.join(".")`), ce qui permet de compter correctement chaque champ invalide dans les tableaux (machines, charges), et pas seulement une erreur par section.
+
+### 5.3 Scroll automatique vers la première erreur
+
+`scrollToFirstError` (`src/utils/scrollToFirstError.ts`) :
+
+- Sélectionne les éléments `[data-slot="field-error"]`.
+- Filtre le premier visible.
+- Effectue un défilement fluide (`smooth` par défaut, `auto` si `prefers-reduced-motion: reduce`).
+- Met le focus sur le champ associé (`input`, `select`, `textarea`, `[role="combobox"]`).
+
+Il est appelé dans `useSimulatorStep.guardNext()` via un double `requestAnimationFrame` pour attendre la mise à jour du DOM après l'affichage des erreurs.
+
+### 5.4 Messages d'erreur i18n
+
+Les messages de validation Zod sont dynamiques et utilisent la fonction `tv(key)` qui appelle `i18n.t(key, { ns: "paid-simulator" })`. Les clés se trouvent dans `src/locales/fr/paid-simulator.json` et `src/locales/en/paid-simulator.json` sous le préfixe `validation.*`.
+
+---
+
+## 6. Moteur de calcul
+
+### 6.1 CA par machine (`machineRevenueCalculations.ts`)
+
+```ts
+machineMonthlyRevenue = count × cyclesPerDay × price × 30
+```
+
+Le CA est calculé sur la base de **30 jours par mois**.
+
+- `calculateCategoryRevenue(machines, "washer")` : total du CA lavage.
+- `calculateCategoryRevenue(machines, "dryer")` : total du CA séchage.
+- `calculateRevenueBreakdown(machines)` : renvoie `washingRevenue`, `dryingRevenue`, `totalRevenue`.
+
+Les helpers `addMachine`, `removeMachine`, `updateMachineList` permettent de manipuler le tableau de machines en conservant l'immutabilité.
+
+### 6.2 Rentabilité (`profitabilityCalculations.ts`)
+
+```text
+monthlyRevenue      = totalRevenue du projet (ou recalculé depuis les machines)
+totalCyclesMonth    = Σ (count × cyclesPerDay × 30)
+avgRevenuePerCycle  = monthlyRevenue / totalCyclesMonth
+fixedCostsTotal     = Σ fixedCosts.amount
+variableCostsPercent = Σ variableCosts.percent
+variableCostsTotal  = monthlyRevenue × variableCostsPercent / 100
+breakEvenRevenueMonthly = fixedCostsTotal / (1 − variableCostsPercent / 100)  [null si ≥ 100%]
+breakEvenCyclesPerDay   = breakEvenRevenueMonthly / avgRevenuePerCycle / 30  [null si impossible]
+estimatedProfitMonth  = monthlyRevenue − variableCostsTotal − fixedCostsTotal
+isProfitable          = estimatedProfitMonth > 0
+```
+
+Toutes les valeurs sont en **euros** (TTC côté UI, HT dans les exports financiers futurs).
+
+### 6.3 Affichage des résultats
+
+La page `SimulatorResultsPage.tsx` compose trois cartes principales :
+
+| Composant | Rôle |
+|---|---|
+| `ResultsSummaryCard` | Résumé identitaire du projet (ville, surface, nombre de machines). |
+| `ResultsHeroKpis` | CA total mensuel, part lavage/séchage, barre de progression. |
+| `ProfitabilityCard` | Résultat estimé mensuel, seuil de rentabilité, cycles/jour nécessaires. |
+| `PaywallCallout` | Message conditionnel (rentable / non rentable) + CTA d'achat. |
+| `ProjectWarnings` | Alertes de cohérence (surface insuffisante, etc.). |
+| `GuideCallout` | Appel à action vers un guide. |
+
+---
+
+## 7. Page Résultats et paywall
+
+### 7.1 État du simulateur (`IS_SIMULATOR_PACK_ACTIVE`)
+
+Actuellement, un drapeau constant `IS_SIMULATOR_PACK_ACTIVE = false` est défini dans les composants de résultats (`PaywallCallout.tsx`, `ProfitabilityCard.tsx`). Il représente l'état "visiteur non connecté sans pack payant".
+
+Quand le dashboard sera opérationnel et que l'authentification sera branchée, ce drapeau devra être remplacé par :
+
+- un contexte d'accès au simulateur (front-end), ou mieux,
+- une vérification côté serveur (edge function) pour éviter qu'un utilisateur ne puisse lire les vrais chiffres en inspectant le code source.
+
+### 7.2 Masquage des chiffres (`MaskedValue`)
+
+Tant que le pack n'est pas actif, les chiffres sensibles sont affichés mais **floutés** avec `blur-[4px]`, `select-none` et `aria-hidden="true"`. Le composant `MaskedValue` conserve la mise en page et la structure du DOM, mais empêche la lecture visuelle et l'accessibilité des valeurs réelles.
+
+Dans `PaywallCallout`, le message est conditionnel :
+
+- **Rentable** : titre vert, description avec les montants floutés, CTA achat.
+- **Non rentable** : titre rouge, description explicative avec conseils, CTA achat.
+
+Dans `ProfitabilityCard`, les valeurs de résultat estimé, seuil de rentabilité et cycles/jour sont affichées réelles si le pack est actif, sinon floutées avec une valeur factice.
+
+---
+
+## 8. Dashboard simulateur
+
+### 8.1 État actuel
+
+Le dashboard `/dashboard-simulator/*` est **fonctionnel avec des données mockées**. Il n'est pas encore connecté à la base de données. Les données proviennent de `src/mocks/dashboard-simulator/*` et sont consommées via les hooks `use-dashboard-*` (`src/hooks/dashboard-simulator/*`), qui simulent un appel réseau avec latence.
+
+### 8.2 Layout et navigation
+
+- `DashboardLayout.tsx` : layout racine avec une sidebar shadcn et un en-tête fixe.
+- `AppSidebar.tsx` : sidebar dédiée, avec une navigation principale (Vue d'ensemble, Projets, Achats, Rapports) et un widget de pack.
+- `WelcomeHeader.tsx` : en-tête de page avec titre, sous-titre et actions.
+
+### 8.3 Primitives partagées
+
+- `KpiTile` : carte KPI avec label, valeur, hint et ton (default/positive/negative).
+- `DataTable` : tableau de données réutilisable.
+- `DeltaPill` : pastille de comparaison (ex : +12 %, -5 %).
+- `StatusBadge` : badge de statut.
+- `format.ts` : utilitaire `fillTemplate` pour interpoler des chaînes avec des variables.
+
+### 8.4 Points de branchement pour les vraies données
+
+Pour passer à de vraies données, il faudra :
+
+1. Remplacer les mocks par des appels Supabase dans les hooks `use-dashboard-*`.
+2. Relier les projets du dashboard au `SimulatorProjectContext` lorsqu'un utilisateur clique sur "Nouveau projet" ou "Éditer".
+3. Persister les projets/scénarios en base de données et respecter les limites du pack (`max_projects`, `access_expires_at`).
+4. Adapter `PackSummaryCard` pour lire le vrai pack actif depuis `profiles`.
+
+---
+
+## 9. Design system et conventions UI
+
+### 9.1 Tokens sémantiques
+
+Les couleurs ne sont jamais codées en dur. Le projet utilise les tokens shadcn/Tailwind définis dans `tailwind.config.ts` et `src/index.css` :
+
+- `bg-primary`, `text-primary-foreground` pour les actions principales.
+- `text-foreground`, `text-muted-foreground`, `bg-muted`, `bg-card` pour le fond et le texte.
+- `text-destructive`, `bg-destructive` pour les erreurs.
+- Tokens Lavcom spécifiques : `lavcom-green`, `lavcom-green-accent`, `lavcom-green-spring`, `lavcom-orange`, etc.
+
+### 9.2 Composants de carte
+
+- `FormCard` (`src/components/ui/form-card.tsx`) : variante de `Card` avec l'ombre `shadow-form` (`1px 2px 2px 0px rgba(0,0,0,0.1)`). C'est la brique de base des cartes de formulaire simulateur.
+- Les cartes de résultats et KPI utilisent également `shadow-form` ou `shadow-profitability`.
+
+### 9.3 Champs de formulaire
+
+`FormField` (`src/components/simulator/project/FormField.tsx`) est un wrapper autour des primitives `Field`, `FieldLabel`, `FieldDescription`, `FieldError` de shadcn (`src/components/ui/field.tsx`). Il permet de :
+
+- afficher un label, une icône, un indicateur requis,
+- afficher un message d'erreur,
+- afficher un hint/description,
+- injecter tout composant `children` (Input, Select, etc.) comme contrôle du champ.
+
+### 9.4 Onglets personnalisés
+
+`SimulatorTabsTrigger` (`src/components/simulator/project/SimulatorTabsTrigger.tsx`) est une variante de `TabsTrigger` avec :
+
+- fond vert (`bg-primary`) à l'état actif (`data-[state=active]:bg-primary`),
+- texte sombre à l'état actif (`data-[state=active]:text-foreground`).
+
+### 9.5 Responsive
+
+Les pages simulateur utilisent des grilles flexibles (`flex`, `grid`) avec des largeurs relatives (`w-3/5`, `w-2/5`). Le layout global est limité à `max-w-5xl` et reste lisible sur mobile. Le dashboard utilise la sidebar shadcn responsive avec `SidebarProvider`.
+
+---
+
+## 10. Internationalisation (i18n)
+
+### 10.1 Namespace `paid-simulator`
+
+Les traductions du nouveau simulateur sont dans le namespace `paid-simulator` :
+
+- `src/locales/fr/paid-simulator.json`
+- `src/locales/en/paid-simulator.json`
+
+Ils sont enregistrés dans `src/lib/i18n-config.ts`.
+
+### 10.2 Conventions de nommage
+
+Les clés sont organisées par domaine :
+
+- `project.*` : page Projet / Local.
+- `machines.*` : page Machines.
+- `charges.*` : page Charges.
+- `results.*` : page Résultats.
+- `validation.*` : messages d'erreur Zod.
+- `common.*` : textes transversaux (boutons, titres de dialogue, etc.).
+- `errors.*` : messages d'erreur globaux.
+
+### 10.3 Règle "aucune chaîne en dur"
+
+Tout texte affiché dans le nouveau simulateur doit provenir du namespace `paid-simulator`. L'utilisation de `useTranslation("paid-simulator")` est obligatoire. Pour l'interpolation de composants React, on utilise le composant `Trans` de `react-i18next`.
+
+---
+
+## 11. Diagrammes
+
+### 11.1 Flux utilisateur des 4 étapes
+
+```mermaid
+flowchart LR
+    A[Landing / Accueil] -->|/simulator/project| B[Étape 1<br/>Projet & Local]
+    B -->|Continuer| C[Étape 2<br/>Machines]
+    C -->|Continuer| D[Étape 3<br/>Charges]
+    D -->|Voir les résultats| E[Étape 4<br/>Résultats]
+    E -->|Acheter un pack| F[Paywall / Stripe]
+    E -->|Nouveau projet| B
+```
+
+### 11.2 Flux de données (contexte → validation → calcul → affichage)
+
+```mermaid
+flowchart TD
+    A[useSimulatorProject<br/>localStorage] --> B[SimulatorProjectContext]
+    B --> C[Composants de formulaire]
+    B --> D[useSimulatorValidation<br/>Zod]
+    D --> E[useSimulatorStep<br/>guardNext]
+    E -->|Erreurs| F[Toast + scrollToFirstError]
+    B --> G[calculateProfitability]
+    G --> H[SimulatorResultsPage]
+    H --> I[PaywallCallout<br/>ProfitabilityCard]
+```
+
+### 11.3 Arbre des routes
+
+```text
+App
+├── /simulator
+│   └── SimulatorLayout
+│       ├── /project       → SimulatorProjectPage
+│       ├── /machines      → SimulatorMachinesPage
+│       ├── /charges       → SimulatorChargesPage
+│       └── /results       → SimulatorResultsPage
+│
+└── /dashboard-simulator
+    └── DashboardRouteGuard
+        └── DashboardSimulatorLayout
+            ├── /                           → DashboardPage
+            ├── /projects                   → ProjectsPage
+            ├── /projects/comparator        → ProjectComparisonPage
+            ├── /projects/:projectId        → ProjectDetailPage
+            ├── /projects/:projectId/scenarios   → ScenariosPage
+            ├── /projects/:projectId/scenarios/:id → ScenarioDetailPage
+            ├── /projects/:projectId/scenario-comparator → ScenarioComparisonPage
+            ├── /reports                    → ReportsPage
+            ├── /purchases                  → PurchasesPage
+            └── /account                  → MyAccountPage
+```
+
+---
+
+## 12. Guide du contributeur
+
+### 12.1 Ajouter un champ dans le simulateur
+
+1. **Type** : ajouter la propriété dans `src/types/simulator.types.ts` (`SimulationProject`).
+2. **Valeur par défaut** : l'ajouter dans `defaultSimulationProject` (`src/hooks/useSimulatorProject.ts`).
+3. **Option de formulaire** : si le champ est une option, l'ajouter dans `src/config/simulatorFormOptions.ts` et son type dans `src/types/simulatorFormOptions.types.ts`.
+4. **Schéma Zod** : ajouter la règle dans `src/lib/validation/simulatorProjectSchema.ts` et les clés i18n dans `validation.*`.
+5. **Composant** : intégrer le champ dans la carte/section appropriée (`project/`, `machines/`, `charges/`) via `FormField`.
+6. **Traductions** : ajouter les clés FR dans `src/locales/fr/paid-simulator.json` et EN dans `src/locales/en/paid-simulator.json`.
+7. **Vérification** : lancer `bunx tsgo --noEmit` pour le typecheck.
+
+### 12.2 Ajouter une étape
+
+1. Ajouter la route dans `src/App.tsx` sous `SimulatorLayout`.
+2. Créer la page dans `src/pages/simulator/`.
+3. Ajouter l'étape dans `steps` de `SimulatorStepper.tsx`.
+4. Mettre à jour `STEP_BY_PATH` dans `SimulatorLayout.tsx`.
+5. Utiliser `useSimulatorStep` avec la ou les sections Zod concernées.
+
+### 12.3 Ajouter une carte de résultats
+
+1. Créer le composant dans `src/components/simulator/results/`.
+2. Lire le projet via `useSimulatorProjectContext`.
+3. Utiliser `useTranslation("paid-simulator")` pour les textes.
+4. Intégrer la carte dans `SimulatorResultsPage.tsx`.
+5. Ajouter les clés i18n FR/EN.
+
+### 12.4 Commandes de vérification
+
+```bash
+# Typecheck
+bunx tsgo --noEmit
+
+# Audit de sécurité des dépendances
+npm audit
+```
+
+> **Note utilisateur** : les vérifications de vulnérabilités des dépendances doivent se faire avec `npm audit`, pas via un outil de sécurité abstrait.
+
+### 12.5 Pièges connus
+
+- **i18n Zod** : les messages de validation sont générés au moment de l'import du schéma. Si `i18n` n'est pas encore initialisé, la langue par défaut est utilisée. Cela ne pose pas de problème en pratique car le schéma est appelé après le montage de l'application.
+- **LocalStorage** : le projet est stocké sous forme JSON. Si la structure évolue, penser à gérer la compatibilité ascendante ou à incrémenter/versionner la clé de stockage.
+- **Paywall client** : `IS_SIMULATOR_PACK_ACTIVE` est un drapeau statique. Il ne doit pas être considéré comme une mesure de sécurité : remplacer par une vérification serveur avant toute livraison en production.
+- **Dashboard isolé** : le dashboard n'utilise pas les mêmes providers que l'application opérateur. Ne pas mélanger les contextes (`useAuth`, `useActiveLaundromat`, etc.) dans les pages dashboard-simulator sans réflexion préalable.
+
+---
+
+## 13. Dette technique et suite
+
+### 13.1 À court terme
+
+- **Remplacer `IS_SIMULATOR_PACK_ACTIVE`** par un vrai contrôle d'accès (contexte ou edge function).
+- **Connecter le dashboard** à la base de données Supabase (projets, scénarios, achats, rapports).
+- **Gérer les packs** : lire `access_expires_at`, `max_projects`, `plan_code` depuis `profiles`.
+- **Gérer l'authentification** : le dashboard est destiné aux utilisateurs connectés ; le simulateur visiteur doit rester accessible sans authentification.
+
+### 13.2 À moyen terme (décommissionnement)
+
+- Supprimer l'ancien simulateur `/simulateur` et `/simulation` une fois le nouveau validé.
+- Migrer les liens de l'application (landing, navigation, emails) vers `/simulator` et `/dashboard-simulator`.
+- Supprimer les composants obsolètes (`src/components/simulation/*`, `src/pages/SimulationPage.tsx`, etc.) et les edge functions inutilisées.
+- Mettre à jour `docs/simulateur-rentabilite.md` et `docs/simulateur-architecture.md` pour refléter le nouveau parcours unique.
+
+### 13.3 Ressources complémentaires
+
+- Plan de test frontend : `docs/testing/simulator-test-plan.md`
+- Architecture ancienne `/simulation` : `docs/simulateur-architecture.md`
+- Documentation fonctionnelle ancienne : `docs/simulateur-rentabilite.md`
+
+---
+
+*Document rédigé le 7 août 2026 — à jour avec la refonte du simulateur de rentabilité Lavcom Performances.*
