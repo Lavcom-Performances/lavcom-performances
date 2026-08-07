@@ -720,17 +720,17 @@ Le parcours `/simulator/*` fonctionne sans backend (état en `localStorage`), ma
 
 ---
 
-## 14. De la maquette Figma au composant React
+## 15. De la maquette Figma au composant React
 
 Le nouveau simulateur et le prototype de dashboard ont été produits à partir de maquettes Figma validées, selon un workflow en quatre étapes. Ce workflow est la référence pour toute nouvelle page ou tout nouveau composant issu du design.
 
-### 14.1 Étape 1 — Export Figma → HTML + Tailwind
+### 15.1 Étape 1 — Export Figma → HTML + Tailwind
 
 Utiliser l'outil [**figma.to.code** de divRIOTS](https://divriots.com/figma.to.code) : à partir de la maquette Figma, il génère une transcription en **HTML + classes Tailwind CSS**.
 
 Cet export est un point de départ, pas un résultat final : la structure est souvent verbeuse, les valeurs sont en dur et la sémantique est absente.
 
-### 14.2 Étape 2 — Relecture et correction du HTML
+### 15.2 Étape 2 — Relecture et correction du HTML
 
 Relire intégralement le HTML généré et corriger les écarts avec la maquette validée :
 
@@ -741,7 +741,7 @@ Relire intégralement le HTML généré et corriger les écarts avec la maquette
 
 L'objectif est d'obtenir un HTML statique **le plus fidèle possible** à la maquette avant toute conversion en React.
 
-### 14.3 Étape 3 — Génération des composants React par Lovable AI
+### 15.3 Étape 3 — Génération des composants React par Lovable AI
 
 Fournir le HTML corrigé à Lovable AI en demandant explicitement des composants React **conformes à l'architecture de l'application** :
 
@@ -751,7 +751,7 @@ Fournir le HTML corrigé à Lovable AI en demandant explicitement des composants
 - textes passés par i18n (`useTranslation("paid-simulator")`), aucune chaîne en dur ;
 - découpage en composants petits et ciblés.
 
-### 14.4 Étape 4 — Revue et ajustements
+### 15.4 Étape 4 — Revue et ajustements
 
 Relire le code généré et corriger jusqu'à obtenir la fidélité visuelle attendue. Checklist de conformité :
 
@@ -763,7 +763,7 @@ Relire le code généré et corriger jusqu'à obtenir la fidélité visuelle att
 - [ ] Thème clair et thème sombre vérifiés.
 - [ ] `bunx tsgo --noEmit` vert.
 
-### 14.5 Alternative : MCP Figma en local
+### 15.5 Alternative : MCP Figma en local
 
 Il existe une intégration Figma en lecture directe via l'application **Lovable Desktop** (Figma Desktop en mode Dev, serveur MCP local activé, puis connexion dans Lovable → Settings → Connectors). Elle est **en lecture seule** : elle ne réécrit jamais dans Figma. Elle peut remplacer l'étape 1 lorsqu'un accès live à la maquette est nécessaire ; à défaut, des captures d'écran suffisent.
 
