@@ -330,7 +330,7 @@ Sur la page d'accueil, section « Simulateur de rentabilité », le bouton « Es
 
 ---
 
-## 12. Séquencement recommandé
+## 14. Séquencement recommandé
 
 ```text
 Phase 1 — Stabilisation du simulateur
