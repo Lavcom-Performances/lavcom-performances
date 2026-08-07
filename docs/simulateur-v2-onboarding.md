@@ -560,7 +560,7 @@ App
 
 ## 12. Démarrer en local
 
-### 12.1 Outils requis
+### 16.1 Outils requis
 
 | Outil | Version / remarque |
 |---|---|
@@ -570,7 +570,7 @@ App
 | VS Code | Extensions recommandées : ESLint, Prettier, Tailwind CSS IntelliSense, TypeScript |
 | Compte Lovable | Accès à l'espace projet (preview, backend, secrets) — à demander au responsable projet |
 
-### 12.2 Procédure d'installation
+### 16.2 Procédure d'installation
 
 ```bash
 # 1. Cloner le dépôt
@@ -593,7 +593,7 @@ npm run dev
 
 L'application est alors disponible sur `http://localhost:8080` (port défini dans `vite.config.ts`).
 
-### 12.3 Commandes utiles
+### 16.3 Commandes utiles
 
 ```bash
 npm run dev        # serveur de développement Vite
@@ -603,7 +603,7 @@ bunx tsgo --noEmit # typecheck TypeScript (rapide)
 npm audit          # audit de sécurité des dépendances
 ```
 
-### 12.4 Workflow Git
+### 16.4 Workflow Git
 
 - La branche synchronisée avec Lovable est `develop`.
 - Toute contribution passe par une branche `feature/*` ou `fix/*` puis une Pull Request vers `develop`.
@@ -614,7 +614,7 @@ npm audit          # audit de sécurité des dépendances
 
 ## 13. Variables d'environnement
 
-### 13.1 Deux régimes distincts
+### 17.1 Deux régimes distincts
 
 | Type | Préfixe | Lu par | Où le configurer | Secret ? |
 |---|---|---|---|---|
@@ -623,7 +623,7 @@ npm audit          # audit de sécurité des dépendances
 
 La liste complète, commentée et catégorisée, se trouve dans **`.env.example`** à la racine du dépôt. C'est la source de vérité : toute nouvelle variable doit y être ajoutée (avec une valeur vide et un commentaire), jamais avec sa vraie valeur.
 
-### 13.2 Variables nécessaires en local
+### 17.2 Variables nécessaires en local
 
 | Variable | Rôle | Où trouver la valeur |
 |---|---|---|
@@ -636,7 +636,7 @@ La liste complète, commentée et catégorisée, se trouve dans **`.env.example`
 
 Le parcours `/simulator/*` fonctionne sans backend (état en `localStorage`), mais le reste de l'application nécessite les variables backend pour démarrer correctement.
 
-### 13.3 Règles à respecter
+### 17.3 Règles à respecter
 
 - **Ne jamais committer `.env`** — il est ignoré par Git ; seul `.env.example` est versionné.
 - **Ne jamais préfixer un secret par `VITE_`** : clé de service, clé secrète Stripe, clés API tierces restent côté Edge Functions.
@@ -719,7 +719,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 
 ## 16. Guide du contributeur
 
-### 12.1 Ajouter un champ dans le simulateur
+### 16.1 Ajouter un champ dans le simulateur
 
 1. **Type** : ajouter la propriété dans `src/types/simulator.types.ts` (`SimulationProject`).
 2. **Valeur par défaut** : l'ajouter dans `defaultSimulationProject` (`src/hooks/useSimulatorProject.ts`).
@@ -729,7 +729,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 6. **Traductions** : ajouter les clés FR dans `src/locales/fr/paid-simulator.json` et EN dans `src/locales/en/paid-simulator.json`.
 7. **Vérification** : lancer `bunx tsgo --noEmit` pour le typecheck.
 
-### 12.2 Ajouter une étape
+### 16.2 Ajouter une étape
 
 1. Ajouter la route dans `src/App.tsx` sous `SimulatorLayout`.
 2. Créer la page dans `src/pages/simulator/`.
@@ -737,7 +737,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 4. Mettre à jour `STEP_BY_PATH` dans `SimulatorLayout.tsx`.
 5. Utiliser `useSimulatorStep` avec la ou les sections Zod concernées.
 
-### 12.3 Ajouter une carte de résultats
+### 16.3 Ajouter une carte de résultats
 
 1. Créer le composant dans `src/components/simulator/results/`.
 2. Lire le projet via `useSimulatorProjectContext`.
@@ -745,7 +745,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 4. Intégrer la carte dans `SimulatorResultsPage.tsx`.
 5. Ajouter les clés i18n FR/EN.
 
-### 12.4 Commandes de vérification
+### 16.4 Commandes de vérification
 
 ```bash
 # Typecheck
@@ -757,7 +757,7 @@ npm audit
 
 > **Note utilisateur** : les vérifications de vulnérabilités des dépendances doivent se faire avec `npm audit`, pas via un outil de sécurité abstrait.
 
-### 12.5 Pièges connus
+### 16.5 Pièges connus
 
 - **i18n Zod** : les messages de validation sont générés au moment de l'import du schéma. Si `i18n` n'est pas encore initialisé, la langue par défaut est utilisée. Cela ne pose pas de problème en pratique car le schéma est appelé après le montage de l'application.
 - **LocalStorage** : le projet est stocké sous forme JSON. Si la structure évolue, penser à gérer la compatibilité ascendante ou à incrémenter/versionner la clé de stockage.
@@ -766,23 +766,23 @@ npm audit
 
 ---
 
-## 13. Dette technique et suite
+## 17. Dette technique et suite
 
-### 13.1 À court terme
+### 17.1 À court terme
 
 - **Remplacer `IS_SIMULATOR_PACK_ACTIVE`** par un vrai contrôle d'accès (contexte ou edge function).
 - **Connecter le dashboard** à la base de données Supabase (projets, scénarios, achats, rapports).
 - **Gérer les packs** : lire `access_expires_at`, `max_projects`, `plan_code` depuis `profiles`.
 - **Gérer l'authentification** : le dashboard est destiné aux utilisateurs connectés ; le simulateur visiteur doit rester accessible sans authentification.
 
-### 13.2 À moyen terme (décommissionnement)
+### 17.2 À moyen terme (décommissionnement)
 
 - Supprimer l'ancien simulateur `/simulateur` et `/simulation` une fois le nouveau validé.
 - Migrer les liens de l'application (landing, navigation, emails) vers `/simulator` et `/dashboard-simulator`.
 - Supprimer les composants obsolètes (`src/components/simulation/*`, `src/pages/SimulationPage.tsx`, etc.) et les edge functions inutilisées.
 - Mettre à jour `docs/simulateur-rentabilite.md` et `docs/simulateur-architecture.md` pour refléter le nouveau parcours unique.
 
-### 13.3 Ressources complémentaires
+### 17.3 Ressources complémentaires
 
 - Plan de test frontend : `docs/testing/simulator-test-plan.md`
 - Architecture ancienne `/simulation` : `docs/simulateur-architecture.md`
