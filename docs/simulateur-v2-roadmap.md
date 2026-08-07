@@ -58,6 +58,8 @@ Règles projet à respecter sur l'ensemble de ces chantiers :
 | H2 | Tests | Plan de tests complet du dashboard | P2 | M | G2 |
 | H3 | Tests | Test du workflow complet de bout en bout | P1 | M | G3, H1 |
 | I1 | Intégration site | Rediriger « Essayer le simulateur gratuit » vers le nouveau simulateur | P2 | S | D2 |
+| J1 | Sécurité | Nettoyage des variables d'environnement exposées sur GitHub | P1 | S | — |
+| K1 | Administration | Dashboard administrateur du simulateur | P1 | L | E3, G2, F3 |
 
 ---
 
@@ -276,7 +278,59 @@ Sur la page d'accueil, section « Simulateur de rentabilité », le bouton « Es
 
 ---
 
-## 12. Séquencement recommandé
+## 12. Lot J — Sécurité et opérations
+
+### J1. Nettoyage des variables d'environnement exposées sur GitHub
+
+**Contexte.** Le dépôt Git contient actuellement un fichier `.env` avec des valeurs de configuration (clé publique Supabase, mode Stripe, etc.). Même si `VITE_SUPABASE_PUBLISHABLE_KEY` est une clé publique destinée au navigateur, la présence d'un fichier `.env` versionné pose un risque opérationnel : toute rotation future, toute erreur de copier-coller d'une clé secrète, ou tout ajout de variable serveur (`SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`, `RESEND_API_KEY`, etc.) peut être commité par inadvertance. Les variables serveur ne doivent jamais figurer dans le dépôt.
+
+**Résultat attendu.**
+1. Supprimer le fichier `.env` du dépôt Git tout en le conservant localement (`git rm --cached .env`).
+2. S'assurer que `.env` est bien listé dans `.gitignore` et qu'il le reste.
+3. Faire tourner les valeurs sensibles : regénérer dans Lovable Cloud Secrets les secrets serveur (runtime) et, pour les variables publiques `VITE_*`, les reconfigurer dans les variables d'environnement du projet Lovable.
+4. Vérifier que la clé publique Supabase actuelle (`VITE_SUPABASE_PUBLISHABLE_KEY`) est bien tournée/renouvelée si elle a été exposée dans l'historique Git, ou au minimum que la procédure de rotation est documentée.
+5. Documenter pour les nouveaux développeurs comment récupérer les valeurs nécessaires en local (via l'interface Lovable ou un canal sécurisé) et comment créer leur propre `.env` à partir du modèle `.env.example` sans jamais le commiter.
+6. Mettre à jour la section « Variables d'environnement » de `docs/simulateur-v2-onboarding.md` pour refléter cette nouvelle procédure.
+
+**Points d'attention.**
+- Cette opération n'a pas d'impact direct sur l'application en production si les secrets sont bien reconstruits dans Lovable avant le prochain déploiement.
+- Prévenir l'équipe qu'une fois `.env` retiré du dépôt, les clones existants devront être nettoyés manuellement pour ne pas réintroduire le fichier.
+
+**Fichiers concernés.** `.env`, `.gitignore`, `.env.example`, `docs/simulateur-v2-onboarding.md`.
+
+---
+
+## 13. Lot K — Administration du simulateur
+
+### K1. Dashboard administrateur du simulateur
+
+**Contexte.** Le Google Drive du projet contient un diagramme de cas d'utilisation (`UC-diagram_admin.png`) décrivant les fonctionnalités attendues pour l'administrateur du simulateur. Aujourd'hui, le back-office plateforme (`/admin/*`) gère les utilisateurs, la facturation et la bêta, mais il n'existe pas encore de section dédiée au suivi et à la gestion du simulateur payant.
+
+**Résultat attendu.**
+- Créer une section dédiée dans le back-office plateforme, par exemple `/admin/simulator` (ou route équivalente validée avec les UX designers), afin de centraliser l'administration du simulateur.
+- Implémenter les cas d'utilisation du diagramme `UC-diagram_admin.png`, typiquement :
+  - Visualisation et gestion des packs achetés (actifs, expirés, à renouveler).
+  - Suivi des paiements et des statuts de transaction Stripe.
+  - Liste des projets/scénarios créés par les utilisateurs, avec possibilité d'inspection en lecture seule.
+  - Statistiques d'usage du simulateur (nombre de simulations démarrées, complétées, taux de conversion vers l'achat).
+  - Gestion des paramètres commerciaux du simulateur (prix des packs, durées d'extension, limites d'usage).
+- Respecter la séparation des rôles de `public.platform_roles` (`super_admin`, `admin`, `billing`) : le dashboard administrateur doit être accessible aux rôles pertinents, sans élargir les droits d'un rôle existant.
+- Protéger les accès côté serveur : les fonctions edge utilisées par ce dashboard doivent vérifier le rôle de l'utilisateur et ne jamais renvoyer de données sensibles (clés, tokens, informations de paiement complètes) au client.
+- Réutiliser les composants et patterns du dashboard projet (`src/pages/dashboard-simulator/`, `src/components/dashboard-simulator/`) lorsque c'est pertinent, après la revue de code A3.
+- Toutes les chaînes affichées doivent passer par i18n (locales fr/en).
+
+**Points d'attention.**
+- Le dashboard administrateur est distinct du dashboard porteur de projet (`/dashboard-simulator/*`). Le premier est un outil interne pour l'équipe Lavcom ; le second est un espace client pour les utilisateurs ayant acheté un pack.
+- Les maquettes Figma du dashboard administrateur, si elles existent, doivent être consultées avant le démarrage de K1.
+- S'assurer que l'implémentation reste cohérente avec les conventions de la section admin existante (`PlatformAdminRoute`, `AdminLayout`, `AdminSidebar`).
+
+**Dépendances.** E3 (schéma base de données), G2 (back-end du dashboard projet), F3 (Stripe branché).
+
+**Fichiers concernés.** `src/pages/admin/simulator/` (à créer), `src/components/admin/simulator/` (à créer), `supabase/functions/admin-simulator-*` (à créer), fichiers de locale fr/en.
+
+---
+
+## 14. Séquencement recommandé
 
 ```text
 Phase 1 — Stabilisation du simulateur
@@ -284,6 +338,7 @@ Phase 1 — Stabilisation du simulateur
   B1 → B2 → B3
   C1, C2, C3
   D1
+  J1
 
 Phase 2 — Base de données
   C1 → E1 → E2 → E3
@@ -293,6 +348,7 @@ Phase 3 — Paiement et tableau de bord
   E3 + F1 + F2 → F3
   E3 + G1 → G2 → G3
   G1 → G4
+  E3 + F3 + G2 → K1
 
 Phase 4 — Qualité, tests et ouverture
   D2 → D4
@@ -303,11 +359,11 @@ Phase 4 — Qualité, tests et ouverture
   Nettoyage final des anciens simulateurs
 ```
 
-Le chemin critique passe par `C1 → E1 → E2 → E3 → F3 / G2 → G3 → H3`. La validation de la base de données par Raul (E2) est la dépendance externe la plus susceptible de retarder l'ensemble : la lancer au plus tôt.
+Le chemin critique passe par `C1 → E1 → E2 → E3 → F3 / G2 → G3 → H3`. Le dashboard administrateur (K1) dépend du back-end du dashboard projet (G2) et de Stripe (F3) : il peut être démarré dès que ces deux chantiers sont stables. La validation de la base de données par Raul (E2) est la dépendance externe la plus susceptible de retarder l'ensemble : la lancer au plus tôt.
 
 ---
 
-## 13. Décisions ouvertes
+## 15. Décisions ouvertes
 
 | # | Question | Impact | Statut |
 |---|---|---|---|
@@ -321,7 +377,7 @@ Les décisions prises doivent être consignées dans ce tableau, avec leur date,
 
 ---
 
-## 14. Rappel : nettoyage final
+## 16. Rappel : nettoyage final
 
 Une fois le nouveau simulateur livré et validé en production, une phase de dépose devra être planifiée :
 
