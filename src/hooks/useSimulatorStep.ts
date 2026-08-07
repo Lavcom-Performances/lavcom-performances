@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useSimulatorValidation, type ValidationErrors } from "./useSimulatorValidation";
+import { scrollToFirstError } from "@/utils/scrollToFirstError";
 import type {
   SimulatorProjectInput,
   SimulatorValidationSection,
