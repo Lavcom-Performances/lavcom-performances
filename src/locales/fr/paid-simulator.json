@@ -197,8 +197,6 @@
         "description": "Ajustez vos paramètres (loyer, prix des cycles, nombre de machines, fréquentation estimée...) pour améliorer la rentabilité de votre projet."
       },
       "cyclesNeeded": "Il vous faut environ <0>{{cycles}}</0> cycles/jour en moyenne pour couvrir vos charges.",
-      "title": "Projet au-dessus du seuil de rentabilité",
-      "description": "Pour avoir accès à l'analyse complète de votre projet, vous devez choisir une formule.",
       "cta": "Découvrir les formules"
     },
     "guide": {

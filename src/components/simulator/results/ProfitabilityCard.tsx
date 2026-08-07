@@ -4,6 +4,8 @@ import { Pen, Target, TrendingUp } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 
+const IS_SIMULATOR_PACK_ACTIVE = false;
+
 export function ProfitabilityCard() {
   const { t } = useTranslation("paid-simulator");
   return (
@@ -23,7 +25,7 @@ export function ProfitabilityCard() {
           </span>
         </div>
         <div>
-          <span className="font-bold w-max text-4xl text-lavcom-green-accent blur-[7px]">
+          <span className="font-bold w-max text-4xl text-lavcom-green-accent blur-[7px]" aria-hidden="true">
             1 234 € 
           </span>
           <span className="font-normal text-sm text-foreground ml-2">{t("common.perMonth")}</span>
@@ -39,7 +41,7 @@ export function ProfitabilityCard() {
             <span className="text-left w-max text-sm text-foreground">
               {t("results.profitability.breakEven")}
             </span>
-            <span className="font-bold text-left w-max text-md text-foreground blur-[3px]">
+            <span className="font-bold text-left w-max text-md text-foreground blur-[3px]" aria-hidden="true">
               1 234 €
             </span>
           </div>
@@ -48,7 +50,7 @@ export function ProfitabilityCard() {
             <span className="text-left w-max text-sm text-foreground">
               {t("results.profitability.cyclesPerDay")}
             </span>
-            <span className="font-bold text-left w-max text-md text-foreground blur-[3px]">
+            <span className="font-bold text-left w-max text-md text-foreground blur-[3px]" aria-hidden="true">
               ≈ 00
             </span>
           </div>

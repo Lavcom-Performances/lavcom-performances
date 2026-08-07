@@ -8,11 +8,16 @@ import { calculateProfitability } from "@/utils/profitabilityCalculations";
 import { cn } from "@/lib/utils";
 
 const devMode = import.meta.env.VITE_DEV_MODE !== "false";
+const IS_SIMULATOR_PACK_ACTIVE = false;
 
-/** Blurred value: readable layout, unreadable figures before payment */
 function BlurredValue({ children }: { children?: React.ReactNode }) {
   return (
-    <strong className="font-bold blur-[4px] select-none" aria-hidden="true">
+    <strong className={cn(
+        "font-bold select-none whitespace-nowrap",
+        !IS_SIMULATOR_PACK_ACTIVE && "blur-[4px]",
+      )}
+      aria-hidden="true"
+    >
       {children}
     </strong>
   );
@@ -68,7 +73,10 @@ export function PaywallCallout() {
             <Trans
               t={t}
               i18nKey="results.paywall.profitable.description"
-              values={{ profitMonth, profitYear }}
+              values={IS_SIMULATOR_PACK_ACTIVE
+                ? { profitMonth, profitYear }
+                : { profitMonth: "1 2345,00 €", profitYear: "123 456,00 €" }
+              }
               components={[<BlurredValue key="0" />, <BlurredValue key="1" />]}
             />
           ) : (
@@ -79,18 +87,18 @@ export function PaywallCallout() {
           <Trans
             t={t}
             i18nKey="results.paywall.cyclesNeeded"
-            values={{ cycles }}
+            values={IS_SIMULATOR_PACK_ACTIVE
+              ? { cycles }
+              : { cycles: "00" }
+            }
             components={[<BlurredValue key="0" />]}
           />
-        </p>
-        <p className="text-left text-sm text-muted-foreground">
-          {t("results.paywall.description")}
         </p>
       </div>
       <Button
         size="lg"
         asChild
-        className="gap-2 py-6 bg-primary text-primary-foreground hover:bg-primary/90 ml-16 animate-gentle-pulse"
+        className="gap-2 py-6 shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 ml-16 animate-gentle-pulse"
       >
         <Link to={devMode ? "/simulator-payment-success" : "/subscribe-simulator"}>
           <span className="font-semi-bold text-lg text-white">

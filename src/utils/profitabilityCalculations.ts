@@ -14,8 +14,16 @@ export interface ProfitabilityResults {
 }
 
 /**
- * Computes the profitability indicators of a simulator project.
- * Pure function, no React dependency.
+ * Calculates profitability metrics for a simulation project.
+ * 
+ * Computes monthly revenue from machines, aggregates fixed and variable costs,
+ * determines break-even points (revenue and cycles per day), and evaluates
+ * overall project profitability.
+ * 
+ * @param project - The simulation project to analyze. Can be partial or undefined,
+ *                  in which case default/empty values are used for missing fields.
+ * @returns An object containing all profitability results including revenue,
+ *          costs, break-even points, estimated profit, and profitability status.
  */
 export function calculateProfitability(
   project: Partial<SimulationProject> | undefined,
@@ -27,21 +35,21 @@ export function calculateProfitability(
   const monthlyRevenue =
     project?.totalRevenue ??
     machines.reduce(
-      (sum, m) => sum + m.count * m.cyclesPerDay * m.price * DAYS_PER_MONTH,
+      (sum, machine) => sum + machine.count * machine.cyclesPerDay * machine.price * DAYS_PER_MONTH,
       0,
     );
 
   const totalCyclesMonth = machines.reduce(
-    (sum, m) => sum + m.count * m.cyclesPerDay * DAYS_PER_MONTH,
+    (sum, machine) => sum + machine.count * machine.cyclesPerDay * DAYS_PER_MONTH,
     0,
   );
 
   const avgRevenuePerCycle =
     totalCyclesMonth > 0 ? monthlyRevenue / totalCyclesMonth : 0;
 
-  const fixedCostsTotal = fixedCosts.reduce((sum, c) => sum + (c.amount ?? 0), 0);
+  const fixedCostsTotal = fixedCosts.reduce((sum, cost) => sum + (cost.amount ?? 0), 0);
   const variableCostsPercent = variableCosts.reduce(
-    (sum, c) => sum + (c.percent ?? 0),
+    (sum, cost) => sum + (cost.percent ?? 0),
     0,
   );
   const variableCostsTotal = monthlyRevenue * (variableCostsPercent / 100);
