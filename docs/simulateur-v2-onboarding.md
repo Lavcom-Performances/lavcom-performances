@@ -22,7 +22,7 @@ Le **nouveau simulateur** (`/simulator/*`) est une refonte du parcours payant. I
 | Parcours | URL | Statut |
 |---|---|---|
 | Nouveau simulateur visiteur | `/simulator/*` | En développement, fonctionnel sans authentification, localStorage uniquement. |
-| Dashboard porteur de projet | `/dashboard-simulator/*` | En développement, données mockées, isolé du reste de l'application. |
+| Dashboard porteur de projet | `/dashboard-simulator/*` | **Prototype brouillon** généré par l'IA Lovable à partir des maquettes Figma. Données mockées, non fonctionnel. Voir section 8 et `docs/simulateur-v2-roadmap.md`. |
 | Ancien simulateur public | `/simulateur` | Conservé en production, non documenté ici. Voir `docs/simulateur-rentabilite.md`. |
 | Ancien simulateur SaaS | `/simulation` | Conservé en production, non documenté ici. Voir `docs/simulateur-architecture.md`. |
 
