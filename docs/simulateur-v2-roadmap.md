@@ -361,7 +361,7 @@ Le chemin critique passe par `C1 → E1 → E2 → E3 → F3 / G2 → G3 → H3`
 
 ---
 
-## 13. Décisions ouvertes
+## 15. Décisions ouvertes
 
 | # | Question | Impact | Statut |
 |---|---|---|---|
