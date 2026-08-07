@@ -769,7 +769,7 @@ Il existe une intégration Figma en lecture directe via l'application **Lovable 
 
 ---
 
-## 15. Documents projet (Google Drive)
+## 16. Documents projet (Google Drive)
 
 Ressources complémentaires hébergées sur le Google Drive du projet. L'accès se demande au responsable projet.
 
@@ -786,9 +786,9 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 
 ---
 
-## 16. Guide du contributeur
+## 17. Guide du contributeur
 
-### 16.1 Ajouter un champ dans le simulateur
+### 17.1 Ajouter un champ dans le simulateur
 
 1. **Type** : ajouter la propriété dans `src/types/simulator.types.ts` (`SimulationProject`).
 2. **Valeur par défaut** : l'ajouter dans `defaultSimulationProject` (`src/hooks/useSimulatorProject.ts`).
@@ -798,7 +798,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 6. **Traductions** : ajouter les clés FR dans `src/locales/fr/paid-simulator.json` et EN dans `src/locales/en/paid-simulator.json`.
 7. **Vérification** : lancer `bunx tsgo --noEmit` pour le typecheck.
 
-### 16.2 Ajouter une étape
+### 17.2 Ajouter une étape
 
 1. Ajouter la route dans `src/App.tsx` sous `SimulatorLayout`.
 2. Créer la page dans `src/pages/simulator/`.
@@ -806,7 +806,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 4. Mettre à jour `STEP_BY_PATH` dans `SimulatorLayout.tsx`.
 5. Utiliser `useSimulatorStep` avec la ou les sections Zod concernées.
 
-### 16.3 Ajouter une carte de résultats
+### 17.3 Ajouter une carte de résultats
 
 1. Créer le composant dans `src/components/simulator/results/`.
 2. Lire le projet via `useSimulatorProjectContext`.
@@ -814,7 +814,7 @@ Ressources complémentaires hébergées sur le Google Drive du projet. L'accès 
 4. Intégrer la carte dans `SimulatorResultsPage.tsx`.
 5. Ajouter les clés i18n FR/EN.
 
-### 16.4 Commandes de vérification
+### 17.4 Commandes de vérification
 
 ```bash
 # Typecheck
@@ -826,7 +826,7 @@ npm audit
 
 > **Note utilisateur** : les vérifications de vulnérabilités des dépendances doivent se faire avec `npm audit`, pas via un outil de sécurité abstrait.
 
-### 16.5 Pièges connus
+### 17.5 Pièges connus
 
 - **i18n Zod** : les messages de validation sont générés au moment de l'import du schéma. Si `i18n` n'est pas encore initialisé, la langue par défaut est utilisée. Cela ne pose pas de problème en pratique car le schéma est appelé après le montage de l'application.
 - **LocalStorage** : le projet est stocké sous forme JSON. Si la structure évolue, penser à gérer la compatibilité ascendante ou à incrémenter/versionner la clé de stockage.
@@ -835,11 +835,11 @@ npm audit
 
 ---
 
-## 17. Dette technique et suite
+## 18. Dette technique et suite
 
 > La liste exhaustive et priorisée des chantiers restants (simulateur **et** dashboard) est tenue à jour dans **`docs/simulateur-v2-roadmap.md`**. Les points ci-dessous en sont le résumé.
 
-### 17.1 À court terme
+### 18.1 À court terme
 
 - **Remplacer `IS_SIMULATOR_PACK_ACTIVE`** par un vrai contrôle d'accès (contexte ou edge function).
 - **Reprendre le prototype dashboard** : le code généré depuis Figma doit être revu, découpé et branché sur de vraies données.
@@ -848,14 +848,14 @@ npm audit
 - **Gérer l'authentification** : le dashboard est destiné aux utilisateurs connectés ; le simulateur visiteur doit rester accessible sans authentification.
 - **i18n, thème sombre et plan de tests** du dashboard, aujourd'hui inexistants.
 
-### 17.2 À moyen terme (décommissionnement)
+### 18.2 À moyen terme (décommissionnement)
 
 - Supprimer l'ancien simulateur `/simulateur` et `/simulation` une fois le nouveau validé.
 - Migrer les liens de l'application (landing, navigation, emails) vers `/simulator` et `/dashboard-simulator`.
 - Supprimer les composants obsolètes (`src/components/simulation/*`, `src/pages/SimulationPage.tsx`, etc.) et les edge functions inutilisées.
 - Mettre à jour `docs/simulateur-rentabilite.md` et `docs/simulateur-architecture.md` pour refléter le nouveau parcours unique.
 
-### 17.3 Ressources complémentaires
+### 18.3 Ressources complémentaires
 
 - **Feuille de route / reste à faire : `docs/simulateur-v2-roadmap.md`** (document complémentaire indispensable)
 - Plan de test frontend : `docs/testing/simulator-test-plan.md`
