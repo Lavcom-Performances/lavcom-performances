@@ -61,6 +61,8 @@ Layout : `src/components/layout/SimulatorLayout.tsx`. Il fournit l'en-tête, le 
 
 Layout : `src/components/dashboard-simulator/layout/DashboardLayout.tsx`. Il est protégé par `DashboardRouteGuard` et utilise une sidebar dédiée (`AppSidebar`), indépendante de l'application opérateur principale.
 
+> **Statut** : ces routes constituent un **prototype visuel**, pas une fonctionnalité livrable. Voir la section 8 pour le détail et `docs/simulateur-v2-roadmap.md` pour les chantiers restants.
+
 ---
 
 ## 3. Architecture applicative
