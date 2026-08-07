@@ -1,5 +1,7 @@
 # Onboarding — Nouveau Simulateur de Rentabilité
 
+> English version: [docs/en/simulateur-v2-onboarding.md](./en/simulateur-v2-onboarding.md)
+
 > Document destiné aux développeurs rejoignant le projet. Il décrit ce qui a été implémenté depuis la création du nouveau simulateur de rentabilité, son architecture, ses principales conventions, et les points d'attention pour y contribuer sans casser les parcours existants.
 
 ---
