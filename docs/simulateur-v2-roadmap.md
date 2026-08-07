@@ -375,7 +375,7 @@ Les décisions prises doivent être consignées dans ce tableau, avec leur date,
 
 ---
 
-## 14. Rappel : nettoyage final
+## 16. Rappel : nettoyage final
 
 Une fois le nouveau simulateur livré et validé en production, une phase de dépose devra être planifiée :
 
