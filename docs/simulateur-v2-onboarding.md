@@ -768,12 +768,16 @@ npm audit
 
 ## 17. Dette technique et suite
 
+> La liste exhaustive et priorisée des chantiers restants (simulateur **et** dashboard) est tenue à jour dans **`docs/simulateur-v2-roadmap.md`**. Les points ci-dessous en sont le résumé.
+
 ### 17.1 À court terme
 
 - **Remplacer `IS_SIMULATOR_PACK_ACTIVE`** par un vrai contrôle d'accès (contexte ou edge function).
+- **Reprendre le prototype dashboard** : le code généré depuis Figma doit être revu, découpé et branché sur de vraies données.
 - **Connecter le dashboard** à la base de données Supabase (projets, scénarios, achats, rapports).
 - **Gérer les packs** : lire `access_expires_at`, `max_projects`, `plan_code` depuis `profiles`.
 - **Gérer l'authentification** : le dashboard est destiné aux utilisateurs connectés ; le simulateur visiteur doit rester accessible sans authentification.
+- **i18n, thème sombre et plan de tests** du dashboard, aujourd'hui inexistants.
 
 ### 17.2 À moyen terme (décommissionnement)
 
@@ -784,7 +788,9 @@ npm audit
 
 ### 17.3 Ressources complémentaires
 
+- **Feuille de route / reste à faire : `docs/simulateur-v2-roadmap.md`** (document complémentaire indispensable)
 - Plan de test frontend : `docs/testing/simulator-test-plan.md`
+- Variables d'environnement : `.env.example`
 - Architecture ancienne `/simulation` : `docs/simulateur-architecture.md`
 - Documentation fonctionnelle ancienne : `docs/simulateur-rentabilite.md`
 
