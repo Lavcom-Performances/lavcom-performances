@@ -612,7 +612,76 @@ npm audit          # audit de sécurité des dépendances
 
 ---
 
-## 13. Variables d'environnement
+## 13. Workflow de développement : Lovable, GitHub et local
+
+Ce projet utilise un dépôt GitHub synchronisé avec Lovable. Il est important de comprendre les différences entre le développement via Lovable et le développement local classique, car chaque mode a des conséquences sur l'historique Git et la qualité du code poussé.
+
+### 13.1 Principe de synchronisation
+
+- L'application est connectée à un dépôt GitHub.
+- Lovable ne pousse que sur la branche **`develop`**.
+- Chaque prompt en mode **Build** génère un **commit automatique** sur `develop` avec un message générique.
+- La branche **`main`** est la branche de production : elle n'est jamais modifiée directement par Lovable.
+- Les règles de protection de branches et le workflow de release sont documentés dans `.github/backup00/SETUP_README.md` et `.github/backup00/BRANCH_PROTECTION.yml`.
+
+### 13.2 Développement local
+
+En local, le développeur conserve le contrôle complet :
+
+- Le dépôt est cloné et travaillé sur sa machine (voir section 12).
+- On peut créer des branches dédiées (`feature/...`, `fix/...`, `chore/...`) pour isoler les travaux.
+- Les commits sont rédigés manuellement avec des messages explicites.
+- On peut tester, itérer et expérimenter sans impacter le dépôt distant.
+- Les changements validés sont intégrés via **Pull Request** vers `develop`, puis promus vers `main` via le workflow GitHub Actions **Release**.
+
+### 13.3 Tableau comparatif
+
+| Aspect | Lovable (mode Build) | Développement local |
+|---|---|---|
+| Branche cible | `develop` uniquement | Branches dédiées possibles (`feature/*`, `fix/*`, etc.) |
+| Commits | Auto-générés à chaque prompt | Rédaction manuelle, messages clairs |
+| Itération rapide | Directe dans l'UI, mais chaque build pousse | Test local sans push, plus de contrôle |
+| Risque de versions intermédiaires | Élevé : chaque build peut créer un commit sur `develop` | Faible : on ne pousse que ce qui est validé |
+| Retour arrière | Possible via l'historique Lovable (crée un commit de revert sur GitHub) | `git revert`, `git reset`, rebase, etc. |
+
+### 13.4 Recommandations pour un développement efficace
+
+1. **Préparer ses prompts avant de builder**
+   - Avoir une idée claire du besoin, des fichiers concernés et du résultat attendu.
+   - Éviter les prompts vagues qui génèrent plusieurs itérations de commits.
+
+2. **Toujours passer par le mode Plan d'abord**
+   - Demander à Lovable de proposer un plan d'action.
+   - Relire le plan, le challenger, le faire modifier si besoin.
+   - Pour les fonctionnalités critiques ou complexes, tester le plan en local avant de passer en mode Build.
+
+3. **Connaître les fichiers impactés**
+   - Demander explicitement dans le plan la liste des fichiers modifiés.
+   - Cela permet de mieux relire le diff après build.
+
+4. **Relire systématiquement après un build Lovable**
+   - Vérifier le diff réel dans l'éditeur Lovable ou sur GitHub.
+   - Lancer le typecheck et les tests en local.
+   - Vérifier le rendu dans le preview Lovable.
+
+5. **Privilégier le local pour les modifications simples**
+   - Corrections de style, de texte, d'espacement, petits ajustements : les faire à la main en local.
+   - Cela évite de solliciter l'IA pour des micro-changements et de générer des commits inutiles sur `develop`.
+
+6. **Ne pas builder du code de test ou temporaire**
+   - Si une version n'est pas destinée à être partagée, ne pas la builder avec Lovable.
+   - Préférer les tests en local pour les explorations et les essais.
+
+### 13.5 Retour à une version antérieure
+
+- Lovable dispose d'un historique intégré permettant de revenir à une version précédente.
+- Cette action génère un nouveau commit sur `develop` (revert).
+- Il est donc normal de voir des commits de retour arrière dans l'historique GitHub.
+
+---
+
+## 14. Variables d'environnement
+
 
 ### 13.1 Deux régimes distincts
 
