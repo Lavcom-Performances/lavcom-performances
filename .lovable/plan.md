@@ -10,7 +10,7 @@ Les docs existantes (`docs/simulateur-rentabilite.md`, `docs/simulateur-architec
 
 ## Structure du document
 
-1. **Contexte et périmètre** — pourquoi un nouveau simulateur, ce qui change vs `/simulateur` et `/simulation`, ce qui est encore statique/mock.
+1. **Contexte et périmètre** — pourquoi un nouveau simulateur, le nouveau simulateur a pour but à terme de remplacer l'ancien (`/simulateur` et `/simulation`) qui est conservé le temps du développement du nouveau ; ce qui change vs les deux anciens parcours, ce qui est encore statique/mock ; à terme, lors du décommissionnement de l'ancien, il faudra prévoir un nettoyage du code (suppression des composants/pages obsolètes, correction des liens) pour ne garder que le nouveau simulateur sans casser l'application.
 2. **Cartographie des routes** — `/simulator/project|machines|charges|results`, redirections, `/dashboard-simulator/*` (projets, scénarios, comparateurs, rapports, achats, compte), avec le layout appliqué à chaque groupe.
 3. **Architecture applicative** — arborescence commentée de `src/components/simulator/*` (project, machines, charges, results, layout), `src/components/dashboard-simulator/*` (layout, overview, projects, scenarios, comparison, shared), pages, contextes, hooks, utils, types, locales.
 4. **Gestion d'état** — `SimulatorProjectContext` + `useSimulatorProject` (valeurs par défaut, persistance localStorage, reset), `SimulatorStepContext` + `useSimulatorStep` (navigation par étape, `guardNext`).
