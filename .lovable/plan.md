@@ -8,10 +8,10 @@ met le focus sur le champ concerné.
 
 ## Fonctionnement
 
-Tous les messages d'erreur du simulateur passent par le composant `FieldError`, qui rend un
-élément portant `role="alert"` et `data-slot="field-error"`. Deux messages de section sont
-actuellement de simples `<span className="text-destructive">` (carte machines et carte charges) :
-ils recevront le même marqueur pour être pris en compte.
+Tous les messages d'erreur de champ du simulateur passent par le composant `FieldError`, qui rend
+un élément portant `role="alert"` et `data-slot="field-error"`. Les messages de section rendus en
+`<span className="text-destructive">` n'ont pas besoin d'être ciblés : dès qu'ils apparaissent, au
+moins une erreur de champ est présente et sert de cible au scroll.
 
 Le premier message d'erreur **présent dans le DOM et visible** (donc hors onglet inactif) est
 sélectionné dans l'ordre du document, puis :
