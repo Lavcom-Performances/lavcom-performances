@@ -558,7 +558,166 @@ App
 
 ---
 
-## 12. Guide du contributeur
+## 12. Démarrer en local
+
+### 12.1 Outils requis
+
+| Outil | Version / remarque |
+|---|---|
+| Node.js | LTS (≥ 20), installé de préférence via [nvm](https://github.com/nvm-sh/nvm) |
+| npm | Fourni avec Node. `bun` est également utilisé pour certains scripts (`bunx tsgo`) |
+| Git | Accès en lecture/écriture au dépôt GitHub du projet |
+| VS Code | Extensions recommandées : ESLint, Prettier, Tailwind CSS IntelliSense, TypeScript |
+| Compte Lovable | Accès à l'espace projet (preview, backend, secrets) — à demander au responsable projet |
+
+### 12.2 Procédure d'installation
+
+```bash
+# 1. Cloner le dépôt
+git clone <URL_DU_DEPOT>
+cd <NOM_DU_PROJET>
+
+# 2. Se placer sur la branche de développement
+git checkout develop
+
+# 3. Installer les dépendances
+npm install
+
+# 4. Créer le fichier d'environnement local
+cp .env.example .env
+# puis renseigner les variables VITE_* (voir section 13)
+
+# 5. Lancer le serveur de développement
+npm run dev
+```
+
+L'application est alors disponible sur `http://localhost:8080` (port défini dans `vite.config.ts`).
+
+### 12.3 Commandes utiles
+
+```bash
+npm run dev        # serveur de développement Vite
+npm run build      # build de production
+npm run lint       # ESLint
+bunx tsgo --noEmit # typecheck TypeScript (rapide)
+npm audit          # audit de sécurité des dépendances
+```
+
+### 12.4 Workflow Git
+
+- La branche synchronisée avec Lovable est `develop`.
+- Toute contribution passe par une branche `feature/*` ou `fix/*` puis une Pull Request vers `develop`.
+- La mise en production se fait par promotion de `develop` vers `main` (workflow GitHub Actions).
+- Les conventions détaillées sont dans `.github/` (CI, CODEOWNERS, protection de branches).
+
+---
+
+## 13. Variables d'environnement
+
+### 13.1 Deux régimes distincts
+
+| Type | Préfixe | Lu par | Où le configurer | Secret ? |
+|---|---|---|---|---|
+| Variables front | `VITE_*` | Le navigateur, injectées au build par Vite | Fichier `.env` à la racine | **Non** — tout ce qui est préfixé `VITE_` finit dans le bundle public |
+| Secrets backend | sans préfixe | Les Edge Functions via `Deno.env.get()` | Interface Lovable Cloud (Secrets) | **Oui** — jamais dans `.env`, jamais côté client |
+
+La liste complète, commentée et catégorisée, se trouve dans **`.env.example`** à la racine du dépôt. C'est la source de vérité : toute nouvelle variable doit y être ajoutée (avec une valeur vide et un commentaire), jamais avec sa vraie valeur.
+
+### 13.2 Variables nécessaires en local
+
+| Variable | Rôle | Où trouver la valeur |
+|---|---|---|
+| `VITE_SUPABASE_URL` | URL du projet backend | Espace Lovable du projet / responsable projet |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Clé publique (anon) du backend, protégée par les politiques RLS | Idem |
+| `VITE_SUPABASE_PROJECT_ID` | Identifiant projet, utilisé par l'outillage CLI | Idem |
+| `VITE_STRIPE_MODE` | `test` ou `live` | `test` en développement |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Clé publique Stripe | Tableau de bord Stripe (mode test) |
+| `VITE_DEV_MODE` | Active des logs et helpers de dev | `true` en local |
+
+Le parcours `/simulator/*` fonctionne sans backend (état en `localStorage`), mais le reste de l'application nécessite les variables backend pour démarrer correctement.
+
+### 13.3 Règles à respecter
+
+- **Ne jamais committer `.env`** — il est ignoré par Git ; seul `.env.example` est versionné.
+- **Ne jamais préfixer un secret par `VITE_`** : clé de service, clé secrète Stripe, clés API tierces restent côté Edge Functions.
+- Les secrets backend (Resend, Stripe, cron, etc.) se configurent dans **Lovable Cloud → Secrets**, pas dans un fichier local.
+- Après modification de `.env`, **redémarrer le serveur de développement** : Vite ne recharge pas les variables à chaud.
+
+### 13.4 Symptômes d'une configuration manquante
+
+- Page blanche au démarrage ou erreurs réseau vers une URL `undefined` → variables `VITE_SUPABASE_*` absentes ou vides.
+- Erreurs d'authentification systématiques → clé publique incorrecte ou pointant vers un autre environnement.
+- Checkout Stripe qui échoue → `VITE_STRIPE_MODE` / `VITE_STRIPE_PUBLISHABLE_KEY` incohérents avec la clé secrète configurée côté backend.
+
+---
+
+## 14. De la maquette Figma au composant React
+
+Le nouveau simulateur et le prototype de dashboard ont été produits à partir de maquettes Figma validées, selon un workflow en quatre étapes. Ce workflow est la référence pour toute nouvelle page ou tout nouveau composant issu du design.
+
+### 14.1 Étape 1 — Export Figma → HTML + Tailwind
+
+Utiliser l'outil [**figma.to.code** de divRIOTS](https://divriots.com/figma.to.code) : à partir de la maquette Figma, il génère une transcription en **HTML + classes Tailwind CSS**.
+
+Cet export est un point de départ, pas un résultat final : la structure est souvent verbeuse, les valeurs sont en dur et la sémantique est absente.
+
+### 14.2 Étape 2 — Relecture et correction du HTML
+
+Relire intégralement le HTML généré et corriger les écarts avec la maquette validée :
+
+- espacements, tailles de police, hauteurs de ligne, rayons et ombres ;
+- états manquants (hover, focus, actif, désactivé, erreur) ;
+- structure trop imbriquée à simplifier ;
+- ordre et hiérarchie des titres.
+
+L'objectif est d'obtenir un HTML statique **le plus fidèle possible** à la maquette avant toute conversion en React.
+
+### 14.3 Étape 3 — Génération des composants React par Lovable AI
+
+Fournir le HTML corrigé à Lovable AI en demandant explicitement des composants React **conformes à l'architecture de l'application** :
+
+- composants fonctionnels TypeScript dans le bon dossier (`src/components/simulator/*`, `src/components/dashboard-simulator/*`) ;
+- réutilisation des primitives existantes (`FormCard`, `FormField` / `Field`, `SimulatorTabsTrigger`, primitives shadcn) ;
+- **tokens sémantiques uniquement** — aucune couleur en dur (`text-white`, `bg-[#...]`) ;
+- textes passés par i18n (`useTranslation("paid-simulator")`), aucune chaîne en dur ;
+- découpage en composants petits et ciblés.
+
+### 14.4 Étape 4 — Revue et ajustements
+
+Relire le code généré et corriger jusqu'à obtenir la fidélité visuelle attendue. Checklist de conformité :
+
+- [ ] Aucune couleur, ombre ou gradient codé en dur ; tout passe par les tokens de `src/index.css` / `tailwind.config.ts`.
+- [ ] Aucune chaîne de caractères en dur ; clés ajoutées en FR **et** EN.
+- [ ] Composants découpés, pas de fichier monolithique.
+- [ ] Responsive vérifié (mobile 320 px, tablette, desktop).
+- [ ] États interactifs conformes à la maquette.
+- [ ] Thème clair et thème sombre vérifiés.
+- [ ] `bunx tsgo --noEmit` vert.
+
+### 14.5 Alternative : MCP Figma en local
+
+Il existe une intégration Figma en lecture directe via l'application **Lovable Desktop** (Figma Desktop en mode Dev, serveur MCP local activé, puis connexion dans Lovable → Settings → Connectors). Elle est **en lecture seule** : elle ne réécrit jamais dans Figma. Elle peut remplacer l'étape 1 lorsqu'un accès live à la maquette est nécessaire ; à défaut, des captures d'écran suffisent.
+
+---
+
+## 15. Documents projet (Google Drive)
+
+Ressources complémentaires hébergées sur le Google Drive du projet. L'accès se demande au responsable projet.
+
+| Document | Contenu | Lien |
+|---|---|---|
+| Maquettes Figma | Designs validés du simulateur et du dashboard | _(lien à ajouter)_ |
+| Spécifications fonctionnelles | Règles métier, parcours, cas limites | _(lien à ajouter)_ |
+| Cahier de recette | Scénarios de validation avant livraison | _(lien à ajouter)_ |
+| Comptes rendus de réunion | Historique des décisions produit | _(lien à ajouter)_ |
+| Charte graphique / ressources de marque | Logos, couleurs, typographies Lavcom | _(lien à ajouter)_ |
+| Roadmap produit | Jalons et priorisation côté métier | _(lien à ajouter)_ |
+
+> Les liens ci-dessus sont à compléter manuellement. Merci de maintenir ce tableau à jour lors de l'ajout d'un nouveau document partagé.
+
+---
+
+## 16. Guide du contributeur
 
 ### 12.1 Ajouter un champ dans le simulateur
 
